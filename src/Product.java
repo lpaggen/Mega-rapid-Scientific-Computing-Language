@@ -1,3 +1,5 @@
+import java.util.Objects;
+
 public class Product extends Expression {
     private final Expression left, right;
 
@@ -22,6 +24,24 @@ public class Product extends Expression {
 
     @Override
     public String toString() {
-        return STR."(\{left.toString()} * \{right.toString()})";
+        // somehow could introduce a switch in here, unsure of how to do this exactly.
+        // -> we need a way to have the "Expression" class here ..?
+        if (Objects.equals(left.toString(), "1.0")) {
+            return STR."(\{right.toString()})";
+        } else if (Objects.equals(right.toString(), "1.0")) {
+            return STR."(\{left.toString()})";
+        } else if (Objects.equals(right.toString(), "0.0") || Objects.equals(left.toString(), "0.0")) {
+            return null; // or something else, null etc
+        } else if (Objects.equals(right.toString(), "-1.0")) {
+            return STR."-\{left.toString()}";
+        } else if (Objects.equals(left.toString(), "-1.0")) {
+            return STR."-\{right.toString()}";
+        }
+        else {
+            // here we want to get rid of the "*" but we cannot do so yet
+            // the issue is the - NEEDS to be at the front, and we also need to account for
+            // multiple - signs -> +
+            return STR."(\{left.toString()}*\{right.toString()})";
+        }
     }
 }

@@ -17,6 +17,6 @@ public class Cosine extends Expression {
     }
     @Override
     public String toString() {
-        return null;
+        return STR."cos(\{arg.toString()})";
     }
 }

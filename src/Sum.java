@@ -1,3 +1,5 @@
+import java.util.Objects;
+
 public class Sum extends Expression {
     private final Expression left, right;
 
@@ -18,6 +20,12 @@ public class Sum extends Expression {
 
     @Override
     public String toString() {
-        return STR."(\{left.toString()} + \{right.toString()})";
+        if (Objects.equals(left.toString(), null)) {
+            return right.toString();
+        } else if (Objects.equals(right.toString(), null)) {
+            return left.toString();
+        } else {
+            return STR."(\{left.toString()} + \{right.toString()})";
+        }
     }
 }

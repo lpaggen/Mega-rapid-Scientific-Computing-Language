@@ -1,4 +1,4 @@
-public class Constant extends Expression{
+public class Constant extends Expression {
     private final double value;
 
     public Constant(double value) {
@@ -7,7 +7,7 @@ public class Constant extends Expression{
 
     @Override
     public Expression diff(String variable) {
-        // constant evaluates to 0 -- unless coeff, will need to address this later
+        // constant evaluates to 0
         return new Constant(0);
     }
 

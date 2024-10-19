@@ -22,6 +22,7 @@ public class Quotient extends Expression {
 
     @Override
     public String toString() {
-        return null;
+        // this is not correct, need to fix.
+        return STR."(\{left.toString()} * \{right.toString()})" + " - " + STR."(\{left.toString()} * \{right.toString()})";
     }
 }
