@@ -1,7 +1,9 @@
+import Expressions.*;
+
 public class Main {
     public static void main(String[] args) {
         Expression x = new Variable("x");
-        Expression expr = new Product(new Constant(5), new Cosine(new Product(x, new Constant(4))));
+        Expression expr = new Product(x, new Power(x, new Constant(3)));
 
         System.out.println("expression: " + expr);
 
