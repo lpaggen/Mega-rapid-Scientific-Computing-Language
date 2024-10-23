@@ -1,24 +1,28 @@
-package Lexer;
+package Interpreter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 // here the goal is to write a tokenizer which is supposed to cast all tokens to their respective Expressions
 // eg if i write "cos(x)", we want: new Cosine(x)
-public class Lexer {
+public class Tokenizer {
 
     private final String input;
-    private int pos = 0;
+    private int pos = 0; // !!! this gets updated at each character in the input file !!!
+    private int tokenPos = 0; // !!! this only gets updated for each COMPLETE token !!!
+    private final List<Token> tokens = new ArrayList<Token>();
+    private boolean isPreviousTypeDeclaration = false;
 
-    public Lexer(String input) {
+    public Tokenizer(String input) {
         this.input = input;
     }
 
     // always takes a String, we want to parse
+    // arguably we could write this entire thing in Regex, it is more scalable, although slower if poorly written
+    // maybe in a future version
     public List<Token> tokenize() {
 
-        List<Token> tokens = new ArrayList<Token>();
+        // List<Token> tokens = new ArrayList<Token>();
 
         while (pos < input.length()) {
             char c = input.charAt(pos);
@@ -44,18 +48,28 @@ public class Lexer {
             } else if (Character.toString(c).equals("^")) {
                 tokens.add(new Token(TokenKind.POWER, "^"));
                 pos++;
-            } else if (Character.isDigit(c)) {
-                tokens.add(tokenizeNumber()); // need to handle all cases where we have more than "9" for example
+            } else if (Character.toString(c).equals("=")) {
+                tokens.add(new Token(TokenKind.EQUAL, "="));
                 pos++;
+            } else if (Character.toString(c).equals(";")) {
+                tokens.add(new Token(TokenKind.SEMICOLON, ";")); // my interpreter will use semicolons for line separation
+                pos++;
+            } else if (Character.isDigit(c)) {
+                // need to handle decimals, but also implicit multiplication, also pos++ handled elsewhere
+                tokens.add(tokenizeNumber()); // need to handle all cases where we have more than "9" for example
+                if (pos < input.length() && Character.isLetter(input.charAt(pos))) {
+                    tokens.add(new Token(TokenKind.MUL, "*"));
+                }
             } else if (Character.isLetter(c)) {
                 tokens.add(tokenizeFunctionOrVariable()); // have to handle this separately for all sin, cos etc.
-                pos++;
+            } else if (Character.isWhitespace(c)) {
+                pos++; // unsure if I need to increment tokenPos here already or not
+                tokenPos--;
             }
         }
-
         tokens.add(new Token(TokenKind.EOF, null));
+        tokenPos++; // issue -> also being incremented at each whitespace
         return tokens;
-
     }
 
     private Token tokenizeFunctionOrVariable() {
@@ -65,6 +79,11 @@ public class Lexer {
             pos++;
         }
         String funcName = name.toString();
+        // !!!!! this is incremented incorrectly at some stage, unsure why
+        tokenPos++; // need to have tokenPos - 1 for correct arrayList access
+        if (isPreviousTypeDeclaration) { // handle type declaration with a boolean
+            tokens.add(tokenizeAccordingToPrevious());
+        }
         return switch (funcName) {
             case "sin" -> new Token(TokenKind.SIN, "sin");
             case "cos" -> new Token(TokenKind.COS, "cos");
@@ -78,18 +97,40 @@ public class Lexer {
             case "DERIVE" -> new Token(TokenKind.DERIVE, "DERIVE");
             case "WRT" -> new Token(TokenKind.WRT, "WRT");
             case "LET" -> new Token(TokenKind.LET, "LET");
+            case "SYMBOL" -> {
+                isPreviousTypeDeclaration = true;
+                yield new Token(TokenKind.SYMBOL, "SYMBOL"); // handle type declarations here
+            }
 
-            default -> throw new IllegalArgumentException("Unknown function: " + funcName);
+            default -> new Token(TokenKind.VARIABLE, funcName);
+        };
+    }
+
+    private Token tokenizeAccordingToPrevious() { // or according to previous declaration or something, doesn't matter
+        String varName = tokens.get(tokenPos).toString();
+        isPreviousTypeDeclaration = false;
+        return switch (varName) {
+            case "symbol" -> new Token(TokenKind.SYMBOL, varName); // here it's going to be lowercase, tokenizer has already lowercased it
+            default -> throw new RuntimeException("Unexpected symbol: " + varName);
         };
     }
 
     // not sure if this will actually work as intended
+    // this works only for integer numbers so far
     private Token tokenizeNumber() {
         StringBuilder number = new StringBuilder();
-        while (pos < input.length() && Character.isDigit(input.charAt(pos))) {
+        boolean isDecimal = false;
+        while (pos < input.length() && (Character.isDigit(input.charAt(pos)) || input.charAt(pos) == '.')) {
+            if (input.charAt(pos) == '.') {
+                if (isDecimal) { // double decimal
+                    throw new RuntimeException("Multiple decimal points in single float, check for a potential mistake...");
+                }
+                isDecimal = true;
+            }
             number.append(input.charAt(pos));
             pos++;
         }
-        return new Token(TokenKind.NUMBER, number.toString());
+        tokenPos++;
+        if (isDecimal) {return new Token(TokenKind.FLOAT, number.toString());} else {return new Token(TokenKind.INTEGER, number.toString());}
     }
 }

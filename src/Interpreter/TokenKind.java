@@ -1,10 +1,13 @@
-package Lexer;
+package Interpreter;
 
 // this is where all tokens are defined,
 // so we can also (and should) define concepts like "derive", "newton", etc. for all optimization techniques we want to implement
 public enum TokenKind {
     EOF,
-    NUMBER,
+    CONST,
+    INTEGER,
+    FLOAT,
+    SYMBOL,
 
     DERIVE,
     LET, // we might need a few traditional language operators
@@ -20,6 +23,8 @@ public enum TokenKind {
     POWER,
     EQUAL,
     WHITESPACE,
+    SEMICOLON,
+    VARIABLE,
 
     COS,
     SIN,
