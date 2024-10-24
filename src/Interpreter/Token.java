@@ -22,15 +22,17 @@ public class Token {
         return switch (kind) {
             case EOF -> "eof";
             case FLOAT -> "float";
+            case FLOAT_TYPE -> "float_type";
             case INTEGER -> "integer";
+            case INTEGER_TYPE -> "integer_type";
             case DERIVE -> "derive";
-            case SYMBOL -> "symbol";
+            case SYMBOL -> "symbol"; // this is the symbol type
+            case SYMBOL_TYPE -> "symbol_type"; // this is the symbol type declarator
             case COS -> "cos";
             case COT -> "cot";
             case CSC -> "csc";
             case DIV -> "div";
             case EXP -> "exp";
-            case LET -> "let";
             case LOG -> "log";
             case MUL -> "mul";
             case PLUS -> "plus";

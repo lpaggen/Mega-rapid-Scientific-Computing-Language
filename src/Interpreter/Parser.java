@@ -3,6 +3,8 @@ package Interpreter;
 import java.util.ArrayList;
 import java.util.List;
 
+// huge bug fix needed, parsing in parentheses is very hard
+
 public class Parser {
 
     private final List<Token> tokens;
@@ -13,7 +15,7 @@ public class Parser {
     }
 
     public String parseCode(List<Token> tokens) {
-        ASTNode out = parseExpression(tokens);
+        ASTNode out = parseExpression(tokens, pos);
         return out.toString();
     }
 
@@ -29,25 +31,29 @@ public class Parser {
             }
         }
         pos++; // consume )
-        return parseExpression(tokensInParen);
+        return parseExpression(tokensInParen, 0);
     }
 
-    private ASTNode parseExpression(List<Token> tokens) { // this name is bad
+    private ASTNode parseExpression(List<Token> tokens, int pos) { // this name is bad
+        System.out.println(tokens);
         Token token = tokens.get(pos);
         if (token.getKind() == TokenKind.SIN || token.getKind() == TokenKind.COS || token.getKind() == TokenKind.TAN || token.getKind() == TokenKind.COT ||
             token.getKind() == TokenKind.CSC || token.getKind() == TokenKind.EXP || token.getKind() == TokenKind.LOG) {
             pos++;
+            token = tokens.get(pos); // not sure if correct... lost track of what is going on
             String functionName = token.getValue();
             if (token.getKind() == TokenKind.OPEN_PAREN) {
                 pos++; // consume (
+                token = tokens.get(pos);
                 ASTNode argument = parseParenContent(); // this is a helper method, seems complex but really isn't
                 return new FunctionNode(functionName, argument); // create the AST node for a function
             } else {
                 throw new RuntimeException("Expected open parenthesis after function declaration");
             }
-        } else if (token.getKind() == TokenKind.INTEGER || token.getKind() == TokenKind.FLOAT ||token.getKind() == TokenKind.VARIABLE) { // handle other tokens maybe
+        } else if (token.getKind() == TokenKind.INTEGER_TYPE || token.getKind() == TokenKind.FLOAT_TYPE ||token.getKind() == TokenKind.VARIABLE) { // handle other tokens maybe
             pos++;
-            return new VariableNode(token.getValue()); // might want to rename to something else, we will see
+            token = tokens.get(pos);
+            return new VariableNode(token.getValue(), token.getKind().toString()); // might want to rename to something else, we will see
         }
         throw new RuntimeException("Unexpected token: " + token.getKind());
     }

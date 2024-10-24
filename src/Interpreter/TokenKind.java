@@ -9,12 +9,19 @@ public enum TokenKind {
     FLOAT,
     SYMBOL,
 
+    FUNCTION,
+
+    // separate all type declarations
+    SYMBOL_TYPE,
+    INTEGER_TYPE,
+    FLOAT_TYPE,
+
     DERIVE,
-    LET, // we might need a few traditional language operators
     WRT, // say "with respect to ..."
 
     OPEN_PAREN,
     CLOSE_PAREN,
+    COMMA, // for multiple function arguments
 
     PLUS,
     MINUS,

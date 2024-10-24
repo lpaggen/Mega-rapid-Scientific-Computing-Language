@@ -54,6 +54,9 @@ public class Tokenizer {
             } else if (Character.toString(c).equals(";")) {
                 tokens.add(new Token(TokenKind.SEMICOLON, ";")); // my interpreter will use semicolons for line separation
                 pos++;
+            } else if (Character.toString(c).equals(",")) {
+                tokens.add(new Token(TokenKind.COMMA, ","));
+                pos++;
             } else if (Character.isDigit(c)) {
                 // need to handle decimals, but also implicit multiplication, also pos++ handled elsewhere
                 tokens.add(tokenizeNumber()); // need to handle all cases where we have more than "9" for example
@@ -64,11 +67,10 @@ public class Tokenizer {
                 tokens.add(tokenizeFunctionOrVariable()); // have to handle this separately for all sin, cos etc.
             } else if (Character.isWhitespace(c)) {
                 pos++; // unsure if I need to increment tokenPos here already or not
-                tokenPos--;
             }
         }
         tokens.add(new Token(TokenKind.EOF, null));
-        tokenPos++; // issue -> also being incremented at each whitespace
+        tokenPos = tokens.size();
         return tokens;
     }
 
@@ -79,44 +81,52 @@ public class Tokenizer {
             pos++;
         }
         String funcName = name.toString();
-        // !!!!! this is incremented incorrectly at some stage, unsure why
-        tokenPos++; // need to have tokenPos - 1 for correct arrayList access
         if (isPreviousTypeDeclaration) { // handle type declaration with a boolean
-            tokens.add(tokenizeAccordingToPrevious());
+            return tokenizeAccordingToPrevious();
+        } else {
+            return switch (funcName) {
+                case "sin" -> new Token(TokenKind.SIN, "sin");
+                case "cos" -> new Token(TokenKind.COS, "cos");
+                case "tan" -> new Token(TokenKind.TAN, "tan");
+                case "sec" -> new Token(TokenKind.SEC, "sec");
+                case "log" -> new Token(TokenKind.LOG, "log");
+                case "exp" -> new Token(TokenKind.EXP, "exp");
+                case "cot" -> new Token(TokenKind.COT, "cot");
+                case "csc" -> new Token(TokenKind.CSC, "csc");
+
+                case "DERIVE" -> new Token(TokenKind.DERIVE, "DERIVE");
+                case "WRT" -> new Token(TokenKind.WRT, "WRT");
+                case "SYMBOL" -> {
+                    isPreviousTypeDeclaration = true;
+                    yield new Token(TokenKind.SYMBOL_TYPE, "SYMBOL_TYPE"); // handle type declarations here
+                }
+                case "INTEGER" -> {
+                    isPreviousTypeDeclaration = true;
+                    yield new Token(TokenKind.INTEGER_TYPE, "INTEGER_TYPE");
+                }
+                case "FLOAT" -> {
+                    isPreviousTypeDeclaration = true;
+                    yield new Token(TokenKind.FLOAT_TYPE, "FLOAT_TYPE");
+                }
+
+                default -> new Token(TokenKind.VARIABLE, funcName);
+            };
         }
-        return switch (funcName) {
-            case "sin" -> new Token(TokenKind.SIN, "sin");
-            case "cos" -> new Token(TokenKind.COS, "cos");
-            case "tan" -> new Token(TokenKind.TAN, "tan");
-            case "sec" -> new Token(TokenKind.SEC, "sec");
-            case "log" -> new Token(TokenKind.LOG, "log");
-            case "exp" -> new Token(TokenKind.EXP, "exp");
-            case "cot" -> new Token(TokenKind.COT, "cot");
-            case "csc" -> new Token(TokenKind.CSC, "csc");
-
-            case "DERIVE" -> new Token(TokenKind.DERIVE, "DERIVE");
-            case "WRT" -> new Token(TokenKind.WRT, "WRT");
-            case "LET" -> new Token(TokenKind.LET, "LET");
-            case "SYMBOL" -> {
-                isPreviousTypeDeclaration = true;
-                yield new Token(TokenKind.SYMBOL, "SYMBOL"); // handle type declarations here
-            }
-
-            default -> new Token(TokenKind.VARIABLE, funcName);
-        };
     }
 
     private Token tokenizeAccordingToPrevious() { // or according to previous declaration or something, doesn't matter
         String varName = tokens.get(tokenPos).toString();
         isPreviousTypeDeclaration = false;
         return switch (varName) {
-            case "symbol" -> new Token(TokenKind.SYMBOL, varName); // here it's going to be lowercase, tokenizer has already lowercased it
-            default -> throw new RuntimeException("Unexpected symbol: " + varName);
+            case "symbol_type" -> new Token(TokenKind.SYMBOL, varName); // here it's going to be lowercase, tokenizer has already lowercased it
+            case "integer_type" -> new Token(TokenKind.INTEGER, varName);
+            case "float_type" -> new Token(TokenKind.FLOAT, varName);
+
+            default -> throw new RuntimeException("Unexpected token: " + varName); // something is going wrong here
         };
     }
 
-    // not sure if this will actually work as intended
-    // this works only for integer numbers so far
+    // can handle floats and integers here
     private Token tokenizeNumber() {
         StringBuilder number = new StringBuilder();
         boolean isDecimal = false;
