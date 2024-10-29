@@ -1,6 +1,6 @@
-import Interpreter.Parser;
-import Interpreter.Tokenizer;
-import Interpreter.Token;
+import Compiler.Parser;
+import Compiler.Tokenizer;
+import Compiler.Token;
 
 import java.util.List;
 
@@ -24,7 +24,7 @@ public class Main {
         }
 
         Parser parser = new Parser(tokens);
-        String result = parser.parseCode(tokens);
+
 
         // System.out.println(result);
     }
