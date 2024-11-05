@@ -13,10 +13,13 @@ public class Parser {
     private final List<Token> tokens;
     // public final ASTNode out;
     private int tokenPos = 0;
-    private int nextTokenPos = 0; // clearer than say pos++
 
     public Parser(List<Token> tokens) {
         this.tokens = tokens;
+    }
+
+    public ASTNode interpretCode() {
+        return parseExpression();
     }
 
     // we need 3 main methods along with a couple of helper methods to help parse our code
@@ -24,26 +27,69 @@ public class Parser {
 
     // 1st implementation -> recursive descent LL(1)
     // try LR later ?
-    private ASTNode parseExpression(List<Token> tokens) {
-        // here we need to handle all EXPRESSIONS -> +, -, so all binary nodes
-        // currently we hava a strange way of handling the negations, need to address the issue
-        while (true) {
-            Token nextToken = parseTerm(tokens.get(nextTokenPos));
 
-            // handle all the cases of expressions now
-            if (nextToken.getKind() == TokenKind.PLUS) { // handle additions
-                return new BinaryOperationNode(left, TokenKind.PLUS, right); // we need to fix these types
-            } else if (nextToken.getKind() == TokenKind.MINUS) {
-                return new BinaryOperationNode(left, TokenKind.MINUS, right); // also fix here
+    // what we do is we let each function call the other recursively, it's complex but works
+    private ASTNode parseExpression() {
+        // here we need to handle all EXPRESSIONS -> +, -, so all binary nodes
+        ASTNode left = parseTerm();
+
+        while (tokenPos < tokens.size()) {
+            Token nextToken = tokens.get(tokenPos); // advance to next token
+            if (nextToken.getKind() == TokenKind.PLUS || nextToken.getKind() == TokenKind.MINUS) {
+                tokenPos++;
+                ASTNode right = parseTerm(); // update left underneath
+                left = new BinaryOperationNode(left, right, nextToken); // should work as intended
+            } else {
+                break; // when no more tokens to parse
             }
         }
+        return left;
     }
 
-    private ASTNode parseFactor(List<Token> tokens) {
+    private ASTNode parseTerm() {
+        ASTNode left = parseFactor();
 
+        while (tokenPos < tokens.size()) {
+            Token nextToken = tokens.get(tokenPos);
+            if (nextToken.getKind() == TokenKind.MUL || nextToken.getKind() == TokenKind.DIV) {
+                tokenPos++;
+                ASTNode right = parseTerm();
+                left = new BinaryOperationNode(left, right, nextToken);
+            } else {
+                break;
+            }
+        }
+        return left;
     }
 
-    private Token parseTerm(Token token) {
-
+    private ASTNode parseFactor() { // this function makes the recursive calls to other handlers
+        Token token = tokens.get(tokenPos);
+        if (token.getKind() == TokenKind.INTEGER) {
+            tokenPos++;
+            return new ConstantNode(Integer.parseInt(token.getValue()));
+        } else if (token.getKind() == TokenKind.FLOAT) {
+            tokenPos++;
+            return new ConstantNode(Float.parseFloat(token.getValue()));
+        } else if (token.getKind() == TokenKind.SYMBOL_TYPE) { // check declaration type
+            tokenPos++;
+            token = tokens.get(tokenPos);
+            if (token.getKind() == TokenKind.SYMBOL) {
+                tokenPos++;
+                return new VariableNode(token.toString(), TokenKind.SYMBOL);
+            } else {
+                throw new RuntimeException("Expected symbol after declaring symbol type");
+            }
+        } else if (token.getKind() == TokenKind.OPEN_PAREN) {
+            tokenPos++; // consume (
+            ASTNode inParenNode = parseExpression();
+            if (token.getKind() == TokenKind.CLOSE_PAREN) { // REMEMBER tokenPos MOVES IN OTHER FUNCTIONS TOO
+                tokenPos++;
+            } else {
+                throw new RuntimeException("Expected matching closed parentheses after opening parentheses");
+            }
+            return inParenNode;
+        }
+        throw new RuntimeException("Unexpected token: " + token.getValue());
     }
+
 }

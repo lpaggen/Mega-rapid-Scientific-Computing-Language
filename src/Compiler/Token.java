@@ -1,5 +1,7 @@
 package Compiler;
 
+import java.util.Objects;
+
 public class Token {
 
     private final TokenKind kind;
@@ -16,6 +18,10 @@ public class Token {
 
     public String getValue() {
         return value;
+    }
+
+    public boolean equals(Token left, Token right) {
+        return Objects.equals(left.getValue(), right.getValue());
     }
 
     public String toString() {

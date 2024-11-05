@@ -3,9 +3,9 @@ package Compiler;
 public class VariableNode extends ASTNode {
 
     public String name;
-    public String type;
+    public TokenKind type;
 
-    public VariableNode(String name, String type) {
+    public VariableNode(String name, TokenKind type) {
         this.name = name;
         this.type = type;
     }

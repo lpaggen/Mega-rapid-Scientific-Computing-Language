@@ -7,7 +7,7 @@ public class FunctionNode extends ASTNode {
 
     public FunctionNode(String functionName, ASTNode argument) {
         this.functionName = functionName;
-        this.argument = argument;
+        this.argument = argument; // however, arguments can be multiple at once... will need to fix this at some stage
     }
 
     public String getFunctionName() {

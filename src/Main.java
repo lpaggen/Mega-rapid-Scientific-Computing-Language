@@ -1,3 +1,4 @@
+import Compiler.ASTNode;
 import Compiler.Parser;
 import Compiler.Tokenizer;
 import Compiler.Token;
@@ -8,7 +9,7 @@ public class Main {
 
     public static void main(String[] args) {
         // Define the input string you want to tokenize
-        String input = "cos(x);"; // Example input
+        String input = "SYMBOL x = 2"; // Example input
 
         // Instantiate the Tokenizer with the input expression
         Tokenizer tokenizer = new Tokenizer(input);
@@ -25,6 +26,7 @@ public class Main {
 
         Parser parser = new Parser(tokens);
 
+        ASTNode out = parser.interpretCode();
 
         // System.out.println(result);
     }

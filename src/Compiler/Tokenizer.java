@@ -94,8 +94,11 @@ public class Tokenizer {
                 case "cot" -> new Token(TokenKind.COT, "cot");
                 case "csc" -> new Token(TokenKind.CSC, "csc");
 
+                case "FUNC" -> new Token(TokenKind.FUNCTION, "FUNCTION_DECL"); // actually more complex than this
+
                 case "DERIVE" -> new Token(TokenKind.DERIVE, "DERIVE");
                 case "WRT" -> new Token(TokenKind.WRT, "WRT");
+
                 case "SYMBOL" -> {
                     isPreviousTypeDeclaration = true;
                     yield new Token(TokenKind.SYMBOL_TYPE, "SYMBOL_TYPE"); // handle type declarations here

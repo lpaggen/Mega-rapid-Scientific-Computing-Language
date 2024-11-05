@@ -1,6 +1,7 @@
 package Compiler;
 
 // this class represents anything with + and -, * operators etc
+// to be reviewed at later stage
 public class BinaryOperationNode extends ASTNode {
 
     public ASTNode left;
