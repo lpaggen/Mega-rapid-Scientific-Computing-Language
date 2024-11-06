@@ -40,11 +40,11 @@ public class Token {
             case DIV -> "div";
             case EXP -> "exp";
             case LOG -> "log";
-            case MUL -> "mul";
-            case PLUS -> "plus";
-            case MINUS -> "minus";
-            case EQUAL -> "equal";
-            case POWER -> "power";
+            case MUL -> "*";
+            case PLUS -> "+";
+            case MINUS -> "-";
+            case EQUAL -> "=";
+            case POWER -> "**";
             case SEC -> "sec";
             case SIN -> "sin";
             case TAN -> "tan";

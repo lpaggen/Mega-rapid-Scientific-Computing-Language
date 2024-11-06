@@ -15,6 +15,6 @@ public class BinaryOperationNode extends ASTNode {
     }
 
     public String toString() {
-        return left.toString() + " " + operator.toString() + " " + left.toString();
+        return "(" + left.toString() + " " + operator + " " + right.toString() + ")";
     }
 }

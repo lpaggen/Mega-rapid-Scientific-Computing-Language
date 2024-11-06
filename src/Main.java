@@ -9,7 +9,7 @@ public class Main {
 
     public static void main(String[] args) {
         // Define the input string you want to tokenize
-        String input = "SYMBOL x = 2"; // Example input
+        String input = "INTEGER x;"; // Example input
 
         // Instantiate the Tokenizer with the input expression
         Tokenizer tokenizer = new Tokenizer(input);
@@ -28,6 +28,8 @@ public class Main {
 
         ASTNode out = parser.interpretCode();
 
-        // System.out.println(result);
+        System.out.println();
+        System.out.println("Output of the parser:");
+        System.out.println(out);
     }
 }
