@@ -1,4 +1,4 @@
-package AST;
+package AST.Nodes;
 
 public abstract class Expression {
     // symbolic differentiation

@@ -1,4 +1,4 @@
-package Compiler;
+package AST.Nodes;
 
 public abstract class ASTNode {
 

@@ -1,4 +1,6 @@
-package Compiler;
+package AST.Expressions;
+
+import AST.Nodes.ASTNode;
 
 public class FunctionNode extends ASTNode {
 

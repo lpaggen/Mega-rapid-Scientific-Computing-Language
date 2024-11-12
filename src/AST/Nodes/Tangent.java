@@ -1,4 +1,4 @@
-package AST;
+package AST.Nodes;
 
 public class Tangent extends Expression {
     private final Expression arg;

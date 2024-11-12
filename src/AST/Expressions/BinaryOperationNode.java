@@ -1,6 +1,9 @@
-package Compiler;
+package AST.Expressions;
 
-// this class represents anything with + and -, * operators etc
+import AST.Nodes.ASTNode;
+import Compiler.Tokenizer.Token;
+
+// this class represents anything with + and -, * operators etc.
 // to be reviewed at later stage
 public class BinaryOperationNode extends ASTNode {
 
@@ -16,5 +19,17 @@ public class BinaryOperationNode extends ASTNode {
 
     public String toString() {
         return "(" + left.toString() + " " + operator + " " + right.toString() + ")";
+    }
+
+    public Token getOperator() {
+        return operator;
+    }
+
+    public ASTNode getLeft() {
+        return left;
+    }
+
+    public ASTNode getRight() {
+        return right;
     }
 }

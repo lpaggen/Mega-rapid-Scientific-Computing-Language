@@ -1,4 +1,4 @@
-package AST;
+package AST.Nodes;
 
 // handling negation through its own node instead of having new Prod(new Constant(-1), x)
 public class Negate extends Expression {

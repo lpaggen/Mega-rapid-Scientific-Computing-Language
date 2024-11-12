@@ -1,13 +1,23 @@
-package Compiler;
+package Compiler.Parser;
+
+import AST.Expressions.BinaryOperationNode;
+import AST.Expressions.ConstantNode;
+import AST.Expressions.FunctionNode;
+import AST.Expressions.VariableNode;
+import AST.Nodes.ASTNode;
+import Compiler.Tokenizer.TokenKind;
+import Compiler.Tokenizer.Token;
 
 import java.util.List;
 
-// huge bug fix needed, parsing in parentheses is very hard
+// parsing going quite well so far, we need to add some error checking
+// stuff like = signs not being followed by anything should crash the program
+// all the trig functions need to be parsed correctly
+// something very hard will now be to keep track of variables, we need a STACK to handle it somehow
 
 public class Parser {
 
     private final List<Token> tokens;
-    // public final ASTNode out;
     private int tokenPos = 0;
 
     public Parser(List<Token> tokens) {
@@ -18,13 +28,6 @@ public class Parser {
         return parseExpression();
     }
 
-    // we need 3 main methods along with a couple of helper methods to help parse our code
-    // parseE, parseT, parseF
-
-    // 1st implementation -> recursive descent LL(1)
-    // try LR later ?
-
-    // what we do is we let each function call the other recursively, it's complex but works
     private ASTNode parseExpression() {
         // here we need to handle all EXPRESSIONS -> +, -, so all binary nodes
         ASTNode left = parseTerm();
@@ -68,6 +71,10 @@ public class Parser {
             tokenPos++;
             return new ConstantNode(Float.parseFloat(token.getValue()));
 
+        } else if (token.getKind() == TokenKind.VARIABLE) { // might be more complicated here
+            tokenPos++;
+            return new VariableNode(token.toString(), TokenKind.VARIABLE);
+
         } else if (token.getKind() == TokenKind.SYMBOL_TYPE) {
             tokenPos++;
             token = tokens.get(tokenPos);
@@ -98,17 +105,37 @@ public class Parser {
                 throw new RuntimeException("Expected variable after declaring integer type");
             }
 
+            // the below could be processed at once with a switch ? readability might not be the best
+        } else if (token.getKind() == TokenKind.COS) { // also process all the rest
+            tokenPos++;
+            token = tokens.get(tokenPos);
+            if (token.getKind() != TokenKind.OPEN_PAREN) {
+                throw new RuntimeException("Expected open parenthesis after declaring cos");
+            }
+            System.out.println(token);
+            tokenPos++; // consume "("
+            token = tokens.get(tokenPos);
+            ASTNode inParenContent = parseExpression();
+            if (tokenPos < tokens.size() && tokens.get(tokenPos).getKind() == TokenKind.CLOSE_PAREN) {
+                tokenPos++;
+            } else {
+                throw new RuntimeException("Expected matching closing parenthesis");
+            }
+            return new FunctionNode("cos", inParenContent); // this should return correct paren content
+
         } else if (token.getKind() == TokenKind.OPEN_PAREN) {
             tokenPos++; // Consume '('
             ASTNode inParenNode = parseExpression(); // call back to parse parentheses content
             if (tokenPos < tokens.size() && tokens.get(tokenPos).getKind() == TokenKind.CLOSE_PAREN) {
-                tokenPos++; // here consume ) closing paren
+                tokenPos++; // here consume ')' closing paren
             } else {
                 throw new RuntimeException("Expected matching closing parenthesis");
             }
             return inParenNode;
         }
-        throw new RuntimeException("Unexpected token: " + token.getValue());
+
+        // return if no token makes sense
+        throw new RuntimeException("Unexpected token: " + token.getValue() + " (type -> " + token.getKind() + ")");
     }
 
 // end of file

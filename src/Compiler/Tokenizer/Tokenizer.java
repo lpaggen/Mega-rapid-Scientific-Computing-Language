@@ -1,4 +1,4 @@
-package Compiler;
+package Compiler.Tokenizer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +12,7 @@ public class Tokenizer {
     private int tokenPos = 0; // !!! this only gets updated for each COMPLETE token !!!
     private final List<Token> tokens = new ArrayList<Token>();
     private boolean isPreviousTypeDeclaration = false;
+    private TokenKind previousTypeDeclaration;
 
     public Tokenizer(String input) {
         this.input = input;
@@ -101,14 +102,17 @@ public class Tokenizer {
 
                 case "SYMBOL" -> {
                     isPreviousTypeDeclaration = true;
+                    previousTypeDeclaration = TokenKind.SYMBOL_TYPE;
                     yield new Token(TokenKind.SYMBOL_TYPE, "SYMBOL_TYPE"); // handle type declarations here
                 }
                 case "INTEGER" -> {
                     isPreviousTypeDeclaration = true;
+                    previousTypeDeclaration = TokenKind.INTEGER_TYPE;
                     yield new Token(TokenKind.INTEGER_TYPE, "INTEGER_TYPE");
                 }
                 case "FLOAT" -> {
                     isPreviousTypeDeclaration = true;
+                    previousTypeDeclaration = TokenKind.FLOAT_TYPE;
                     yield new Token(TokenKind.FLOAT_TYPE, "FLOAT_TYPE");
                 }
 
@@ -117,15 +121,16 @@ public class Tokenizer {
         }
     }
 
+    // something needs to be fixed here, you can't tokenize "SYMBOL SYMBOL x" for example
     private Token tokenizeAccordingToPrevious() { // or according to previous declaration or something, doesn't matter
-        String varName = tokens.get(tokenPos).toString();
+        String varName = tokens.get(tokenPos).toString(); // actually replace by getKind() could be better
         isPreviousTypeDeclaration = false;
         return switch (varName) {
             case "symbol_type" -> new Token(TokenKind.SYMBOL, varName); // here it's going to be lowercase, tokenizer has already lowercased it
             case "integer_type" -> new Token(TokenKind.INTEGER, varName);
             case "float_type" -> new Token(TokenKind.FLOAT, varName);
 
-            default -> throw new RuntimeException("Unexpected token: " + varName); // something is going wrong here
+            default -> throw new RuntimeException("Unexpected token: " + varName);
         };
     }
 

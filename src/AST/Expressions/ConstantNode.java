@@ -1,4 +1,6 @@
-package Compiler;
+package AST.Expressions;
+
+import AST.Nodes.ASTNode;
 
 public class ConstantNode extends ASTNode {
     private final Number value; // hold int or float

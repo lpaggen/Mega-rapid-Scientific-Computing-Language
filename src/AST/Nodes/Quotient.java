@@ -1,4 +1,4 @@
-package AST;
+package AST.Nodes;
 
 public class Quotient extends Expression {
     private final Expression left, right;

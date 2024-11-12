@@ -1,7 +1,7 @@
-import Compiler.ASTNode;
-import Compiler.Parser;
-import Compiler.Tokenizer;
-import Compiler.Token;
+import AST.Nodes.ASTNode;
+import Compiler.Parser.Parser;
+import Compiler.Tokenizer.Tokenizer;
+import Compiler.Tokenizer.Token;
 
 import java.util.List;
 
@@ -9,7 +9,7 @@ public class Main {
 
     public static void main(String[] args) {
         // Define the input string you want to tokenize
-        String input = "INTEGER x;"; // Example input
+        String input = "cos(x)"; // Example input
 
         // Instantiate the Tokenizer with the input expression
         Tokenizer tokenizer = new Tokenizer(input);

@@ -1,4 +1,4 @@
-package AST;
+package AST.Nodes;
 
 public class Variable extends Expression {
     private final String name;

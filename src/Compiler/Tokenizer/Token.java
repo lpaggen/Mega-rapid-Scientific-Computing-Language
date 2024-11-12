@@ -1,4 +1,4 @@
-package Compiler;
+package Compiler.Tokenizer;
 
 import java.util.Objects;
 

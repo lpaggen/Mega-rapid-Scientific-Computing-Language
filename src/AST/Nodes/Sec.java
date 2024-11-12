@@ -1,4 +1,4 @@
-package AST;
+package AST.Nodes;
 
 public class Sec extends Expression {
 

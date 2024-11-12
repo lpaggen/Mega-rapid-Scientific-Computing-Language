@@ -1,4 +1,4 @@
-package AST;
+package AST.Nodes;
 
 import java.util.Objects;
 
