@@ -5,8 +5,10 @@ import Compiler.Tokenizer.TokenKind;
 
 public class VariableNode extends ASTNode {
 
-    public String name;
-    public TokenKind type;
+    private final String name;
+    private final TokenKind type;
+    private Integer intValue;
+    private float floatValue;
 
     // need constructor to take values for ALL defined types somehow
     // implement a setValue and getValue method
@@ -14,6 +16,18 @@ public class VariableNode extends ASTNode {
     public VariableNode(String name, TokenKind type) {
         this.name = name;
         this.type = type;
+    }
+
+    public VariableNode(String name, TokenKind type, Integer value) {
+        this.name = name;
+        this.type = type;
+        this.intValue = value;
+    }
+
+    public VariableNode(String name, TokenKind type, Float value) {
+        this.name = name;
+        this.type = type;
+        this.floatValue = value;
     }
 
     public void setValue(int value) { // need a special type of whatever, maybe throw in constant then if etc
@@ -25,6 +39,6 @@ public class VariableNode extends ASTNode {
     }
 
     public String toString() {
-        return name + " (" + type + ")";
+        return type + " (" + name + ")";
     }
 }

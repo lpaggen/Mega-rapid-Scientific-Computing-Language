@@ -61,6 +61,7 @@ public class Parser {
         return left;
     }
 
+    // i might throw everything into a switch, seems there are a lot of if else
     private ASTNode parseFactor() {
         Token token = tokens.get(tokenPos);
         if (token.getKind() == TokenKind.INTEGER) {
@@ -73,7 +74,7 @@ public class Parser {
 
         } else if (token.getKind() == TokenKind.VARIABLE) { // might be more complicated here
             tokenPos++;
-            return new VariableNode(token.toString(), TokenKind.VARIABLE);
+            return new VariableNode(token.getValue(), TokenKind.VARIABLE);
 
         } else if (token.getKind() == TokenKind.SYMBOL_TYPE) {
             tokenPos++;
@@ -90,7 +91,7 @@ public class Parser {
             token = tokens.get(tokenPos);
             if (token.getKind() == TokenKind.FLOAT) {
                 tokenPos++;
-                return new VariableNode(token.toString(), TokenKind.SYMBOL);
+                return new VariableNode(token.toString(), TokenKind.FLOAT);
             } else {
                 throw new RuntimeException("Expected variable after declaring float type");
             }
@@ -105,8 +106,9 @@ public class Parser {
                 throw new RuntimeException("Expected variable after declaring integer type");
             }
 
-            // the below could be processed at once with a switch ? readability might not be the best
-        } else if (token.getKind() == TokenKind.COS) { // also process all the rest
+        } else if (token.getKind() == TokenKind.COS || token.getKind() == TokenKind.SIN || token.getKind() == TokenKind.TAN
+                || token.getKind() == TokenKind.COT || token.getKind() == TokenKind.SEC || token.getKind() == TokenKind.CSC) {
+            Token functionType = token; // unsure if this is needed
             tokenPos++;
             token = tokens.get(tokenPos);
             if (token.getKind() != TokenKind.OPEN_PAREN) {
@@ -114,14 +116,14 @@ public class Parser {
             }
             System.out.println(token);
             tokenPos++; // consume "("
-            token = tokens.get(tokenPos);
+            // token = tokens.get(tokenPos);
             ASTNode inParenContent = parseExpression();
             if (tokenPos < tokens.size() && tokens.get(tokenPos).getKind() == TokenKind.CLOSE_PAREN) {
                 tokenPos++;
             } else {
                 throw new RuntimeException("Expected matching closing parenthesis");
             }
-            return new FunctionNode("cos", inParenContent); // this should return correct paren content
+            return getFunctionNode(functionType, inParenContent); // moved the switch to its own function, more readable
 
         } else if (token.getKind() == TokenKind.OPEN_PAREN) {
             tokenPos++; // Consume '('
@@ -136,6 +138,22 @@ public class Parser {
 
         // return if no token makes sense
         throw new RuntimeException("Unexpected token: " + token.getValue() + " (type -> " + token.getKind() + ")");
+    }
+
+    // this is more readable than inside the parseFactor method imo, could move back into it at a later stage
+    private FunctionNode getFunctionNode(Token functionType, ASTNode inParenContent) {
+        FunctionNode functionNode; // init empty
+        switch(functionType.getKind()) {
+            case TokenKind.COS -> functionNode = new FunctionNode("cos", inParenContent);
+            case TokenKind.SIN -> functionNode = new FunctionNode("sin", inParenContent);
+            case TokenKind.TAN -> functionNode = new FunctionNode("tan", inParenContent);
+            case TokenKind.COT -> functionNode = new FunctionNode("cot", inParenContent);
+            case TokenKind.SEC -> functionNode = new FunctionNode("sec", inParenContent);
+            case TokenKind.CSC -> functionNode = new FunctionNode("csc", inParenContent);
+
+            default -> throw new RuntimeException("Unexpected token type");
+        }
+        return functionNode;
     }
 
 // end of file

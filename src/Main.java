@@ -9,7 +9,7 @@ public class Main {
 
     public static void main(String[] args) {
         // Define the input string you want to tokenize
-        String input = "cos(x)"; // Example input
+        String input = "FLOAT g"; // Example input
 
         // Instantiate the Tokenizer with the input expression
         Tokenizer tokenizer = new Tokenizer(input);
