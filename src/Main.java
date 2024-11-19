@@ -2,6 +2,7 @@ import AST.Nodes.ASTNode;
 import Compiler.Parser.Parser;
 import Compiler.Tokenizer.Tokenizer;
 import Compiler.Tokenizer.Token;
+import DataTypes.Symbol;
 
 import java.util.List;
 
@@ -9,7 +10,7 @@ public class Main {
 
     public static void main(String[] args) {
         // Define the input string you want to tokenize
-        String input = "FLOAT g"; // Example input
+        String input = "csc(x)"; // Example input
 
         // Instantiate the Tokenizer with the input expression
         Tokenizer tokenizer = new Tokenizer(input);
@@ -31,5 +32,7 @@ public class Main {
         System.out.println();
         System.out.println("Output of the parser:");
         System.out.println(out);
+
+        System.out.println(new Symbol(2, "x").add(new Symbol(5, "x")));
     }
 }
