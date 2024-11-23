@@ -54,6 +54,8 @@ public class Token {
             case WHITESPACE -> "whitespace";
             case VARIABLE -> "variable";
             case SEMICOLON -> "semicolon";
+            case MATRIX_TYPE -> "matrix_type";
+            case MATRIX -> "matrix";
 
             default -> throw new IllegalStateException("Unexpected value: " + kind);
         };

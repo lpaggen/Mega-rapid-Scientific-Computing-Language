@@ -115,6 +115,11 @@ public class Tokenizer {
                     previousTypeDeclaration = TokenKind.FLOAT_TYPE;
                     yield new Token(TokenKind.FLOAT_TYPE, "FLOAT_TYPE");
                 }
+                case "MATRIX" -> {
+                    isPreviousTypeDeclaration = true;
+                    previousTypeDeclaration = TokenKind.MATRIX_TYPE;
+                    yield new Token(TokenKind.MATRIX_TYPE, "MATRIX_TYPE");
+                }
 
                 default -> new Token(TokenKind.VARIABLE, funcName);
             };
@@ -129,6 +134,7 @@ public class Tokenizer {
             case "symbol_type" -> new Token(TokenKind.SYMBOL, varName); // here it's going to be lowercase, tokenizer has already lowercased it
             case "integer_type" -> new Token(TokenKind.INTEGER, varName);
             case "float_type" -> new Token(TokenKind.FLOAT, varName);
+            case "matrix_type" -> new Token(TokenKind.MATRIX, varName);
 
             default -> throw new RuntimeException("Unexpected token: " + varName);
         };

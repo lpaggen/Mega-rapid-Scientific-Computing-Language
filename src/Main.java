@@ -33,6 +33,9 @@ public class Main {
         System.out.println("Output of the parser:");
         System.out.println(out);
 
-        System.out.println(new Symbol(2, "x").add(new Symbol(5, "x")));
+        System.out.println();
+        System.out.println("testing new structures");
+        System.out.println(new Symbol(2.7f, "x").add(new Symbol(5, "x")));
+
     }
 }

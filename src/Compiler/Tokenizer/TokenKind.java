@@ -9,12 +9,16 @@ public enum TokenKind {
     FLOAT,
     SYMBOL,
 
+    // some data structure tokens
+    MATRIX,
+
     FUNCTION,
 
     // separate all type declarations
     SYMBOL_TYPE,
     INTEGER_TYPE,
     FLOAT_TYPE,
+    MATRIX_TYPE,
 
     DERIVE,
     WRT, // say "with respect to ..."
