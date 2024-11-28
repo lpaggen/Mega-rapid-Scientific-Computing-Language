@@ -1,5 +1,8 @@
 package DataStructures;
 
+import DataTypes.Symbol;
+
+import java.net.Inet4Address;
 import java.util.Objects;
 
 // have to implement a matrix structure, with capability for eigenvalue, inversion, det, mul, etc. etc
@@ -32,20 +35,32 @@ public class Matrix<T> { // so apparently T is "type" (generic)
             throw new IllegalArgumentException("Matrix multiplication not possible: Columns of A (" + colsA + ") must match rows of B (" + rowsB + ").");
         }
 
-        Object[][] result = new Object[rowsA][colsB];
+        Object[][] result = new Object[rowsA][colsB]; // still object type
 
-        // main computation loop, I will set up some (minor) optimizations later down the line
-        // currently O(n^3) is a bit slow - "slow"
+        // main computation loop, I will set up some (minor) optimizations later down the line, maybe not
+        // currently O(n^3) is a bit slow - "slow" for my purposes should be just fine
         // there is an additional degree of complexity here; a matrix needs to handle symbols AND Numbers
         for (int i = 0; i < rowsA; i++) {
             for (int j = 0; j < colsB; j++) {
+                Object sum = 0; // could be a symbol ...
                 for (int k = 0; k < colsA; k++) {
-
-                    // result[i][j] += A[i][k] * B[k][j];
+                    Object elementA = A.entries[i][k]; // this would get the contents of the matrix, parse int and sym and float
+                    Object elementB = B.entries[k][j];
+                    if (elementA instanceof Integer && elementB instanceof Integer) {
+                        sum = (Integer) sum + (Integer) elementA + (Integer) elementB; // we could handle all in floats too
+                    } else if (elementA instanceof Float && elementB instanceof Float) {
+                        sum = (Float) sum + (Float) elementA + (Float) elementB;
+                    } else if (elementA instanceof Symbol && elementB instanceof Symbol) {
+                        sum = (Symbol) sum + (Symbol) elementA + (Symbol) elementB; // this is a big expression
+                    }
                 }
             }
         }
         return null;
     }
-
+    private void validateName(String name) { // check if uppercase letter
+        if (!name.matches("[A-Z]")) { // check regex for alphabet
+            throw new IllegalArgumentException("Matrix name must be a single uppercase alphabetical character.");
+        }
+    }
 }

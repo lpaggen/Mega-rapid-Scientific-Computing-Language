@@ -2,7 +2,7 @@ package Util;
 
 public class HelperClass {
 
-    public void help(String arg) {
+    public static void help(String arg) {
         switch (arg) {
             case "symbol":
                 System.out.println("The Symbol data type allows for algebraic operations (eg 2x + 5x = 7x)");

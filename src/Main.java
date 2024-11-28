@@ -3,6 +3,7 @@ import Compiler.Parser.Parser;
 import Compiler.Tokenizer.Tokenizer;
 import Compiler.Tokenizer.Token;
 import DataTypes.Symbol;
+import Util.HelperClass;
 
 import java.util.List;
 
@@ -35,7 +36,10 @@ public class Main {
 
         System.out.println();
         System.out.println("testing new structures");
-        System.out.println(new Symbol(2.7f, "x").add(new Symbol(5, "x")));
+        System.out.println(new Symbol("x"));
 
+        // HelperClass.help("symbol");
+
+        System.out.println(4 + 5f);
     }
 }
