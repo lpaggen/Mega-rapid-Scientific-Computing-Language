@@ -27,6 +27,6 @@ public class Term {
 
     @Override
     public String toString() {
-
+        return this.coeff.toString() + this.getSymbol().toString();
     }
 }

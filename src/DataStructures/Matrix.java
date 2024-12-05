@@ -1,5 +1,6 @@
 package DataStructures;
 
+import DataTypes.Expression;
 import DataTypes.Symbol;
 
 import java.net.Inet4Address;
@@ -9,7 +10,7 @@ import java.util.Objects;
 // this is more complex than i initially expected it to be
 public class Matrix<T> { // so apparently T is "type" (generic)
     private final int rows, columns;
-    private final Object[][] entries;
+    private final Object[][] entries; // define as Object, specify later... might be "slow"
 
     public Matrix(int rows, int columns) {
         this.rows = rows;
@@ -50,8 +51,9 @@ public class Matrix<T> { // so apparently T is "type" (generic)
                         sum = (Integer) sum + (Integer) elementA + (Integer) elementB; // we could handle all in floats too
                     } else if (elementA instanceof Float && elementB instanceof Float) {
                         sum = (Float) sum + (Float) elementA + (Float) elementB;
-                    } else if (elementA instanceof Symbol && elementB instanceof Symbol) {
-                        sum = (Symbol) sum + (Symbol) elementA + (Symbol) elementB; // this is a big expression
+                    } else if (elementA instanceof Expression && elementB instanceof Expression) {
+                        sum = new Expression(); // this is a big expression, initialize a fresh one
+
                     }
                 }
             }

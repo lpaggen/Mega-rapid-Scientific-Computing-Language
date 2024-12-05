@@ -15,10 +15,6 @@ public class Symbol {
         this.name = name;
     }
 
-    public String getName() {
-        return name;
-    }
-
     @Override
     public String toString() {
         return this.name;
@@ -26,6 +22,8 @@ public class Symbol {
 
     // a Symbol must be defined by a single, lowercase letter (really can't imagine why you would need more than 26 symbols)
     // we do this because a Vector and a Matrix (both Matrix) are to be defined by capital letters
+    // a Symbol must also be part of an expression, otherwise we are bound to run into issues
+    // TO DO -> find a way to automatically cast into Term, then Expression
     private void validateName(String name) { // doesn't need to return anything
         if (!name.matches("[a-z]")) { // check regex for alphabet
             throw new IllegalArgumentException("Symbol name must be a single lowercase alphabetical character.");

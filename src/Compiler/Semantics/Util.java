@@ -10,6 +10,4 @@ public class Util { // have to see how to format all this
     private ASTNode left;
     private ASTNode right;
     private Token operator;
-
-    
 }
