@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Expression {
-    private List<Term> terms;
+    private final List<Term> terms;
 
     public Expression() {
         this.terms = new ArrayList<>();

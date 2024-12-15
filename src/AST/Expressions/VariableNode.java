@@ -7,7 +7,7 @@ public class VariableNode extends ASTNode {
 
     private final String name;
     private final TokenKind type;
-    private Integer intValue;
+    private int intValue;
     private float floatValue;
 
     // need constructor to take values for ALL defined types somehow
@@ -18,16 +18,16 @@ public class VariableNode extends ASTNode {
         this.type = type;
     }
 
-    public VariableNode(String name, TokenKind type, Integer value) {
+    public VariableNode(String name, TokenKind type, Integer coeff) {
         this.name = name;
         this.type = type;
-        this.intValue = value;
+        this.intValue = coeff;
     }
 
-    public VariableNode(String name, TokenKind type, Float value) {
+    public VariableNode(String name, TokenKind type, Float coeff) {
         this.name = name;
         this.type = type;
-        this.floatValue = value;
+        this.floatValue = coeff;
     }
 
     public void setValue(int value) { // need a special type of whatever, maybe throw in constant then if etc

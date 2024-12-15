@@ -12,7 +12,7 @@ public class Main {
 
     public static void main(String[] args) {
         // Define the input string you want to tokenize
-        String input = "csc(x)"; // Example input
+        String input = "SYMBOL x;"; // Example input
 
         // Instantiate the Tokenizer with the input expression
         Tokenizer tokenizer = new Tokenizer(input);
@@ -43,5 +43,7 @@ public class Main {
         // HelperClass.help("symbol");
 
         System.out.println(x);
+        System.out.println();
+        System.out.println(xTerm);
     }
 }

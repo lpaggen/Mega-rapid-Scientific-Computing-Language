@@ -7,6 +7,7 @@ import AST.Expressions.VariableNode;
 import AST.Nodes.ASTNode;
 import Compiler.Tokenizer.TokenKind;
 import Compiler.Tokenizer.Token;
+import Util.LookupTable;
 
 import java.util.List;
 
@@ -19,6 +20,7 @@ public class Parser {
 
     private final List<Token> tokens;
     private int tokenPos = 0;
+    private LookupTable<String, String, String> table = new LookupTable();
 
     public Parser(List<Token> tokens) {
         this.tokens = tokens;
@@ -62,6 +64,7 @@ public class Parser {
     }
 
     // i might throw everything into a switch, seems there are a lot of if else
+    // declarations of anything other than a symbol must come with value assigment, so into the lookup table immediately
     private ASTNode parseFactor() {
         Token token = tokens.get(tokenPos);
         if (token.getKind() == TokenKind.INTEGER) {
