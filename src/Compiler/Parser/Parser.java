@@ -159,5 +159,9 @@ public class Parser {
         return functionNode;
     }
 
+    private void assignValueToLookupTable() { // this helper method assigns (and will handle errors) variables to values
+        System.out.println("hi");
+    }
+
 // end of file
 }
