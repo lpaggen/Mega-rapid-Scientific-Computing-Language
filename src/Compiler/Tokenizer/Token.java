@@ -2,7 +2,7 @@ package Compiler.Tokenizer;
 
 import java.util.Objects;
 
-public class Token {
+public class Token { // can convert to record, unsure if i want to do that just yet
 
     private final TokenKind kind;
     private final String value;
@@ -32,8 +32,8 @@ public class Token {
             case INTEGER -> "integer";
             case INTEGER_TYPE -> "integer_type";
             case DERIVE -> "derive";
-            case SYMBOL -> "symbol"; // this is the symbol type
-            case SYMBOL_TYPE -> "symbol_type"; // this is the symbol type declarator
+            // case SYMBOL -> "symbol"; // this is the symbol type
+            // case SYMBOL_TYPE -> "symbol_type"; // this is the symbol type declarator
             case COS -> "cos";
             case COT -> "cot";
             case CSC -> "csc";

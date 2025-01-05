@@ -1,9 +1,9 @@
 package Util;
 
-public class IntValue implements Value {
+public class IntegerValue implements Value {
     private int value;
 
-    public IntValue(int value) {
+    public IntegerValue(int value) {
         this.value = value;
     }
     public Integer getValue() {
@@ -11,5 +11,10 @@ public class IntValue implements Value {
     }
     public String toString() {
         return Integer.toString(value);
+    }
+
+    @Override
+    public Object evaluate(Object value) {
+        return null;
     }
 }

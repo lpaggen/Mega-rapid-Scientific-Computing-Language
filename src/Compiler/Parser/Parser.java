@@ -8,6 +8,7 @@ import AST.Nodes.ASTNode;
 import Compiler.Tokenizer.TokenKind;
 import Compiler.Tokenizer.Token;
 import Util.LookupTable;
+import Util.Value;
 
 import java.util.List;
 
@@ -20,7 +21,7 @@ public class Parser {
 
     private final List<Token> tokens;
     private int tokenPos = 0;
-    private LookupTable<String, String, String> table = new LookupTable();
+    private LookupTable<String, Value, TokenKind> table = new LookupTable<>();
 
     public Parser(List<Token> tokens) {
         this.tokens = tokens;
@@ -79,15 +80,15 @@ public class Parser {
             tokenPos++;
             return new VariableNode(token.getValue(), TokenKind.VARIABLE);
 
-        } else if (token.getKind() == TokenKind.SYMBOL_TYPE) {
-            tokenPos++;
-            token = tokens.get(tokenPos);
-            if (token.getKind() == TokenKind.SYMBOL) {
-                tokenPos++;
-                return new VariableNode(token.toString(), TokenKind.SYMBOL);
-            } else {
-                throw new RuntimeException("Expected variable after declaring symbol type");
-            }
+//        } else if (token.getKind() == TokenKind.SYMBOL_TYPE) {
+//            tokenPos++;
+//            token = tokens.get(tokenPos);
+//            if (token.getKind() == TokenKind.SYMBOL) {
+//                tokenPos++;
+//                return new VariableNode(token.toString(), TokenKind.SYMBOL);
+//            } else {
+//                throw new RuntimeException("Expected variable after declaring symbol type");
+//            }
 
         } else if (token.getKind() == TokenKind.FLOAT_TYPE) {
             tokenPos++;
@@ -159,8 +160,8 @@ public class Parser {
         return functionNode;
     }
 
-    private void assignValueToLookupTable() { // this helper method assigns (and will handle errors) variables to values
-        System.out.println("hi");
+    private void declareVariableToTable(String key, Object value, TokenKind type) { // this helper method assigns (and will handle errors) variables to values
+        table.assignValueToLookupTable(key, value, type);
     }
 
 // end of file

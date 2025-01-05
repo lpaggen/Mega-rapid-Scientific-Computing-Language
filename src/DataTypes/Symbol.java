@@ -1,24 +1,46 @@
 package DataTypes;
 
+import Compiler.Tokenizer.TokenKind;
+
 import java.util.Objects;
 
 // the Symbol datatype is unique to this language (afaik)
 // it allows for algebraic mathematical operations
 // as such, 2a + a will return 3a
-// symbols do not have a value, i will implement this at a later stage for evaluation purposes
+// !! symbol will handle int and float instead of being a separate data type
 public class Symbol {
-    private final String name;
+    private final String name; // name of a symbol can only be
+    private Number value;
+    private final TokenKind kind;
 
     // will consider adding vectors and matrices to the data structures
-    public Symbol(String name) {
+    public Symbol(String name, Number value, TokenKind kind) {
         validateName(name); // moved outside constructor
         this.name = name;
+        this.value = value;
+        this.kind = kind;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Number getValue() {
+        return value;
+    }
+
+    public TokenKind getKind() {
+        return kind;
+    }
+
+    public void setValue(Number value) {
+        this.value = value;
     }
 
     @Override
     public String toString() {
         return this.name;
-    }
+    } // probably unused
 
     // a Symbol must be defined by a single, lowercase letter (really can't imagine why you would need more than 26 symbols)
     // we do this because a Vector and a Matrix (both Matrix) are to be defined by capital letters

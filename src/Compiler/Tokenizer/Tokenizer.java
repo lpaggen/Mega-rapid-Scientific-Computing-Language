@@ -3,8 +3,6 @@ package Compiler.Tokenizer;
 import java.util.ArrayList;
 import java.util.List;
 
-// here the goal is to write a tokenizer which is supposed to cast all tokens to their respective Expressions
-// eg if i write "cos(x)", we want: new Cosine(x)
 public class Tokenizer {
 
     private final String input;
@@ -100,11 +98,11 @@ public class Tokenizer {
                 case "DERIVE" -> new Token(TokenKind.DERIVE, "DERIVE");
                 case "WRT" -> new Token(TokenKind.WRT, "WRT");
 
-                case "SYMBOL" -> {
-                    isPreviousTypeDeclaration = true;
-                    previousTypeDeclaration = TokenKind.SYMBOL_TYPE;
-                    yield new Token(TokenKind.SYMBOL_TYPE, "SYMBOL_TYPE"); // handle type declarations here
-                }
+                // case "SYMBOL" -> {
+                //     isPreviousTypeDeclaration = true;
+                //     previousTypeDeclaration = TokenKind.SYMBOL_TYPE;
+                //     yield new Token(TokenKind.SYMBOL_TYPE, "SYMBOL_TYPE"); // handle type declarations here
+                // }
                 case "INTEGER" -> {
                     isPreviousTypeDeclaration = true;
                     previousTypeDeclaration = TokenKind.INTEGER_TYPE;
@@ -121,6 +119,7 @@ public class Tokenizer {
                     yield new Token(TokenKind.MATRIX_TYPE, "MATRIX_TYPE");
                 }
 
+                // these non-standard types should be handled in the parser instead
                 default -> new Token(TokenKind.VARIABLE, funcName);
             };
         }
@@ -130,13 +129,13 @@ public class Tokenizer {
     private Token tokenizeAccordingToPrevious() { // or according to previous declaration or something, doesn't matter
         String varName = tokens.get(tokenPos).toString(); // actually replace by getKind() could be better
         isPreviousTypeDeclaration = false;
-        return switch (varName) {
-            case "symbol_type" -> new Token(TokenKind.SYMBOL, varName); // here it's going to be lowercase, tokenizer has already lowercased it
+        return switch (varName) { // in future commit -> will remove Symbol explicit class, and make it interface for int and float
+            // case "symbol_type" -> new Token(TokenKind.SYMBOL, varName); // here it's going to be lowercase, tokenizer has already lowercased it
             case "integer_type" -> new Token(TokenKind.INTEGER, varName);
             case "float_type" -> new Token(TokenKind.FLOAT, varName);
             case "matrix_type" -> new Token(TokenKind.MATRIX, varName);
 
-            default -> throw new RuntimeException("Unexpected token: " + varName);
+            default -> throw new RuntimeException("Undefined data type: " + varName);
         };
     }
 

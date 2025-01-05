@@ -1,5 +1,6 @@
 import AST.Nodes.ASTNode;
 import Compiler.Parser.Parser;
+import Compiler.Tokenizer.TokenKind;
 import Compiler.Tokenizer.Tokenizer;
 import Compiler.Tokenizer.Token;
 import DataTypes.Symbol;
@@ -12,7 +13,7 @@ public class Main {
 
     public static void main(String[] args) {
         // Define the input string you want to tokenize
-        String input = "SYMBOL x;"; // Example input
+        String input = "INTEGER x;"; // Example input
 
         // Instantiate the Tokenizer with the input expression
         Tokenizer tokenizer = new Tokenizer(input);
@@ -37,7 +38,7 @@ public class Main {
 
         System.out.println();
         System.out.println("testing new structures");
-        Symbol x = new Symbol("x");
+        Symbol x = new Symbol("x", 5, TokenKind.INTEGER);
         Term xTerm = new Term(x, 5);
 
         // HelperClass.help("symbol");

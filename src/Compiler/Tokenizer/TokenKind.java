@@ -7,7 +7,7 @@ public enum TokenKind {
     CONST,
     INTEGER,
     FLOAT,
-    SYMBOL,
+    // SYMBOL,
 
     // some data structure tokens
     MATRIX,
@@ -15,7 +15,7 @@ public enum TokenKind {
     FUNCTION,
 
     // separate all type declarations
-    SYMBOL_TYPE,
+    // SYMBOL_TYPE,
     INTEGER_TYPE,
     FLOAT_TYPE,
     MATRIX_TYPE,

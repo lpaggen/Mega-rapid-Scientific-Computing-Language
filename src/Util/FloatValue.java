@@ -12,4 +12,9 @@ public class FloatValue implements Value {
     public String toString() {
         return Float.toString(value);
     }
+
+    @Override
+    public Object evaluate(Object value) {
+        return null;
+    }
 }
