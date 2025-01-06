@@ -126,6 +126,7 @@ public class Tokenizer {
     }
 
     // something needs to be fixed here, you can't tokenize "SYMBOL SYMBOL x" for example
+    // here i don't think it's necessary to tokenize according to a previous
     private Token tokenizeAccordingToPrevious() { // or according to previous declaration or something, doesn't matter
         String varName = tokens.get(tokenPos).toString(); // actually replace by getKind() could be better
         isPreviousTypeDeclaration = false;

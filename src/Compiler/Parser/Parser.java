@@ -80,7 +80,7 @@ public class Parser {
             tokenPos++;
             return new VariableNode(token.getValue(), TokenKind.VARIABLE);
 
-//        } else if (token.getKind() == TokenKind.SYMBOL_TYPE) {
+//        } else if (token.getKind() == TokenKind.SYMBOL_TYPE) { // what i will end up doing is probably rename this to math_variable or whatever
 //            tokenPos++;
 //            token = tokens.get(tokenPos);
 //            if (token.getKind() == TokenKind.SYMBOL) {
@@ -90,10 +90,12 @@ public class Parser {
 //                throw new RuntimeException("Expected variable after declaring symbol type");
 //            }
 
-        } else if (token.getKind() == TokenKind.FLOAT_TYPE) {
+        } else if (token.getKind() == TokenKind.FLOAT_TYPE) { // some modifications could be made, as in we don't need to know it's a float after a FLOAT_TYPE
             tokenPos++;
             token = tokens.get(tokenPos);
-            if (token.getKind() == TokenKind.FLOAT) {
+            if (token.getKind() == TokenKind.FLOAT) { // here we -WILL- also redesign the tokenizer to simply have "variable", don't need to know if FLOAT
+                String variableName = token.getValue();
+                declareVariableToTable(variableName, null, TokenKind.FLOAT); // declaration of the variable, !! need to also parse values somehow, will do later
                 tokenPos++;
                 return new VariableNode(token.toString(), TokenKind.FLOAT);
             } else {
@@ -103,7 +105,9 @@ public class Parser {
         } else if (token.getKind() == TokenKind.INTEGER_TYPE) {
             tokenPos++;
             token = tokens.get(tokenPos);
-            if (token.getKind() == TokenKind.INTEGER) {
+            if (token.getKind() == TokenKind.INTEGER) { // as mentioned above, will redesign tokenizer to have VARIABLE here
+                String variableName = token.getValue();
+                declareVariableToTable(variableName, null, TokenKind.INTEGER); // declare variable
                 tokenPos++;
                 return new VariableNode(token.toString(), TokenKind.INTEGER);
             } else {

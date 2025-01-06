@@ -1,7 +1,6 @@
 package Util;
 
 import Compiler.Tokenizer.TokenKind;
-import DataStructures.Matrix;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -54,10 +53,15 @@ public class LookupTable<K, V extends Value, T> {
 
         V inferredValue = inferValue(value, type);
         setValue(key, inferredValue);
+
+        // this should work just fine with the inferred type -- besides it's deterministic
     }
 
+    // there is a problem currently when initializing a variable with no value -- current check works fine it seems
     private V inferValue(Object value, T type) { // some further checks need to be done, i don't know how safe this is
-        if (type.equals(TokenKind.INTEGER)) {
+        if (value == null) { // this means we declare a variable with no value
+            return (V) null;
+        } else if (type.equals(TokenKind.INTEGER)) {
             return (V) new IntegerValue((Integer) value);
         } else if (type.equals(TokenKind.FLOAT)) {
             return (V) new FloatValue((Float) value);

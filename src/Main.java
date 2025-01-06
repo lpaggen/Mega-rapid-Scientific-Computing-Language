@@ -12,16 +12,10 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args) {
-        // Define the input string you want to tokenize
-        String input = "INTEGER x;"; // Example input
+        String input = "INTEGER x;"; // input goes here
 
-        // Instantiate the Tokenizer with the input expression
         Tokenizer tokenizer = new Tokenizer(input);
-
-        // Call the tokenize() method to get a list of tokens
         List<Token> tokens = tokenizer.tokenize();
-
-        // Loop through the tokens and print them
         System.out.println(tokens);
 
         for (Token token : tokens) {
