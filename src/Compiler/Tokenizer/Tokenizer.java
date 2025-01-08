@@ -9,8 +9,6 @@ public class Tokenizer {
     private int pos = 0; // !!! this gets updated at each character in the input file !!!
     private int tokenPos = 0; // !!! this only gets updated for each COMPLETE token !!!
     private final List<Token> tokens = new ArrayList<Token>();
-    private boolean isPreviousTypeDeclaration = false;
-    private TokenKind previousTypeDeclaration;
 
     public Tokenizer(String input) {
         this.input = input;
@@ -80,63 +78,32 @@ public class Tokenizer {
             pos++;
         }
         String funcName = name.toString();
-        if (isPreviousTypeDeclaration) { // handle type declaration with a boolean
-            return tokenizeAccordingToPrevious();
-        } else {
-            return switch (funcName) {
-                case "sin" -> new Token(TokenKind.SIN, "sin");
-                case "cos" -> new Token(TokenKind.COS, "cos");
-                case "tan" -> new Token(TokenKind.TAN, "tan");
-                case "sec" -> new Token(TokenKind.SEC, "sec");
-                case "log" -> new Token(TokenKind.LOG, "log");
-                case "exp" -> new Token(TokenKind.EXP, "exp");
-                case "cot" -> new Token(TokenKind.COT, "cot");
-                case "csc" -> new Token(TokenKind.CSC, "csc");
+        return switch (funcName) {
+            case "sin" -> new Token(TokenKind.SIN, "sin");
+            case "cos" -> new Token(TokenKind.COS, "cos");
+            case "tan" -> new Token(TokenKind.TAN, "tan");
+            case "sec" -> new Token(TokenKind.SEC, "sec");
+            case "log" -> new Token(TokenKind.LOG, "log");
+            case "exp" -> new Token(TokenKind.EXP, "exp");
+            case "cot" -> new Token(TokenKind.COT, "cot");
+            case "csc" -> new Token(TokenKind.CSC, "csc");
 
-                case "FUNC" -> new Token(TokenKind.FUNCTION, "FUNCTION_DECL"); // actually more complex than this
+            case "FUNC" -> new Token(TokenKind.FUNCTION, "FUNCTION_DECL"); // actually more complex than this
 
-                case "DERIVE" -> new Token(TokenKind.DERIVE, "DERIVE");
-                case "WRT" -> new Token(TokenKind.WRT, "WRT");
+            case "DERIVE" -> new Token(TokenKind.DERIVE, "DERIVE");
+            case "WRT" -> new Token(TokenKind.WRT, "WRT");
 
-                // case "SYMBOL" -> {
-                //     isPreviousTypeDeclaration = true;
-                //     previousTypeDeclaration = TokenKind.SYMBOL_TYPE;
-                //     yield new Token(TokenKind.SYMBOL_TYPE, "SYMBOL_TYPE"); // handle type declarations here
-                // }
-                case "INTEGER" -> {
-                    isPreviousTypeDeclaration = true;
-                    previousTypeDeclaration = TokenKind.INTEGER_TYPE;
-                    yield new Token(TokenKind.INTEGER_TYPE, "INTEGER_TYPE");
-                }
-                case "FLOAT" -> {
-                    isPreviousTypeDeclaration = true;
-                    previousTypeDeclaration = TokenKind.FLOAT_TYPE;
-                    yield new Token(TokenKind.FLOAT_TYPE, "FLOAT_TYPE");
-                }
-                case "MATRIX" -> {
-                    isPreviousTypeDeclaration = true;
-                    previousTypeDeclaration = TokenKind.MATRIX_TYPE;
-                    yield new Token(TokenKind.MATRIX_TYPE, "MATRIX_TYPE");
-                }
+            // case "SYMBOL" -> {
+            //     isPreviousTypeDeclaration = true;
+            //     previousTypeDeclaration = TokenKind.SYMBOL_TYPE;
+            //     yield new Token(TokenKind.SYMBOL_TYPE, "SYMBOL_TYPE"); // handle type declarations here
+            // }
+            case "INTEGER" -> new Token(TokenKind.INTEGER_TYPE, "INTEGER_TYPE");
+            case "FLOAT" -> new Token(TokenKind.FLOAT_TYPE, "FLOAT_TYPE");
+            case "MATRIX" -> new Token(TokenKind.MATRIX_TYPE, "MATRIX_TYPE");
 
-                // these non-standard types should be handled in the parser instead
-                default -> new Token(TokenKind.VARIABLE, funcName);
-            };
-        }
-    }
-
-    // something needs to be fixed here, you can't tokenize "SYMBOL SYMBOL x" for example
-    // here i don't think it's necessary to tokenize according to a previous
-    private Token tokenizeAccordingToPrevious() { // or according to previous declaration or something, doesn't matter
-        String varName = tokens.get(tokenPos).toString(); // actually replace by getKind() could be better
-        isPreviousTypeDeclaration = false;
-        return switch (varName) { // in future commit -> will remove Symbol explicit class, and make it interface for int and float
-            // case "symbol_type" -> new Token(TokenKind.SYMBOL, varName); // here it's going to be lowercase, tokenizer has already lowercased it
-            case "integer_type" -> new Token(TokenKind.INTEGER, varName);
-            case "float_type" -> new Token(TokenKind.FLOAT, varName);
-            case "matrix_type" -> new Token(TokenKind.MATRIX, varName);
-
-            default -> throw new RuntimeException("Undefined data type: " + varName);
+            // these non-standard types should be handled in the parser instead
+            default -> new Token(TokenKind.VARIABLE, funcName);
         };
     }
 

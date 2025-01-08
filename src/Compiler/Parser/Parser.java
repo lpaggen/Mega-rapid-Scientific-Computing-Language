@@ -93,7 +93,7 @@ public class Parser {
         } else if (token.getKind() == TokenKind.FLOAT_TYPE) { // some modifications could be made, as in we don't need to know it's a float after a FLOAT_TYPE
             tokenPos++;
             token = tokens.get(tokenPos);
-            if (token.getKind() == TokenKind.FLOAT) { // here we -WILL- also redesign the tokenizer to simply have "variable", don't need to know if FLOAT
+            if (token.getKind() == TokenKind.VARIABLE) { // here we -WILL- also redesign the tokenizer to simply have "variable", don't need to know if FLOAT
                 String variableName = token.getValue();
                 declareVariableToTable(variableName, null, TokenKind.FLOAT); // declaration of the variable, !! need to also parse values somehow, will do later
                 tokenPos++;
@@ -105,7 +105,7 @@ public class Parser {
         } else if (token.getKind() == TokenKind.INTEGER_TYPE) {
             tokenPos++;
             token = tokens.get(tokenPos);
-            if (token.getKind() == TokenKind.INTEGER) { // as mentioned above, will redesign tokenizer to have VARIABLE here
+            if (token.getKind() == TokenKind.VARIABLE) { // as mentioned above, will redesign tokenizer to have VARIABLE here
                 String variableName = token.getValue();
                 declareVariableToTable(variableName, null, TokenKind.INTEGER); // declare variable
                 tokenPos++;
