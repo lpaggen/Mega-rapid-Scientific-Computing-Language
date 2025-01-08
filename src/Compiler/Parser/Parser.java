@@ -21,7 +21,7 @@ public class Parser {
 
     private final List<Token> tokens;
     private int tokenPos = 0;
-    private LookupTable<String, Value, TokenKind> table = new LookupTable<>();
+    private LookupTable<String, Value, TokenKind> lookUpTable = new LookupTable<>();
 
     public Parser(List<Token> tokens) {
         this.tokens = tokens;
@@ -134,7 +134,7 @@ public class Parser {
             return getFunctionNode(functionType, inParenContent); // moved the switch to its own function, more readable
 
         } else if (token.getKind() == TokenKind.OPEN_PAREN) {
-            tokenPos++; // Consume '('
+            tokenPos++; // consume '('
             ASTNode inParenNode = parseExpression(); // call back to parse parentheses content
             if (tokenPos < tokens.size() && tokens.get(tokenPos).getKind() == TokenKind.CLOSE_PAREN) {
                 tokenPos++; // here consume ')' closing paren
@@ -165,7 +165,7 @@ public class Parser {
     }
 
     private void declareVariableToTable(String key, Object value, TokenKind type) { // this helper method assigns (and will handle errors) variables to values
-        table.assignValueToLookupTable(key, value, type);
+        lookUpTable.assignValueToLookupTable(key, value, type);
     }
 
 // end of file
