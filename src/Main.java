@@ -6,6 +6,8 @@ import Compiler.Tokenizer.Token;
 import DataTypes.Symbol;
 import DataTypes.Term;
 import Util.HelperClass;
+import Util.LookupTable;
+import Util.Value;
 
 import java.util.List;
 
@@ -26,9 +28,16 @@ public class Main {
 
         ASTNode out = parser.interpretCode();
 
+        LookupTable<String, Value, TokenKind> lookupTable = new LookupTable<>();
+        lookupTable.assignValueToLookupTable("x", 5, TokenKind.INTEGER);
+
         System.out.println();
         System.out.println("Output of the parser:");
         System.out.println(out);
+
+        System.out.println();
+        System.out.println("Contents of the lookup table:");
+        lookupTable.showLookupTable();
 
         System.out.println();
         System.out.println("testing new structures");

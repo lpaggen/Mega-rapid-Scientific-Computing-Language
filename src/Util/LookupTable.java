@@ -53,14 +53,12 @@ public class LookupTable<K, V extends Value, T> {
 
         V inferredValue = inferValue(value, type);
         setValue(key, inferredValue);
-
-        // this should work just fine with the inferred type -- besides it's deterministic
     }
 
     // there is a problem currently when initializing a variable with no value -- current check works fine it seems
     private V inferValue(Object value, T type) { // some further checks need to be done, i don't know how safe this is
-        if (value == null) { // this means we declare a variable with no value
-            return (V) null;
+        if (value == null) { // this means we declare a variable with no value, which obviously works
+            return null;
         } else if (type.equals(TokenKind.INTEGER)) {
             return (V) new IntegerValue((Integer) value);
         } else if (type.equals(TokenKind.FLOAT)) {
@@ -69,6 +67,33 @@ public class LookupTable<K, V extends Value, T> {
             return (V) new MatrixValue((double[][]) value);
         }
         throw new IllegalArgumentException("Could not infer value of '" + type + "', check for errors");
+    }
+
+    // this i don't understand, was chatGPT work, i don't specialize in formatting Java strings
+    public void showLookupTable() {
+        // Define column widths for alignment
+        final int typeWidth = 10;
+        final int keyWidth = 15;
+        final int valueWidth = 30;
+
+        // Print the header
+        System.out.printf("%-" + typeWidth + "s%-" + keyWidth + "s%-" + valueWidth + "s%n", "TYPE", "KEY", "VALUE");
+        System.out.println("-".repeat(typeWidth + keyWidth + valueWidth));
+
+        // Print each entry
+        for (Map.Entry<K, Entry<V, T>> entry : map.entrySet()) {
+            K key = entry.getKey();
+            T type = entry.getValue().type;
+            V value = entry.getValue().value;
+
+            // Format and print the row
+            System.out.printf(
+                    "%-" + typeWidth + "s%-" + keyWidth + "s%-" + valueWidth + "s%n",
+                    type,
+                    key,
+                    value != null ? value.toString() : "null"
+            );
+        }
     }
 
     private static class Entry<V, T> {
