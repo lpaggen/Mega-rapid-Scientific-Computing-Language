@@ -14,7 +14,7 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args) {
-        String input = "INTEGER x;"; // input goes here
+        String input = "INTEGER x = 6;"; // input goes here
 
         Tokenizer tokenizer = new Tokenizer(input);
         List<Token> tokens = tokenizer.tokenize();
@@ -28,8 +28,7 @@ public class Main {
 
         ASTNode out = parser.interpretCode();
 
-        LookupTable<String, Value, TokenKind> lookupTable = new LookupTable<>();
-        lookupTable.assignValueToLookupTable("x", 5, TokenKind.INTEGER);
+        // LookupTable<String, Value, TokenKind> lookupTable = new LookupTable<>();
 
         System.out.println();
         System.out.println("Output of the parser:");
@@ -37,7 +36,7 @@ public class Main {
 
         System.out.println();
         System.out.println("Contents of the lookup table:");
-        lookupTable.showLookupTable();
+        parser.lookUpTable.showLookupTable(); // you can see that the parser now correctly declares variables
 
         System.out.println();
         System.out.println("testing new structures");
