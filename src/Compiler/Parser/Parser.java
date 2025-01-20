@@ -11,6 +11,8 @@ import Util.IntegerValue;
 import Util.LookupTable;
 import Util.Value;
 
+import java.net.Inet4Address;
+import java.net.InterfaceAddress;
 import java.util.List;
 
 // parsing going quite well so far, we need to add some error checking
@@ -65,8 +67,6 @@ public class Parser {
         return left;
     }
 
-    // i might throw everything into a switch, seems there are a lot of if else
-    // declarations of anything other than a symbol must come with value assigment, so into the lookup table immediately
     private ASTNode parseFactor() {
         Token token = tokens.get(tokenPos);
         if (token.getKind() == TokenKind.INTEGER) {
@@ -91,18 +91,25 @@ public class Parser {
 //                throw new RuntimeException("Expected variable after declaring symbol type");
 //            }
 
-            // i might put this into a function later on, the code is pretty similar for all type declarations
         } else if (token.getKind() == TokenKind.FLOAT_TYPE) { // some modifications could be made, as in we don't need to know it's a float after a FLOAT_TYPE
             tokenPos++;
             token = tokens.get(tokenPos);
             declareVariable(tokenPos);
-            setValueToAssignedVariable(tokenPos);
+            System.out.println(token);
+            System.out.println(tokens.size());
+            System.out.println(tokenPos);
+            if (tokens.get(tokenPos + 1).getKind() != TokenKind.SEMICOLON) { // if we hit a semicolon, we declare with no value
+                setValueToAssignedVariable(tokenPos);
+            }
             return new VariableNode(token.toString(), TokenKind.FLOAT);
 
         } else if (token.getKind() == TokenKind.INTEGER_TYPE) {
             tokenPos++;
             token = tokens.get(tokenPos);
             declareVariable(tokenPos); // these operations are now modular
+            if (tokens.get(tokenPos + 1).getKind() != TokenKind.SEMICOLON) { // if we hit a semicolon, we declare with no value
+                setValueToAssignedVariable(tokenPos); // in this case, the user wants to assign a value to the variable
+            }
             setValueToAssignedVariable(tokenPos);
             return new VariableNode(token.toString(), TokenKind.INTEGER);
 
@@ -135,7 +142,6 @@ public class Parser {
             }
             return inParenNode;
         }
-
         // return if no token makes sense
         throw new RuntimeException("Unexpected token: " + token.getValue() + " (type -> " + token.getKind() + ")");
     }
@@ -156,44 +162,52 @@ public class Parser {
         return functionNode;
     }
 
-    private void declareVariableToTable(String key, Object value, TokenKind type) { // this helper method assigns (and will handle errors) variables to values
-        lookUpTable.assignValueToLookupTable(key, value, type);
-    }
-
     private void declareVariable(Integer tokenPos) {
         Token token = tokens.get(tokenPos);
         if (token.getKind() != TokenKind.VARIABLE) {
-            throw new RuntimeException("Expected blablabla need to fix this");
+            throw new RuntimeException("Expected VARIABLE after declaring " + token.getKind());
         }
         String variableName = token.getValue();
-        lookUpTable.assignValueToLookupTable(variableName, null, TokenKind.INTEGER);
+        TokenKind variableType = parseDataType(tokens.getFirst().getKind()); // this helper method infers the type
+        lookUpTable.assignValueToLookupTable(variableName, null, variableType); // default integer need to change
     }
 
     private void setValueToAssignedVariable(Integer tokenPos) {
         tokenPos++;
         Token token = tokens.get(tokenPos);
         Object tokenValue = parseValue(tokens.get(tokenPos + 1).getKind(), tokens.get(tokenPos + 1)); // might clean later
-        System.out.println(tokenValue);
         if (token.getKind() != TokenKind.EQUAL && token.getKind() != TokenKind.SEMICOLON) {
-            throw new RuntimeException("Expected blablabla will fix this too");
+            throw new RuntimeException("Expected SEMICOLON or EQUAL after declaring variable");
         }
-        if (token.getKind() == TokenKind.EQUAL && tokenPos + 1 < tokens.size() && tokens.get(tokenPos + 1).getKind() == TokenKind.INTEGER && tokens.get(tokenPos + 2).getKind() == TokenKind.SEMICOLON) {
-            // here implement the logic to check for if it's a integer, etc, and assign value to variable in the table
-            // i will definitely be refactoring this at a later stage
-            lookUpTable.assignValueToLookupTable(tokens.get(tokenPos - 1).getValue(), Integer.parseInt(tokens.get(tokenPos + 1).getValue()), TokenKind.INTEGER);
+        if (isValidAssignment(tokenPos) && tokens.get(tokenPos + 1).getKind() == TokenKind.INTEGER) {
+            lookUpTable.assignValueToLookupTable(tokens.get(tokenPos - 1).getValue(), tokenValue, TokenKind.INTEGER);
+        } else if (isValidAssignment(tokenPos) && tokens.get(tokenPos + 1).getKind() == TokenKind.FLOAT) {
+            lookUpTable.assignValueToLookupTable(tokens.get(tokenPos - 1).getValue(), tokenValue, TokenKind.FLOAT);
         } else {
-            throw new RuntimeException("Expected b value after declaring u type");
+            throw new RuntimeException("Value " + tokenValue + " (" + tokens.get(tokenPos + 1).getKind() + ")" + " cannot be assigned to " + tokens.getFirst());
         }
     }
 
     private Object parseValue(TokenKind type, Token token) { // i might use this to declare variables easily
-        Object out;
-        switch (type) {
-            case INTEGER -> out = Integer.parseInt(token.getValue());
-            case FLOAT -> out = Float.parseFloat(token.getValue());
-
+        return switch (type) {
+            case INTEGER -> Integer.parseInt(token.getValue());
+            case FLOAT -> Float.parseFloat(token.getValue());
             default -> throw new RuntimeException("Unsupported type: " + type);
-        }
-        return out;
+        };
+    }
+
+    private TokenKind parseDataType(TokenKind firstToken) {
+        return switch (firstToken) {
+            case FLOAT_TYPE -> TokenKind.FLOAT;
+            case INTEGER_TYPE -> TokenKind.INTEGER;
+            default -> throw new RuntimeException("Unsupported type: " + firstToken);
+        };
+    }
+
+    private boolean isValidAssignment(Integer tokenPos) { // i can also use a token, it doesn't matter
+        return tokens.get(tokenPos).getKind() == TokenKind.EQUAL
+                && tokenPos + 1 < tokens.size()
+                && tokens.get(tokenPos + 1).getKind() == parseDataType(tokens.getFirst().getKind()) // default int, change later for float support
+                && tokens.get(tokenPos + 2).getKind() == TokenKind.SEMICOLON;
     }
 }

@@ -14,7 +14,7 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args) {
-        String input = "INTEGER x = 6;"; // input goes here
+        String input = "FLOAT x = 6;"; // input goes here
 
         Tokenizer tokenizer = new Tokenizer(input);
         List<Token> tokens = tokenizer.tokenize();
