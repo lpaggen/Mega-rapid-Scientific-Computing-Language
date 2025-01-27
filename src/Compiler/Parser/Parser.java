@@ -95,9 +95,7 @@ public class Parser {
             tokenPos++;
             token = tokens.get(tokenPos);
             declareVariable(tokenPos);
-            System.out.println(token);
-            System.out.println(tokens.size());
-            System.out.println(tokenPos);
+            isValidNumberName(token.getValue()); // this does not work yet
             if (tokens.get(tokenPos + 1).getKind() != TokenKind.SEMICOLON) { // if we hit a semicolon, we declare with no value
                 setValueToAssignedVariable(tokenPos);
             }
@@ -110,8 +108,16 @@ public class Parser {
             if (tokens.get(tokenPos + 1).getKind() != TokenKind.SEMICOLON) { // if we hit a semicolon, we declare with no value
                 setValueToAssignedVariable(tokenPos); // in this case, the user wants to assign a value to the variable
             }
-            setValueToAssignedVariable(tokenPos);
             return new VariableNode(token.toString(), TokenKind.INTEGER);
+
+        } else if (token.getKind() == TokenKind.MATRIX_TYPE) {
+            tokenPos++;
+            token = tokens.get(tokenPos);
+            declareVariable(tokenPos);
+            if (tokens.get(tokenPos + 1).getKind() != TokenKind.SEMICOLON) {
+                setValueToAssignedVariable(tokenPos);
+            }
+            return new VariableNode(token.toString(), TokenKind.MATRIX);
 
         } else if (token.getKind() == TokenKind.COS || token.getKind() == TokenKind.SIN || token.getKind() == TokenKind.TAN
                 || token.getKind() == TokenKind.COT || token.getKind() == TokenKind.SEC || token.getKind() == TokenKind.CSC) {
@@ -183,6 +189,8 @@ public class Parser {
             lookUpTable.assignValueToLookupTable(tokens.get(tokenPos - 1).getValue(), tokenValue, TokenKind.INTEGER);
         } else if (isValidAssignment(tokenPos) && tokens.get(tokenPos + 1).getKind() == TokenKind.FLOAT) {
             lookUpTable.assignValueToLookupTable(tokens.get(tokenPos - 1).getValue(), tokenValue, TokenKind.FLOAT);
+        } else if (isValidAssignment(tokenPos) && tokens.get(tokenPos +1).getKind() == TokenKind.MATRIX) {
+            // logic for matrix declaration goes here
         } else {
             throw new RuntimeException("Value " + tokenValue + " (" + tokens.get(tokenPos + 1).getKind() + ")" + " cannot be assigned to " + tokens.getFirst());
         }
@@ -200,6 +208,7 @@ public class Parser {
         return switch (firstToken) {
             case FLOAT_TYPE -> TokenKind.FLOAT;
             case INTEGER_TYPE -> TokenKind.INTEGER;
+            case MATRIX_TYPE -> TokenKind.MATRIX;
             default -> throw new RuntimeException("Unsupported type: " + firstToken);
         };
     }
@@ -209,5 +218,11 @@ public class Parser {
                 && tokenPos + 1 < tokens.size()
                 && tokens.get(tokenPos + 1).getKind() == parseDataType(tokens.getFirst().getKind()) // default int, change later for float support
                 && tokens.get(tokenPos + 2).getKind() == TokenKind.SEMICOLON;
+    }
+
+    private void isValidNumberName(String variableName) {
+        if (variableName == null || variableName.length() != 1 || !variableName.matches("[a-z]")) {
+            throw new IllegalArgumentException("Integer/Float name must be a single lowercase alphabetical character");
+        }
     }
 }

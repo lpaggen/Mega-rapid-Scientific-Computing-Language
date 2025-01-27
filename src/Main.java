@@ -5,16 +5,13 @@ import Compiler.Tokenizer.Tokenizer;
 import Compiler.Tokenizer.Token;
 import DataTypes.Symbol;
 import DataTypes.Term;
-import Util.HelperClass;
-import Util.LookupTable;
-import Util.Value;
 
 import java.util.List;
 
 public class Main {
 
     public static void main(String[] args) {
-        String input = "FLOAT x = 6;"; // input goes here
+        String input = "FLOAT x = 7.;"; // input goes here
 
         Tokenizer tokenizer = new Tokenizer(input);
         List<Token> tokens = tokenizer.tokenize();
