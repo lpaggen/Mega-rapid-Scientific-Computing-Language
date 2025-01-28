@@ -11,6 +11,8 @@ public enum TokenKind {
 
     // some data structure tokens
     MATRIX,
+    OPEN_BRACKET,
+    CLOSE_BRACKET,
 
     FUNCTION,
 

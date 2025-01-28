@@ -56,6 +56,8 @@ public class Token { // can convert to record, unsure if i want to do that just 
             case SEMICOLON -> "semicolon";
             case MATRIX_TYPE -> "matrix_type";
             case MATRIX -> "matrix";
+            case OPEN_BRACKET -> "open_bracket";
+            case CLOSE_BRACKET -> "close_bracket";
 
             default -> throw new IllegalStateException("Unexpected value: " + kind);
         };

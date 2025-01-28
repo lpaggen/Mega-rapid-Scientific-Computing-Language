@@ -11,7 +11,7 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args) {
-        String input = "FLOAT x = 7.;"; // input goes here
+        String input = "MATRIX x = [[2 4][5 7]]"; // input goes here
 
         Tokenizer tokenizer = new Tokenizer(input);
         List<Token> tokens = tokenizer.tokenize();

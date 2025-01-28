@@ -54,6 +54,8 @@ public class Tokenizer {
             } else if (Character.toString(c).equals(",")) {
                 tokens.add(new Token(TokenKind.COMMA, ","));
                 pos++;
+            } else if (Character.toString(c).equals("[")) {
+                tokenizeMatrix(tokens); // tokenizing matrices will happen in a helper function
             } else if (Character.isDigit(c)) {
                 // need to handle decimals, but also implicit multiplication, also pos++ handled elsewhere
                 tokens.add(tokenizeNumber()); // need to handle all cases where we have more than "9" for example
@@ -123,5 +125,31 @@ public class Tokenizer {
         }
         tokenPos++;
         if (isDecimal) {return new Token(TokenKind.FLOAT, number.toString());} else {return new Token(TokenKind.INTEGER, number.toString());}
+    }
+
+    private void tokenizeMatrix(List<Token> tokens) {
+        int openBrackets = 0; // this should be incremented as long as there are open brackets, we then match on closing brackets
+        while (pos < input.length()) {
+            char c = input.charAt(pos);
+            if (Character.toString(c).equals("[")) {
+                tokens.add(new Token(TokenKind.OPEN_BRACKET, "["));
+                openBrackets++;
+                pos++;
+            } else if (Character.toString(c).equals("]")) {
+                tokens.add(new Token(TokenKind.CLOSE_BRACKET, "]"));
+                openBrackets--;
+                pos++;
+            } else if (Character.isDigit(c)) {
+                tokens.add(tokenizeNumber());
+                if (pos < input.length() && Character.isLetter(input.charAt(pos))) {
+                    tokens.add(new Token(TokenKind.MUL, "*"));
+                }
+            } else if (Character.isWhitespace(c)) {
+                pos++;
+            }
+            if (openBrackets < 0) { // if we ever reach a negative number of open brackets, we have a syntax error
+                throw new RuntimeException("Syntax error: too many closing brackets");
+            }
+        }
     }
 }

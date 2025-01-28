@@ -53,7 +53,6 @@ public class Matrix<T> { // so apparently T is "type" (generic)
                         sum = (Float) sum + (Float) elementA + (Float) elementB;
                     } else if (elementA instanceof Expression && elementB instanceof Expression) {
                         sum = new Expression(); // this is a big expression, initialize a fresh one
-
                     }
                 }
             }

@@ -11,8 +11,6 @@ import Util.IntegerValue;
 import Util.LookupTable;
 import Util.Value;
 
-import java.net.Inet4Address;
-import java.net.InterfaceAddress;
 import java.util.List;
 
 // parsing going quite well so far, we need to add some error checking
@@ -189,8 +187,9 @@ public class Parser {
             lookUpTable.assignValueToLookupTable(tokens.get(tokenPos - 1).getValue(), tokenValue, TokenKind.INTEGER);
         } else if (isValidAssignment(tokenPos) && tokens.get(tokenPos + 1).getKind() == TokenKind.FLOAT) {
             lookUpTable.assignValueToLookupTable(tokens.get(tokenPos - 1).getValue(), tokenValue, TokenKind.FLOAT);
-        } else if (isValidAssignment(tokenPos) && tokens.get(tokenPos +1).getKind() == TokenKind.MATRIX) {
-            // logic for matrix declaration goes here
+        } else if (isValidAssignment(tokenPos) && tokens.get(tokenPos + 1).getKind() == TokenKind.MATRIX) {
+            System.out.println("Matrix assignment");
+            isValidMatrixAssignment(tokenPos);
         } else {
             throw new RuntimeException("Value " + tokenValue + " (" + tokens.get(tokenPos + 1).getKind() + ")" + " cannot be assigned to " + tokens.getFirst());
         }
@@ -216,7 +215,7 @@ public class Parser {
     private boolean isValidAssignment(Integer tokenPos) { // i can also use a token, it doesn't matter
         return tokens.get(tokenPos).getKind() == TokenKind.EQUAL
                 && tokenPos + 1 < tokens.size()
-                && tokens.get(tokenPos + 1).getKind() == parseDataType(tokens.getFirst().getKind()) // default int, change later for float support
+                && tokens.get(tokenPos + 1).getKind() == parseDataType(tokens.getFirst().getKind())
                 && tokens.get(tokenPos + 2).getKind() == TokenKind.SEMICOLON;
     }
 
@@ -224,5 +223,9 @@ public class Parser {
         if (variableName == null || variableName.length() != 1 || !variableName.matches("[a-z]")) {
             throw new IllegalArgumentException("Integer/Float name must be a single lowercase alphabetical character");
         }
+    }
+
+    private void isValidMatrixAssignment(Integer tokenPos) {
+        System.out.println(tokens.get(tokenPos));
     }
 }
