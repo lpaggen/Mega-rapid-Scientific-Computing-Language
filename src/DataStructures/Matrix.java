@@ -59,6 +59,8 @@ public class Matrix<T> { // so apparently T is "type" (generic)
         }
         return null;
     }
+
+    // i will see whether this belongs here or in the Parser
     private void validateName(String name) { // check if uppercase letter
         if (!name.matches("[A-Z]")) { // check regex for alphabet
             throw new IllegalArgumentException("Matrix name must be a single uppercase alphabetical character.");

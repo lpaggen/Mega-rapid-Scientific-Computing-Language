@@ -127,29 +127,77 @@ public class Tokenizer {
         if (isDecimal) {return new Token(TokenKind.FLOAT, number.toString());} else {return new Token(TokenKind.INTEGER, number.toString());}
     }
 
+    // i could also have this return some "MATRIX" token with a Value consisting of the tokens...
+    // i will need to think about what makes the most sense for my application, we have to loop over all tokens twice anyway (parser + tokenizer)
+    // also i could definitely change the way things are tokenized here, i could use some prefix for dimensions, avoiding brackets entirely
+//    private void tokenizeMatrix(List<Token> tokens) {
+//        int openBrackets = 0; // this should be incremented as long as there are open brackets, we then match on closing brackets
+//        int closeBrackets = 0;
+//        while (pos < input.length() - 1) {
+//            char c = input.charAt(pos);
+//            if (Character.toString(c).equals("[")) {
+//                tokens.add(new Token(TokenKind.OPEN_BRACKET, "["));
+//                openBrackets++;
+//                pos++;
+//            } else if (Character.toString(c).equals("]")) {
+//                tokens.add(new Token(TokenKind.CLOSE_BRACKET, "]"));
+//                closeBrackets++;
+//                pos++;
+//            } else if (Character.isDigit(c)) {
+//                tokens.add(tokenizeNumber()); // !!! pos is incremented in this function too, might change at future stage
+//                if (pos < input.length() && Character.isLetter(input.charAt(pos))) { // some more checks will be needed here however
+//                    tokens.add(new Token(TokenKind.MUL, "*")); // this is useful when there are coefficients involved
+//                }
+//            } else if (Character.isWhitespace(c)) {
+//                pos++;
+//            }
+//        }
+//        if (openBrackets != closeBrackets) {
+//            throw new RuntimeException("Syntax error: brackets mismatch in Matrix");
+//        }
+//    }
+
+    // i don't see how to avoid nested loops to check correctness of the matrix + determine number of columns
     private void tokenizeMatrix(List<Token> tokens) {
         int openBrackets = 0; // this should be incremented as long as there are open brackets, we then match on closing brackets
-        while (pos < input.length()) {
+        int closeBrackets = 0;
+        int numCols = 0; // this would get updated every iteration, so we can check the dimensions
+        StringBuilder matrixContent = new StringBuilder();
+        matrixContent.append('0'); // these two values represent rows and columns, they help the parser do its job
+        matrixContent.append('0');
+        while (pos < input.length() - 1) {
             char c = input.charAt(pos);
             if (Character.toString(c).equals("[")) {
-                tokens.add(new Token(TokenKind.OPEN_BRACKET, "["));
                 openBrackets++;
                 pos++;
             } else if (Character.toString(c).equals("]")) {
-                tokens.add(new Token(TokenKind.CLOSE_BRACKET, "]"));
-                openBrackets--;
+                closeBrackets++;
                 pos++;
-            } else if (Character.isDigit(c)) {
-                tokens.add(tokenizeNumber());
-                if (pos < input.length() && Character.isLetter(input.charAt(pos))) {
-                    tokens.add(new Token(TokenKind.MUL, "*"));
+            } else if (Character.isDigit(c)) { // when we encounter a digit, we need to start counting cols + keep track of validity in dims
+                int tempIndex = pos;
+                while (tempIndex < input.length() && Character.isDigit(input.charAt(tempIndex))) {
+                    tempIndex++;
+                }
+                System.out.println(tempIndex);
+                System.out.println(pos);
+                if (tempIndex - pos != numCols) {
+                    System.out.println(tempIndex - pos);
+                    throw new RuntimeException("Number of columns mismatch");
+                }
+                numCols = tempIndex - pos; // update number of columns
+
+                matrixContent.append(tokenizeNumber()); // !!! pos is incremented in this function too, might change at future stage
+                if (pos < input.length() && Character.isLetter(input.charAt(pos))) { // some more checks will be needed here however
+                    matrixContent.append(new Token(TokenKind.MUL, "*")); // this is useful when there are coefficients involved
                 }
             } else if (Character.isWhitespace(c)) {
                 pos++;
             }
-            if (openBrackets < 0) { // if we ever reach a negative number of open brackets, we have a syntax error
-                throw new RuntimeException("Syntax error: too many closing brackets");
-            }
         }
+        if (openBrackets != closeBrackets) {
+            throw new RuntimeException("Syntax error: brackets mismatch in Matrix");
+        }
+        matrixContent.setCharAt(0, (char) (openBrackets - 1)); // it always holds true that this number is row dimensions
+        tokens.add(new Token(TokenKind.MATRIX, matrixContent.toString())); // token is then implicit
     }
 }

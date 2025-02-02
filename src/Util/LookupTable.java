@@ -27,7 +27,7 @@ public class LookupTable<K, V extends Value, T> {
         return map.get(key).type;
     }
 
-    public boolean variableIsDeclared(K key) {
+    public boolean isDeclared(K key) {
         return map.containsKey(key);
     }
 
@@ -47,7 +47,7 @@ public class LookupTable<K, V extends Value, T> {
     }
 
     public void assignValueToLookupTable(K key, Object value, T type) {
-        if (!variableIsDeclared(key)) {
+        if (!isDeclared(key)) {
             declareVariable(key, type); // declare the variable in case it doesn't exist yet, it does not need a value and can be initialized blank
         }
 

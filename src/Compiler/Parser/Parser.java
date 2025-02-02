@@ -7,6 +7,7 @@ import AST.Expressions.VariableNode;
 import AST.Nodes.ASTNode;
 import Compiler.Tokenizer.TokenKind;
 import Compiler.Tokenizer.Token;
+import DataStructures.Matrix;
 import Util.IntegerValue;
 import Util.LookupTable;
 import Util.Value;
@@ -176,9 +177,11 @@ public class Parser {
         lookUpTable.assignValueToLookupTable(variableName, null, variableType); // default integer need to change
     }
 
+    // i need to streamline this to make it way cleaner, right now it's hard to read
     private void setValueToAssignedVariable(Integer tokenPos) {
         tokenPos++;
         Token token = tokens.get(tokenPos);
+        // this line is problematic for matrix declaration, as the matrix won't have a value
         Object tokenValue = parseValue(tokens.get(tokenPos + 1).getKind(), tokens.get(tokenPos + 1)); // might clean later
         if (token.getKind() != TokenKind.EQUAL && token.getKind() != TokenKind.SEMICOLON) {
             throw new RuntimeException("Expected SEMICOLON or EQUAL after declaring variable");
@@ -195,7 +198,9 @@ public class Parser {
         }
     }
 
-    private Object parseValue(TokenKind type, Token token) { // i might use this to declare variables easily
+    // this currently does not support matrices
+    // either i add support here, or i separate it into some "parseMatrix" function
+    private Number parseValue(TokenKind type, Token token) {
         return switch (type) {
             case INTEGER -> Integer.parseInt(token.getValue());
             case FLOAT -> Float.parseFloat(token.getValue());
