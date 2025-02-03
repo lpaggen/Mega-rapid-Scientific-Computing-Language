@@ -158,35 +158,25 @@ public class Tokenizer {
 //    }
 
     // i don't see how to avoid nested loops to check correctness of the matrix + determine number of columns
-    private void tokenizeMatrix(List<Token> tokens) {
+    private void tokenizeMatrix(List<Token> tokens) { // TO DO: handle errors regarding dimensions of matrices
+        int howManyTimesExecutedNumCols = 0; // this is an early way to attempt to not loop excessively, but it prevents from checking dimensions across rows
         int openBrackets = 0; // this should be incremented as long as there are open brackets, we then match on closing brackets
         int closeBrackets = 0;
+        // this is proving to be quite hard, as we need to reset and check if each row matches the number of columns
         int numCols = 0; // this would get updated every iteration, so we can check the dimensions
         StringBuilder matrixContent = new StringBuilder();
-        matrixContent.append('0'); // these two values represent rows and columns, they help the parser do its job
-        matrixContent.append('0');
         while (pos < input.length() - 1) {
             char c = input.charAt(pos);
-            if (Character.toString(c).equals("[")) {
+            if (c == '[') {
                 openBrackets++;
                 pos++;
-            } else if (Character.toString(c).equals("]")) {
+            } else if (c == ']') {
                 closeBrackets++;
                 pos++;
-            } else if (Character.isDigit(c)) { // when we encounter a digit, we need to start counting cols + keep track of validity in dims
-                int tempIndex = pos;
-                while (tempIndex < input.length() && Character.isDigit(input.charAt(tempIndex))) {
-                    tempIndex++;
-                }
-                System.out.println(tempIndex);
-                System.out.println(pos);
-                if (tempIndex - pos != numCols) {
-                    System.out.println(tempIndex - pos);
-                    throw new RuntimeException("Number of columns mismatch");
-                }
-                numCols = tempIndex - pos; // update number of columns
-
-                matrixContent.append(tokenizeNumber()); // !!! pos is incremented in this function too, might change at future stage
+            } else if (Character.isDigit(c)) { // when we encounter a digit, we need to start counting cols + keep track of validity in dim
+                numCols = getNumCols(pos); // !!!! this is not efficient -> absolutely need to fix
+                matrixContent.append(tokenizeNumber().getValue()); // !!! pos is incremented in this function too, might change at future stage
+                matrixContent.append(' ');
                 if (pos < input.length() && Character.isLetter(input.charAt(pos))) { // some more checks will be needed here however
                     matrixContent.append(new Token(TokenKind.MUL, "*")); // this is useful when there are coefficients involved
                 }
@@ -197,7 +187,20 @@ public class Tokenizer {
         if (openBrackets != closeBrackets) {
             throw new RuntimeException("Syntax error: brackets mismatch in Matrix");
         }
-        matrixContent.setCharAt(0, (char) (openBrackets - 1)); // it always holds true that this number is row dimensions
+        matrixContent.insert(0, (openBrackets - 1) + " ");
+        matrixContent.insert(0, numCols + " ");
         tokens.add(new Token(TokenKind.MATRIX, matrixContent.toString())); // token is then implicit
+        System.out.println(matrixContent);
+    }
+
+    private int getNumCols(int pos) {
+        int numCols = 0;
+        while (pos < input.length() && input.charAt(pos) != ']') {
+            if (Character.isDigit(input.charAt(pos))) {
+                numCols++;
+            }
+            pos++;
+        }
+        return numCols;
     }
 }
