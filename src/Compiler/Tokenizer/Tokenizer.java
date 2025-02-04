@@ -24,6 +24,7 @@ public class Tokenizer {
         while (pos < input.length()) {
             char c = input.charAt(pos);
 
+            // we don't need toString for Character, can just equate to '' -> change in future release
             if (Character.toString(c).equals("(")) {
                 tokens.add(new Token(TokenKind.OPEN_PAREN, "("));
                 pos++;
@@ -159,41 +160,45 @@ public class Tokenizer {
 
     // i don't see how to avoid nested loops to check correctness of the matrix + determine number of columns
     private void tokenizeMatrix(List<Token> tokens) { // TO DO: handle errors regarding dimensions of matrices
-        int howManyTimesExecutedNumCols = 0; // this is an early way to attempt to not loop excessively, but it prevents from checking dimensions across rows
+        int lengthMatrix = -1; // the -1 accounts for the semicolon
         int openBrackets = 0; // this should be incremented as long as there are open brackets, we then match on closing brackets
         int closeBrackets = 0;
         // this is proving to be quite hard, as we need to reset and check if each row matches the number of columns
-        int numCols = 0; // this would get updated every iteration, so we can check the dimensions
+        int numCols = getNumCols(pos);
+        int numRows = getNumRows(pos);
         StringBuilder matrixContent = new StringBuilder();
         while (pos < input.length() - 1) {
             char c = input.charAt(pos);
             if (c == '[') {
                 openBrackets++;
                 pos++;
+                lengthMatrix++;
             } else if (c == ']') {
                 closeBrackets++;
                 pos++;
+                lengthMatrix++;
             } else if (Character.isDigit(c)) { // when we encounter a digit, we need to start counting cols + keep track of validity in dim
-                numCols = getNumCols(pos); // !!!! this is not efficient -> absolutely need to fix
                 matrixContent.append(tokenizeNumber().getValue()); // !!! pos is incremented in this function too, might change at future stage
                 matrixContent.append(' ');
                 if (pos < input.length() && Character.isLetter(input.charAt(pos))) { // some more checks will be needed here however
                     matrixContent.append(new Token(TokenKind.MUL, "*")); // this is useful when there are coefficients involved
                 }
+                lengthMatrix++;
             } else if (Character.isWhitespace(c)) {
                 pos++;
             }
         }
         if (openBrackets != closeBrackets) {
             throw new RuntimeException("Syntax error: brackets mismatch in Matrix");
-        }
-        matrixContent.insert(0, (openBrackets - 1) + " ");
+        } else if ((numCols * numRows) != (lengthMatrix - openBrackets - closeBrackets + 1))
+            throw new RuntimeException("Syntax error: matrix dimensions do not match");
+        matrixContent.insert(0, numRows + " ");
         matrixContent.insert(0, numCols + " ");
         tokens.add(new Token(TokenKind.MATRIX, matrixContent.toString())); // token is then implicit
         System.out.println(matrixContent);
     }
 
-    private int getNumCols(int pos) {
+    private int getNumCols(int pos) { // doesn't work atm, why ?
         int numCols = 0;
         while (pos < input.length() && input.charAt(pos) != ']') {
             if (Character.isDigit(input.charAt(pos))) {
@@ -202,5 +207,21 @@ public class Tokenizer {
             pos++;
         }
         return numCols;
+    }
+
+    private int getNumRows(int pos) {
+        int numRows = 0;
+        boolean lastWasBracket = false;
+        while (pos < input.length()) {
+            char current = input.charAt(pos);
+            if (current == ']' && !lastWasBracket) {
+                numRows++;
+                lastWasBracket = true; // flag when we encounter bracket
+            } else if (current != ']') {
+                lastWasBracket = false;  // Reset flag if we encounter another character
+            }
+            pos++;
+        }
+        return numRows;
     }
 }
