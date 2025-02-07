@@ -191,9 +191,9 @@ public class Tokenizer {
         if (openBrackets != closeBrackets) {
             throw new RuntimeException("Syntax error: brackets mismatch in Matrix");
         } else if ((numCols * numRows) != (lengthMatrix - openBrackets - closeBrackets + 1))
-            throw new RuntimeException("Syntax error: matrix dimensions do not match");
-        matrixContent.insert(0, numRows + " ");
+            throw new RuntimeException("Syntax error: matrix dimensions do not match"); // i might rename this later
         matrixContent.insert(0, numCols + " ");
+        matrixContent.insert(0, numRows + " ");
         tokens.add(new Token(TokenKind.MATRIX, matrixContent.toString())); // token is then implicit
         System.out.println(matrixContent);
     }
