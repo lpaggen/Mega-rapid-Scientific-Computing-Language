@@ -8,7 +8,7 @@ public class Tokenizer {
     private final String input;
     private int pos = 0; // !!! this gets updated at each character in the input file !!!
     private int tokenPos = 0; // !!! this only gets updated for each COMPLETE token !!!
-    private final List<Token> tokens = new ArrayList<Token>();
+    private final List<Token> tokens = new ArrayList<>();
 
     public Tokenizer(String input) {
         this.input = input;
@@ -18,8 +18,6 @@ public class Tokenizer {
     // arguably we could write this entire thing in Regex, it is more scalable, although slower if poorly written
     // maybe in a future version
     public List<Token> tokenize() {
-
-        // List<Token> tokens = new ArrayList<Token>();
 
         while (pos < input.length()) {
             char c = input.charAt(pos);
@@ -162,7 +160,7 @@ public class Tokenizer {
     // maybe one day i will write a program that avoids nested loops
     // Feb 08 25 is not that day
     // hope this works
-    // right now this constructs a String, which definitely is not ideal...
+    // right now this constructs a String, which definitely is not ideal... -> i fixed this by using the MatrixToken class
     private void tokenizeMatrix(List<Token> tokens) { // TO DO: handle errors regarding dimensions of matrices
         int lengthMatrix = -1; // the -1 accounts for the semicolon
         int openBrackets = 0; // this should be incremented as long as there are open brackets, we then match on closing brackets
@@ -170,6 +168,7 @@ public class Tokenizer {
         int numCols = getNumCols(pos);
         int numRows = getNumRows(pos);
         StringBuilder matrixContent = new StringBuilder();
+        List<Token> matrixTokens = new ArrayList<>(); // this is where all the actual tokens are stored for the matrix entries
         while (pos < input.length() - 1) {
             char c = input.charAt(pos);
             if (c == '[') {
@@ -183,6 +182,7 @@ public class Tokenizer {
             } else if (Character.isDigit(c)) { // when we encounter a digit, we need to start counting cols + keep track of validity in dim
                 matrixContent.append(tokenizeNumber().getValue()); // !!! pos is incremented in this function too, might change at future stage
                 matrixContent.append(' ');
+                matrixTokens.add(new Token(tokenizeNumber().getKind(), tokenizeNumber().getValue()));
                 if (pos < input.length() && Character.isLetter(input.charAt(pos))) { // some more checks will be needed here however
                     matrixContent.append(new Token(TokenKind.MUL, "*")); // this is useful when there are coefficients involved
                 }
@@ -197,7 +197,7 @@ public class Tokenizer {
             throw new RuntimeException("Syntax error: matrix dimensions do not match"); // i might rename this later
         matrixContent.insert(0, numCols + " ");
         matrixContent.insert(0, numRows + " ");
-        tokens.add(new Token(TokenKind.MATRIX, matrixContent.toString())); // token is then implicit
+        tokens.add(new MatrixToken(TokenKind.MATRIX, matrixContent.toString(), matrixTokens)); // token is then implicit
         System.out.println(matrixContent);
     }
 

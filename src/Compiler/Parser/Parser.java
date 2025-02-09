@@ -5,6 +5,7 @@ import AST.Expressions.ConstantNode;
 import AST.Expressions.FunctionNode;
 import AST.Expressions.VariableNode;
 import AST.Nodes.ASTNode;
+import Compiler.Tokenizer.MatrixToken;
 import Compiler.Tokenizer.TokenKind;
 import Compiler.Tokenizer.Token;
 import DataStructures.Matrix;
@@ -181,9 +182,12 @@ public class Parser {
     // i need to streamline this to make it way cleaner, right now it's hard to read
     private void setValueToAssignedVariable(Integer tokenPos) {
         tokenPos++;
-        Token token = tokens.get(tokenPos);
-        // this line is problematic for matrix declaration, as the matrix won't have a value
-        Object tokenValue = parseValue(tokens.get(tokenPos + 1).getKind(), tokens.get(tokenPos + 1)); // might clean later
+        Token token = tokens.get(tokenPos); // this is going to be a semicolon or a equal sign
+        System.out.println(tokens.get(tokenPos + 1));
+        TokenKind variableType = parseDataType(tokens.getFirst().getKind()); // not sure if doing this is optimal, but it will work for now
+        Token variableToken = tokens.get(tokenPos + 1); // this is where we are now, we need to do a switch or something to check for matrix or not and assign to table
+        // this line is problematic for matrix declaration, as the matrix won't have a value -- it now does, but it's still a WIP, as it won't support expressions (only single values for now)
+        Number tokenValue = parseValue(tokens.get(tokenPos + 1).getKind(), tokens.get(tokenPos + 1)); // might clean later, it's a number atm but this could also change to Object to support symbols
         if (token.getKind() != TokenKind.EQUAL && token.getKind() != TokenKind.SEMICOLON) {
             throw new RuntimeException("Expected SEMICOLON or EQUAL after declaring variable");
         }
@@ -201,13 +205,16 @@ public class Parser {
 
     // this currently does not support matrices
     // either i add support here, or i separate it into some "parseMatrix" function
-    private Object parseValue(TokenKind type, Token token) { // it could be "number" but here we also need it to parse matrix
+    private Number parseValue(TokenKind type, Token token) { // it could be "number" but here we also need it to parse matrix
         return switch (type) {
             case INTEGER -> Integer.parseInt(token.getValue());
             case FLOAT -> Float.parseFloat(token.getValue());
-            case MATRIX -> parseMatrix(token.getValue());
             default -> throw new RuntimeException("Unsupported type: " + type);
         };
+    }
+
+    private Matrix<Object> parseMatrix(MatrixToken token) {
+        return parseMatrix(token.getValue().charAt(0), token.getValue().charAt(1), token.getEntries());
     }
 
     private TokenKind parseDataType(TokenKind firstToken) {
@@ -239,25 +246,18 @@ public class Parser {
     }
 
     // this might not be super optimized quite yet, i'll write something better at some stage
-    private Matrix<Object> parseMatrix(String matrixContent) { // i can't be sure if this is the right thing to do atm
-        String[] tokens = matrixContent.split("\\s+");
-        System.out.println("Matrix assignment " + matrixContent);
-        int numRows = Character.getNumericValue(matrixContent.charAt(0)); // this is terrible, i would need an array of some sort instead of a string
-        int numCols = Character.getNumericValue(matrixContent.charAt(1)); // still, this will work as expected. next we parse and set values to cells
+    private Matrix<Object> parseMatrix(int numRows, int numCols, List<Token> matrixEntries) { // i can't be sure if this is the right thing to do atm
+        System.out.println("Matrix assignment");
         Matrix<Object> matrix = new Matrix<>(numRows, numCols);
-        int matrixTokenPos = 4; // IMPORTANT: this is set as 4 because of the 2 leading elements (numRows, numCols) in matrixContent !!!!!
+        int matrixTokenPos = 0;
         for (int row = 0; row < numRows; row++) {
             for (int col = 0; col < numCols; col++) {
-                Object value = parseMatrixEntry(tokens[matrixTokenPos]);
+                Object value = matrixEntries.get(matrixTokenPos).getValue(); // i don't know what i am doing here anymore, this is bound to be redesigned
                 matrix.set(row, col, value);
                 matrixTokenPos++;
             }
         }
         return matrix;
-    }
-
-    private Object parseMatrixEntry(String token) {
-
     }
 
     private void isValidMatrixAssignment(Integer tokenPos) {
