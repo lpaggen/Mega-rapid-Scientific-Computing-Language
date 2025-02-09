@@ -13,6 +13,7 @@ import Util.LookupTable;
 import Util.Value;
 
 import java.util.List;
+import java.util.Objects;
 
 // parsing going quite well so far, we need to add some error checking
 // stuff like = signs not being followed by anything should crash the program
@@ -200,10 +201,11 @@ public class Parser {
 
     // this currently does not support matrices
     // either i add support here, or i separate it into some "parseMatrix" function
-    private Number parseValue(TokenKind type, Token token) {
+    private Object parseValue(TokenKind type, Token token) { // it could be "number" but here we also need it to parse matrix
         return switch (type) {
             case INTEGER -> Integer.parseInt(token.getValue());
             case FLOAT -> Float.parseFloat(token.getValue());
+            case MATRIX -> parseMatrix(token.getValue());
             default -> throw new RuntimeException("Unsupported type: " + type);
         };
     }
@@ -230,7 +232,35 @@ public class Parser {
         }
     }
 
+    private void isValidMatrixName(String variableName) { // check if uppercase letter
+        if (!variableName.matches("[A-Z]")) { // check regex for alphabet
+            throw new IllegalArgumentException("Matrix name must be a single uppercase alphabetical character.");
+        }
+    }
+
+    // this might not be super optimized quite yet, i'll write something better at some stage
+    private Matrix<Object> parseMatrix(String matrixContent) { // i can't be sure if this is the right thing to do atm
+        String[] tokens = matrixContent.split("\\s+");
+        System.out.println("Matrix assignment " + matrixContent);
+        int numRows = Character.getNumericValue(matrixContent.charAt(0)); // this is terrible, i would need an array of some sort instead of a string
+        int numCols = Character.getNumericValue(matrixContent.charAt(1)); // still, this will work as expected. next we parse and set values to cells
+        Matrix<Object> matrix = new Matrix<>(numRows, numCols);
+        int matrixTokenPos = 4; // IMPORTANT: this is set as 4 because of the 2 leading elements (numRows, numCols) in matrixContent !!!!!
+        for (int row = 0; row < numRows; row++) {
+            for (int col = 0; col < numCols; col++) {
+                Object value = parseMatrixEntry(tokens[matrixTokenPos]);
+                matrix.set(row, col, value);
+                matrixTokenPos++;
+            }
+        }
+        return matrix;
+    }
+
+    private Object parseMatrixEntry(String token) {
+
+    }
+
     private void isValidMatrixAssignment(Integer tokenPos) {
-        System.out.println(tokens.get(tokenPos));
+        System.out.println(tokens.get(tokenPos)); // this has to be completed eventually
     }
 }

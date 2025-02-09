@@ -9,6 +9,7 @@ import java.util.Map;
 // this is necessary because we need to keep track of what is declared and what isn't, as well as their values and types
 // also we use a custom "Value" interface for the V field of the table because we need support for diff Objects
 // V extends value too, as stated previously we will need a Value field to handle all our different types and structures
+// to be honest i could have also used another class for the value (value of map) and access the properties i need through it
 public class LookupTable<K, V extends Value, T> {
 
     private Map<K, Entry<V, T>> map = new HashMap<>();

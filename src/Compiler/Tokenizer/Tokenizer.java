@@ -159,11 +159,14 @@ public class Tokenizer {
 //    }
 
     // i don't see how to avoid nested loops to check correctness of the matrix + determine number of columns
+    // maybe one day i will write a program that avoids nested loops
+    // Feb 08 25 is not that day
+    // hope this works
+    // right now this constructs a String, which definitely is not ideal...
     private void tokenizeMatrix(List<Token> tokens) { // TO DO: handle errors regarding dimensions of matrices
         int lengthMatrix = -1; // the -1 accounts for the semicolon
         int openBrackets = 0; // this should be incremented as long as there are open brackets, we then match on closing brackets
         int closeBrackets = 0;
-        // this is proving to be quite hard, as we need to reset and check if each row matches the number of columns
         int numCols = getNumCols(pos);
         int numRows = getNumRows(pos);
         StringBuilder matrixContent = new StringBuilder();

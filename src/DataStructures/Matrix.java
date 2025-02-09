@@ -10,15 +10,15 @@ import java.util.Objects;
 // this is more complex than i initially expected it to be
 public class Matrix<T> { // so apparently T is "type" (generic)
     private final int rows, columns;
-    private final Object[][] entries; // define as Object, specify later... might be "slow"
+    private final T[][] entries; // define as Object, specify later... might be "slow"
 
     public Matrix(int rows, int columns) {
         this.rows = rows;
         this.columns = columns;
-        this.entries = new Object[rows][columns];
+        this.entries = (T[][]) new Object[rows][columns];
     }
 
-    public void set(int row, int col, Object value) { // the Object class is used here because I need support for symbols AND floats
+    public void set(int row, int col, T value) { // the Object class is used here because I need support for symbols AND Numbers
         if (row >= rows || col >= columns || row < 0 || col < 0) {
             throw new IndexOutOfBoundsException("Invalid index <" + col + ", " + row + "> for <" + this.rows + "x" + this.columns + "> matrix");
         }
@@ -58,12 +58,5 @@ public class Matrix<T> { // so apparently T is "type" (generic)
             }
         }
         return null;
-    }
-
-    // i will see whether this belongs here or in the Parser
-    private void validateName(String name) { // check if uppercase letter
-        if (!name.matches("[A-Z]")) { // check regex for alphabet
-            throw new IllegalArgumentException("Matrix name must be a single uppercase alphabetical character.");
-        }
     }
 }
