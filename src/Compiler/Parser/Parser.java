@@ -184,8 +184,17 @@ public class Parser {
         tokenPos++;
         Token token = tokens.get(tokenPos); // this is going to be a semicolon or a equal sign
         System.out.println(tokens.get(tokenPos + 1));
-        TokenKind variableType = parseDataType(tokens.getFirst().getKind()); // not sure if doing this is optimal, but it will work for now
+        TokenKind variableKind = parseDataType(tokens.getFirst().getKind()); // not sure if doing this is optimal, but it will work for now
         Token variableToken = tokens.get(tokenPos + 1); // this is where we are now, we need to do a switch or something to check for matrix or not and assign to table
+        String variableName = tokens.get(tokenPos - 1).getValue(); // this is where we are now, we need to do a switch or something to check for matrix or not and assign to table
+        if (variableToken.getKind() == TokenKind.MATRIX) {
+            MatrixToken matrixToken = (MatrixToken) variableToken;
+            System.out.println("testing");
+            System.out.println(matrixToken.getValue());
+            System.out.println("end testing");
+            Matrix<Object> matrix = parseMatrix(Integer.parseInt(String.valueOf(matrixToken.getValue().charAt(0))), Integer.parseInt(String.valueOf(matrixToken.getValue().charAt(2))), matrixToken.getEntries());
+            lookUpTable.assignValueToLookupTable(variableName, matrix, variableKind);
+        }
         // this line is problematic for matrix declaration, as the matrix won't have a value -- it now does, but it's still a WIP, as it won't support expressions (only single values for now)
         Number tokenValue = parseValue(tokens.get(tokenPos + 1).getKind(), tokens.get(tokenPos + 1)); // might clean later, it's a number atm but this could also change to Object to support symbols
         if (token.getKind() != TokenKind.EQUAL && token.getKind() != TokenKind.SEMICOLON) {
@@ -203,18 +212,12 @@ public class Parser {
         }
     }
 
-    // this currently does not support matrices
-    // either i add support here, or i separate it into some "parseMatrix" function
-    private Number parseValue(TokenKind type, Token token) { // it could be "number" but here we also need it to parse matrix
+    private Number parseValue(TokenKind type, Token token) {
         return switch (type) {
             case INTEGER -> Integer.parseInt(token.getValue());
             case FLOAT -> Float.parseFloat(token.getValue());
             default -> throw new RuntimeException("Unsupported type: " + type);
         };
-    }
-
-    private Matrix<Object> parseMatrix(MatrixToken token) {
-        return parseMatrix(token.getValue().charAt(0), token.getValue().charAt(1), token.getEntries());
     }
 
     private TokenKind parseDataType(TokenKind firstToken) {
@@ -246,17 +249,19 @@ public class Parser {
     }
 
     // this might not be super optimized quite yet, i'll write something better at some stage
-    private Matrix<Object> parseMatrix(int numRows, int numCols, List<Token> matrixEntries) { // i can't be sure if this is the right thing to do atm
+    private Matrix<Object> parseMatrix(int numRows, int numCols, List<Token> matrixEntries) {
         System.out.println("Matrix assignment");
+        System.out.println(matrixEntries);
         Matrix<Object> matrix = new Matrix<>(numRows, numCols);
-        int matrixTokenPos = 0;
-        for (int row = 0; row < numRows; row++) {
-            for (int col = 0; col < numCols; col++) {
-                Object value = matrixEntries.get(matrixTokenPos).getValue(); // i don't know what i am doing here anymore, this is bound to be redesigned
-                matrix.set(row, col, value);
-                matrixTokenPos++;
-            }
+        // the following was chatGPT because i could not find a solution
+        // it is called "looping through matrixEntries in a row-major order" -> no idea how this works, avoids a nested for loop
+        for (int i = 0; i < matrixEntries.size(); i++) {
+            int row = i / numCols;  // row index
+            int col = i % numCols;  // column index
+            Object value = matrixEntries.get(i).getValue();
+            matrix.set(row, col, value);
         }
+        System.out.println(matrix.toString());
         return matrix;
     }
 

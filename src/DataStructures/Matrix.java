@@ -3,26 +3,40 @@ package DataStructures;
 import DataTypes.Expression;
 import DataTypes.Symbol;
 
-import java.net.Inet4Address;
-import java.util.Objects;
+import java.util.Arrays;
 
 // have to implement a matrix structure, with capability for eigenvalue, inversion, det, mul, etc. etc
 // this is more complex than i initially expected it to be
 public class Matrix<T> { // so apparently T is "type" (generic)
     private final int rows, columns;
-    private final T[][] entries; // define as Object, specify later... might be "slow"
+    private final Object[][] entries; // define as Object, specify later... might be "slow"
 
     public Matrix(int rows, int columns) {
         this.rows = rows;
         this.columns = columns;
-        this.entries = (T[][]) new Object[rows][columns];
+        this.entries = new Object[rows][columns];
     }
 
-    public void set(int row, int col, T value) { // the Object class is used here because I need support for symbols AND Numbers
+    public void set(int row, int col, Object value) { // the Object class is used here because I need support for symbols AND Numbers
         if (row >= rows || col >= columns || row < 0 || col < 0) {
             throw new IndexOutOfBoundsException("Invalid index <" + col + ", " + row + "> for <" + this.rows + "x" + this.columns + "> matrix");
         }
         entries[row][col] = value;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < rows; i++) {
+            sb.append("[");
+            for (int j = 0; j < columns; j++) {
+                sb.append(entries[i][j] == null ? "null" : entries[i][j].toString());
+                if (j < columns - 1) sb.append(", ");
+            }
+            sb.append("]");
+            if (i < rows - 1) sb.append(", ");
+        }
+        return sb.toString();
     }
 
     // any operation on matrices should return a matrix type

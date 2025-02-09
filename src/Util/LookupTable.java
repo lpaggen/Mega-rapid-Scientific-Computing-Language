@@ -12,7 +12,7 @@ import java.util.Map;
 // to be honest i could have also used another class for the value (value of map) and access the properties i need through it
 public class LookupTable<K, V extends Value, T> {
 
-    private Map<K, Entry<V, T>> map = new HashMap<>();
+    private final Map<K, Entry<V, T>> map = new HashMap<>();
 
     public V getValue(K key) {
         if (!map.containsKey(key)) {
@@ -65,7 +65,7 @@ public class LookupTable<K, V extends Value, T> {
         } else if (type.equals(TokenKind.FLOAT)) {
             return (V) new FloatValue((Float) value);
         } else if (type.equals(TokenKind.MATRIX)) {
-            return (V) new MatrixValue((double[][]) value);
+            return (V) new MatrixValue((Object[][]) value);
         }
         throw new IllegalArgumentException("Could not infer value of '" + type + "', check for errors");
     }

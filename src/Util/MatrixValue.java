@@ -1,12 +1,12 @@
 package Util;
 
 public class MatrixValue implements Value {
-    private double[][] matrix;
+    private Object[][] matrix;
 
-    public MatrixValue(double[][] matrix) {
+    public MatrixValue(Object[][] matrix) {
         this.matrix = matrix;
     }
-    public double[][] getValue() {
+    public Object[][] getValue() {
         return matrix;
     }
 

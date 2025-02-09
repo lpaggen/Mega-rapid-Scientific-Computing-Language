@@ -180,9 +180,12 @@ public class Tokenizer {
                 pos++;
                 lengthMatrix++;
             } else if (Character.isDigit(c)) { // when we encounter a digit, we need to start counting cols + keep track of validity in dim
-                matrixContent.append(tokenizeNumber().getValue()); // !!! pos is incremented in this function too, might change at future stage
+                Token Digit = tokenizeNumber();
+                String valueOfNumber = Digit.getValue();
+                TokenKind kindOfNumber = Digit.getKind();
+                matrixContent.append(valueOfNumber); // !!! pos is incremented in this function too, might change at future stage
                 matrixContent.append(' ');
-                matrixTokens.add(new Token(tokenizeNumber().getKind(), tokenizeNumber().getValue()));
+                matrixTokens.add(new Token(kindOfNumber, valueOfNumber));
                 if (pos < input.length() && Character.isLetter(input.charAt(pos))) { // some more checks will be needed here however
                     matrixContent.append(new Token(TokenKind.MUL, "*")); // this is useful when there are coefficients involved
                 }
