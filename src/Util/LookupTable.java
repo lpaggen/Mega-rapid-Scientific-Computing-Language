@@ -1,6 +1,7 @@
 package Util;
 
 import Compiler.Tokenizer.TokenKind;
+import DataTypes.Computable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -65,7 +66,7 @@ public class LookupTable<K, V extends Value, T> {
         } else if (type.equals(TokenKind.FLOAT)) {
             return (V) new FloatValue((Float) value);
         } else if (type.equals(TokenKind.MATRIX)) {
-            return (V) new MatrixValue((Object[][]) value);
+            return (V) new MatrixValue((Computable[][]) value);
         }
         throw new IllegalArgumentException("Could not infer value of '" + type + "', check for errors");
     }

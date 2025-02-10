@@ -1,11 +1,14 @@
 package Util;
 
-public class MatrixValue implements Value {
+import DataTypes.Computable;
+
+public class MatrixValue implements Computable {
     private Object[][] matrix;
 
-    public MatrixValue(Object[][] matrix) {
+    public MatrixValue(Computable[][] matrix) {
         this.matrix = matrix;
     }
+
     public Object[][] getValue() {
         return matrix;
     }
@@ -16,7 +19,22 @@ public class MatrixValue implements Value {
     }
 
     @Override
-    public Object evaluate(Object value) {
+    public Computable add(Computable other) {
+        return null;
+    }
+
+    @Override
+    public Computable subtract(Computable other) {
+        return null;
+    }
+
+    @Override
+    public Computable multiply(Computable other) {
+        return null;
+    }
+
+    @Override
+    public Computable divide(Computable other) {
         return null;
     }
 }

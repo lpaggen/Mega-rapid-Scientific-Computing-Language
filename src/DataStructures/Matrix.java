@@ -1,5 +1,6 @@
 package DataStructures;
 
+import DataTypes.Computable;
 import DataTypes.Expression;
 import DataTypes.Symbol;
 
@@ -7,17 +8,17 @@ import java.util.Arrays;
 
 // have to implement a matrix structure, with capability for eigenvalue, inversion, det, mul, etc. etc
 // this is more complex than i initially expected it to be
-public class Matrix<T> { // so apparently T is "type" (generic)
+public class Matrix<T extends Computable> { // so apparently T is "type" (generic)
     private final int rows, columns;
-    private final Object[][] entries; // define as Object, specify later... might be "slow"
+    private final T[][] entries; // define as Object, specify later... might be "slow"
 
     public Matrix(int rows, int columns) {
         this.rows = rows;
         this.columns = columns;
-        this.entries = new Object[rows][columns];
+        this.entries = (T[][]) new Computable[rows][columns];
     }
 
-    public void set(int row, int col, Object value) { // the Object class is used here because I need support for symbols AND Numbers
+    public void set(int row, int col, T value) { // the Object class is used here because I need support for symbols AND Numbers
         if (row >= rows || col >= columns || row < 0 || col < 0) {
             throw new IndexOutOfBoundsException("Invalid index <" + col + ", " + row + "> for <" + this.rows + "x" + this.columns + "> matrix");
         }
@@ -25,8 +26,9 @@ public class Matrix<T> { // so apparently T is "type" (generic)
     }
 
     @Override
-    public String toString() {
+    public String toString() { // this is kinda slow, we might want to optimize this later
         StringBuilder sb = new StringBuilder();
+        sb.append('[');
         for (int i = 0; i < rows; i++) {
             sb.append("[");
             for (int j = 0; j < columns; j++) {
@@ -36,6 +38,7 @@ public class Matrix<T> { // so apparently T is "type" (generic)
             sb.append("]");
             if (i < rows - 1) sb.append(", ");
         }
+        sb.append(']');
         return sb.toString();
     }
 

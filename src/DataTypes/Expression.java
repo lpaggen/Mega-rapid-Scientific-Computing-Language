@@ -5,7 +5,7 @@ import AST.Nodes.Exp;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Expression {
+public class Expression implements Computable{
     private final List<Term> terms;
 
     public Expression() {
@@ -36,5 +36,25 @@ public class Expression {
     @Override
     public String toString() {
         return terms.toString(); // not sure if this can work
+    }
+
+    @Override
+    public Computable add(Computable other) {
+        return null;
+    }
+
+    @Override
+    public Computable subtract(Computable other) {
+        return null;
+    }
+
+    @Override
+    public Computable multiply(Computable other) {
+        return null;
+    }
+
+    @Override
+    public Computable divide(Computable other) {
+        return null;
     }
 }

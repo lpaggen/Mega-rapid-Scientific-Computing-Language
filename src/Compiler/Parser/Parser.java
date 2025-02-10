@@ -9,6 +9,9 @@ import Compiler.Tokenizer.MatrixToken;
 import Compiler.Tokenizer.TokenKind;
 import Compiler.Tokenizer.Token;
 import DataStructures.Matrix;
+import DataTypes.Computable;
+import DataTypes.Numeric;
+import Util.FloatValue;
 import Util.IntegerValue;
 import Util.LookupTable;
 import Util.Value;
@@ -192,11 +195,11 @@ public class Parser {
             System.out.println("testing");
             System.out.println(matrixToken.getValue());
             System.out.println("end testing");
-            Matrix<Object> matrix = parseMatrix(Integer.parseInt(String.valueOf(matrixToken.getValue().charAt(0))), Integer.parseInt(String.valueOf(matrixToken.getValue().charAt(2))), matrixToken.getEntries());
+            Matrix<Computable> matrix = parseMatrix(Integer.parseInt(String.valueOf(matrixToken.getValue().charAt(0))), Integer.parseInt(String.valueOf(matrixToken.getValue().charAt(2))), matrixToken.getEntries());
             lookUpTable.assignValueToLookupTable(variableName, matrix, variableKind);
         }
         // this line is problematic for matrix declaration, as the matrix won't have a value -- it now does, but it's still a WIP, as it won't support expressions (only single values for now)
-        Number tokenValue = parseValue(tokens.get(tokenPos + 1).getKind(), tokens.get(tokenPos + 1)); // might clean later, it's a number atm but this could also change to Object to support symbols
+        Computable tokenValue = parseValue(tokens.get(tokenPos + 1).getKind(), tokens.get(tokenPos + 1)); // might clean later, it's a number atm but this could also change to Object to support symbols
         if (token.getKind() != TokenKind.EQUAL && token.getKind() != TokenKind.SEMICOLON) {
             throw new RuntimeException("Expected SEMICOLON or EQUAL after declaring variable");
         }
@@ -212,10 +215,10 @@ public class Parser {
         }
     }
 
-    private Number parseValue(TokenKind type, Token token) {
+    private Computable parseValue(TokenKind type, Token token) {
         return switch (type) {
-            case INTEGER -> Integer.parseInt(token.getValue());
-            case FLOAT -> Float.parseFloat(token.getValue());
+            case INTEGER -> new IntegerValue(Integer.parseInt(token.getValue()));
+            case FLOAT -> new FloatValue(Float.parseFloat(token.getValue()));
             default -> throw new RuntimeException("Unsupported type: " + type);
         };
     }
@@ -249,16 +252,17 @@ public class Parser {
     }
 
     // this might not be super optimized quite yet, i'll write something better at some stage
-    private Matrix<Object> parseMatrix(int numRows, int numCols, List<Token> matrixEntries) {
+    private Matrix<Computable> parseMatrix(int numRows, int numCols, List<Token> matrixEntries) {
         System.out.println("Matrix assignment");
         System.out.println(matrixEntries);
-        Matrix<Object> matrix = new Matrix<>(numRows, numCols);
+        Matrix<Computable> matrix = new Matrix<>(numRows, numCols);
         // the following was chatGPT because i could not find a solution
         // it is called "looping through matrixEntries in a row-major order" -> no idea how this works, avoids a nested for loop
         for (int i = 0; i < matrixEntries.size(); i++) {
             int row = i / numCols;  // row index
             int col = i % numCols;  // column index
-            Object value = matrixEntries.get(i).getValue();
+            Token entry = matrixEntries.get(i);
+            Computable value = parseValue(entry.getKind(), entry);
             matrix.set(row, col, value);
         }
         System.out.println(matrix.toString());
