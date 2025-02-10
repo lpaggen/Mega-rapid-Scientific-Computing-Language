@@ -2,6 +2,9 @@ package Util;
 
 import Compiler.Tokenizer.TokenKind;
 import DataTypes.Computable;
+import DataTypes.MatrixValue;
+import DataTypes.NumericValue;
+import DataTypes.Value;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -62,9 +65,9 @@ public class LookupTable<K, V extends Value, T> {
         if (value == null) { // this means we declare a variable with no value, which obviously works
             return null;
         } else if (type.equals(TokenKind.INTEGER)) {
-            return (V) new IntegerValue((Integer) value);
+            return (V) new NumericValue((Integer) value);
         } else if (type.equals(TokenKind.FLOAT)) {
-            return (V) new FloatValue((Float) value);
+            return (V) new NumericValue((Float) value);
         } else if (type.equals(TokenKind.MATRIX)) {
             return (V) new MatrixValue((Computable[][]) value);
         }

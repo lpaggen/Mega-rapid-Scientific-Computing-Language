@@ -1,4 +1,4 @@
-package Util;
+package DataTypes;
 
 import DataTypes.Computable;
 

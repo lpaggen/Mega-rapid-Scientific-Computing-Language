@@ -10,14 +10,11 @@ import Compiler.Tokenizer.TokenKind;
 import Compiler.Tokenizer.Token;
 import DataStructures.Matrix;
 import DataTypes.Computable;
-import DataTypes.Numeric;
-import Util.FloatValue;
-import Util.IntegerValue;
+import DataTypes.NumericValue;
 import Util.LookupTable;
-import Util.Value;
+import DataTypes.Value;
 
 import java.util.List;
-import java.util.Objects;
 
 // parsing going quite well so far, we need to add some error checking
 // stuff like = signs not being followed by anything should crash the program
@@ -215,10 +212,10 @@ public class Parser {
         }
     }
 
-    private Computable parseValue(TokenKind type, Token token) {
+    private NumericValue parseValue(TokenKind type, Token token) {
         return switch (type) {
-            case INTEGER -> new IntegerValue(Integer.parseInt(token.getValue()));
-            case FLOAT -> new FloatValue(Float.parseFloat(token.getValue()));
+            case INTEGER -> new NumericValue(Integer.parseInt(token.getValue()));
+            case FLOAT -> new NumericValue(Float.parseFloat(token.getValue()));
             default -> throw new RuntimeException("Unsupported type: " + type);
         };
     }
@@ -265,7 +262,7 @@ public class Parser {
             Computable value = parseValue(entry.getKind(), entry);
             matrix.set(row, col, value);
         }
-        System.out.println(matrix.toString());
+        System.out.println(matrix);
         return matrix;
     }
 
