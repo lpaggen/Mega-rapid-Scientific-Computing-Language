@@ -4,7 +4,7 @@ import Compiler.Tokenizer.TokenKind;
 
 import java.util.Objects;
 
-// the Symbol datatype is unique to this language (afaik)
+// the Symbol datatype is unique to this language (afaik) - also Sympy uses it
 // it allows for algebraic mathematical operations
 // as such, 2a + a will return 3a
 // !! symbol will handle int and float instead of being a separate data type
@@ -15,7 +15,7 @@ public class Symbol {
 
     // will consider adding vectors and matrices to the data structures
     public Symbol(String name, Number value, TokenKind kind) {
-        validateName(name); // moved outside constructor
+        validateName(name);
         this.name = name;
         this.value = value;
         this.kind = kind;

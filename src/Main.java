@@ -18,32 +18,7 @@ public class Main {
         System.out.println(tokens);
 
         for (Token token : tokens) {
-            System.out.println(token.getKind());
+            System.out.println(token);
         }
-
-        Parser parser = new Parser(tokens);
-
-        ASTNode out = parser.interpretCode();
-
-        // LookupTable<String, Value, TokenKind> lookupTable = new LookupTable<>();
-
-        System.out.println();
-        System.out.println("Output of the parser:");
-        System.out.println(out);
-
-        System.out.println();
-        System.out.println("Contents of the lookup table:");
-        parser.lookUpTable.showLookupTable(); // you can see that the parser now correctly declares variables
-
-        System.out.println();
-        System.out.println("testing new structures");
-        Symbol x = new Symbol("x", 5, TokenKind.INTEGER);
-        Term xTerm = new Term(x, 5);
-
-        // HelperClass.help("symbol");
-
-        System.out.println(x);
-        System.out.println();
-        System.out.println(xTerm);
     }
 }

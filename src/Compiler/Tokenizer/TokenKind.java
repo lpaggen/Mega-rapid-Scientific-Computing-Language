@@ -7,20 +7,23 @@ public enum TokenKind {
     CONST,
     INTEGER,
     FLOAT,
-    // SYMBOL,
+    SYMBOL,
+    NUM,
+    STRING,
 
     // some data structure tokens
     MATRIX,
     OPEN_BRACKET,
     CLOSE_BRACKET,
 
-    FUNCTION,
+    FUNC,
 
     // separate all type declarations
     // SYMBOL_TYPE,
     INTEGER_TYPE,
     FLOAT_TYPE,
     MATRIX_TYPE,
+    SYMBOL_TYPE,
 
     DERIVE,
     WRT, // say "with respect to ..."
@@ -35,6 +38,14 @@ public enum TokenKind {
     MUL,
     POWER,
     EQUAL,
+    GREATER,
+    GREATER_EQUAL,
+    LESS,
+    LESS_EQUAL,
+    NOT_EQUAL,
+    NOT,
+    EQUAL_EQUAL,
+
     WHITESPACE,
     SEMICOLON,
     VARIABLE,
@@ -47,4 +58,16 @@ public enum TokenKind {
     SEC,
     CSC,
     COT,
+    OR,
+    AND,
+    TRUE,
+    FALSE,
+    IF,
+    ELSE,
+    FOR,
+    WHILE,
+    BREAK,
+    CONTINUE,
+    RETURN,
+    PRINT,
 }
