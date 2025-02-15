@@ -218,7 +218,7 @@ public class Tokenizer {
         int closeBrackets = 0;
         int numCols = getNumCols(pos);
         int numRows = getNumRows(pos);
-        StringBuilder lexeme = new StringBuilder();
+        StringBuilder matrixLexeme = new StringBuilder();
         List<Token> literal = new ArrayList<>(); // this is where all the actual tokens are stored for the matrix entries
         while (pos < input.length() - 1) {
             char c = input.charAt(pos);
@@ -232,11 +232,11 @@ public class Tokenizer {
                 lengthMatrix++;
             } else if (isDigit(c)) {
                 Token Digit = tokenizeNumberReturnDouble();
-                String valueOfNumber = Digit.; // digit.lexeme
+                String lexemeOfNumber = Digit.getLexeme(); // digit.lexeme
                 TokenKind kindOfNumber = Digit.getKind(); // digit.kind
-                matrixContent.append(valueOfNumber); // !!! pos is incremented in this function too, might change at future stage
-                matrixContent.append(' ');
-                matrixTokens.add(new Token(kindOfNumber, valueOfNumber));
+                matrixLexeme.append(lexemeOfNumber); // !!! pos is incremented in this function too, might change at future stage
+                matrixLexeme.append(' ');
+                literal.add(new Token(kindOfNumber, lexemeOfNumber, Digit.getLiteral(), line));
                 if (pos < input.length() && Character.isLetter(input.charAt(pos))) { // some more checks will be needed here however
                     matrixContent.append(new Token(TokenKind.MUL, "*")); // this is useful when there are coefficients involved
                 }
