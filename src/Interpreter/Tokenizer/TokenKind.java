@@ -10,6 +10,7 @@ public enum TokenKind {
     SYMBOL,
     NUM,
     STRING,
+    NULL,
 
     // some data structure tokens
     MATRIX,
@@ -18,7 +19,6 @@ public enum TokenKind {
 
     FUNC,
 
-    // separate all type declarations
     // SYMBOL_TYPE,
     INTEGER_TYPE,
     FLOAT_TYPE,
@@ -37,6 +37,7 @@ public enum TokenKind {
     DIV,
     MUL,
     POWER,
+
     EQUAL,
     GREATER,
     GREATER_EQUAL,
@@ -58,6 +59,7 @@ public enum TokenKind {
     SEC,
     CSC,
     COT,
+
     OR,
     AND,
     TRUE,

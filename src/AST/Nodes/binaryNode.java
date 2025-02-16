@@ -7,7 +7,7 @@ public class binaryNode extends Expression {
     final Expression rhs;
     final Token operator;
 
-    binaryNode(Expression lhs, Token operator, Expression rhs) {
+    public binaryNode(Expression lhs, Token operator, Expression rhs) {
         this.lhs = lhs;
         this.rhs = rhs;
         this.operator = operator;

@@ -4,8 +4,7 @@ import AST.Expressions.BinaryOperationNode;
 import AST.Expressions.ConstantNode;
 import AST.Expressions.FunctionNode;
 import AST.Expressions.VariableNode;
-import AST.Nodes.ASTNode;
-import AST.Nodes.Expression;
+import AST.Nodes.*;
 import Interpreter.Tokenizer.MatrixToken;
 import Interpreter.Tokenizer.TokenKind;
 import Interpreter.Tokenizer.Token;
@@ -32,44 +31,12 @@ public class Parser {
         this.tokens = tokens;
     }
 
-    public ASTNode interpretCode() {
+    public Expression interpretCode() {
         return parseExpression();
     }
 
-    private ASTNode parseExpression() {
-        // here we need to handle all EXPRESSIONS -> +, -, so all binary nodes
-        ASTNode left = parseTerm();
 
-        while (tokenPos < tokens.size()) {
-            Token nextToken = tokens.get(tokenPos); // advance to next token
-            if (nextToken.getKind() == TokenKind.PLUS || nextToken.getKind() == TokenKind.MINUS) {
-                tokenPos++;
-                ASTNode right = parseTerm(); // update left underneath
-                left = new BinaryOperationNode(left, right, nextToken); // should work as intended
-            } else {
-                break; // when no more tokens to parse
-            }
-        }
-        return left;
-    }
-
-    private ASTNode parseTerm() {
-        ASTNode left = parseFactor();
-
-        while (tokenPos < tokens.size()) {
-            Token nextToken = tokens.get(tokenPos);
-            if (nextToken.getKind() == TokenKind.MUL || nextToken.getKind() == TokenKind.DIV) {
-                tokenPos++;
-                ASTNode right = parseFactor();
-                left = new BinaryOperationNode(left, right, nextToken);
-            } else {
-                break;
-            }
-        }
-        return left;
-    }
-
-    private ASTNode parseFactor() {
+    private ASTNode parseFactorOLD() {
         Token token = tokens.get(tokenPos);
         if (token.getKind() == TokenKind.INTEGER) {
             tokenPos++;
@@ -271,23 +238,78 @@ public class Parser {
         System.out.println(tokens.get(tokenPos)); // this has to be completed eventually
     }
 
+    private Expression parseExpression() {
+        return parseEquality();
+    }
+
+    private Expression parseEquality() {
+        Expression expression = parseComparison();
+        while (match(TokenKind.EQUAL_EQUAL, TokenKind.NOT_EQUAL)) {
+            Token operator = previous();
+            Expression rhs = parseComparison();
+            expression = new binaryNode(expression, operator, rhs);
+        }
+        return expression;
+    }
+
     private Expression parseTerm() {
         Expression expression = parseFactor();
+        while (match(TokenKind.PLUS, TokenKind.MINUS)) {
+            Token operator = previous();
+            Expression rhs = parseFactor();
+            expression = new binaryNode(expression, operator, rhs);
+        }
+        return expression;
     }
 
     private Expression parseFactor() {
         Expression expression = parseUnary();
+        while (match(TokenKind.MUL, TokenKind.DIV)) {
+            Token operator = previous();
+            Expression rhs = parseUnary();
+            expression = new binaryNode(expression, operator, rhs);
+        }
     }
 
     private Expression parseComparison() {
         Expression expression = parseTerm();
+        while (match(TokenKind.GREATER, TokenKind.LESS, TokenKind.GREATER_EQUAL, TokenKind.LESS_EQUAL)) {
+            Token operator = previous(); // because match() consumes the token (advances position)
+            Expression rhs = parseTerm(); // here we are also consuming the next token, which ensures the while loop actually works
+            expression = new binaryNode(expression, operator, rhs); {
+            }
+        }
+        return expression;
+    }
 
+    private Expression parseUnary() {
+        if (match(TokenKind.NOT, TokenKind.MINUS)) { // handle both ! and negation
+            Token operator = previous();
+            Expression rhs = parseUnary();
+            return new unaryNode(operator, rhs);
+        }
+        return parsePrimary();
+    }
+
+    private Expression parsePrimary() {
+        if (match(TokenKind.FALSE)) return new primaryNode(false);
+        if (match(TokenKind.TRUE)) return new primaryNode(true);
+        if (match(TokenKind.NULL)) return new primaryNode(null);
+        if (match(TokenKind.NUM, TokenKind.STRING)) {
+            return new primaryNode(previous().getLiteral()); // remember match() consumes a token !!
+        }
+        if (match(TokenKind.OPEN_PAREN)) {
+            Expression expression = parseExpression();
+            consumeClosingParen(TokenKind.CLOSE_PAREN); // this is like match, we're looking for a closing parenthesis
+            return new groupingNode(expression);
+        }
+        return null;
     }
 
     private boolean match(TokenKind... expectedKinds) {
         for (TokenKind expectedKind : expectedKinds) {
             if (check(expectedKind)) {
-                consume();
+                advance();
                 return true;
             }
         }
@@ -296,16 +318,25 @@ public class Parser {
 
     private boolean check(TokenKind expectedKind) {
         if (!isAtEnd()) {
-            return tokens.get(tokenPos).getKind() == expectedKind;
+            return peek().getKind() == expectedKind;
         }
         return false;
     }
 
-    private Token consume() {
+    private Token consumeClosingParen(TokenKind kind) {
+        if (check(kind)) return advance();
+        else throw new Error("Expecting closing paren at line");
+    }
+
+    private Token advance() {
         if (!isAtEnd()) {
             tokenPos++;
         }
         return previous();
+    }
+
+    private Token peek() {
+        return tokens.get(tokenPos);
     }
 
     private Token previous() {
@@ -313,6 +344,6 @@ public class Parser {
     }
 
     private boolean isAtEnd() {
-        return tokenPos >= tokens.size();
+        return peek().getKind() == TokenKind.EOF;
     }
 }
