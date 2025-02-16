@@ -27,4 +27,9 @@ public class primaryNode extends Expression {
     public Expression simplify() {
         return null;
     }
+
+    @Override
+    public Expression substitute(String... s) {
+        return null;
+    }
 }

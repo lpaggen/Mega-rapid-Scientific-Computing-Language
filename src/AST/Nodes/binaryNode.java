@@ -19,15 +19,15 @@ public class binaryNode extends Expression {
     }
 
     @Override
-    public double evaluate() {
-        double lhsVal = lhs.evaluate();
-        double rhsVal = rhs.evaluate();
+    public Object evaluate() {
+        Object lhsVal = lhs.evaluate();
+        Object rhsVal = rhs.evaluate();
 
-        return switch (operator.getLexeme()) {
-            case "+" -> lhsVal + rhsVal;
-            case "-" -> lhsVal - rhsVal;
-            case "*" -> lhsVal * rhsVal;
-            case "/" -> lhsVal / rhsVal;
+        return switch (operator.getKind()) {
+            case PLUS -> lhsVal + rhsVal;
+            case MINUS -> lhsVal - rhsVal;
+            case MUL -> lhsVal * rhsVal;
+            case DIV -> lhsVal / rhsVal;
             default -> throw new UnsupportedOperationException("Unsupported operator: " + operator.getLexeme());
         };
     }
@@ -40,5 +40,10 @@ public class binaryNode extends Expression {
     @Override
     public Expression simplify() { // need to fix this eventually
         return lhs.simplify() + rhs.simplify();
+    }
+
+    @Override
+    public Expression substitute(String... s) {
+        return null;
     }
 }

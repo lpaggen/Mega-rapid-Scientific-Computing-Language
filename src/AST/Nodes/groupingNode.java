@@ -27,4 +27,14 @@ public class groupingNode extends Expression {
     public Expression simplify() {
         return null;
     }
+
+    @Override
+    public Expression substitute(String... s) {
+        return "";
+    }
+
+    // need to double-check my logic here
+    public Expression getValue() {
+        return expression;
+    }
 }
