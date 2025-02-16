@@ -11,13 +11,13 @@ public class Negate extends Expression {
 
 
     @Override
-    public Expression diff(String variable) {
-        return new Product(new Constant(-1), arg);
+    public Expression derive(String variable) {
+        return new Product(new Numeric(-1), arg);
     }
 
     @Override
     public double eval(double... values) {
-        return -1 * arg.eval(); // fix later
+        return -1 * arg.evaluate(); // fix later
     }
 
     @Override

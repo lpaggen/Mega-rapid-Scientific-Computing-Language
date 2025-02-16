@@ -2,6 +2,8 @@ package AST.Nodes;
 
 import java.util.Objects;
 
+import static java.lang.StringTemplate.STR;
+
 public class Product extends Expression {
     private final Expression left, right;
 
@@ -11,17 +13,17 @@ public class Product extends Expression {
     }
 
     @Override
-    public Expression diff(String variable) {
+    public Expression derive(String variable) {
         // follows the basic rules of diff, power rule
         return new Sum(
-                new Product(left.diff(variable), right),
-                new Product(left, right.diff(variable))
+                new Product(left.derive(variable), right),
+                new Product(left, right.derive(variable))
         );
     }
 
     @Override
     public double eval(double... values) {
-        return left.eval(values) * right.eval(values);
+        return left.evaluate(values) * right.evaluate(values);
     }
 
     @Override

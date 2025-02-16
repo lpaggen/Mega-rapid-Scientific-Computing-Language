@@ -9,11 +9,11 @@ public class Quotient extends Expression {
     }
 
     @Override
-    public Expression diff(String variable) {
+    public Expression derive(String variable) {
         // quotient rule
         return new Sum( // just handle the diff as a product of -1 and sum
-                new Product(left.diff(variable), left),
-                new Product(new Constant(-1), new Product(right.diff(variable), left))
+                new Product(left.derive(variable), left),
+                new Product(new Numeric(-1), new Product(right.derive(variable), left))
         );
     }
 

@@ -10,10 +10,10 @@ public class Power extends Expression {
     }
 
     @Override
-    public Expression diff(String variable) {
+    public Expression derive(String variable) {
         return new Product(
-                new Power(arg, new Constant(degree.eval() - 1)),
-                new Product(degree, arg.diff(variable))
+                new Power(arg, new Numeric(degree.evaluate() - 1)),
+                new Product(degree, arg.derive(variable))
         );
     }
 

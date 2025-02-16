@@ -9,14 +9,14 @@ public class Cosec extends Expression {
     }
 
     @Override
-    public Expression diff(String variable) {
-        return new Product(new Constant(-1), new Cosec(arg));
+    public Expression derive(String variable) {
+        return new Product(new Numeric(-1), new Cosec(arg));
     }
 
     @Override
     public double eval(double... values) {
         // need to check case when div 0 error
-        return 1/Math.sin(arg.eval(values));
+        return 1/Math.sin(arg.evaluate(values));
     }
 
     @Override

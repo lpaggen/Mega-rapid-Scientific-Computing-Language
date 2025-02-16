@@ -8,14 +8,14 @@ public class Exp extends Expression {
     }
 
     @Override
-    public Expression diff(String variable) {
+    public Expression derive(String variable) {
         // chain rule of e, should be correct
-        return new Product(arg.diff(variable), new Exp(arg));
+        return new Product(arg.derive(variable), new Exp(arg));
     }
 
     @Override
     public double eval(double... values) {
-        return Math.exp(arg.eval(values));
+        return Math.exp(arg.evaluate(values));
     }
 
     @Override

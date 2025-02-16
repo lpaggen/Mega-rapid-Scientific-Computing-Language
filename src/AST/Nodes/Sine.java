@@ -8,15 +8,15 @@ public class Sine extends Expression {
     }
 
     @Override
-    public Expression diff(String variable) {
+    public Expression derive(String variable) {
         // chain rule in this case -- even if sin(x), can still easily evaluate with parser
-        return new Product(new Cosine(arg), arg.diff(variable));
+        return new Product(new Cosine(arg), arg.derive(variable));
     }
 
     @Override
     public double eval(double... values) {
         // here we need eval etc. because "Math.sin" won't accept a double[]
-        return Math.sin(arg.eval(values));
+        return Math.sin(arg.evaluate(values));
     }
 
     @Override

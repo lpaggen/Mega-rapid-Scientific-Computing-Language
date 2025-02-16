@@ -11,13 +11,13 @@ public class Sum extends Expression {
     }
 
     @Override
-    public Expression diff(String variable) {
-        return new Sum(left.diff(variable), right.diff(variable));
+    public Expression derive(String variable) {
+        return new Sum(left.derive(variable), right.derive(variable));
     }
 
     @Override
     public double eval(double... values) {
-        return left.eval(values) + right.eval(values);
+        return left.evaluate(values) + right.evaluate(values);
     }
 
     @Override

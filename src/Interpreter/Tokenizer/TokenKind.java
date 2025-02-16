@@ -1,4 +1,4 @@
-package Compiler.Tokenizer;
+package Interpreter.Tokenizer;
 
 // this is where all tokens are defined,
 // so we can also (and should) define concepts like "derive", "newton", etc. for all optimization techniques we want to implement

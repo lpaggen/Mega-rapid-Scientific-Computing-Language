@@ -1,13 +1,14 @@
-package Compiler.Parser;
+package Interpreter.Parser;
 
 import AST.Expressions.BinaryOperationNode;
 import AST.Expressions.ConstantNode;
 import AST.Expressions.FunctionNode;
 import AST.Expressions.VariableNode;
 import AST.Nodes.ASTNode;
-import Compiler.Tokenizer.MatrixToken;
-import Compiler.Tokenizer.TokenKind;
-import Compiler.Tokenizer.Token;
+import AST.Nodes.Expression;
+import Interpreter.Tokenizer.MatrixToken;
+import Interpreter.Tokenizer.TokenKind;
+import Interpreter.Tokenizer.Token;
 import DataStructures.Matrix;
 import DataTypes.Computable;
 import DataTypes.NumericValue;
@@ -25,7 +26,7 @@ public class Parser {
 
     private final List<Token> tokens;
     private int tokenPos = 0;
-    public LookupTable<String, Value, TokenKind> lookUpTable = new LookupTable<>();
+    public LookupTable<String, Expression, TokenKind> lookUpTable = new LookupTable<>();
 
     public Parser(List<Token> tokens) {
         this.tokens = tokens;
@@ -268,5 +269,50 @@ public class Parser {
 
     private void isValidMatrixAssignment(Integer tokenPos) {
         System.out.println(tokens.get(tokenPos)); // this has to be completed eventually
+    }
+
+    private Expression parseTerm() {
+        Expression expression = parseFactor();
+    }
+
+    private Expression parseFactor() {
+        Expression expression = parseUnary();
+    }
+
+    private Expression parseComparison() {
+        Expression expression = parseTerm();
+
+    }
+
+    private boolean match(TokenKind... expectedKinds) {
+        for (TokenKind expectedKind : expectedKinds) {
+            if (check(expectedKind)) {
+                consume();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean check(TokenKind expectedKind) {
+        if (!isAtEnd()) {
+            return tokens.get(tokenPos).getKind() == expectedKind;
+        }
+        return false;
+    }
+
+    private Token consume() {
+        if (!isAtEnd()) {
+            tokenPos++;
+        }
+        return previous();
+    }
+
+    private Token previous() {
+        return tokens.get(tokenPos - 1);
+    }
+
+    private boolean isAtEnd() {
+        return tokenPos >= tokens.size();
     }
 }

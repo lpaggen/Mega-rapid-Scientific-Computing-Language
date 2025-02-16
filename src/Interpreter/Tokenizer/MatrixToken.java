@@ -1,4 +1,4 @@
-package Compiler.Tokenizer;
+package Interpreter.Tokenizer;
 
 import java.util.List;
 

@@ -1,7 +1,7 @@
 package AST.Expressions;
 
 import AST.Nodes.ASTNode;
-import Compiler.Tokenizer.TokenKind;
+import Interpreter.Tokenizer.TokenKind;
 
 public class VariableNode extends ASTNode {
 

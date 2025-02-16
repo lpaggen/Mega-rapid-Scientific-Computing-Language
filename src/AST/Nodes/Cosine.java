@@ -8,14 +8,14 @@ public class Cosine extends Expression {
     }
 
     @Override
-    public Expression diff(String variable) {
+    public Expression derive(String variable) {
         // cosine chain rule
-        return new Product(new Constant(-1), new Product(new Sine(arg), arg.diff(variable)));
+        return new Product(new Numeric(-1), new Product(new Sine(arg), arg.derive(variable)));
     }
 
     @Override
     public double eval(double... values) {
-        return Math.cos(arg.eval(values));
+        return Math.cos(arg.evaluate(values));
     }
     @Override
     public String toString() {

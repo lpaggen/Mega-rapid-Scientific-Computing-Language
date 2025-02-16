@@ -10,19 +10,19 @@ public class Log extends Expression {
     }
 
     @Override
-    public Expression diff(String variable) {
+    public Expression derive(String variable) {
         // need base 2 and any other base sorted
         // actually we only support base 2 and 10 atm, rarely need other values
         if (base.toString().equals("2")) {
-            return new Quotient(new Constant(1), new Product(arg, new Log(arg, base)));
-        } else return new Quotient(new Constant(1), new Log(arg, base));
+            return new Quotient(new Numeric(1), new Product(arg, new Log(arg, base)));
+        } else return new Quotient(new Numeric(1), new Log(arg, base));
     }
 
     @Override
     public double eval(double... values) {
         if (base.toString().equals("2")) {
-            return Math.log(arg.eval(values));
-        } else return Math.log10(arg.eval(values));
+            return Math.log(arg.evaluate(values));
+        } else return Math.log10(arg.evaluate(values));
     }
 
     @Override

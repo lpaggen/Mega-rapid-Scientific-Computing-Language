@@ -1,6 +1,7 @@
 package Util;
 
-import Compiler.Tokenizer.TokenKind;
+import AST.Nodes.Expression;
+import Interpreter.Tokenizer.TokenKind;
 import DataTypes.Computable;
 import DataTypes.MatrixValue;
 import DataTypes.NumericValue;
@@ -14,7 +15,7 @@ import java.util.Map;
 // also we use a custom "Value" interface for the V field of the table because we need support for diff Objects
 // V extends value too, as stated previously we will need a Value field to handle all our different types and structures
 // to be honest i could have also used another class for the value (value of map) and access the properties i need through it
-public class LookupTable<K, V extends Value, T> {
+public class LookupTable<K, V extends Expression, T> {
 
     private final Map<K, Entry<V, T>> map = new HashMap<>();
 

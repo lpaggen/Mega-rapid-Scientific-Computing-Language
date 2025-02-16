@@ -1,11 +1,7 @@
-package Compiler.Parser;
+package Interpreter.Parser;
 
-import AST.Nodes.ASTNode;
-import Compiler.Tokenizer.TokenKind;
+import Interpreter.Tokenizer.TokenKind;
 import DataTypes.Symbol;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class SymbolTable {
     private String name;

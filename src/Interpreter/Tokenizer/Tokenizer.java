@@ -1,6 +1,4 @@
-package Compiler.Tokenizer;
-
-import DataStructures.Matrix;
+package Interpreter.Tokenizer;
 
 import java.util.*;
 
@@ -237,9 +235,9 @@ public class Tokenizer {
                 matrixLexeme.append(lexemeOfNumber); // !!! pos is incremented in this function too, might change at future stage
                 matrixLexeme.append(' ');
                 literal.add(new Token(kindOfNumber, lexemeOfNumber, Digit.getLiteral(), line));
-                if (pos < input.length() && Character.isLetter(input.charAt(pos))) { // some more checks will be needed here however
-                    matrixContent.append(new Token(TokenKind.MUL, "*")); // this is useful when there are coefficients involved
-                }
+//                if (pos < input.length() && Character.isLetter(input.charAt(pos))) { // some more checks will be needed here however
+//                    literal.add(new Token(TokenKind.MUL)); // this is useful when there are coefficients involved
+//                }
                 lengthMatrix++;
             } else if (Character.isWhitespace(c)) {
                 pos++;
@@ -249,10 +247,9 @@ public class Tokenizer {
             throw new RuntimeException("Syntax error: brackets mismatch in Matrix");
         } else if ((numCols * numRows) != (lengthMatrix - openBrackets - closeBrackets + 1))
             throw new RuntimeException("Syntax error: matrix dimensions do not match"); // i might rename this later
-        matrixContent.insert(0, numCols + " ");
-        matrixContent.insert(0, numRows + " ");
-        tokens.add(new MatrixToken(TokenKind.MATRIX, matrixContent.toString(), null, line, matrixTokens)); // token is then implicit
-        System.out.println(matrixContent);
+        matrixLexeme.insert(0, numCols + " ");
+        matrixLexeme.insert(0, numRows + " ");
+        tokens.add(new MatrixToken(TokenKind.MATRIX, matrixLexeme.toString(), null, line, literal)); // token is then implicit
     }
 
     private int getNumCols(int pos) { // doesn't work atm, why ?

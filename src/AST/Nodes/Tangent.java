@@ -9,13 +9,13 @@ public class Tangent extends Expression {
 
     // MUST IMPLEMENT SEC, COSEC, *POWER* RULE !!!!!!!!!!
     @Override
-    public Expression diff(String variable) {
-        return new Product(new Sec(arg), arg.diff(variable));
+    public Expression derive(String variable) {
+        return new Product(new Sec(arg), arg.derive(variable));
     }
 
     @Override
     public double eval(double... values) {
-        return arg.eval(values);
+        return arg.evaluate(values);
     }
 
     @Override

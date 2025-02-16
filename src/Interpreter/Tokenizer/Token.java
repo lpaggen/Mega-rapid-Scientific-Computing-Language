@@ -1,6 +1,4 @@
-package Compiler.Tokenizer;
-
-import java.util.Objects;
+package Interpreter.Tokenizer;
 
 public class Token { // can convert to record, unsure if i want to do that just yet
 

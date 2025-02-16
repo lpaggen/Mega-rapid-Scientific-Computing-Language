@@ -9,8 +9,8 @@ public class Cot extends Expression {
     }
 
     @Override
-    public Expression diff(String variable) {
-        return new Product(new Constant(-1), new Power(new Cosec(arg), new Constant(2)));
+    public Expression derive(String variable) {
+        return new Product(new Numeric(-1), new Power(new Cosec(arg), new Numeric(2)));
     }
 
     @Override

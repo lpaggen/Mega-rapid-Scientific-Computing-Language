@@ -1,8 +1,6 @@
 package DataTypes;
 
-import Compiler.Tokenizer.TokenKind;
-
-import java.util.Objects;
+import Interpreter.Tokenizer.TokenKind;
 
 // the Symbol datatype is unique to this language (afaik) - also Sympy uses it
 // it allows for algebraic mathematical operations

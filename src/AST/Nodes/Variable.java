@@ -8,9 +8,9 @@ public class Variable extends Expression {
     }
 
     @Override
-    public Expression diff(String variable) {
+    public Expression derive(String variable) {
         // wrt itself or not depends
-        return name.equals(variable) ? new Constant(1) : new Constant(0);
+        return name.equals(variable) ? new Numeric(1) : new Numeric(0);
     }
 
     @Override

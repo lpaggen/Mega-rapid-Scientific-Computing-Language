@@ -1,10 +1,5 @@
-import AST.Nodes.ASTNode;
-import Compiler.Parser.Parser;
-import Compiler.Tokenizer.TokenKind;
-import Compiler.Tokenizer.Tokenizer;
-import Compiler.Tokenizer.Token;
-import DataTypes.Symbol;
-import DataTypes.Term;
+import Interpreter.Tokenizer.Tokenizer;
+import Interpreter.Tokenizer.Token;
 
 import java.util.List;
 

@@ -1,7 +1,7 @@
 package AST.Expressions;
 
 import AST.Nodes.ASTNode;
-import Compiler.Tokenizer.Token;
+import Interpreter.Tokenizer.Token;
 
 // this class represents anything with + and -, * operators etc.
 // to be reviewed at later stage

@@ -9,15 +9,15 @@ public class Sec extends Expression {
     }
 
     @Override
-    public Expression diff(String variable) {
+    public Expression derive(String variable) {
         // use a chain rule to get x' * secx * tanx
-        return new Product(new Product(new Sec(arg), new Tangent(arg)), arg.diff(variable));
+        return new Product(new Product(new Sec(arg), new Tangent(arg)), arg.derive(variable));
     }
 
     @Override
     public double eval(double... values) {
         // need to implement Zero division error thing here
-        return 1/Math.cos(arg.eval(values));
+        return 1/Math.cos(arg.evaluate(values));
     }
 
     @Override
