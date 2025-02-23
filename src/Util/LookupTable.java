@@ -1,114 +1,77 @@
 package Util;
 
-import AST.Nodes.Expression;
+import Interpreter.Tokenizer.Token;
 import Interpreter.Tokenizer.TokenKind;
-import DataTypes.Computable;
-import DataTypes.MatrixValue;
-import DataTypes.NumericValue;
-import DataTypes.Value;
 
 import java.util.HashMap;
 import java.util.Map;
 
-// this class is a new data structure for my language, it's just a triple hash map
-// this is necessary because we need to keep track of what is declared and what isn't, as well as their values and types
-// also we use a custom "Value" interface for the V field of the table because we need support for diff Objects
-// V extends value too, as stated previously we will need a Value field to handle all our different types and structures
-// to be honest i could have also used another class for the value (value of map) and access the properties i need through it
-public class LookupTable<K, V extends Expression, T> {
+public class LookupTable<K, V extends Token> {
+    private final Map<K, V> map = new HashMap<>();
 
-    private final Map<K, Entry<V, T>> map = new HashMap<>();
-
-    public V getValue(K key) {
+    public TokenKind getType(K key) {
         if (!map.containsKey(key)) {
             throw new IllegalArgumentException("Variable '" + key + "' not declared");
         }
-        return map.get(key).value;
+        return map.get(key).getKind();
     }
 
-    public T getType(K key) {
+    public String getLexeme(K key) {
         if (!map.containsKey(key)) {
             throw new IllegalArgumentException("Variable '" + key + "' not declared");
         }
-        return map.get(key).type;
+        return map.get(key).getLexeme();
+    }
+
+    public Object getLiteral(K key) {
+        if (!map.containsKey(key)) {
+            throw new IllegalArgumentException("Variable '" + key + "' not declared");
+        }
+        return map.get(key).getLiteral();
+    }
+
+    // this method is used to declare a variable in the lookup table
+    public void declareVariable(K key, V value) {
+        if (map.containsKey(key)) {
+            throw new IllegalArgumentException("Variable '" + key + "' already declared.");
+        }
+        map.put(key, value);
+    }
+
+    // this method is used to change the value of a variable in the lookup table
+    public void setValue(K key, V value) {
+        if (!map.containsKey(key)) {
+            throw new IllegalArgumentException("Variable '" + key + "' not declared.");
+        }
+        map.put(key, value);
     }
 
     public boolean isDeclared(K key) {
         return map.containsKey(key);
     }
 
-    public void setValue(K key, V value) {
-        if (!map.containsKey(key)) {
-            throw new IllegalArgumentException("Variable '" + key + "' not declared.");
-        }
-        Entry<V, T> entry = map.get(key);
-        entry.value = value; // update value
-    }
-
-    public void declareVariable(K key, T type) {
-        if (map.containsKey(key)) {
-            throw new IllegalArgumentException("Variable '" + key + "' already declared."); // not sure if we use this, counter-intuitive really
-        }
-        map.put(key, new Entry<>(null, type)); // can initialize with empty value, which is good
-    }
-
-    public void assignValueToLookupTable(K key, Object value, T type) {
-        if (!isDeclared(key)) {
-            declareVariable(key, type); // declare the variable in case it doesn't exist yet, it does not need a value and can be initialized blank
-        }
-
-        V inferredValue = inferValue(value, type);
-        setValue(key, inferredValue);
-    }
-
-    // there is a problem currently when initializing a variable with no value -- current check works fine it seems
-    private V inferValue(Object value, T type) { // some further checks need to be done, i don't know how safe this is
-        if (value == null) { // this means we declare a variable with no value, which obviously works
-            return null;
-        } else if (type.equals(TokenKind.INTEGER)) {
-            return (V) new NumericValue((Integer) value);
-        } else if (type.equals(TokenKind.FLOAT)) {
-            return (V) new NumericValue((Float) value);
-        } else if (type.equals(TokenKind.MATRIX)) {
-            return (V) new MatrixValue((Computable[][]) value);
-        }
-        throw new IllegalArgumentException("Could not infer value of '" + type + "', check for errors");
-    }
-
-    // this i don't understand, was chatGPT work, i don't specialize in formatting Java strings
-    public void showLookupTable() {
+    public void showLookupTable(Map<String, Token> symbolTable) {
         // Define column widths for alignment
-        final int typeWidth = 10;
-        final int keyWidth = 15;
+        final int typeWidth = 15;
+        final int keyWidth = 20;
         final int valueWidth = 30;
 
         // Print the header
-        System.out.printf("%-" + typeWidth + "s%-" + keyWidth + "s%-" + valueWidth + "s%n", "TYPE", "KEY", "VALUE");
+        System.out.printf("%-" + typeWidth + "s%-" + keyWidth + "s%-" + valueWidth + "s%n", "TOKEN TYPE", "VARIABLE NAME", "LITERAL VALUE");
         System.out.println("-".repeat(typeWidth + keyWidth + valueWidth));
 
-        // Print each entry
-        for (Map.Entry<K, Entry<V, T>> entry : map.entrySet()) {
-            K key = entry.getKey();
-            T type = entry.getValue().type;
-            V value = entry.getValue().value;
+        // Print each entry from the symbol table
+        for (Map.Entry<String, Token> entry : symbolTable.entrySet()) {
+            String key = entry.getKey();
+            Token token = entry.getValue();
 
             // Format and print the row
             System.out.printf(
                     "%-" + typeWidth + "s%-" + keyWidth + "s%-" + valueWidth + "s%n",
-                    type,
-                    key,
-                    value != null ? value.toString() : "null"
+                    token.getKind(),               // TokenKind (e.g., INTEGER, FLOAT)
+                    key,                      // Variable name (declared at runtime)
+                    token.getLiteral() != null ? token.getLiteral().toString() : "null"  // Literal value
             );
-        }
-    }
-
-    private static class Entry<V, T> {
-        private V value;
-        private T type;
-
-        public Entry(V value, T type) {
-            this.value = value;
-            this.type = type;
         }
     }
 }
