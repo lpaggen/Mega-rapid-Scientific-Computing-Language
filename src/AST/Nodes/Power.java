@@ -9,22 +9,27 @@ public class Power extends Expression {
         this.degree = degree;
     }
 
+    // there must be a fix here in that the degree is not always numeric, it can be algebraic
     @Override
     public Expression derive(String variable) {
         return new Product(
-                new Power(arg, new Numeric(degree.evaluate() - 1)),
+                new Power(arg, new NumericNode(degree.evaluate() - 1)), // this has to be Expression
                 new Product(degree, arg.derive(variable))
         );
     }
 
     @Override
-    public double eval(double... values) {
-        // need to fix this at some point
-        return 0;
+    public Object evaluate() {
+        return null;
     }
 
     @Override
     public String toString() {
         return STR."\{arg.toString()}**\{degree.toString()}";
+    }
+
+    @Override
+    public Expression substitute(String... s) {
+        return null;
     }
 }

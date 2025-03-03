@@ -1,6 +1,5 @@
 package Interpreter.Semantics;
 
-import AST.Nodes.ASTNode;
 import Interpreter.Tokenizer.Token;
 
 // util class (rename later) handles all the transformation from generic nodes to their proper AST nodes

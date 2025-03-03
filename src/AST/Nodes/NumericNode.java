@@ -1,24 +1,20 @@
 package AST.Nodes;
 
-public class numericNode extends Expression {
+public class NumericNode extends AlgebraicExpression {
     private final double value;
 
-    public numericNode(float value) {
-        this.value = value;
-    }
-
-    public numericNode(int value) {
+    public NumericNode(double value) {
         this.value = value;
     }
 
     @Override
     public Expression derive(String variable) {
         // constant evaluates to 0
-        return new numericNode(0);
+        return new NumericNode(0);
     }
 
     @Override
-    public double evaluate() {
+    public Object evaluate() {
         return 0;
     }
 
@@ -27,11 +23,7 @@ public class numericNode extends Expression {
         return Double.toString(value);
     }
 
-    @Override
-    public Expression simplify() {
-        return null;
-    }
-
+    // the logic for this is quite involved, so i will work on it later in development
     @Override
     public Expression substitute(String... s) {
         return null;

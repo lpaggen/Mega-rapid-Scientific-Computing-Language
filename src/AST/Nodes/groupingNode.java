@@ -14,7 +14,7 @@ public class groupingNode extends Expression {
     }
 
     @Override
-    public double evaluate() {
+    public Object evaluate() {
         return expression.evaluate();
     }
 

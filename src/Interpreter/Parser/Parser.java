@@ -1,18 +1,10 @@
 package Interpreter.Parser;
 
-import AST.Expressions.BinaryOperationNode;
-import AST.Expressions.ConstantNode;
-import AST.Expressions.FunctionNode;
-import AST.Expressions.VariableNode;
 import AST.Nodes.*;
-import Interpreter.Tokenizer.MatrixToken;
 import Interpreter.Tokenizer.TokenKind;
 import Interpreter.Tokenizer.Token;
-import DataStructures.Matrix;
-import DataTypes.Computable;
 import DataTypes.NumericValue;
 import Util.LookupTable;
-import DataTypes.Value;
 
 import java.util.List;
 
@@ -25,7 +17,7 @@ public class Parser {
 
     private final List<Token> tokens;
     private int tokenPos = 0;
-    public LookupTable<String, Expression, TokenKind> lookUpTable = new LookupTable<>();
+    public LookupTable<String, Token> lookupTable = new LookupTable<>();
 
     public Parser(List<Token> tokens) {
         this.tokens = tokens;
@@ -247,7 +239,7 @@ public class Parser {
         while (match(TokenKind.EQUAL_EQUAL, TokenKind.NOT_EQUAL)) {
             Token operator = previous();
             Expression rhs = parseComparison();
-            expression = new binaryNode(expression, operator, rhs);
+            expression = new BinaryNode(expression, operator, rhs);
         }
         return expression;
     }
@@ -257,7 +249,7 @@ public class Parser {
         while (match(TokenKind.PLUS, TokenKind.MINUS)) {
             Token operator = previous();
             Expression rhs = parseFactor();
-            expression = new binaryNode(expression, operator, rhs);
+            expression = new BinaryNode(expression, operator, rhs);
         }
         return expression;
     }
@@ -267,7 +259,7 @@ public class Parser {
         while (match(TokenKind.MUL, TokenKind.DIV)) {
             Token operator = previous();
             Expression rhs = parseUnary();
-            expression = new binaryNode(expression, operator, rhs);
+            expression = new BinaryNode(expression, operator, rhs);
         }
         return expression;
     }
@@ -277,7 +269,7 @@ public class Parser {
         while (match(TokenKind.GREATER, TokenKind.LESS, TokenKind.GREATER_EQUAL, TokenKind.LESS_EQUAL)) {
             Token operator = previous(); // because match() consumes the token (advances position)
             Expression rhs = parseTerm(); // here we are also consuming the next token, which ensures the while loop actually works
-            expression = new binaryNode(expression, operator, rhs); {
+            expression = new BinaryNode(expression, operator, rhs); {
             }
         }
         return expression;
