@@ -1,21 +1,26 @@
 package AST.Nodes;
 
-public class NumericNode extends AlgebraicExpression {
+import Interpreter.Tokenizer.Token;
+import Util.LookupTable;
+
+public class NumericNode extends Expression {
     private final double value;
 
     public NumericNode(double value) {
         this.value = value;
     }
 
-    @Override
+    public Expression simplify() {
+        return null;
+    }
+
     public Expression derive(String variable) {
         // constant evaluates to 0
         return new NumericNode(0);
     }
 
-    @Override
-    public Object evaluate() {
-        return 0;
+    public Expression substitute(String variable) {
+        throw new UnsupportedOperationException("Cannot substitute a number for another number");
     }
 
     @Override
@@ -23,9 +28,9 @@ public class NumericNode extends AlgebraicExpression {
         return Double.toString(value);
     }
 
-    // the logic for this is quite involved, so i will work on it later in development
+    // this isn't really ideal, maybe this should just be an expression
     @Override
-    public Expression substitute(String... s) {
-        return null;
+    public Object evaluate(LookupTable<String, Token> env) {
+        return value;
     }
 }

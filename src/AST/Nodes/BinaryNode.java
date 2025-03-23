@@ -1,8 +1,9 @@
 package AST.Nodes;
 
 import Interpreter.Tokenizer.Token;
+import Util.LookupTable;
 
-public class BinaryNode extends AlgebraicExpression {
+public class BinaryNode extends Expression {
     final Expression lhs;
     final Expression rhs;
     final Token operator;
@@ -13,17 +14,25 @@ public class BinaryNode extends AlgebraicExpression {
         this.operator = operator;
     }
 
-    @Override
+    public Expression simplify() {
+        return null;
+    }
+
+    // this needs a lot of logic too
     public Expression derive(String variable) {
+        return null;
+    }
+
+    public Expression substitute(String variable) {
         return null;
     }
 
     // evaluate in our case is going to need much more than just a double, so we need to change this to Object
     // it's also going to be quite extensive, because we have a lot of type matches to check
     @Override
-    public Object evaluate() {
-        Object lhsVal = lhs.evaluate();
-        Object rhsVal = rhs.evaluate();
+    public Object evaluate(LookupTable<String, Token> env) {
+        Object lhsVal = lhs.evaluate(env);
+        Object rhsVal = rhs.evaluate(env);
 
         if (lhsVal instanceof Number && rhsVal instanceof Number) {
             return evaluateNumeric((Number) lhsVal, (Number) rhsVal);
@@ -46,17 +55,7 @@ public class BinaryNode extends AlgebraicExpression {
         return lhs + " " + operator + " " + rhs;
     }
 
-    public Expression simplify() { // need to fix this eventually
+    public Expression substitute() { // need to fix this eventually
         return lhs.simplify() + rhs.simplify();
-    }
-
-    @Override
-    public Expression substitute(String... s) {
-        return null;
-    }
-
-    @Override
-    public Expression substitute(Number n) {
-        return null;
     }
 }

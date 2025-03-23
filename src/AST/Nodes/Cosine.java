@@ -1,6 +1,6 @@
 package AST.Nodes;
 
-public class Cosine extends Expression {
+public class Cosine extends MathExpression {
     private final Expression arg;
 
     public Cosine(Expression arg) {

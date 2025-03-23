@@ -1,5 +1,8 @@
 package AST.Nodes;
 
+import Interpreter.Tokenizer.Token;
+import Util.LookupTable;
+
 public class Variable extends Expression {
     private final String name;
 
@@ -7,19 +10,15 @@ public class Variable extends Expression {
         this.name = name;
     }
 
-    @Override
-    public Expression derive(String variable) {
-        // wrt itself or not depends
-        return name.equals(variable) ? new Numeric(1) : new Numeric(0);
-    }
-
-    @Override
-    public double eval(double... values) {
-        throw new UnsupportedOperationException("unsupported..");
-    }
-
-    @Override
     public String toString() {
-        return name;
+        return this.name;
+    }
+
+    @Override
+    public Object evaluate(LookupTable<String, Token> env) {
+        if (env.isDeclared(name)) {
+            return env.getLiteral(name);
+        }
+        throw new RuntimeException("Undefined variable: " + name);
     }
 }

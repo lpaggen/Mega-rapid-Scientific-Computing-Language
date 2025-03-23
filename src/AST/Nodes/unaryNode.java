@@ -2,6 +2,7 @@ package AST.Nodes;
 
 import Interpreter.Tokenizer.Token;
 import Interpreter.Tokenizer.TokenKind;
+import Util.LookupTable;
 
 public class unaryNode extends Expression {
     private final Token operator;
@@ -12,19 +13,19 @@ public class unaryNode extends Expression {
         this.rhs = rhs;
     }
 
-    @Override
+    // not sure how to handle atm
     public Expression derive(String variable) {
         return new unaryNode(operator, rhs.derive(variable));
     }
 
     @Override
-    public Object evaluate() {
-        Object rightValue = rhs.evaluate();
-        switch (operator.getKind()) {
-            case MINUS: return - (double) rightValue;
-            case NOT_EQUAL: return !isTruthy(rightValue);
-        }
-        throw new RuntimeException("Unsupported unary operator: " + operator.getKind());
+    public Object evaluate(LookupTable<String, Token> env) {
+        Object rightValue = rhs.evaluate(env);
+        return switch (operator.getKind()) {
+            case MINUS -> -(double) rightValue;
+            case NOT_EQUAL -> !isTruthy(rightValue);
+            default -> throw new RuntimeException("Unsupported unary operator: " + operator.getKind());
+        };
     }
 
     @Override
@@ -32,16 +33,7 @@ public class unaryNode extends Expression {
         return operator.getLexeme() + rhs.toString();
     }
 
-    @Override
-    public Expression simplify() {
-        return null;
-    }
-
-    @Override
-    public Expression substitute(String... s) {
-        return null;
-    }
-
+    // this block makes it so that we can also evaluate 0 and 1s as T/F
     private boolean isTruthy(Object rightValue) {
         if (rightValue instanceof Boolean) { return (Boolean) rightValue; }
         if (rightValue instanceof Integer) { return (Integer) rightValue == 0; }

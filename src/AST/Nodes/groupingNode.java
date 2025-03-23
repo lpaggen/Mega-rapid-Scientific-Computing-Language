@@ -1,5 +1,8 @@
 package AST.Nodes;
 
+import Interpreter.Tokenizer.Token;
+import Util.LookupTable;
+
 public class groupingNode extends Expression {
     private final Expression expression;
 
@@ -7,30 +10,13 @@ public class groupingNode extends Expression {
         this.expression = expression;
     }
 
-
-    @Override
-    public Expression derive(String variable) {
-        return null;
-    }
-
-    @Override
-    public Object evaluate() {
-        return expression.evaluate();
-    }
-
-    @Override
     public String toString() {
         return "(" + expression.toString() + ")";
     }
 
     @Override
-    public Expression simplify() {
+    public Object evaluate(LookupTable<String, Token> env) {
         return null;
-    }
-
-    @Override
-    public Expression substitute(String... s) {
-        return "";
     }
 
     // need to double-check my logic here
