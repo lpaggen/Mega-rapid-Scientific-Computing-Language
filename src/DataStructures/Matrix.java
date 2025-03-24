@@ -2,9 +2,6 @@ package DataStructures;
 
 import DataTypes.Computable;
 import DataTypes.Expression;
-import DataTypes.Symbol;
-
-import java.util.Arrays;
 
 // have to implement a matrix structure, with capability for eigenvalue, inversion, det, mul, etc. etc
 // this is more complex than i initially expected it to be

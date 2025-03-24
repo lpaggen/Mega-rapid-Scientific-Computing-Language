@@ -1,5 +1,7 @@
 package DataTypes;
 
+import AST.Nodes.Symbol;
+
 public class Term {
     private final Number coeff;
     private final Symbol symbol;

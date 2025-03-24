@@ -10,7 +10,7 @@ public class Cosine extends MathExpression {
     @Override
     public Expression derive(String variable) {
         // cosine chain rule
-        return new Product(new Numeric(-1), new Product(new Sine(arg), arg.derive(variable)));
+        return new Multiply(new Numeric(-1), new Multiply(new Sine(arg), arg.derive(variable)));
     }
 
     @Override

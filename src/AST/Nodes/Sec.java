@@ -11,7 +11,7 @@ public class Sec extends Expression {
     @Override
     public Expression derive(String variable) {
         // use a chain rule to get x' * secx * tanx
-        return new Product(new Product(new Sec(arg), new Tangent(arg)), arg.derive(variable));
+        return new Multiply(new Multiply(new Sec(arg), new Tangent(arg)), arg.derive(variable));
     }
 
     @Override

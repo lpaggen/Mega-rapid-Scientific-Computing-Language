@@ -10,7 +10,7 @@ public class Cosec extends Expression {
 
     @Override
     public Expression derive(String variable) {
-        return new Product(new Numeric(-1), new Cosec(arg));
+        return new Multiply(new Numeric(-1), new Cosec(arg));
     }
 
     @Override

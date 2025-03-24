@@ -6,7 +6,7 @@ import Util.LookupTable;
 
 public class unaryNode extends Expression {
     private final Token operator;
-    private final Expression rhs;
+    private final MathExpression rhs;
 
     public unaryNode(Token operator, Expression rhs) {
         this.operator = operator;

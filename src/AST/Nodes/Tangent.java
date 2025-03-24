@@ -10,7 +10,7 @@ public class Tangent extends Expression {
     // MUST IMPLEMENT SEC, COSEC, *POWER* RULE !!!!!!!!!!
     @Override
     public Expression derive(String variable) {
-        return new Product(new Sec(arg), arg.derive(variable));
+        return new Multiply(new Sec(arg), arg.derive(variable));
     }
 
     @Override

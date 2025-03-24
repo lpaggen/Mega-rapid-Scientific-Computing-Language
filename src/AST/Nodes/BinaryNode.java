@@ -4,11 +4,11 @@ import Interpreter.Tokenizer.Token;
 import Util.LookupTable;
 
 public class BinaryNode extends Expression {
-    final Expression lhs;
-    final Expression rhs;
+    final MathExpression lhs;
+    final MathExpression rhs;
     final Token operator;
 
-    public BinaryNode(Expression lhs, Token operator, Expression rhs) {
+    public BinaryNode(MathExpression lhs, Token operator, MathExpression rhs) {
         this.lhs = lhs;
         this.rhs = rhs;
         this.operator = operator;
@@ -56,6 +56,6 @@ public class BinaryNode extends Expression {
     }
 
     public Expression substitute() { // need to fix this eventually
-        return lhs.simplify() + rhs.simplify();
+        return lhs.substitute() + rhs.substitute();
     }
 }

@@ -10,7 +10,7 @@ public class Cot extends Expression {
 
     @Override
     public Expression derive(String variable) {
-        return new Product(new Numeric(-1), new Power(new Cosec(arg), new Numeric(2)));
+        return new Multiply(new Numeric(-1), new Power(new Cosec(arg), new Numeric(2)));
     }
 
     @Override

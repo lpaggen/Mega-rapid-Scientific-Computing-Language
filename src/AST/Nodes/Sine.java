@@ -10,7 +10,7 @@ public class Sine extends Expression {
     @Override
     public Expression derive(String variable) {
         // chain rule in this case -- even if sin(x), can still easily evaluate with parser
-        return new Product(new Cosine(arg), arg.derive(variable));
+        return new Multiply(new Cosine(arg), arg.derive(variable));
     }
 
     @Override

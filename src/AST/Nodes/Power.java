@@ -3,7 +3,7 @@ package AST.Nodes;
 import Interpreter.Tokenizer.Token;
 import Util.LookupTable;
 
-public class Power extends Expression {
+public class Power extends MathExpression {
 
     private final Expression arg, degree;
 
@@ -14,9 +14,9 @@ public class Power extends Expression {
 
     // there must be a fix here in that the degree is not always numeric, it can be algebraic
     public Expression derive(String variable) {
-        return new Product(
+        return new Multiply(
                 new Power(arg, new NumericNode(degree.evaluate() - 1)), // this has to be Expression
-                new Product(degree, arg.derive(variable))
+                new Multiply(degree, arg.derive(variable))
         );
     }
 

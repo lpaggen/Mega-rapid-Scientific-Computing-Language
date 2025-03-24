@@ -14,6 +14,7 @@ public class Variable extends Expression {
         return this.name;
     }
 
+    // we fetch from the environment
     @Override
     public Object evaluate(LookupTable<String, Token> env) {
         if (env.isDeclared(name)) {

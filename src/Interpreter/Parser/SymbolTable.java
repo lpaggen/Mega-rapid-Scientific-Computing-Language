@@ -1,7 +1,7 @@
 package Interpreter.Parser;
 
 import Interpreter.Tokenizer.TokenKind;
-import DataTypes.Symbol;
+import AST.Nodes.Symbol;
 
 public class SymbolTable {
     private String name;

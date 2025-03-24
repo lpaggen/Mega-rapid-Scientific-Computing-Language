@@ -1,6 +1,6 @@
 package DataTypes;
 
-import AST.Nodes.Exp;
+import AST.Nodes.Symbol;
 
 import java.util.ArrayList;
 import java.util.List;

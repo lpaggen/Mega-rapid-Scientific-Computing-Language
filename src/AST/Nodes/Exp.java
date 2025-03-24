@@ -10,7 +10,7 @@ public class Exp extends Expression {
     @Override
     public Expression derive(String variable) {
         // chain rule of e, should be correct
-        return new Product(arg.derive(variable), new Exp(arg));
+        return new Multiply(arg.derive(variable), new Exp(arg));
     }
 
     @Override
