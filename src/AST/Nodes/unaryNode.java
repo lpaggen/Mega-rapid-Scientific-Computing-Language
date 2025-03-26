@@ -13,11 +13,19 @@ public class unaryNode extends Expression {
         this.rhs = rhs;
     }
 
+    // i'm not sure yet what to do, a 2nd constructor could work
+    // we have to accept stuff like this: !true, -5, !true, but also -x ...
+    // i will implement at a later stage, first i need to make sure this works
+    public unaryNode(Token operator, MathExpression rhs) {
+        this.operator = operator;
+        this.rhs = rhs;
+    }
+
     @Override
     public Object evaluate(LookupTable<String, Token> env) {
         Object rightValue = rhs.evaluate(env);
         return switch (operator.getKind()) {
-            case MINUS -> -(double) rightValue;
+            case MINUS -> evaluateMinus(rightValue);
             case NOT_EQUAL -> !isTruthy(rightValue);
             default -> throw new RuntimeException("Unsupported unary operator: " + operator.getKind());
         };
@@ -30,12 +38,15 @@ public class unaryNode extends Expression {
 
     // this block makes it so that we can also evaluate 0 and 1s as T/F
     private boolean isTruthy(Object rightValue) {
-        if (rightValue instanceof Boolean) { return (Boolean) rightValue; }
-        if (rightValue instanceof Integer) { return (Integer) rightValue == 0; }
-        if (rightValue instanceof Double) { return (Double) rightValue == 0; }
-        if (rightValue instanceof Float) { return (Float) rightValue == 0; }
-        if (rightValue instanceof Long) { return (Long) rightValue == 0; }
+        if (rightValue instanceof Boolean) { return ((BooleanNode) rightValue).getValue(); }
+        if (rightValue instanceof Constant) { return ((Constant) rightValue).getValue() == 0; }
         if (rightValue == null) { return false; }
-        return false;
+        throw new RuntimeException("Cannot apply '!' to non-boolean value.");
+    }
+
+    private Object evaluateMinus(Object rightValue) {
+        if (rightValue instanceof Number) { return -((Number) rightValue).doubleValue(); }
+        if (rightValue instanceof MathExpression) { return new Multiply(new Constant(-1), (MathExpression) rightValue); }
+        throw new RuntimeException("Cannot apply '-' to non-numeric (algebraic) value.");
     }
 }

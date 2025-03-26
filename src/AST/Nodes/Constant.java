@@ -10,6 +10,10 @@ public class Constant extends MathExpression {
         this.value = value;
     }
 
+    public double getValue() {
+        return value;
+    }
+
     @Override
     public Object evaluate(LookupTable<String, Token> env) {
         return value;
