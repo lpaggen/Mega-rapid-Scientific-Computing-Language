@@ -1,25 +1,33 @@
 package AST.Nodes;
 
-public class Cot extends Expression {
+import Interpreter.Tokenizer.Token;
+import Util.LookupTable;
 
-    private final Expression arg;
+public class Cot extends MathExpression {
 
-    public Cot(Expression arg) {
+    private final MathExpression arg;
+
+    public Cot(MathExpression arg) {
         this.arg = arg;
     }
 
     @Override
-    public Expression derive(String variable) {
-        return new Multiply(new Numeric(-1), new Power(new Cosec(arg), new Numeric(2)));
+    public MathExpression derive(String variable) {
+        return new Multiply(new Constant(-1), new Power(new Cosec(arg), new Constant(2)));
     }
 
     @Override
-    public double eval(double... values) {
-        return 0;
+    public MathExpression substitute(String... args) {
+        return new Cot(arg.substitute(args));
+    }
+
+    @Override
+    public Object evaluate(LookupTable<String, Token> env) {
+        return Math.cos((double) arg.evaluate(env)) / Math.sin((double) arg.evaluate(env));
     }
 
     @Override
     public String toString() {
-        return "wip";
+        return "cot(" + arg.toString() + ")";
     }
 }

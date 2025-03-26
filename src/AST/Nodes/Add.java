@@ -46,9 +46,6 @@ public class Add extends MathExpression {
     // the logic needs to be reworked
     @Override
     public String toString() {
-        String leftStr = (left != null) ? left.toString() : "0";
-        String rightStr = (right != null) ? right.toString() : "0";
-
-        return String.format("(%s + %s)", leftStr, rightStr);
+        return left.toString() + " + " + right.toString();
     }
 }

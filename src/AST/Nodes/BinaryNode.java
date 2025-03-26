@@ -55,7 +55,7 @@ public class BinaryNode extends Expression {
         return lhs + " " + operator + " " + rhs;
     }
 
-    public Expression substitute() { // need to fix this eventually
+    public MathExpression substitute() { // need to fix this eventually
         return lhs.substitute() + rhs.substitute();
     }
 }

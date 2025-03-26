@@ -1,26 +1,37 @@
 package AST.Nodes;
 
-public class Cosec extends Expression {
+import Interpreter.Tokenizer.Token;
+import Util.LookupTable;
 
-    private final Expression arg;
+public class Cosec extends MathExpression {
 
-    public Cosec(Expression arg) {
+    private final MathExpression arg;
+
+    public Cosec(MathExpression arg) {
         this.arg = arg;
     }
 
     @Override
-    public Expression derive(String variable) {
-        return new Multiply(new Numeric(-1), new Cosec(arg));
+    public MathExpression derive(String variable) {
+        return new Multiply(new Constant(-1), new Cosec(arg));
     }
 
+    // some work needs to be done here, there's two types of things we can run into
+    // either when we substitute we get a double value -> 1 / Math.sin
+    // or we get a MathExpression, in which case we can just return a math expression?
     @Override
-    public double eval(double... values) {
-        // need to check case when div 0 error
-        return 1/Math.sin(arg.evaluate(values));
+    public MathExpression substitute(String... args) {
+        return new Cosec(arg.substitute(args));
+    }
+
+    // quite unsure if this will work, it should, given the right circumstances
+    @Override
+    public Object evaluate(LookupTable<String, Token> env) {
+        return 1 / Math.sin((double) arg.evaluate(env));
     }
 
     @Override
     public String toString() {
-        return STR."csc(\{arg.toString()})";
+        return "csc(" + arg.toString() + ")";
     }
 }

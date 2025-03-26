@@ -1,25 +1,32 @@
 package AST.Nodes;
 
-public class Tangent extends Expression {
-    private final Expression arg;
+import Interpreter.Tokenizer.Token;
+import Util.LookupTable;
 
-    public Tangent(Expression arg) {
+public class Tangent extends MathExpression {
+    private final MathExpression arg;
+
+    public Tangent(MathExpression arg) {
         this.arg = arg;
     }
 
-    // MUST IMPLEMENT SEC, COSEC, *POWER* RULE !!!!!!!!!!
     @Override
-    public Expression derive(String variable) {
+    public MathExpression derive(String variable) {
         return new Multiply(new Sec(arg), arg.derive(variable));
     }
 
     @Override
-    public double eval(double... values) {
-        return arg.evaluate(values);
+    public MathExpression substitute(String... args) {
+        return new Tangent(arg.substitute(args));
+    }
+
+    @Override
+    public Object evaluate(LookupTable<String, Token> env) {
+        return Math.tan((double) arg.evaluate(env));
     }
 
     @Override
     public String toString() {
-        return STR."tan(\{arg.toString()})";
+        return "tan(" + arg.toString() + ")";
     }
 }

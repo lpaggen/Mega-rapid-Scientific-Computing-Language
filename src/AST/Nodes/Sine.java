@@ -1,26 +1,33 @@
 package AST.Nodes;
 
-public class Sine extends Expression {
-    private final Expression arg;
+import Interpreter.Tokenizer.Token;
+import Util.LookupTable;
 
-    public Sine(Expression arg) {
+public class Sine extends MathExpression {
+    private final MathExpression arg;
+
+    public Sine(MathExpression arg) {
         this.arg = arg;
     }
 
     @Override
-    public Expression derive(String variable) {
+    public MathExpression derive(String variable) {
         // chain rule in this case -- even if sin(x), can still easily evaluate with parser
         return new Multiply(new Cosine(arg), arg.derive(variable));
     }
 
     @Override
-    public double eval(double... values) {
-        // here we need eval etc. because "Math.sin" won't accept a double[]
-        return Math.sin(arg.evaluate(values));
+    public MathExpression substitute(String... args) {
+        return new Sine((arg).substitute(args));
+    }
+
+    @Override
+    public Object evaluate(LookupTable<String, Token> env) {
+        return Math.sin((double) arg.evaluate(env));
     }
 
     @Override
     public String toString() {
-        return STR."sin(\{arg.toString()})";
+        return "sin(" + arg.toString() + ")";
     }
 }

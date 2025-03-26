@@ -6,16 +6,11 @@ import Util.LookupTable;
 
 public class unaryNode extends Expression {
     private final Token operator;
-    private final MathExpression rhs;
+    private final Expression rhs;
 
     public unaryNode(Token operator, Expression rhs) {
         this.operator = operator;
         this.rhs = rhs;
-    }
-
-    // not sure how to handle atm
-    public Expression derive(String variable) {
-        return new unaryNode(operator, rhs.derive(variable));
     }
 
     @Override

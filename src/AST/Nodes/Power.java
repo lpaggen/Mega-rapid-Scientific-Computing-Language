@@ -5,23 +5,20 @@ import Util.LookupTable;
 
 public class Power extends MathExpression {
 
-    private final Expression arg, degree;
+    private final MathExpression arg, degree;
 
-    public Power(Expression arg, Expression degree) {
+    public Power(MathExpression arg, MathExpression degree) {
         this.arg = arg;
         this.degree = degree;
     }
 
     // there must be a fix here in that the degree is not always numeric, it can be algebraic
-    public Expression derive(String variable) {
+    @Override
+    public MathExpression derive(String variable) {
         return new Multiply(
-                new Power(arg, new NumericNode(degree.evaluate() - 1)), // this has to be Expression
+                new Power(arg, new Minus(degree, new Constant(-1))), // this has to be Expression
                 new Multiply(degree, arg.derive(variable))
         );
-    }
-
-    public Expression substitute(String variable) {
-        return null;
     }
 
     @Override
@@ -31,10 +28,11 @@ public class Power extends MathExpression {
 
     @Override
     public String toString() {
-        return STR."\{arg.toString()}**\{degree.toString()}";
+        return arg.toString() + "**" + degree.toString();
     }
 
-    public Expression substitute(String... s) {
-        return null;
+    @Override
+    public MathExpression substitute(String... s) {
+        return new Power(arg.substitute(s), degree.substitute(s));
     }
 }

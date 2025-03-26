@@ -1,25 +1,33 @@
 package AST.Nodes;
 
-public class Exp extends Expression {
-    private final Expression arg;
+import Interpreter.Tokenizer.Token;
+import Util.LookupTable;
 
-    public Exp(Expression arg) {
+public class Exp extends MathExpression {
+    private final MathExpression arg;
+
+    public Exp(MathExpression arg) {
         this.arg = arg;
     }
 
     @Override
-    public Expression derive(String variable) {
+    public MathExpression derive(String variable) {
         // chain rule of e, should be correct
         return new Multiply(arg.derive(variable), new Exp(arg));
     }
 
     @Override
-    public double eval(double... values) {
-        return Math.exp(arg.evaluate(values));
+    public MathExpression substitute(String... args) {
+        return new Exp(arg.substitute(args));
+    }
+
+    @Override
+    public Object evaluate(LookupTable<String, Token> env) {
+        return Math.exp((double) arg.evaluate(env));
     }
 
     @Override
     public String toString() {
-        return STR."e**\{arg.toString()}";
+        return "exp(" + arg.toString() + ")";
     }
 }

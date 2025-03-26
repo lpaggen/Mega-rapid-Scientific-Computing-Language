@@ -1,24 +1,33 @@
 package AST.Nodes;
 
-public class Cosine extends MathExpression {
-    private final Expression arg;
+import Interpreter.Tokenizer.Token;
+import Util.LookupTable;
 
-    public Cosine(Expression arg) {
+public class Cosine extends MathExpression {
+    private final MathExpression arg;
+
+    public Cosine(MathExpression arg) {
         this.arg = arg;
     }
 
     @Override
-    public Expression derive(String variable) {
+    public MathExpression derive(String variable) {
         // cosine chain rule
-        return new Multiply(new Numeric(-1), new Multiply(new Sine(arg), arg.derive(variable)));
+        return new Multiply(new Constant(-1), new Multiply(new Sine(arg), arg.derive(variable)));
     }
 
     @Override
-    public double eval(double... values) {
-        return Math.cos(arg.evaluate(values));
+    public MathExpression substitute(String... args) {
+        return new Cosine(arg.substitute(args));
     }
+
+    @Override
+    public Object evaluate(LookupTable<String, Token> env) {
+        return Math.cos((double) arg.evaluate(env));
+    }
+
     @Override
     public String toString() {
-        return STR."cos(\{arg.toString()})";
+        return "cos(" + arg.toString() + ")";
     }
 }

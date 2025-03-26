@@ -1,27 +1,34 @@
 package AST.Nodes;
 
-public class Sec extends Expression {
+import Interpreter.Tokenizer.Token;
+import Util.LookupTable;
 
-    private final Expression arg;
+public class Sec extends MathExpression {
 
-    public Sec(Expression arg) {
+    private final MathExpression arg;
+
+    public Sec(MathExpression arg) {
         this.arg = arg;
     }
 
     @Override
-    public Expression derive(String variable) {
+    public MathExpression derive(String variable) {
         // use a chain rule to get x' * secx * tanx
         return new Multiply(new Multiply(new Sec(arg), new Tangent(arg)), arg.derive(variable));
     }
 
     @Override
-    public double eval(double... values) {
-        // need to implement Zero division error thing here
-        return 1/Math.cos(arg.evaluate(values));
+    public MathExpression substitute(String... args) {
+        return new Sec((arg).substitute(args));
+    }
+
+    @Override
+    public Object evaluate(LookupTable<String, Token> env) {
+        return 1 / Math.cos((double) arg.evaluate(env));
     }
 
     @Override
     public String toString() {
-        return STR."sec(\{arg.toString()})";
+        return "sec(" + arg.toString() + ")";
     }
 }

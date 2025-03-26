@@ -20,20 +20,20 @@ public class Divide extends MathExpression {
             return ((Number) numResult).doubleValue() / ((Number) denomResult).doubleValue();
         }
         if (numResult instanceof MathExpression && denomResult instanceof MathExpression) {
-            return new Multiply((MathExpression) numResult, (MathExpression) denomResult);
+            return new Divide((MathExpression) numResult, (MathExpression) denomResult);
         }
         if (numResult instanceof MathExpression) {
-            return new Multiply((MathExpression) numResult, denom);
+            return new Divide((MathExpression) numResult, denom);
         }
         if (denomResult instanceof MathExpression) {
-            return new Multiply(num, (MathExpression) denomResult);
+            return new Divide(num, (MathExpression) denomResult);
         }
         throw new RuntimeException("Operation not supported");
     }
 
     @Override
     public String toString() {
-        return "";
+        return num.toString() + " / " + denom.toString();
     }
 
     @Override

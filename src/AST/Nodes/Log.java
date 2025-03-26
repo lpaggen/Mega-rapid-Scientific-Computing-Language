@@ -1,34 +1,42 @@
 package AST.Nodes;
 
-public class Log extends Expression {
-    private final Expression arg, base;
+import Interpreter.Tokenizer.Token;
+import Util.LookupTable;
 
-    public Log(Expression arg, Expression base) {
+public class Log extends MathExpression {
+    private final MathExpression arg, base;
+
+    public Log(MathExpression arg, MathExpression base) {
         // here we do need the base to check if natural or not
         this.arg = arg;
         this.base = base;
     }
 
     @Override
-    public Expression derive(String variable) {
+    public MathExpression derive(String variable) {
         // need base 2 and any other base sorted
         // actually we only support base 2 and 10 atm, rarely need other values
         if (base.toString().equals("2")) {
-            return new Divide(new NumericNode(1), new Multiply(arg, new Log(arg, base)));
-        } else return new Divide(new NumericNode(1), new Log(arg, base));
+            return new Divide(new Constant(1), new Multiply(arg, new Log(arg, base)));
+        } else return new Divide(new Constant(1), new Log(arg, base));
     }
 
     @Override
-    public double evaluate(double... values) {
+    public MathExpression substitute(String... args) {
+        return new Log(arg.substitute(args), base.substitute(args));
+    }
+
+    @Override
+    public Object evaluate(LookupTable<String, Token> env) {
         if (base.toString().equals("2")) {
-            return Math.log(arg.evaluate(values));
-        } else return Math.log10(arg.evaluate(values));
+            return Math.log((double) arg.evaluate(env));
+        } else return Math.log10((double) arg.evaluate(env));
     }
 
     @Override
     public String toString() {
         if (base.toString().equals("2")) {
-            return STR."log(\{arg.toString()})";
-        } return STR."ln(\{arg.toString()})";
+            return "ln(" + arg.toString() + ")";
+        } return "log(" + arg.toString() + ")";
     }
 }
