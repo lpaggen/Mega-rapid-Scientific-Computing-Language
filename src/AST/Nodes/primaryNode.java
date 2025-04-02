@@ -1,5 +1,8 @@
 package AST.Nodes;
 
+import Interpreter.Tokenizer.Token;
+import Util.LookupTable;
+
 public class primaryNode extends Expression {
     private final Object value;
 
@@ -8,8 +11,8 @@ public class primaryNode extends Expression {
     }
 
     @Override
-    public Object evaluate() {
-        return 0;
+    public Object evaluate(LookupTable<String, Token> env) {
+        return value;
     }
 
     @Override

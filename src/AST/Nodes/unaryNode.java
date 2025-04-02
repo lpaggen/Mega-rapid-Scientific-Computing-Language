@@ -38,8 +38,8 @@ public class unaryNode extends Expression {
 
     // this block makes it so that we can also evaluate 0 and 1s as T/F
     private boolean isTruthy(Object rightValue) {
-        if (rightValue instanceof Boolean) { return ((BooleanNode) rightValue).getValue(); }
-        if (rightValue instanceof Constant) { return ((Constant) rightValue).getValue() == 0; }
+        if (rightValue instanceof Boolean) { return (Boolean) rightValue; }
+        if (rightValue instanceof BooleanNode) { return ((BooleanNode) rightValue).getValue(); }
         if (rightValue == null) { return false; }
         throw new RuntimeException("Cannot apply '!' to non-boolean value.");
     }

@@ -22,52 +22,88 @@ public class Tokenizer {
     }
 
     private void scanToken() {
-        char c = advance();
+        if (pos >= input.length()) {
+            return;
+        }
+        char c = peek();
         switch (c) {
             case '(':
-                addToken(TokenKind.OPEN_PAREN); break;
+                addToken(TokenKind.OPEN_PAREN);
+                advance();
+                break;
             case ')':
-                addToken(TokenKind.CLOSE_PAREN); break;
+                addToken(TokenKind.CLOSE_PAREN);
+                advance();
+                break;
             case '+':
-                addToken(TokenKind.PLUS); break;
+                addToken(TokenKind.PLUS);
+                advance();
+                break;
             case '-':
-                addToken(TokenKind.MINUS); break;
+                addToken(TokenKind.MINUS);
+                advance();
+                break;
             case '*':
-                addToken(TokenKind.MUL); break;
+                addToken(TokenKind.MUL);
+                advance();
+                break;
             case '/':
-                addToken(TokenKind.DIV); break; // our comment would be #
+                addToken(TokenKind.DIV); // our comment would be #
+                advance();
+                break;
             case '^':
-                addToken(TokenKind.POWER); break;
+                addToken(TokenKind.POWER);
+                advance();
+                break;
             case ';':
-                addToken(TokenKind.SEMICOLON); break;
+                addToken(TokenKind.SEMICOLON);
+                advance();
+                break;
             case ',':
-                addToken(TokenKind.COMMA); break;
+                addToken(TokenKind.COMMA);
+                advance();
+                break;
             case '!':
-                addToken(match('=') ? TokenKind.NOT_EQUAL : TokenKind.NOT); break;
+                addToken(match('=') ? TokenKind.NOT_EQUAL : TokenKind.NOT);
+                advance();
+                break;
             case '<':
-                addToken(match('=') ? TokenKind.LESS_EQUAL : TokenKind.LESS); break;
+                addToken(match('=') ? TokenKind.LESS_EQUAL : TokenKind.LESS);
+                advance();
+                break;
             case '>':
-                addToken(match('=') ? TokenKind.GREATER_EQUAL : TokenKind.GREATER); break;
+                addToken(match('=') ? TokenKind.GREATER_EQUAL : TokenKind.GREATER);
+                advance();
+                break;
             case '=':
-                addToken(match('=') ? TokenKind.EQUAL_EQUAL : TokenKind.EQUAL); break;
+                addToken(match('=') ? TokenKind.EQUAL_EQUAL : TokenKind.EQUAL);
+                advance();
+                break;
             case '#': // this is the comment character, so consider all as whitespace
-                while (peek() != '\n' && pos < input.length()) advance(); break;
+                while (peek() != '\n' && pos < input.length()) advance();
+                break;
             case '[':
-                tokenizeMatrix(); break;
+                tokenizeMatrix();
+                break;
             case '\n':
-                line++; break;
+                line++;
+                break;
             case '\r':
             case '\t':
             case ' ':
+                advance();
                 break; // ignore whitespace
             case '"':
-                tokenizeString(); break;
+                tokenizeString();
+                break;
             default:
-                if (isDigit(c)) {
+                if (isDigit(c)) { // Check the current character 'c'
                     tokenizeNumber();
+                    advance();
                     break;
                 } else if (isAlphaNumeric(c)) {
                     tokenizeKeyword();
+                    advance();
                     break;
                 }
                 throw new RuntimeException("Unexpected character: " + c + " at line " + line);
@@ -110,35 +146,35 @@ public class Tokenizer {
         return c >= '0' && c <= '9';
     }
 
-    private void tokenizeNumber() { // i scrapped the idea of using integers and floats here, rather just use NumericValue
+    private void tokenizeNumber() {
         StringBuilder lexeme = new StringBuilder();
         boolean isDecimal = false;
-        while (isDigit(peek())) {
-            if (current() == '.') {
+
+        while (pos < input.length() && (isDigit(peek()) || peek() == '.')) {
+            char currentChar = peek();
+            if (currentChar == '.') {
                 if (isDecimal) {
                     throw new RuntimeException("Multiple decimal points in single float, check for a potential mistake...");
                 }
                 isDecimal = true;
             }
-            lexeme.append(current());
-            advance();
+            lexeme.append(advance());
         }
-        addToken(TokenKind.NUM, lexeme.toString(), Double.parseDouble(lexeme.toString()));
+        tokens.add(new Token(TokenKind.NUM, lexeme.toString(), Double.parseDouble(lexeme.toString()), line));
     }
 
     // this method does not add to the tokens list, it just returns the token
     private Token tokenizeNumberReturnDouble() { // i scrapped the idea of using integers and floats here, rather just use NumericValue
         StringBuilder lexeme = new StringBuilder();
         boolean isDecimal = false;
-        while (isDigit(peek())) {
-            if (current() == '.') {
+        while (isDigit(peek()) || peek() == '.') {
+            if (peek() == '.') {
                 if (isDecimal) {
                     throw new RuntimeException("Multiple decimal points in single float, check for a potential mistake...");
                 }
                 isDecimal = true;
             }
-            lexeme.append(current());
-            advance();
+            lexeme.append(advance());
         } // so it simply returns a token with the value of the number as .literal
         return new Token(TokenKind.NUM, lexeme.toString(), Double.parseDouble(lexeme.toString()), line);
     }
@@ -158,11 +194,16 @@ public class Tokenizer {
 
     private void tokenizeString() {
         StringBuilder lexeme = new StringBuilder();
+        advance(); // consume the opening quote
         while (peek() != '"' && pos < input.length()) {
             lexeme.append(advance());
         }
-        advance(); // consume the closing quote
-        addToken(TokenKind.STRING, lexeme.toString(), lexeme.toString()); // unsure if this works
+        if (peek() == '"') {
+            advance(); // consume the closing quote
+            addToken(TokenKind.STRING, lexeme.toString(), lexeme.toString()); // unsure if this works
+        } else {
+            throw new RuntimeException("Unterminated string at line " + line);
+        }
     }
 
     private boolean isAlphaNumeric(char c) {
@@ -170,12 +211,13 @@ public class Tokenizer {
     }
 
     private char advance() {
+        if (pos >= input.length()) {
+            // This should ideally not be reached if the while loop condition in tokenize() is correct
+            throw new RuntimeException("Tried to advance beyond the end of the input.");
+        }
+        char c = input.charAt(pos);
         pos++;
-        return input.charAt(pos);
-    }
-
-    private char current() {
-        return input.charAt(pos);
+        return c;
     }
 
     private void addToken(TokenKind kind) {
@@ -212,71 +254,75 @@ public class Tokenizer {
     // hope this works
     // right now this constructs a String, which definitely is not ideal... -> i fixed this by using the MatrixToken class
     private void tokenizeMatrix() { // TO DO: handle errors regarding dimensions of matrices
-        int lengthMatrix = -1; // the -1 accounts for the semicolon
-        int openBrackets = 0; // this should be incremented as long as there are open brackets, we then match on closing brackets
+        System.out.println("Matrix tokenization...");
+        int startPos = pos;
+        int openBrackets = 0;
         int closeBrackets = 0;
-        int numCols = getNumCols(pos);
-        int numRows = getNumRows(pos);
-        StringBuilder matrixLexeme = new StringBuilder();
-        List<Token> literal = new ArrayList<>(); // this is where all the actual tokens are stored for the matrix entries
-        while (pos < input.length() - 1) {
-            char c = input.charAt(pos);
+        List<List<Token>> rows = new ArrayList<>();
+        List<Token> currentRow = new ArrayList<>();
+
+        // First pass: Extract matrix elements and check bracket balance
+        while (pos < input.length()) {
+            char c = peek();
             if (c == '[') {
                 openBrackets++;
-                pos++;
-                lengthMatrix++;
+                advance();
             } else if (c == ']') {
                 closeBrackets++;
-                pos++;
-                lengthMatrix++;
-            } else if (isDigit(c)) {
-                Token Digit = tokenizeNumberReturnDouble();
-                String lexemeOfNumber = Digit.getLexeme(); // digit.lexeme
-                TokenKind kindOfNumber = Digit.getKind(); // digit.kind
-                matrixLexeme.append(lexemeOfNumber); // !!! pos is incremented in this function too, might change at future stage
-                matrixLexeme.append(' ');
-                literal.add(new Token(kindOfNumber, lexemeOfNumber, Digit.getLiteral(), line));
-//                if (pos < input.length() && Character.isLetter(input.charAt(pos))) { // some more checks will be needed here however
-//                    literal.add(new Token(TokenKind.MUL)); // this is useful when there are coefficients involved
-//                }
-                lengthMatrix++;
+                advance();
+                rows.add(new ArrayList<>(currentRow)); // End of a row
+                currentRow.clear();
+            } else if (isDigit(c) || c == '.') {
+                Token numberToken = tokenizeNumberReturnDouble();
+                currentRow.add(numberToken);
             } else if (Character.isWhitespace(c)) {
-                pos++;
+                advance();
+            } else if (c == ';') {
+                advance(); // Move to the next element in the current row
+            } else {
+                throw new RuntimeException("Unexpected character in matrix: " + c + " at line " + line);
+            }
+            if (openBrackets > 0 && openBrackets == closeBrackets) {
+                break; // End of the matrix
+            }
+            if (pos >= input.length() && openBrackets != closeBrackets) {
+                throw new RuntimeException("Syntax error: Unclosed matrix at line " + line);
             }
         }
+
+        if (openBrackets == 0 || closeBrackets == 0) {
+            throw new RuntimeException("Syntax error: Malformed matrix, missing brackets at line " + line);
+        }
+
         if (openBrackets != closeBrackets) {
-            throw new RuntimeException("Syntax error: brackets mismatch in Matrix");
-        } else if ((numCols * numRows) != (lengthMatrix - openBrackets - closeBrackets + 1))
-            throw new RuntimeException("Syntax error: matrix dimensions do not match"); // i might rename this later
-        matrixLexeme.insert(0, numCols + " ");
-        matrixLexeme.insert(0, numRows + " ");
-        tokens.add(new MatrixToken(TokenKind.MATRIX, matrixLexeme.toString(), null, line, literal)); // token is then implicit
-    }
-
-    private int getNumCols(int pos) { // doesn't work atm, why ?
-        int numCols = 0;
-        while (pos < input.length() && input.charAt(pos) != ']') {
-            if (Character.isDigit(input.charAt(pos))) {
-                numCols++;
-            }
-            pos++;
+            throw new RuntimeException("Syntax error: Mismatched brackets in matrix at line " + line);
         }
-        return numCols;
-    }
 
-    private int getNumRows(int pos) {
-        int numRows = 0;
-        boolean lastWasBracket = false;
-        while (pos < input.length()) {
-            char current = input.charAt(pos);
-            if (current == ']' && !lastWasBracket) {
-                numRows++;
-                lastWasBracket = true; // flag when we encounter bracket
-            } else if (current != ']') {
-                lastWasBracket = false;  // Reset flag if we encounter another character
-            }
-            pos++;
+        if (rows.isEmpty()) {
+            tokens.add(new MatrixToken(TokenKind.MATRIX, "0 0", null, line, new ArrayList<>()));
+            return;
         }
-        return numRows;
+
+        // Determine the number of columns and check for consistency
+        int numRows = rows.size();
+        int numCols = rows.get(0).size();
+        for (List<Token> row : rows) {
+            if (row.size() != numCols) {
+                throw new RuntimeException("Syntax error: Inconsistent number of columns in matrix at line " + line);
+            }
+        }
+
+        // Construct the matrix lexeme and literal
+        StringBuilder matrixLexeme = new StringBuilder();
+        matrixLexeme.append(numRows).append(" ").append(numCols);
+        List<Token> matrixLiteralTokens = new ArrayList<>();
+        for (List<Token> row : rows) {
+            for (Token token : row) {
+                matrixLexeme.append(" ").append(token.getLexeme());
+                matrixLiteralTokens.add(token);
+            }
+        }
+
+        tokens.add(new MatrixToken(TokenKind.MATRIX, matrixLexeme.toString(), null, line, matrixLiteralTokens));
     }
 }

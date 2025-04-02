@@ -3,7 +3,6 @@ package Interpreter.Parser;
 import AST.Nodes.*;
 import Interpreter.Tokenizer.TokenKind;
 import Interpreter.Tokenizer.Token;
-import DataTypes.NumericValue;
 import Util.LookupTable;
 
 import java.util.List;
@@ -239,7 +238,7 @@ public class Parser {
         while (match(TokenKind.EQUAL_EQUAL, TokenKind.NOT_EQUAL)) {
             Token operator = previous();
             Expression rhs = parseComparison();
-            expression = new BinaryNode(expression, operator, rhs);
+            expression = new LogicalBinaryNode(expression, operator, rhs);
         }
         return expression;
     }
@@ -249,7 +248,7 @@ public class Parser {
         while (match(TokenKind.PLUS, TokenKind.MINUS)) {
             Token operator = previous();
             Expression rhs = parseFactor();
-            expression = new BinaryNode(expression, operator, rhs);
+            expression = new BinaryNode((MathExpression) expression, operator, (MathExpression) rhs);
         }
         return expression;
     }
@@ -259,7 +258,7 @@ public class Parser {
         while (match(TokenKind.MUL, TokenKind.DIV)) {
             Token operator = previous();
             Expression rhs = parseUnary();
-            expression = new BinaryNode(expression, operator, rhs);
+            expression = new BinaryNode((MathExpression) expression, operator, (MathExpression) rhs);
         }
         return expression;
     }
@@ -269,7 +268,7 @@ public class Parser {
         while (match(TokenKind.GREATER, TokenKind.LESS, TokenKind.GREATER_EQUAL, TokenKind.LESS_EQUAL)) {
             Token operator = previous(); // because match() consumes the token (advances position)
             Expression rhs = parseTerm(); // here we are also consuming the next token, which ensures the while loop actually works
-            expression = new BinaryNode(expression, operator, rhs); {
+            expression = new BinaryNode((MathExpression) expression, operator, (MathExpression) rhs); {
             }
         }
         return expression;
