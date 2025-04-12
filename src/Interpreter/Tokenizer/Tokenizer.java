@@ -26,6 +26,8 @@ public class Tokenizer {
             return;
         }
         char c = peek();
+        System.out.println("Scanning char: " + input.charAt(pos) + " at pos=" + pos);
+
         switch (c) {
             case '(':
                 addToken(TokenKind.OPEN_PAREN);
@@ -65,19 +67,23 @@ public class Tokenizer {
                 break;
             case '!':
                 addToken(match('=') ? TokenKind.NOT_EQUAL : TokenKind.NOT);
-                advance();
+                // advance();
                 break;
             case '<':
                 addToken(match('=') ? TokenKind.LESS_EQUAL : TokenKind.LESS);
-                advance();
+                // advance();
                 break;
             case '>':
                 addToken(match('=') ? TokenKind.GREATER_EQUAL : TokenKind.GREATER);
-                advance();
+                // advance();
                 break;
             case '=':
-                addToken(match('=') ? TokenKind.EQUAL_EQUAL : TokenKind.EQUAL);
-                advance();
+                System.out.println("Before match: pos=" + pos + ", char" + (pos < input.length() ? input.charAt(pos) : "EOF"));
+                if (match('=')) {
+                    addToken(TokenKind.EQUAL_EQUAL);
+                } else {
+                    addToken(TokenKind.EQUAL);
+                }
                 break;
             case '#': // this is the comment character, so consider all as whitespace
                 while (peek() != '\n' && pos < input.length()) advance();
@@ -189,7 +195,7 @@ public class Tokenizer {
         if (kind == null) {
             kind = TokenKind.VARIABLE;
         }
-        addToken(kind);
+        addToken(kind, keyword, null);
     }
 
     private void tokenizeString() {

@@ -1,3 +1,4 @@
+import Interpreter.Parser.Parser;
 import Interpreter.Tokenizer.Tokenizer;
 import Interpreter.Tokenizer.Token;
 
@@ -11,5 +12,10 @@ public class Main {
         Tokenizer tokenizer = new Tokenizer(input);
         List<Token> tokens = tokenizer.tokenize();
         System.out.println(tokens);
+        System.out.println();
+
+        // this is where the parser would go
+        Parser parser = new Parser(tokens);
+        parser.interpretCode();
     }
 }

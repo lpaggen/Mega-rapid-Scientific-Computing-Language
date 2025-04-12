@@ -7,11 +7,6 @@ import Util.LookupTable;
 
 import java.util.List;
 
-// parsing going quite well so far, we need to add some error checking
-// stuff like = signs not being followed by anything should crash the program
-// all the trig functions need to be parsed correctly
-// something very hard will now be to keep track of variables, we need a STACK to handle it somehow
-
 public class Parser {
 
     private final List<Token> tokens;
@@ -25,7 +20,6 @@ public class Parser {
     public Expression interpretCode() {
         return parseExpression();
     }
-
 
 //    private ASTNode parseFactorOLD() {
 //        Token token = tokens.get(tokenPos);
@@ -268,7 +262,7 @@ public class Parser {
         while (match(TokenKind.GREATER, TokenKind.LESS, TokenKind.GREATER_EQUAL, TokenKind.LESS_EQUAL)) {
             Token operator = previous(); // because match() consumes the token (advances position)
             Expression rhs = parseTerm(); // here we are also consuming the next token, which ensures the while loop actually works
-            expression = new BinaryNode((MathExpression) expression, operator, (MathExpression) rhs); {
+            expression = new LogicalBinaryNode(expression, operator, rhs); {
             }
         }
         return expression;
