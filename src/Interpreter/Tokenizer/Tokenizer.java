@@ -78,8 +78,9 @@ public class Tokenizer {
                 // advance();
                 break;
             case '=':
-                System.out.println("Before match: pos=" + pos + ", char" + (pos < input.length() ? input.charAt(pos) : "EOF"));
-                if (match('=')) {
+                System.out.println("Before match: pos: " + pos + ", char: " + (pos < input.length() ? input.charAt(pos) : "EOF"));
+                System.out.println(match('='));
+                if (match('=')) { // somehow match is seeing a "=" it should not be seeing
                     addToken(TokenKind.EQUAL_EQUAL);
                 } else {
                     addToken(TokenKind.EQUAL);
@@ -243,9 +244,9 @@ public class Tokenizer {
     }
 
     private boolean match(char expected) {
+        pos++; // found the issue! was updating this position incorrectly
         if (pos >= input.length()) return false;
         if (input.charAt(pos) != expected) return false;
-        pos++;
         return true;
     }
 
