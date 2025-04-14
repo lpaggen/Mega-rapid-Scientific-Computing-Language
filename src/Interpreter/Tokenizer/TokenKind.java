@@ -24,6 +24,7 @@ public enum TokenKind {
     FLOAT_TYPE,
     MATRIX_TYPE,
     SYMBOL_TYPE,
+    BOOLEAN_TYPE,
 
     DERIVE,
     WRT, // say "with respect to ..."

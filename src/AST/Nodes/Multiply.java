@@ -42,7 +42,7 @@ public class Multiply extends MathExpression {
         if (rightResult instanceof MathExpression) {
             return new Multiply((MathExpression) rightResult, left);
         }
-        throw new RuntimeException("Operation not supported");
+        throw new UnsupportedOperationException("Operation not supported");
     }
 
     @Override

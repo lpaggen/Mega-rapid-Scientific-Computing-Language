@@ -146,6 +146,7 @@ public class Tokenizer {
         put("wrt", TokenKind.WRT);
         put("symbol", TokenKind.SYMBOL_TYPE);
         put("null", TokenKind.NULL);
+        put("bool", TokenKind.BOOLEAN_TYPE);
     }};
 
     // using Character.isDigit() would allow for all kinds of weird characters, so i'm using this instead

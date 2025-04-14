@@ -6,11 +6,13 @@ import Interpreter.Tokenizer.Token;
 import Util.LookupTable;
 
 import java.util.List;
+import java.util.Set;
 
 public class Parser {
 
     private final List<Token> tokens;
     private int tokenPos = 0;
+    private int line = 0;
     public LookupTable<String, Token> lookupTable = new LookupTable<>();
 
     public Parser(List<Token> tokens) {
@@ -262,8 +264,7 @@ public class Parser {
         while (match(TokenKind.GREATER, TokenKind.LESS, TokenKind.GREATER_EQUAL, TokenKind.LESS_EQUAL)) {
             Token operator = previous(); // because match() consumes the token (advances position)
             Expression rhs = parseTerm(); // here we are also consuming the next token, which ensures the while loop actually works
-            expression = new LogicalBinaryNode(expression, operator, rhs); {
-            }
+            expression = new LogicalBinaryNode(expression, operator, rhs);
         }
         return expression;
     }
@@ -290,6 +291,32 @@ public class Parser {
             return new groupingNode(expression);
         }
         throw new Error("Can't parse expression :" + peek());
+    }
+
+    // this method handles variable declarations, i will add more error checks at some stage
+    // for now i just want to be able to recognize variables and declare them into the env
+    // atm we can declare with or without a value
+    // !!!!!! FOR NOW WE ARE NOT CHECKING IF VALUE MATCHES TYPE -> NEED TO FIX !!!!!!!
+    private void parseDeclaration() {
+        if (!typeKeywords.contains(peek().getKind())) {
+            throw new RuntimeException("Type: " + peek().getKind() + " not supported");
+        }
+        Token typeToken = advance(); // consume the type token
+        if (!match(TokenKind.VARIABLE)) {
+            throw new RuntimeException("Expected variable after type declaration");
+        }
+        Token variableToken = previous(); // get the variable token
+        String variableLexeme = variableToken.getLexeme();
+        if (match(TokenKind.EQUAL)) {
+            Expression valueExpression = parseExpression();
+            Object value = valueExpression.evaluate(lookupTable);
+            lookupTable.declareVariable(variableLexeme, new Token(typeToken.getKind(), variableLexeme, value, line));
+            advance();
+        } else if (match(TokenKind.SEMICOLON)) {
+            lookupTable.declareVariable(variableLexeme, new Token(typeToken.getKind(), variableLexeme, null, line));
+        } else {
+            throw new RuntimeException("Expected '=' or ';' after variable name");
+        }
     }
 
     private boolean match(TokenKind... expectedKinds) {
@@ -332,4 +359,12 @@ public class Parser {
     private boolean isAtEnd() {
         return peek().getKind() == TokenKind.EOF;
     }
+
+    private static final Set<TokenKind> typeKeywords = Set.of(
+            TokenKind.INTEGER_TYPE,
+            TokenKind.FLOAT_TYPE,
+            TokenKind.BOOLEAN_TYPE,
+            TokenKind.MATRIX_TYPE,
+            TokenKind.SYMBOL_TYPE
+    );
 }
