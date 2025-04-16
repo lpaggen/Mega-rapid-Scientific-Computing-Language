@@ -290,7 +290,8 @@ public class Parser {
             consumeClosingParen(TokenKind.CLOSE_PAREN); // this is like match, we're looking for a closing parenthesis
             return new groupingNode(expression);
         }
-        throw new Error("Can't parse expression :" + peek());
+        parseDeclaration();
+        throw new RuntimeException("Expected expression");
     }
 
     // this method handles variable declarations, i will add more error checks at some stage

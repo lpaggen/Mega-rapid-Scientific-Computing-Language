@@ -15,6 +15,10 @@ public class Token { // can convert to record, unsure if i want to do that just 
         this.lexeme = lexeme;
     }
 
+    public int getLine() {
+        return line;
+    }
+
     public String toString() {
         return kind + " " + lexeme + " " + literal;
     }

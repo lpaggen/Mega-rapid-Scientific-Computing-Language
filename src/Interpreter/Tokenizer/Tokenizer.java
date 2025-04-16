@@ -26,7 +26,6 @@ public class Tokenizer {
             return;
         }
         char c = peek();
-        System.out.println("Scanning char: " + input.charAt(pos) + " at pos=" + pos);
 
         switch (c) {
             case '(':
@@ -78,8 +77,6 @@ public class Tokenizer {
                 // advance();
                 break;
             case '=':
-                System.out.println("Before match: pos: " + pos + ", char: " + (pos < input.length() ? input.charAt(pos) : "EOF"));
-                System.out.println(match('='));
                 if (match('=')) { // somehow match is seeing a "=" it should not be seeing
                     addToken(TokenKind.EQUAL_EQUAL);
                 } else {
