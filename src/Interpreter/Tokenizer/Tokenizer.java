@@ -25,89 +25,65 @@ public class Tokenizer {
         if (pos >= input.length()) {
             return;
         }
-        char c = peek();
+        char c = peek(); // Peek at the current character
+
+        System.out.println("Scanning character: " + c + " at line " + line); // Debug print
 
         switch (c) {
-            case '(':
-                addToken(TokenKind.OPEN_PAREN);
-                advance();
-                break;
-            case ')':
-                addToken(TokenKind.CLOSE_PAREN);
-                advance();
-                break;
-            case '+':
-                addToken(TokenKind.PLUS);
-                advance();
-                break;
-            case '-':
-                addToken(TokenKind.MINUS);
-                advance();
-                break;
-            case '*':
-                addToken(TokenKind.MUL);
-                advance();
-                break;
-            case '/':
-                addToken(TokenKind.DIV); // our comment would be #
-                advance();
-                break;
-            case '^':
-                addToken(TokenKind.POWER);
-                advance();
-                break;
-            case ';':
-                addToken(TokenKind.SEMICOLON);
-                advance();
-                break;
-            case ',':
-                addToken(TokenKind.COMMA);
-                advance();
-                break;
+            case '(': addToken(TokenKind.OPEN_PAREN); advance(); break;
+            case ')': addToken(TokenKind.CLOSE_PAREN); advance(); break;
+            case '+': addToken(TokenKind.PLUS); advance(); break;
+            case '-': addToken(TokenKind.MINUS); advance(); break;
+            case '*': addToken(TokenKind.MUL); advance(); break;
+            case '/': addToken(TokenKind.DIV); advance(); break;
+            case '^': addToken(TokenKind.POWER); advance(); break;
+            case ';': addToken(TokenKind.SEMICOLON); advance(); break;
+            case ',': addToken(TokenKind.COMMA); advance(); break;
             case '!':
                 addToken(match('=') ? TokenKind.NOT_EQUAL : TokenKind.NOT);
-                // advance();
+                advance(); // Advance after processing '!'
                 break;
             case '<':
                 addToken(match('=') ? TokenKind.LESS_EQUAL : TokenKind.LESS);
-                // advance();
+                advance(); // Advance after processing '<'
                 break;
             case '>':
                 addToken(match('=') ? TokenKind.GREATER_EQUAL : TokenKind.GREATER);
-                // advance();
+                advance(); // Advance after processing '>'
                 break;
             case '=':
-                if (match('=')) { // somehow match is seeing a "=" it should not be seeing
+                if (match('=')) {
                     addToken(TokenKind.EQUAL_EQUAL);
+                    advance(); // Advance for the second '='
                 } else {
                     addToken(TokenKind.EQUAL);
+                    advance(); // Advance for the single '='
                 }
                 break;
-            case '#': // this is the comment character, so consider all as whitespace
+            case '#':
                 while (peek() != '\n' && pos < input.length()) advance();
                 break;
             case '[':
-                tokenizeMatrix();
+                tokenizeMatrix(); // tokenizeMatrix handles its own advancing
                 break;
             case '\n':
                 line++;
+                advance();
                 break;
             case '\r':
             case '\t':
             case ' ':
-                advance();
-                break; // ignore whitespace
+                advance(); // Ignore whitespace
+                break;
             case '"':
-                tokenizeString();
+                tokenizeString(); // tokenizeString handles its own advancing
                 break;
             default:
-                if (isDigit(c)) { // Check the current character 'c'
-                    tokenizeNumber();
-                    advance();
+                if (isDigit(c)) {
+                    tokenizeNumber(); // tokenizeNumber handles its own advancing
                     break;
                 } else if (isAlphaNumeric(c)) {
-                    tokenizeKeyword();
-                    advance();
+                    tokenizeKeyword(); // tokenizeKeyword handles its own advancing
                     break;
                 }
                 throw new RuntimeException("Unexpected character: " + c + " at line " + line);
@@ -154,6 +130,8 @@ public class Tokenizer {
     private void tokenizeNumber() {
         StringBuilder lexeme = new StringBuilder();
         boolean isDecimal = false;
+
+        System.out.println("Tokenizing number... " + input.charAt(pos - 1));
 
         while (pos < input.length() && (isDigit(peek()) || peek() == '.')) {
             char currentChar = peek();
@@ -242,10 +220,11 @@ public class Tokenizer {
     }
 
     private boolean match(char expected) {
-        pos++; // found the issue! was updating this position incorrectly
-        if (pos >= input.length()) return false;
-        if (input.charAt(pos) != expected) return false;
-        return true;
+        if (pos + 1 < input.length() && input.charAt(pos + 1) == expected) {
+            advance(); // Consume the matching second character
+            return true;
+        }
+        return false;
     }
 
     private char peek() {
