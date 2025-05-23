@@ -30,33 +30,45 @@ public class Tokenizer {
         System.out.println("Scanning character: " + c + " at line " + line); // Debug print
 
         switch (c) {
-            case '(': addToken(TokenKind.OPEN_PAREN); advance(); break;
-            case ')': addToken(TokenKind.CLOSE_PAREN); advance(); break;
-            case '+': addToken(TokenKind.PLUS); advance(); break;
-            case '-': addToken(TokenKind.MINUS); advance(); break;
-            case '*': addToken(TokenKind.MUL); advance(); break;
-            case '/': addToken(TokenKind.DIV); advance(); break;
-            case '^': addToken(TokenKind.POWER); advance(); break;
-            case ';': addToken(TokenKind.SEMICOLON); advance(); break;
-            case ',': addToken(TokenKind.COMMA); advance(); break;
+            case '(': addToken(TokenKind.OPEN_PAREN, "("); advance(); break;
+            case ')': addToken(TokenKind.CLOSE_PAREN, ")"); advance(); break;
+            case '+': addToken(TokenKind.PLUS, "+"); advance(); break;
+            case '-': addToken(TokenKind.MINUS, "-"); advance(); break;
+            case '*': addToken(TokenKind.MUL, "*"); advance(); break;
+            case '/': addToken(TokenKind.DIV, "/"); advance(); break;
+            case '^': addToken(TokenKind.POWER, "**"); advance(); break;
+            case ';': addToken(TokenKind.SEMICOLON, ";"); advance(); break;
+            case ',': addToken(TokenKind.COMMA, ","); advance(); break;
             case '!':
-                addToken(match('=') ? TokenKind.NOT_EQUAL : TokenKind.NOT);
+                if (match('=')) {
+                    addToken(TokenKind.NOT_EQUAL, "!=");
+                } else {
+                    addToken(TokenKind.NOT, "!");
+                }
                 advance(); // Advance after processing '!'
                 break;
             case '<':
-                addToken(match('=') ? TokenKind.LESS_EQUAL : TokenKind.LESS);
+                if (match('=')) {
+                    addToken(TokenKind.LESS_EQUAL, "<=");
+                } else {
+                    addToken(TokenKind.LESS, "<");
+                }
                 advance(); // Advance after processing '<'
                 break;
             case '>':
-                addToken(match('=') ? TokenKind.GREATER_EQUAL : TokenKind.GREATER);
+                if (match('=')) {
+                    addToken(TokenKind.GREATER_EQUAL, ">=");
+                } else {
+                    addToken(TokenKind.GREATER, ">");
+                }
                 advance(); // Advance after processing '>'
                 break;
             case '=':
                 if (match('=')) {
-                    addToken(TokenKind.EQUAL_EQUAL);
+                    addToken(TokenKind.EQUAL_EQUAL, "==");
                     advance(); // Advance for the second '='
                 } else {
-                    addToken(TokenKind.EQUAL);
+                    addToken(TokenKind.EQUAL, "="); // we can hard code it, or we can set up a char.pos(i) something
                     advance(); // Advance for the single '='
                 }
                 break;
@@ -203,8 +215,8 @@ public class Tokenizer {
         return c;
     }
 
-    private void addToken(TokenKind kind) {
-        addToken(kind, kind.toString(), null);
+    private void addToken(TokenKind kind, String lexeme) {
+        addToken(kind, lexeme, null); // made small change here, less confusing when debugging
     }
 
     // lexeme is the String representation of the token
