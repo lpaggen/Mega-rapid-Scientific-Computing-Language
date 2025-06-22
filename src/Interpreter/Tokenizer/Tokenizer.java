@@ -155,23 +155,42 @@ public class Tokenizer {
             }
             lexeme.append(advance());
         }
-        tokens.add(new Token(TokenKind.NUM, lexeme.toString(), Double.parseDouble(lexeme.toString()), line));
+        String numberStr = lexeme.toString();
+        Object literal;
+        if (isDecimal) { // we cannot use a ternary branch, it casts everything to Double for some reason
+            literal = Double.parseDouble(numberStr);
+        } else {
+            literal = Integer.parseInt(numberStr);
+        }
+        TokenKind kind = isDecimal ? TokenKind.FLOAT : TokenKind.INTEGER; // determine if it's a float or an integer
+
+        tokens.add(new Token(kind, lexeme.toString(), literal, line));
     }
 
     // this method does not add to the tokens list, it just returns the token
-    private Token tokenizeNumberReturnDouble() { // i scrapped the idea of using integers and floats here, rather just use NumericValue
+    private Token tokenizeNumberReturnDouble() {
         StringBuilder lexeme = new StringBuilder();
         boolean isDecimal = false;
         while (isDigit(peek()) || peek() == '.') {
             if (peek() == '.') {
                 if (isDecimal) {
-                    throw new RuntimeException("Multiple decimal points in single float, check for a potential mistake...");
+                    throw new RuntimeException("Multiple decimal points in number.");
                 }
                 isDecimal = true;
             }
             lexeme.append(advance());
-        } // so it simply returns a token with the value of the number as .literal
-        return new Token(TokenKind.NUM, lexeme.toString(), Double.parseDouble(lexeme.toString()), line);
+        }
+
+        String numberStr = lexeme.toString();
+        Object literal;
+        if (isDecimal) {
+            literal = Double.parseDouble(numberStr);
+        } else {
+            literal = Integer.parseInt(numberStr);
+        }
+        TokenKind kind = isDecimal ? TokenKind.FLOAT : TokenKind.INTEGER;
+
+        return new Token(kind, numberStr, literal, line);
     }
 
     private void tokenizeKeyword() {
@@ -250,6 +269,7 @@ public class Tokenizer {
     // hope this works
     // right now this constructs a String, which definitely is not ideal... -> i fixed this by using the MatrixToken class
     private void tokenizeMatrix() { // TO DO: handle errors regarding dimensions of matrices
+        System.out.println("tok matrix");
         System.out.println("Matrix tokenization...");
         int startPos = pos;
         int openBrackets = 0;
@@ -269,7 +289,8 @@ public class Tokenizer {
                 rows.add(new ArrayList<>(currentRow)); // End of a row
                 currentRow.clear();
             } else if (isDigit(c) || c == '.') {
-                Token numberToken = tokenizeNumberReturnDouble();
+                Token numberToken =
+                        tokenizeNumberReturnDouble();
                 currentRow.add(numberToken);
             } else if (Character.isWhitespace(c)) {
                 advance();

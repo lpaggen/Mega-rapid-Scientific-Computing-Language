@@ -5,7 +5,9 @@ import Interpreter.Tokenizer.TokenKind;
 import Interpreter.Tokenizer.Token;
 import Util.LookupTable;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class Parser {
@@ -96,8 +98,8 @@ public class Parser {
         if (match(TokenKind.FALSE)) return new primaryNode(false);
         if (match(TokenKind.TRUE)) return new primaryNode(true);
         if (match(TokenKind.NULL)) return new primaryNode(null);
-        if (match(TokenKind.NUM, TokenKind.STRING)) {
-            return new primaryNode(previous().getLiteral()); // remember match() consumes a token !!
+        if (match(TokenKind.INTEGER, TokenKind.FLOAT, TokenKind.STRING)) {
+            return new primaryNode(previous().getLiteral());
         }
         if (match(TokenKind.OPEN_PAREN)) {
             Expression expression = parseExpression();
@@ -112,11 +114,22 @@ public class Parser {
     // atm we can declare with or without a value
     // !!!!!! FOR NOW WE ARE NOT CHECKING IF VALUE MATCHES TYPE -> NEED TO FIX !!!!!!!
     private DeclarationNode parseDeclaration() {
-        System.out.println("Parsing declaration");
+
+        // this surely can't be optimal, but it will work until i figure something better out
+        // the idea is to just fetch the type from the declaration
+        Map<TokenKind, TokenKind> mapDeclarationToDatatype = Map.of(
+                TokenKind.INTEGER_TYPE, TokenKind.INTEGER,
+                TokenKind.FLOAT_TYPE, TokenKind.FLOAT,
+                TokenKind.BOOLEAN_TYPE, TokenKind.BOOLEAN,
+                TokenKind.MATRIX_TYPE, TokenKind.MATRIX,
+                TokenKind.SYMBOL_TYPE, TokenKind.SYMBOL
+        );
+
         if (!typeKeywords.contains(peek().getKind())) {
             throw new RuntimeException(peek() + " Expected type keyword.");
         }
         Token typeToken = advance();
+        System.out.println(typeToken);
         if (!match(TokenKind.VARIABLE)) {
             throw new RuntimeException(peek() + " Expected variable name after type.");
         }
@@ -126,8 +139,9 @@ public class Parser {
             initializer = parseExpression();
         }
         consume(TokenKind.SEMICOLON);
-        lookupTable.declareVariable(name.getLexeme(), new Token(typeToken.getKind(), name.getLexeme(), null, line)); // declare without initial value for now, assignment handles the value
-        System.out.println("Declared variable: " + name.getLexeme() + " of type: " + typeToken.getKind());
+        TokenKind dataType = mapDeclarationToDatatype.get(typeToken.getKind());
+        System.out.println("Declaring variable: " + name.getLexeme() + " of type: " + dataType);
+        lookupTable.declareVariable(name.getLexeme(), new Token(dataType, name.getLexeme(), null, line));
         return new DeclarationNode(typeToken, name, initializer);
     }
 

@@ -17,6 +17,7 @@ public class DeclarationNode extends Statement {
     @Override
     public void execute(LookupTable<String, Token> env) {
         Object value = (initializer != null) ? initializer.evaluate(env) : null;
-        env.declareVariable(variable.getLexeme(), new Token(type.getKind(), variable.getLexeme(), value, variable.getLine()));
+        env.setValue(variable.getLexeme(), new Token(type.getKind(), variable.getLexeme(), value, variable.getLine()));
+        env.showLookupTable();
     }
 }

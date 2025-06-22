@@ -6,6 +6,7 @@ public enum TokenKind {
     EOF,
     CONST,
     INTEGER,
+    BOOLEAN,
     FLOAT,
     SYMBOL,
     NUM,

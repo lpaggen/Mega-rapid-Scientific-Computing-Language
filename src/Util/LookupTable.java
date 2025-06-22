@@ -50,27 +50,24 @@ public class LookupTable<K, V extends Token> {
         return map.containsKey(key);
     }
 
-    public void showLookupTable(Map<String, Token> symbolTable) {
-        // Define column widths for alignment
+    // this method simply prints the lookup table to the console, it is used for debugging
+    public void showLookupTable() {
         final int typeWidth = 15;
         final int keyWidth = 20;
         final int valueWidth = 30;
 
-        // Print the header
         System.out.printf("%-" + typeWidth + "s%-" + keyWidth + "s%-" + valueWidth + "s%n", "TOKEN TYPE", "VARIABLE NAME", "LITERAL VALUE");
         System.out.println("-".repeat(typeWidth + keyWidth + valueWidth));
 
-        // Print each entry from the symbol table
-        for (Map.Entry<String, Token> entry : symbolTable.entrySet()) {
-            String key = entry.getKey();
-            Token token = entry.getValue();
+        for (Map.Entry<K, V> entry : map.entrySet()) {
+            K key = entry.getKey();
+            V token = entry.getValue();
 
-            // Format and print the row
             System.out.printf(
                     "%-" + typeWidth + "s%-" + keyWidth + "s%-" + valueWidth + "s%n",
-                    token.getKind(),               // TokenKind (e.g., INTEGER, FLOAT)
-                    key,                      // Variable name (declared at runtime)
-                    token.getLiteral() != null ? token.getLiteral().toString() : "null"  // Literal value
+                    token.getKind(),
+                    key.toString(),
+                    token.getLiteral() != null ? token.getLiteral().toString() : "null"
             );
         }
     }
