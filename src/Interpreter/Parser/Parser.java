@@ -10,6 +10,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+// IMPORTANT NOTE
+// the parser is ONLY responsible for parsing the code and building the AST
+// it does NOT check for semantic errors or type mismatches
+// that is the job of the interpreter or a separate semantic analyzer
+// the parser will throw runtime exceptions if it encounters unexpected tokens
+// the parser ONLY cares about SYNTAX AND GRAMMAR
 public class Parser {
 
     private final List<Token> tokens;
