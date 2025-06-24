@@ -1,8 +1,9 @@
 *Welcome to my mathematical optimization language repo*
 
-Currently the project is a work in progress which I am contributing to while completing my master's degree in Data Science at Maastricht University. The aim of this project is to develop a programming language capable of simple operations, such as computing symbolic derivatives, and maybe a couple of optimization methods (think of simplex methods, newton, interior point).
+Currently WIP. Maybe master's thesis or academic publication down the line, will think about it and evaluate if this is even possible with the time constraints i am facing
 
-The project currently has an Abstract Syntax Tree (AST) to handle more complex operations such as the chain rule, and many trigonometric functions. I am currently developing my own parser and interpreter for the language, so that any standard expression can be converted into a format accepted by my AST (for example think of converting sin(x) into new Sine(value=new Variable(name="x")).
+atm it has: tokenizer, parser (wip), error handling (wip), AST (wip). Ideally i would implement support for functions and basic for loops, as well as conditional branching. no OOP in mind for the project. The big thing about this project would also be the support for symbolic algebra and mathematical optimization down the line, so linear programming etc could be implemented in due time. I am also considering implementing my own version of MapReduce in the language, to enhance the speed of those very expensive matrix multiplications. 
 
-There are currently a number of missing features, such as the ability to compute partial derivatives, and plot functions, among others. Progress will be slow but I aim to get this language to at least a functional state in the (hopefully) near future.
+the tokenizer runs in O(n) time (obviously). parser O(n), 2nd pass in addition to the tokenizer. semantic analysis should be O(n) something when done, so overall no (major) mistakes are being made when it comes to core interpreter logic.
 
+obviously i could use ANTLR and LLVM, but i'd rather just build this for learning, as opposed to it being an actually useful tool. perhaps it could be shown to university students if the algebra and optimization parts are ever made to work, however! that would be a cool learning tool. 
