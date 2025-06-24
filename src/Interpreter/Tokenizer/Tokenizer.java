@@ -1,5 +1,7 @@
 package Interpreter.Tokenizer;
 
+import Interpreter.ErrorHandler;
+
 import java.util.*;
 
 public class Tokenizer {
@@ -98,7 +100,9 @@ public class Tokenizer {
                     tokenizeKeyword(); // tokenizeKeyword handles its own advancing
                     break;
                 }
-                throw new RuntimeException("Unexpected character: " + c + " at line " + line);
+                //throw new RuntimeException("Unexpected character: " + c + " at line " + line);
+                throw new ErrorHandler("tokenization", line, "Unexpected character: '" + c + "'",
+                        "Did you mean to use a different character? If you meant to use a variable, make sure it is declared.");
         }
     }
 
@@ -143,13 +147,11 @@ public class Tokenizer {
         StringBuilder lexeme = new StringBuilder();
         boolean isDecimal = false;
 
-        System.out.println("Tokenizing number... " + input.charAt(pos - 1));
-
         while (pos < input.length() && (isDigit(peek()) || peek() == '.')) {
             char currentChar = peek();
             if (currentChar == '.') {
                 if (isDecimal) {
-                    throw new RuntimeException("Multiple decimal points in single float, check for a potential mistake...");
+                    throw new ErrorHandler("tokenization", line, "Multiple decimal points in number.", "Caused by -> " + lexeme);
                 }
                 isDecimal = true;
             }
@@ -174,7 +176,7 @@ public class Tokenizer {
         while (isDigit(peek()) || peek() == '.') {
             if (peek() == '.') {
                 if (isDecimal) {
-                    throw new RuntimeException("Multiple decimal points in number.");
+                    throw new RuntimeException("Multiple decimal points in number.\nDid you mean to use a comma instead?");
                 }
                 isDecimal = true;
             }
@@ -216,7 +218,8 @@ public class Tokenizer {
             advance(); // consume the closing quote
             addToken(TokenKind.STRING, lexeme.toString(), lexeme.toString()); // unsure if this works
         } else {
-            throw new RuntimeException("Unterminated string at line " + line);
+            throw new ErrorHandler("tokenization", line, "Unterminated string literal.",
+                    "Did you forget to close the string with a double quote? Current lexeme: \"" + lexeme + "\"");
         }
     }
 

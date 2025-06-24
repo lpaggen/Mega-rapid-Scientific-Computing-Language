@@ -14,6 +14,10 @@ public class DeclarationNode extends Statement {
         this.initializer = initializer;
     }
 
+    // IMPORTANT
+    // this node should be the one catching type mismatches
+    // it's super easy really, we check the literal, and the type of the variable
+    // if there's a mismatch, we crash the program OR we are nice and tolerate small mistakes, will see!
     @Override
     public void execute(LookupTable<String, Token> env) {
         Object value = (initializer != null) ? initializer.evaluate(env) : null;

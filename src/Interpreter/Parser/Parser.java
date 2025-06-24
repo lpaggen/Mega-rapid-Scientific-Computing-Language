@@ -1,6 +1,7 @@
 package Interpreter.Parser;
 
 import AST.Nodes.*;
+import Interpreter.ErrorHandler;
 import Interpreter.Tokenizer.TokenKind;
 import Interpreter.Tokenizer.Token;
 import Util.LookupTable;
@@ -112,7 +113,13 @@ public class Parser {
             consume(TokenKind.CLOSE_PAREN); // this is like match, we're looking for a closing parenthesis
             return new groupingNode(expression);
         }
-        throw new RuntimeException(peek() + " Expected expression.");
+        throw new ErrorHandler(
+                "parsing",
+                peek().getLine(),
+                "Unexpected token: " + peek().getLexeme(),
+                "Expected an expression, variable, or literal value."
+        );
+        //throw new RuntimeException(peek() + " Expected expression.");
     }
 
     // this method handles variable declarations, i will add more error checks at some stage
@@ -132,12 +139,24 @@ public class Parser {
         );
 
         if (!typeKeywords.contains(peek().getKind())) {
-            throw new RuntimeException(peek() + " Expected type keyword.");
+            throw new ErrorHandler(
+                    "parsing",
+                    peek().getLine(),
+                    "Unexpected token: " + peek().getLexeme(),
+                    "Expected a type keyword (int, float, bool, matrix, symbol)."
+            );
+            //throw new RuntimeException(peek() + " Expected type keyword.");
         }
         Token typeToken = advance();
         System.out.println(typeToken);
         if (!match(TokenKind.VARIABLE)) {
-            throw new RuntimeException(peek() + " Expected variable name after type.");
+            throw new ErrorHandler(
+                    "parsing",
+                    peek().getLine(),
+                    "Unexpected token: " + peek().getLexeme(),
+                    "Expected a variable name after type declaration."
+            );
+            //throw new RuntimeException(peek() + " Expected variable name after type.");
         }
         Token name = previous();
         Expression initializer = null;
@@ -148,7 +167,7 @@ public class Parser {
         TokenKind dataType = mapDeclarationToDatatype.get(typeToken.getKind());
         System.out.println("Declaring variable: " + name.getLexeme() + " of type: " + dataType);
         lookupTable.declareVariable(name.getLexeme(), new Token(dataType, name.getLexeme(), null, line));
-        return new DeclarationNode(typeToken, name, initializer);
+        return new DeclarationNode(new Token(dataType, typeToken.getLexeme(), null, typeToken.getLine()), name, initializer);
     }
 
     private boolean match(TokenKind... expectedKinds) {
