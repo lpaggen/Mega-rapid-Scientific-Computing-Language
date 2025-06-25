@@ -125,7 +125,7 @@ public class Parser {
     // this method handles variable declarations, i will add more error checks at some stage
     // for now i just want to be able to recognize variables and declare them into the env
     // atm we can declare with or without a value
-    // !!!!!! FOR NOW WE ARE NOT CHECKING IF VALUE MATCHES TYPE -> NEED TO FIX !!!!!!!
+    // !! type mismatch errors happen at another stage of the interpreter
     private DeclarationNode parseDeclaration() {
 
         // this surely can't be optimal, but it will work until i figure something better out

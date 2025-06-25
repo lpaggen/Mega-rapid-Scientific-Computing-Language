@@ -1,5 +1,6 @@
 package AST.Nodes;
 
+import Interpreter.ErrorHandler;
 import Interpreter.Tokenizer.Token;
 import Util.LookupTable;
 
@@ -21,6 +22,22 @@ public class DeclarationNode extends Statement {
     @Override
     public void execute(LookupTable<String, Token> env) {
         Object value = (initializer != null) ? initializer.evaluate(env) : null;
+
+        switch (type.getKind()) {
+            case FLOAT:
+                if (!(value instanceof Float)) {
+                    throw new ErrorHandler("execution", variable.getLine(), "Type mismatch: expected float, got " + (value != null ? value.getClass().getSimpleName() : "null"), "Please ensure the initializer is a float.");
+                    //throw new RuntimeException("Type mismatch: expected float, got " + (value != null ? value.getClass().getSimpleName() : "null") + " at line " + variable.getLine());
+                }
+                break;
+            case INTEGER:
+                if (!(value instanceof Integer)) {
+                    throw new ErrorHandler("execution", variable.getLine(), "Type mismatch: expected integer, got " + (value != null ? value.getClass().getSimpleName() : "null"), "Please ensure the initializer is an integer.");
+                    //throw new RuntimeException("Type mismatch: expected integer, got " + (value != null ? value.getClass().getSimpleName() : "null") + " at line " + variable.getLine());
+                }
+                break;
+        }
+
         env.setValue(variable.getLexeme(), new Token(type.getKind(), variable.getLexeme(), value, variable.getLine()));
         env.showLookupTable();
     }
