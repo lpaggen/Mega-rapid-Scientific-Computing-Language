@@ -32,9 +32,6 @@ public class LookupTable<K, V extends Token> {
 
     // this method is used to declare a variable in the lookup table
     public void declareVariable(K key, V value) {
-        if (map.containsKey(key)) {
-            throw new IllegalArgumentException("Variable '" + key + "' already declared.");
-        }
         map.put(key, value);
     }
 

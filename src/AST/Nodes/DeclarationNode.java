@@ -25,7 +25,10 @@ public class DeclarationNode extends Statement {
 
         switch (type.getKind()) {
             case FLOAT:
-                if (!(value instanceof Float)) {
+                if (value instanceof Integer) {
+                    // convert integer to float if needed -- but throw warning somehow...
+                    value = ((Integer) value).floatValue();
+                } else if (!(value instanceof Float) && !(value instanceof Double)) {
                     throw new ErrorHandler("execution", variable.getLine(), "Type mismatch: expected float, got " + (value != null ? value.getClass().getSimpleName() : "null"), "Please ensure the initializer is a float.");
                     //throw new RuntimeException("Type mismatch: expected float, got " + (value != null ? value.getClass().getSimpleName() : "null") + " at line " + variable.getLine());
                 }
