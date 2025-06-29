@@ -1,13 +1,15 @@
 import Interpreter.Parser.Parser;
 import Interpreter.Tokenizer.Tokenizer;
 import Interpreter.Tokenizer.Token;
+import Util.WarningHandler;
 
 import java.util.List;
 
 public class Main {
 
     public static void main(String[] args) {
-        String input = "float x = 5.7;\nfloat x = 55;"; // input goes here
+        String input = "int x = 4;\n" +
+                "int y = x;"; // input goes here
 
         Tokenizer tokenizer = new Tokenizer(input);
         List<Token> tokens = tokenizer.tokenize();

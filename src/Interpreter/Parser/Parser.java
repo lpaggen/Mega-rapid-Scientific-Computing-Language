@@ -21,7 +21,6 @@ public class Parser {
 
     private final List<Token> tokens;
     private int tokenPos = 0;
-    private int line = 0;
     public LookupTable<String, Token> lookupTable = new LookupTable<>();
 
     public Parser(List<Token> tokens) {
@@ -30,7 +29,7 @@ public class Parser {
 
     public void interpretCode() {
         while (!isAtEnd()) {
-            if (check(TokenKind.INTEGER_TYPE) || check(TokenKind.FLOAT_TYPE) || check(TokenKind.BOOLEAN_TYPE) || check(TokenKind.MATRIX_TYPE) || check(TokenKind.SYMBOL_TYPE)) {
+            if (check(TokenKind.INTEGER_TYPE) || check(TokenKind.FLOAT_TYPE) || check(TokenKind.BOOLEAN_TYPE) || check(TokenKind.MATRIX_TYPE) || check(TokenKind.SYMBOL_TYPE) || check(TokenKind.STRING_TYPE)) {
                 Statement statement = parseDeclaration();
                 statement.execute(lookupTable);
             } else {
@@ -102,16 +101,33 @@ public class Parser {
     }
 
     private Expression parsePrimary() {
+        System.out.println("Parsing primary expression at token: " + peek().getLexeme() + " of type: " + peek().getKind());
         if (match(TokenKind.FALSE)) return new primaryNode(false);
         if (match(TokenKind.TRUE)) return new primaryNode(true);
         if (match(TokenKind.NULL)) return new primaryNode(null);
         if (match(TokenKind.INTEGER, TokenKind.FLOAT, TokenKind.STRING)) {
+            System.out.println("Literal found: " + previous().getLexeme() + " of type: " + previous().getKind());
             return new primaryNode(previous().getLiteral());
         }
         if (match(TokenKind.OPEN_PAREN)) {
             Expression expression = parseExpression();
             consume(TokenKind.CLOSE_PAREN); // this is like match, we're looking for a closing parenthesis
             return new groupingNode(expression);
+        } // atm we can't really execute any computations, will check what to do in later build
+        if (match(TokenKind.VARIABLE)) {
+            Token variableToken = previous();
+            if (!lookupTable.isDeclared(variableToken.getLexeme())) {
+                throw new ErrorHandler(
+                        "parsing",
+                        variableToken.getLine(),
+                        "Variable not declared: " + variableToken.getLexeme(),
+                        "Please declare the variable before using it."
+                );
+                //throw new RuntimeException("Variable not declared: " + variableToken.getLexeme() + " at line " + variableToken.getLine());
+            } // so now, we should maybe do a recursive call to parsePrimary(), or just take the value directly and out a primaryNode
+            //return new VariableNode(variableToken);
+            Object value = lookupTable.getLiteral(variableToken.getLexeme());
+            return new primaryNode(value); // this will return the value of the variable, not the variable itself
         }
         throw new ErrorHandler(
                 "parsing",
@@ -135,7 +151,8 @@ public class Parser {
                 TokenKind.FLOAT_TYPE, TokenKind.FLOAT,
                 TokenKind.BOOLEAN_TYPE, TokenKind.BOOLEAN,
                 TokenKind.MATRIX_TYPE, TokenKind.MATRIX,
-                TokenKind.SYMBOL_TYPE, TokenKind.SYMBOL
+                TokenKind.SYMBOL_TYPE, TokenKind.SYMBOL,
+                TokenKind.STRING_TYPE, TokenKind.STRING
         );
 
         if (!typeKeywords.contains(peek().getKind())) {
@@ -148,7 +165,6 @@ public class Parser {
             //throw new RuntimeException(peek() + " Expected type keyword.");
         }
         Token typeToken = advance();
-        System.out.println(typeToken);
         if (!match(TokenKind.VARIABLE)) {
             throw new ErrorHandler(
                     "parsing",
@@ -166,7 +182,7 @@ public class Parser {
         consume(TokenKind.SEMICOLON);
         TokenKind dataType = mapDeclarationToDatatype.get(typeToken.getKind());
         System.out.println("Declaring variable: " + name.getLexeme() + " of type: " + dataType);
-        lookupTable.declareVariable(name.getLexeme(), new Token(dataType, name.getLexeme(), null, line));
+        lookupTable.declareVariable(name.getLexeme(), new Token(dataType, name.getLexeme(), null, typeToken.getLine()));
         return new DeclarationNode(new Token(dataType, typeToken.getLexeme(), null, typeToken.getLine()), name, initializer);
     }
 
@@ -220,11 +236,18 @@ public class Parser {
         return peek().getKind() == TokenKind.EOF;
     }
 
+    // in future add support for all types
     private static final Set<TokenKind> typeKeywords = Set.of(
             TokenKind.INTEGER_TYPE,
             TokenKind.FLOAT_TYPE,
             TokenKind.BOOLEAN_TYPE,
             TokenKind.MATRIX_TYPE,
-            TokenKind.SYMBOL_TYPE
+            TokenKind.SYMBOL_TYPE,
+            TokenKind.STRING_TYPE
     );
 }
+
+// BUGS detected that need fixing
+// can't declare variables with null values, this goes against my original ideas
+// when declaring a variable, wrong Error is returned in case of eg: int x == 5; ???? why ??
+// variables cannot be declared with the value of other declared variables, eg: int x = y; where y is already declared will CRASH
