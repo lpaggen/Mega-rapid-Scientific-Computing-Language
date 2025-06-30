@@ -48,6 +48,7 @@ public class Parser {
     }
 
     private Expression parseExpression() {
+        System.out.println("current token at parseExpression: " + peek());
         return parseEquality();
     }
 
@@ -56,6 +57,16 @@ public class Parser {
         while (match(TokenKind.EQUAL_EQUAL, TokenKind.NOT_EQUAL)) {
             Token operator = previous();
             Expression rhs = parseComparison();
+            expression = new LogicalBinaryNode(expression, operator, rhs);
+        }
+        return expression;
+    }
+
+    private Expression parseComparison() {
+        Expression expression = parseTerm();
+        while (match(TokenKind.GREATER, TokenKind.LESS, TokenKind.GREATER_EQUAL, TokenKind.LESS_EQUAL)) {
+            Token operator = previous(); // because match() consumes the token (advances position)
+            Expression rhs = parseTerm(); // here we are also consuming the next token, which ensures the while loop actually works
             expression = new LogicalBinaryNode(expression, operator, rhs);
         }
         return expression;
@@ -81,16 +92,6 @@ public class Parser {
         return expression;
     }
 
-    private Expression parseComparison() {
-        Expression expression = parseTerm();
-        while (match(TokenKind.GREATER, TokenKind.LESS, TokenKind.GREATER_EQUAL, TokenKind.LESS_EQUAL)) {
-            Token operator = previous(); // because match() consumes the token (advances position)
-            Expression rhs = parseTerm(); // here we are also consuming the next token, which ensures the while loop actually works
-            expression = new LogicalBinaryNode(expression, operator, rhs);
-        }
-        return expression;
-    }
-
     private Expression parseUnary() {
         if (match(TokenKind.NOT, TokenKind.MINUS)) { // handle both ! and negation
             Token operator = previous();
@@ -101,16 +102,15 @@ public class Parser {
     }
 
     private Expression parsePrimary() {
-        System.out.println("Parsing primary expression at token: " + peek().getLexeme() + " of type: " + peek().getKind());
         if (match(TokenKind.FALSE)) return new primaryNode(false);
         if (match(TokenKind.TRUE)) return new primaryNode(true);
         if (match(TokenKind.NULL)) return new primaryNode(null);
         if (match(TokenKind.INTEGER, TokenKind.FLOAT, TokenKind.STRING)) {
-            System.out.println("Literal found: " + previous().getLexeme() + " of type: " + previous().getKind());
             return new primaryNode(previous().getLiteral());
         }
         if (match(TokenKind.OPEN_PAREN)) {
-            Expression expression = parseExpression();
+            System.out.println("current token at parsePrimary: " + peek());
+            Expression expression = parseExpression(); // TO FIX: for some odd reason, everything becomes NULL
             consume(TokenKind.CLOSE_PAREN); // this is like match, we're looking for a closing parenthesis
             return new groupingNode(expression);
         } // atm we can't really execute any computations, will check what to do in later build

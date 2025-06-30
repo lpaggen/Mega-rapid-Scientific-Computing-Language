@@ -16,7 +16,7 @@ public class groupingNode extends Expression {
 
     @Override
     public Object evaluate(LookupTable<String, Token> env) {
-        return null;
+        return expression.evaluate(env);
     }
 
     // need to double-check my logic here
