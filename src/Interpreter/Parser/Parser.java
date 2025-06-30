@@ -66,7 +66,7 @@ public class Parser {
         while (match(TokenKind.PLUS, TokenKind.MINUS)) {
             Token operator = previous();
             Expression rhs = parseFactor();
-            expression = new BinaryNode((MathExpression) expression, operator, (MathExpression) rhs);
+            expression = new BinaryNode(expression, operator, rhs);
         }
         return expression;
     }
@@ -76,7 +76,7 @@ public class Parser {
         while (match(TokenKind.MUL, TokenKind.DIV)) {
             Token operator = previous();
             Expression rhs = parseUnary();
-            expression = new BinaryNode((MathExpression) expression, operator, (MathExpression) rhs);
+            expression = new BinaryNode(expression, operator, rhs);
         }
         return expression;
     }

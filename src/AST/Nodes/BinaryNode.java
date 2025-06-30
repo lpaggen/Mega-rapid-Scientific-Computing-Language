@@ -3,21 +3,15 @@ package AST.Nodes;
 import Interpreter.Tokenizer.Token;
 import Util.LookupTable;
 
-public class BinaryNode extends MathExpression {
-    final MathExpression lhs;
-    final MathExpression rhs;
+public class BinaryNode extends Expression {
+    final Expression lhs;
+    final Expression rhs;
     final Token operator;
 
-    public BinaryNode(MathExpression lhs, Token operator, MathExpression rhs) {
+    public BinaryNode(Expression lhs, Token operator, Expression rhs) {
         this.lhs = lhs;
         this.rhs = rhs;
         this.operator = operator;
-    }
-
-    // this needs a lot of logic too
-    @Override
-    public MathExpression derive(String variable) {
-        return new BinaryNode(lhs.derive(variable), operator, rhs.derive(variable));
     }
 
     // evaluate in our case is going to need much more than just a double, so we need to change this to Object
@@ -30,9 +24,17 @@ public class BinaryNode extends MathExpression {
         if (lhsVal instanceof BooleanNode && rhsVal instanceof BooleanNode) {
             return evaluateBoolean(((BooleanNode) lhsVal).getValue(), ((BooleanNode) rhsVal).getValue());
         }
-
-        if (lhsVal instanceof Number && rhsVal instanceof Number) {
-            return evaluateNumeric((Number) lhsVal, (Number) rhsVal);
+        if (lhsVal instanceof Integer && rhsVal instanceof Integer) {
+            return evaluateInteger(lhsVal, rhsVal);
+        }
+        if (lhsVal instanceof Float && rhsVal instanceof Float) {
+            return evaluateFloat(lhsVal, rhsVal);
+        }
+        if (lhsVal instanceof Integer && rhsVal instanceof Float) {
+            return evaluateFloatTolerant(lhsVal, rhsVal);
+        }
+        if (lhsVal instanceof Float && rhsVal instanceof Integer) {
+            return evaluateFloatTolerant(lhsVal, rhsVal);
         }
         if (lhsVal instanceof MathExpression && rhsVal instanceof MathExpression) {
             return new BinaryNode((MathExpression) lhsVal, operator, (MathExpression) rhsVal);
@@ -46,14 +48,35 @@ public class BinaryNode extends MathExpression {
         throw new UnsupportedOperationException("Unsupported types for" + operator.getLexeme() + ": " + lhsVal.getClass() + " and " + rhsVal.getClass());
     }
 
-    private Object evaluateNumeric(Number lhsVal, Number rhsVal) {
+    private Integer evaluateInteger(Object lhsVal, Object rhsVal) {
         return switch (operator.getKind()) {
-            case PLUS -> lhsVal.doubleValue() + rhsVal.doubleValue();
-            case MINUS -> lhsVal.doubleValue() - rhsVal.doubleValue();
-            case MUL -> lhsVal.doubleValue() * rhsVal.doubleValue();
-            case DIV -> lhsVal.doubleValue() / rhsVal.doubleValue();
+            case PLUS -> (Integer) lhsVal + (Integer) rhsVal;
+            case MINUS -> (Integer) lhsVal - (Integer) rhsVal;
+            case MUL -> (Integer) lhsVal * (Integer) rhsVal;
+            case DIV -> (Integer) lhsVal / (Integer) rhsVal;
             default -> throw new UnsupportedOperationException("Unsupported operator: " + operator.getLexeme());
         };
+    }
+
+    private Float evaluateFloat(Object lhsVal, Object rhsVal) {
+        return switch (operator.getKind()) {
+            case PLUS -> ((Float) lhsVal) + ((Float) rhsVal);
+            case MINUS -> ((Float) lhsVal) - ((Float) rhsVal);
+            case MUL -> ((Float) lhsVal) * ((Float) rhsVal);
+            case DIV -> ((Float) lhsVal) / ((Float) rhsVal);
+            default -> throw new UnsupportedOperationException("Unsupported operator: " + operator.getLexeme());
+        };
+    }
+
+    private float evaluateFloatTolerant(Object lhsVal, Object rhsVal) {
+        // this is a tolerant version of the float evaluation, it will convert int to float
+        if (lhsVal instanceof Integer) {
+            lhsVal = ((Integer) lhsVal).floatValue();
+        }
+        if (rhsVal instanceof Integer) {
+            rhsVal = ((Integer) rhsVal).floatValue();
+        }
+        return evaluateFloat(lhsVal, rhsVal);
     }
 
     private Object evaluateBoolean(Boolean lhsVal, Boolean rhsVal) {
@@ -67,9 +90,5 @@ public class BinaryNode extends MathExpression {
     @Override
     public String toString() {
         return lhs + " " + operator + " " + rhs;
-    }
-
-    public MathExpression substitute(String... args) { // need to fix this eventually
-        return new BinaryNode(lhs.substitute(args), operator, rhs.substitute(args));
     }
 }
