@@ -1,8 +1,7 @@
 package AST.Nodes;
 
 import Interpreter.Tokenizer.Token;
-import Interpreter.Tokenizer.TokenKind;
-import Util.LookupTable;
+import Util.Environment;
 
 public class unaryNode extends Expression {
     private final Token operator;
@@ -22,7 +21,7 @@ public class unaryNode extends Expression {
     }
 
     @Override
-    public Object evaluate(LookupTable<String, Token> env) {
+    public Object evaluate(Environment<String, Token> env) {
         Object rightValue = rhs.evaluate(env);
         return switch (operator.getKind()) {
             case MINUS -> evaluateMinus(rightValue);

@@ -1,7 +1,7 @@
 package AST.Nodes;
 
 import Interpreter.Tokenizer.Token;
-import Util.LookupTable;
+import Util.Environment;
 
 public class Variable extends Expression {
     private final String name;
@@ -16,7 +16,7 @@ public class Variable extends Expression {
 
     // we fetch from the environment
     @Override
-    public Object evaluate(LookupTable<String, Token> env) {
+    public Object evaluate(Environment<String, Token> env) {
         if (env.isDeclared(name)) {
             return env.getLiteral(name);
         }

@@ -1,7 +1,7 @@
 package AST.Nodes;
 
 import Interpreter.Tokenizer.Token;
-import Util.LookupTable;
+import Util.Environment;
 
 public class Log extends MathExpression {
     private final MathExpression arg, base;
@@ -27,7 +27,7 @@ public class Log extends MathExpression {
     }
 
     @Override
-    public Object evaluate(LookupTable<String, Token> env) {
+    public Object evaluate(Environment<String, Token> env) {
         if (base.toString().equals("2")) {
             return Math.log((double) arg.evaluate(env));
         } else return Math.log10((double) arg.evaluate(env));

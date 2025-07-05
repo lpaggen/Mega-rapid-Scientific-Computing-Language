@@ -1,12 +1,12 @@
 package AST.Nodes;
 
 import Interpreter.Tokenizer.Token;
-import Util.LookupTable;
+import Util.Environment;
 
 public abstract class MathExpression extends Expression {
 
     @Override
-    public abstract Object evaluate(LookupTable<String, Token> env);
+    public abstract Object evaluate(Environment<String, Token> env);
 
     @Override
     public abstract String toString();

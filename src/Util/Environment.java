@@ -11,7 +11,7 @@ import java.util.Map;
 // or maybe we can get away with implementing a "scopeID" in the Token class or the lookuptable itself?
 // second option is better, because it allows us to have a single lookup table for the entire program
 // it is much simpler on paper, but i do not know how exactly it would work in practice
-public class LookupTable<K, V extends Token> {
+public class Environment<K, V extends Token> {
     private final Map<K, V> map = new HashMap<>();
 
     public TokenKind getType(K key) {

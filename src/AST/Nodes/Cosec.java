@@ -1,7 +1,7 @@
 package AST.Nodes;
 
 import Interpreter.Tokenizer.Token;
-import Util.LookupTable;
+import Util.Environment;
 
 public class Cosec extends MathExpression {
 
@@ -26,7 +26,7 @@ public class Cosec extends MathExpression {
 
     // quite unsure if this will work, it should, given the right circumstances
     @Override
-    public Object evaluate(LookupTable<String, Token> env) {
+    public Object evaluate(Environment<String, Token> env) {
         return 1 / Math.sin((double) arg.evaluate(env));
     }
 

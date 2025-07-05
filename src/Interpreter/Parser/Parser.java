@@ -4,9 +4,8 @@ import AST.Nodes.*;
 import Interpreter.ErrorHandler;
 import Interpreter.Tokenizer.TokenKind;
 import Interpreter.Tokenizer.Token;
-import Util.LookupTable;
+import Util.Environment;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -21,7 +20,7 @@ public class Parser {
 
     private final List<Token> tokens;
     private int tokenPos = 0;
-    public LookupTable<String, Token> lookupTable = new LookupTable<>();
+    public Environment<String, Token> environment = new Environment<>();
 
     public Parser(List<Token> tokens) {
         this.tokens = tokens;
@@ -31,16 +30,19 @@ public class Parser {
         while (!isAtEnd()) {
             if (check(TokenKind.INTEGER_TYPE) || check(TokenKind.FLOAT_TYPE) || check(TokenKind.BOOLEAN_TYPE) || check(TokenKind.MATRIX_TYPE) || check(TokenKind.SYMBOL_TYPE) || check(TokenKind.STRING_TYPE)) {
                 Statement statement = parseDeclaration();
-                statement.execute(lookupTable);
+                statement.execute(environment);
             } else {
-                Expression expression = parseExpression();
+                System.out.println("PARSING A STATEMENT");
+                Statement statement = parseStatement();
                 // Potentially do something with the evaluated expression
-                expression.evaluate(lookupTable);
             }
         }
     }
 
     private Statement parseStatement() {
+        if (match(TokenKind.PRINT)) {
+            return parsePrintFunction();
+        }
         if (check(TokenKind.INTEGER_TYPE) || check(TokenKind.FLOAT_TYPE) || check(TokenKind.BOOLEAN_TYPE) || check(TokenKind.MATRIX_TYPE) || check(TokenKind.SYMBOL_TYPE)) {
             return parseDeclaration();
         }
@@ -109,14 +111,13 @@ public class Parser {
             return new primaryNode(previous().getLiteral());
         }
         if (match(TokenKind.OPEN_PAREN)) {
-            System.out.println("current token at parsePrimary: " + peek());
             Expression expression = parseExpression(); // TO FIX: for some odd reason, everything becomes NULL
             consume(TokenKind.CLOSE_PAREN); // this is like match, we're looking for a closing parenthesis
             return new groupingNode(expression);
         } // atm we can't really execute any computations, will check what to do in later build
         if (match(TokenKind.VARIABLE)) {
             Token variableToken = previous();
-            if (!lookupTable.isDeclared(variableToken.getLexeme())) {
+            if (!environment.isDeclared(variableToken.getLexeme())) {
                 throw new ErrorHandler(
                         "parsing",
                         variableToken.getLine(),
@@ -126,7 +127,7 @@ public class Parser {
                 //throw new RuntimeException("Variable not declared: " + variableToken.getLexeme() + " at line " + variableToken.getLine());
             } // so now, we should maybe do a recursive call to parsePrimary(), or just take the value directly and out a primaryNode
             //return new VariableNode(variableToken);
-            Object value = lookupTable.getLiteral(variableToken.getLexeme());
+            Object value = environment.getLiteral(variableToken.getLexeme());
             return new primaryNode(value); // this will return the value of the variable, not the variable itself
         }
         throw new ErrorHandler(
@@ -182,7 +183,7 @@ public class Parser {
         consume(TokenKind.SEMICOLON);
         TokenKind dataType = mapDeclarationToDatatype.get(typeToken.getKind());
         System.out.println("Declaring variable: " + name.getLexeme() + " of type: " + dataType);
-        lookupTable.declareVariable(name.getLexeme(), new Token(dataType, name.getLexeme(), null, typeToken.getLine()));
+        environment.declareVariable(name.getLexeme(), new Token(dataType, name.getLexeme(), null, typeToken.getLine()));
         return new DeclarationNode(new Token(dataType, typeToken.getLexeme(), null, typeToken.getLine()), name, initializer);
     }
 
@@ -250,4 +251,3 @@ public class Parser {
 // BUGS detected that need fixing
 // can't declare variables with null values, this goes against my original ideas
 // when declaring a variable, wrong Error is returned in case of eg: int x == 5; ???? why ??
-// variables cannot be declared with the value of other declared variables, eg: int x = y; where y is already declared will CRASH

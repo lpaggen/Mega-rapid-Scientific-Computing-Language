@@ -1,7 +1,7 @@
 package AST.Nodes;
 
 import Interpreter.Tokenizer.Token;
-import Util.LookupTable;
+import Util.Environment;
 
 public class Divide extends MathExpression {
     private final MathExpression num, denom;
@@ -12,7 +12,7 @@ public class Divide extends MathExpression {
     }
 
     @Override
-    public Object evaluate(LookupTable<String, Token> env) {
+    public Object evaluate(Environment<String, Token> env) {
         Object numResult = num.evaluate(env);
         Object denomResult = denom.evaluate(env);
 

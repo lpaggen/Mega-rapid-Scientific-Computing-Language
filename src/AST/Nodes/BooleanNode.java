@@ -1,7 +1,7 @@
 package AST.Nodes;
 
 import Interpreter.Tokenizer.Token;
-import Util.LookupTable;
+import Util.Environment;
 
 public class BooleanNode extends Expression {
     private final boolean value;
@@ -15,7 +15,7 @@ public class BooleanNode extends Expression {
     }
 
     @Override
-    public Object evaluate(LookupTable<String, Token> env) {
+    public Object evaluate(Environment<String, Token> env) {
         return this;
     }
 

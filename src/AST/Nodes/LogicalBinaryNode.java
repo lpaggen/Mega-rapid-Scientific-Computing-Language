@@ -1,7 +1,7 @@
 package AST.Nodes;
 
 import Interpreter.Tokenizer.Token;
-import Util.LookupTable;
+import Util.Environment;
 
 // this class might be temporary, it serves as a placeholder for the actual implementation
 // of when we want to deal with logic and non strictly symbolic expressions
@@ -17,7 +17,7 @@ public class LogicalBinaryNode extends Expression {
     }
 
     @Override
-    public Object evaluate(LookupTable<String, Token> env) {
+    public Object evaluate(Environment<String, Token> env) {
         Object lhsVal = lhs.evaluate(env);
         Object rhsVal = rhs.evaluate(env);
 

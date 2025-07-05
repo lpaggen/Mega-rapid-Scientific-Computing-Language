@@ -1,8 +1,8 @@
 package AST.Nodes;
 
 import Interpreter.Tokenizer.Token;
-import Util.LookupTable;
+import Util.Environment;
 
 public abstract class Statement extends ASTNode {
-    public abstract void execute(LookupTable<String, Token> env);
+    public abstract void execute(Environment<String, Token> env);
 }

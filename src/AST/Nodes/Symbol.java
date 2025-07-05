@@ -1,8 +1,7 @@
 package AST.Nodes;
 
 import Interpreter.Tokenizer.Token;
-import Interpreter.Tokenizer.TokenKind;
-import Util.LookupTable;
+import Util.Environment;
 
 // the Symbol datatype is unique to this language (afaik) - also Sympy uses it
 // it allows for algebraic mathematical operations
@@ -22,7 +21,7 @@ public class Symbol extends MathExpression {
     }
 
     @Override
-    public Object evaluate(LookupTable<String, Token> env) {
+    public Object evaluate(Environment<String, Token> env) {
         return null;
     }
 

@@ -2,7 +2,7 @@ package AST.Nodes;
 
 import Interpreter.ErrorHandler;
 import Interpreter.Tokenizer.Token;
-import Util.LookupTable;
+import Util.Environment;
 import Util.WarningHandler;
 
 public class DeclarationNode extends Statement {
@@ -22,7 +22,7 @@ public class DeclarationNode extends Statement {
     // it's super easy really, we check the literal, and the type of the variable
     // if there's a mismatch, we crash the program OR we are nice and tolerate small mistakes, will see!
     @Override
-    public void execute(LookupTable<String, Token> env) {
+    public void execute(Environment<String, Token> env) {
         Object value = (initializer != null) ? initializer.evaluate(env) : null;
 
         switch (type.getKind()) {
