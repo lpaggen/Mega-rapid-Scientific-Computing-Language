@@ -8,7 +8,7 @@ import java.util.Map;
 
 // !!!! IMPORTANT FOR FUTURE BUILDS
 // we can either use (and painfully convert everything) SCOPED HASH MAPS
-// or maybe we can get away with implementing a "scopeID" in the Token class or the lookuptable itself?
+// or maybe we can get away with implementing a "scopeID" in the Token class or the env itself?
 // second option is better, because it allows us to have a single lookup table for the entire program
 // it is much simpler on paper, but i do not know how exactly it would work in practice
 public class Environment<K, V extends Token> {

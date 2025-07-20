@@ -34,6 +34,8 @@ public class Tokenizer {
         switch (c) {
             case '(': addToken(TokenKind.OPEN_PAREN, "("); advance(); break;
             case ')': addToken(TokenKind.CLOSE_PAREN, ")"); advance(); break;
+            case '{': addToken(TokenKind.OPEN_BRACE, "{"); advance(); break;
+            case '}': addToken(TokenKind.CLOSE_BRACE, "}"); advance(); break;
             case '+': addToken(TokenKind.PLUS, "+"); advance(); break;
             case '-': addToken(TokenKind.MINUS, "-"); advance(); break;
             case '*': addToken(TokenKind.MUL, "*"); advance(); break;
@@ -106,6 +108,8 @@ public class Tokenizer {
         }
     }
 
+    // in future build -> want to remove built in functions from this map, can just store them in env at runtime
+    // this means we're not hardcoding them, so no token for PRINT etc, it would make it all simpler
     private final Map<String, TokenKind> keywords = new HashMap<>() {{
         put("sin", TokenKind.SIN);
         put("cos", TokenKind.COS);
@@ -129,7 +133,7 @@ public class Tokenizer {
         put("int", TokenKind.INTEGER_TYPE);
         put("float", TokenKind.FLOAT_TYPE);
         put("matrix", TokenKind.MATRIX_TYPE);
-        put("print", TokenKind.PRINT);
+        // put("print", TokenKind.PRINT);
         put("break", TokenKind.BREAK);
         put("continue", TokenKind.CONTINUE);
         put("wrt", TokenKind.WRT);

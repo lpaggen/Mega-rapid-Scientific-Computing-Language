@@ -1,6 +1,7 @@
 package Interpreter.Parser;
 
 import AST.Nodes.*;
+import AST.Nodes.BuiltIns.BuiltIns;
 import Interpreter.ErrorHandler;
 import Interpreter.Tokenizer.TokenKind;
 import Interpreter.Tokenizer.Token;
@@ -28,25 +29,20 @@ public class Parser {
 
     public void interpretCode() {
         while (!isAtEnd()) {
-            if (check(TokenKind.INTEGER_TYPE) || check(TokenKind.FLOAT_TYPE) || check(TokenKind.BOOLEAN_TYPE) || check(TokenKind.MATRIX_TYPE) || check(TokenKind.SYMBOL_TYPE) || check(TokenKind.STRING_TYPE)) {
-                Statement statement = parseDeclaration();
-                statement.execute(environment);
-            } else {
-                System.out.println("PARSING A STATEMENT");
-                Statement statement = parseStatement();
-                // Potentially do something with the evaluated expression
-            }
+            Statement statement = parseStatement();
+            statement.execute(environment);
         }
     }
 
+    // everything should really start from the Statement, since we have to declare variables, functions, etc.
     private Statement parseStatement() {
-        if (match(TokenKind.PRINT)) {
-            return parsePrintFunction();
-        }
-        if (check(TokenKind.INTEGER_TYPE) || check(TokenKind.FLOAT_TYPE) || check(TokenKind.BOOLEAN_TYPE) || check(TokenKind.MATRIX_TYPE) || check(TokenKind.SYMBOL_TYPE)) {
+        System.out.println("current token at parseStatement: " + peek());
+        if (isDeclarationStart()) {
             return parseDeclaration();
+        } else if (isFunction()) {
+            return parseFunction();
         }
-        return new ExpressionStatementNode(parseExpression()); // Wrap the expression in a statement node
+        return null;
     }
 
     private Expression parseExpression() {
@@ -187,6 +183,33 @@ public class Parser {
         return new DeclarationNode(new Token(dataType, typeToken.getLexeme(), null, typeToken.getLine()), name, initializer);
     }
 
+    private Statement parseFunctionDeclaration() { // we should build the logic to allow users to define a function
+        return null;
+        // we will handle this later, for now we just want to parse the function call (handle builtins)
+    }
+
+    // here we need a way to do things correctly
+    private Statement parseFunctionCall() {
+        if (BuiltIns.isBuiltInFunction(peek().getLexeme())) { // first we handle built-in functions (in library)
+            FunctionNode builtInFunction = BuiltIns.getBuiltInFunction(peek().getLexeme());
+            advance(); // consume the function name
+            consume(TokenKind.OPEN_PAREN); // consume the opening parenthesis
+            List<Expression> parameters = parseFunctionParameters();
+            consume(TokenKind.CLOSE_PAREN); // consume the closing parenthesis
+            return new FunctionNode(builtInFunction, parameters);
+        } else {
+            // handle user-defined functions
+            Token functionName = consume(TokenKind.VARIABLE);
+            consume(TokenKind.OPEN_PAREN);
+            List<Expression> parameters = parseFunctionParameters();
+            consume(TokenKind.CLOSE_PAREN);
+            consume(TokenKind.OPEN_BRACE);
+            List<Statement> body = parseFunctionBody();
+            consume(TokenKind.CLOSE_BRACE);
+            return new FunctionNode(functionName.getLexeme(), parameters, body);
+        }
+    }
+
     private boolean match(TokenKind... expectedKinds) {
         for (TokenKind expectedKind : expectedKinds) {
             if (check(expectedKind)) {
@@ -235,6 +258,14 @@ public class Parser {
 
     private boolean isAtEnd() {
         return peek().getKind() == TokenKind.EOF;
+    }
+
+    boolean isDeclarationStart() {
+        return check(TokenKind.INTEGER_TYPE, TokenKind.FLOAT_TYPE, TokenKind.BOOLEAN_TYPE, TokenKind.MATRIX_TYPE, TokenKind.SYMBOL_TYPE, TokenKind.STRING_TYPE);
+    }
+
+    boolean isFunction() {
+        return BuiltIns.isBuiltInFunction(peek().getLexeme());
     }
 
     // in future add support for all types

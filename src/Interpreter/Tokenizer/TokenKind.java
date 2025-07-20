@@ -33,6 +33,8 @@ public enum TokenKind {
 
     OPEN_PAREN,
     CLOSE_PAREN,
+    OPEN_BRACE, // for blocks of code
+    CLOSE_BRACE, // for blocks of code
     COMMA, // for multiple function arguments
 
     PLUS,
@@ -74,5 +76,5 @@ public enum TokenKind {
     BREAK,
     CONTINUE,
     RETURN,
-    PRINT,
+    // PRINT,
 }
