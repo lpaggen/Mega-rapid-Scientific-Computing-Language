@@ -12,6 +12,7 @@ public class BuiltIns {
 
     static { // this is the registry for built-in functions, we can just add whatever we want and use them as we normally would
         builtInFunctions.put("print", new PrintFunction());
+        // we can add whatever else we want here, maybe also add the module they correspond to?
     }
 
     public static FunctionNode getBuiltInFunction(String name) {
