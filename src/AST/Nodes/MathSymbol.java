@@ -3,20 +3,20 @@ package AST.Nodes;
 import Interpreter.Tokenizer.Token;
 import Util.Environment;
 
-// the Symbol datatype is unique to this language (afaik) - also Sympy uses it
+// the MathSymbol datatype is unique to this language (afaik) - also Sympy uses it
 // it allows for algebraic mathematical operations
 // as such, 2a + a will return 3a
 // !! symbol will handle int and float instead of being a separate data type
-public class Symbol extends MathExpression {
+public class MathSymbol extends MathExpression {
     private final String name; // name of a symbol can only be
 
-    public Symbol(String name) {
+    public MathSymbol(String name) {
         this.name = name;
     }
 
     private void validateName(String name) { // doesn't need to return anything
         if (!name.matches("[a-z]")) { // check regex for alphabet
-            throw new IllegalArgumentException("Symbol name must be a single lowercase alphabetical character.");
+            throw new IllegalArgumentException("MathSymbol name must be a single lowercase alphabetical character.");
         }
     }
 

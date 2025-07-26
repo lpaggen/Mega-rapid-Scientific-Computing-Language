@@ -1,19 +1,19 @@
 package DataTypes;
 
-import AST.Nodes.Symbol;
+import AST.Nodes.MathSymbol;
 
 public class Term {
     private final Number coeff;
-    private final Symbol symbol;
+    private final MathSymbol symbol;
     private final boolean isFloat;
 
-    public Term(Symbol symbol, Integer coeff) {
+    public Term(MathSymbol symbol, Integer coeff) {
         this.symbol = symbol;
         this.coeff = coeff;
         this.isFloat = false;
     }
 
-    public Term(Symbol symbol, Float coeff) {
+    public Term(MathSymbol symbol, Float coeff) {
         this.symbol = symbol;
         this.coeff = coeff;
         this.isFloat = true;
@@ -23,7 +23,7 @@ public class Term {
         return this.coeff;
     }
 
-    public Symbol getSymbol() {
+    public MathSymbol getSymbol() {
         return symbol;
     }
 

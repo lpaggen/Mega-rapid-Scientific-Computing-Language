@@ -3,31 +3,31 @@ package Util;
 import java.util.HashMap;
 import java.util.Map;
 
-public class EnvReWrite <K extends VariableSymbol> {
-    private final Map<K, VariableSymbol> environment = new HashMap<>();
+public class EnvReWrite<V extends VariableSymbol> {
+    private final Map<String, V> environment = new HashMap<>();
 
-    public void declareVariable(K key, VariableSymbol value) {
+    public void declareVariable(String key, V value) {
         if (environment.containsKey(key)) {
-            throw new IllegalArgumentException("Variable '" + key.getName() + "' already declared.");
+            throw new IllegalArgumentException("Variable '" + key + "' already declared.");
         }
         environment.put(key, value);
     }
 
-    public void setValue(K key, VariableSymbol value) {
+    public void setValue(String key, V value) {
         if (!environment.containsKey(key)) {
-            throw new IllegalArgumentException("Variable '" + key.getName() + "' not declared.");
+            throw new IllegalArgumentException("Variable '" + key + "' not declared.");
         }
         environment.put(key, value);
     }
 
-    public VariableSymbol lookup(K key) {
+    public V lookup(String key) {
         if (!environment.containsKey(key)) {
-            throw new IllegalArgumentException("Variable '" + key.getName() + "' not declared.");
+            throw new IllegalArgumentException("Variable '" + key + "' not declared.");
         }
         return environment.get(key);
     }
 
-    public boolean isDeclared(K key) {
+    public boolean isDeclared(String key) {
         return environment.containsKey(key);
     }
 
@@ -39,15 +39,15 @@ public class EnvReWrite <K extends VariableSymbol> {
         System.out.printf("%-" + typeWidth + "s%-" + keyWidth + "s%-" + valueWidth + "s%n", "TOKEN TYPE", "VARIABLE NAME", "LITERAL VALUE");
         System.out.println("-".repeat(typeWidth + keyWidth + valueWidth));
 
-        for (Map.Entry<K, VariableSymbol> entry : environment.entrySet()) {
-            K key = entry.getKey();
-            VariableSymbol token = entry.getValue();
+        for (Map.Entry<String, V> entry : environment.entrySet()) {
+            String key = entry.getKey();
+            V variableSymbol = entry.getValue();
 
             System.out.printf(
                     "%-" + typeWidth + "s%-" + keyWidth + "s%-" + valueWidth + "s%n",
-                    token.getType(),
-                    key.getName(),
-                    token.getValue() != null ? token.getValue().toString() : "null"
+                    variableSymbol.getType(),
+                    key,
+                    variableSymbol.getValue() != null ? variableSymbol.getValue().toString() : "null"
             );
         }
     }

@@ -13,6 +13,7 @@ import java.util.Map;
 // it is much simpler on paper, but i do not know how exactly it would work in practice
 
 // TO DO refactor: V should not extend Token! Since we want to allow for functions too...
+// but why can't functions be tokens? am I missing something here?
 public class Environment<K, V extends Token> {
     private final Map<K, V> map = new HashMap<>();
 
