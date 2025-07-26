@@ -1,54 +1,61 @@
 package Util;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 
-public class EnvReWrite<V extends VariableSymbol> {
-    private final Map<String, V> environment = new HashMap<>();
+// scoped hash maps! super easy concept for the time being, use a stack to push and pop scope
+// so each "level" i call "scope" is its own environment
+public class EnvReWrite {
+    private final Deque<Map<String, Symbol>> envStack = new ArrayDeque<>();
 
-    public void declareVariable(String key, V value) {
-        if (environment.containsKey(key)) {
-            throw new IllegalArgumentException("Variable '" + key + "' already declared.");
-        }
-        environment.put(key, value);
+    public EnvReWrite() {
+        // initialize with a global environment -- remember we can just change this anytime!
+        pushScope();
     }
 
-    public void setValue(String key, V value) {
-        if (!environment.containsKey(key)) {
-            throw new IllegalArgumentException("Variable '" + key + "' not declared.");
-        }
-        environment.put(key, value);
+    public void pushScope() {
+        envStack.push(new HashMap<>());
     }
 
-    public V lookup(String key) {
-        if (!environment.containsKey(key)) {
-            throw new IllegalArgumentException("Variable '" + key + "' not declared.");
+    // self-explanatory, this just goes up in scope
+    // obviously we can delete scopes when we go up, since we don't need them anymore
+    public void popScope() {
+        if (envStack.size() == 1) {
+            throw new IllegalStateException("Cannot pop global scope");
         }
-        return environment.get(key);
+        envStack.pop();
     }
 
-    public boolean isDeclared(String key) {
-        return environment.containsKey(key);
+    public void declareVariable(String name, Symbol value) {
+        Map<String, Symbol> currentScope = envStack.peek();
+        if (currentScope.containsKey(name)) {
+            throw new IllegalArgumentException("Variable '" + name + "' already declared in current scope");
+        }
+        currentScope.put(name, value);
     }
 
-    public void showLookupTable() {
-        final int typeWidth = 15;
-        final int keyWidth = 20;
-        final int valueWidth = 30;
-
-        System.out.printf("%-" + typeWidth + "s%-" + keyWidth + "s%-" + valueWidth + "s%n", "TOKEN TYPE", "VARIABLE NAME", "LITERAL VALUE");
-        System.out.println("-".repeat(typeWidth + keyWidth + valueWidth));
-
-        for (Map.Entry<String, V> entry : environment.entrySet()) {
-            String key = entry.getKey();
-            V variableSymbol = entry.getValue();
-
-            System.out.printf(
-                    "%-" + typeWidth + "s%-" + keyWidth + "s%-" + valueWidth + "s%n",
-                    variableSymbol.getType(),
-                    key,
-                    variableSymbol.getValue() != null ? variableSymbol.getValue().toString() : "null"
-            );
+    public Symbol lookup(String name) {
+        for (Map<String, Symbol> scope : envStack) {
+            if (scope.containsKey(name)) {
+                return scope.get(name);
+            }
         }
+        throw new IllegalArgumentException("Variable '" + name + "' not found in any scope");
+    }
+
+    public boolean isDeclared(String name) {
+        return envStack.peek().containsKey(name);
+    }
+
+    public void updateVariable(String name, Symbol value) {
+        for (Map<String, Symbol> scope : envStack) {
+            if (scope.containsKey(name)) {
+                scope.put(name, value);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Variable '" + name + "' not found in any scope");
     }
 }

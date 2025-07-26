@@ -19,6 +19,10 @@ public class FunctionSymbol extends Symbol {
         return parameters;
     }
 
+    // so until (maybe) future revisions, this should stay the base ASTNode
+    // in the future we might specify a more specific type for the body,
+    // but really we might not need to, think about it:
+    // the body is just a list of statements, and we can execute them in the environment
     public ASTNode getBody() {
         return body;
     }
