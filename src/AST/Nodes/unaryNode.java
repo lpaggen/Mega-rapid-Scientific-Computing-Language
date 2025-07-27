@@ -1,6 +1,7 @@
 package AST.Nodes;
 
 import Interpreter.Tokenizer.Token;
+import Util.EnvReWrite;
 import Util.Environment;
 
 public class unaryNode extends Expression {
@@ -21,7 +22,7 @@ public class unaryNode extends Expression {
     }
 
     @Override
-    public Object evaluate(Environment<String, Token> env) {
+    public Object evaluate(EnvReWrite env) {
         Object rightValue = rhs.evaluate(env);
         return switch (operator.getKind()) {
             case MINUS -> evaluateMinus(rightValue);

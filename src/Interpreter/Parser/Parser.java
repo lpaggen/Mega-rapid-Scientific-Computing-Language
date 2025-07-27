@@ -6,12 +6,12 @@ import Interpreter.ErrorHandler;
 import Interpreter.Tokenizer.TokenKind;
 import Interpreter.Tokenizer.Token;
 import Util.EnvReWrite;
-import Util.Environment;
 import Util.VariableSymbol;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 // IMPORTANT NOTE
 // the parser is ONLY responsible for parsing the code and building the AST
@@ -23,7 +23,7 @@ public class Parser {
 
     private final List<Token> tokens;
     private int tokenPos = 0;
-    public Environment<String, Token> environment = new Environment<>();
+    public EnvReWrite environment = new EnvReWrite(); // remember this initializes a global scope BY DEFAULT
 
     public Parser(List<Token> tokens) {
         this.tokens = tokens;
@@ -126,7 +126,8 @@ public class Parser {
                 //throw new RuntimeException("Variable not declared: " + variableToken.getLexeme() + " at line " + variableToken.getLine());
             } // so now, we should maybe do a recursive call to parsePrimary(), or just take the value directly and out a primaryNode
             //return new VariableNode(variableToken);
-            Object value = environment.getLiteral(variableToken.getLexeme());
+            VariableSymbol var = (VariableSymbol) environment.lookup(variableToken.getLexeme());
+            Object value = var.getValue();
             return new primaryNode(value); // this will return the value of the variable, not the variable itself
         }
         throw new ErrorHandler(
@@ -182,11 +183,8 @@ public class Parser {
         consume(TokenKind.SEMICOLON);
         TokenKind dataType = mapDeclarationToDatatype.get(typeToken.getKind());
         System.out.println("Declaring variable: " + name.getLexeme() + " of type: " + dataType);
-        // deprecating the old environment declaration with Token in favor of VariableSymbol
-        // so if it's not a function, ie a type; we can declare it as a VariableSymbol using the first constructor
-        //VariableSymbol variableSymbol = new VariableSymbol(name.getLexeme(), dataType, typeToken.getLine());
-        //environment.declareVariable(name.getLexeme(), variableSymbol);
-        environment.declareVariable(name.getLexeme(), new Token(dataType, name.getLexeme(), null, typeToken.getLine()));
+        // VariableSymbol variableSymbol = new VariableSymbol(name.getLexeme(), dataType, initializer);
+        // environment.declareVariable(name.getLexeme(), variableSymbol);
 
         // environment.declareVariable(name.getLexeme(), new Token(dataType, name.getLexeme(), null, typeToken.getLine()));
         return new DeclarationNode(new Token(dataType, typeToken.getLexeme(), null, typeToken.getLine()), name, initializer);
@@ -197,9 +195,27 @@ public class Parser {
         // we will handle this later, for now we just want to parse the function call (handle builtins)
     }
 
-    // here we need a way to do things correctly
 //    private Statement parseFunctionCall() {
 //        if (BuiltIns.isBuiltInFunction(peek().getLexeme())) { // first we handle built-in functions (in library)
+//            FunctionNode builtInFunction = BuiltIns.getBuiltInFunction(peek().getLexeme());
+//            advance(); // consume the function name
+//            consume(TokenKind.OPEN_PAREN); // consume the opening parenthesis
+//            List<Expression> parameters = parseFunctionParameters();
+//            consume(TokenKind.CLOSE_PAREN); // consume the closing parenthesis
+//            return new FunctionNode(builtInFunction, parameters);
+//        } else {
+//            throw new ErrorHandler(
+//                    "parsing",
+//                    peek().getLine(),
+//                    "Unexpected token: " + peek().getLexeme(),
+//                    "Expected a built-in function call."
+//            );
+//        }
+//    }
+
+    // here we need a way to do things correctly
+//    private Statement parseFunctionCall() {
+//        if (BuiltIns.isBuiltInFunction(peek().getLexeme())) { // first we handle built-in functions (in library) ? why ?
 //            FunctionNode builtInFunction = BuiltIns.getBuiltInFunction(peek().getLexeme());
 //            advance(); // consume the function name
 //            consume(TokenKind.OPEN_PAREN); // consume the opening parenthesis

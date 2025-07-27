@@ -1,6 +1,7 @@
 package AST.Nodes;
 
 import Interpreter.Tokenizer.Token;
+import Util.EnvReWrite;
 import Util.Environment;
 
 public class BinaryNode extends Expression {
@@ -17,7 +18,7 @@ public class BinaryNode extends Expression {
     // evaluate in our case is going to need much more than just a double, so we need to change this to Object
     // it's also going to be quite extensive, because we have a lot of type matches to check
     @Override
-    public Object evaluate(Environment<String, Token> env) {
+    public Object evaluate(EnvReWrite env) {
         Object lhsVal = lhs.evaluate(env);
         Object rhsVal = rhs.evaluate(env);
 

@@ -1,6 +1,7 @@
 package AST.Nodes;
 
 import Interpreter.Tokenizer.Token;
+import Util.EnvReWrite;
 import Util.Environment;
 
 public class Sec extends MathExpression {
@@ -23,7 +24,7 @@ public class Sec extends MathExpression {
     }
 
     @Override
-    public Object evaluate(Environment<String, Token> env) {
+    public Object evaluate(EnvReWrite env) {
         return 1 / Math.cos((double) arg.evaluate(env));
     }
 

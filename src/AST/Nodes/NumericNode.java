@@ -1,6 +1,7 @@
 package AST.Nodes;
 
 import Interpreter.Tokenizer.Token;
+import Util.EnvReWrite;
 import Util.Environment;
 
 public class NumericNode extends Expression {
@@ -30,7 +31,7 @@ public class NumericNode extends Expression {
 
     // this isn't really ideal, maybe this should just be an expression
     @Override
-    public Object evaluate(Environment<String, Token> env) {
+    public Object evaluate(EnvReWrite env) {
         return value;
     }
 }

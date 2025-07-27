@@ -1,6 +1,7 @@
 package AST.Nodes;
 
 import Interpreter.Tokenizer.Token;
+import Util.EnvReWrite;
 import Util.Environment;
 
 public class Log extends MathExpression {
@@ -27,7 +28,7 @@ public class Log extends MathExpression {
     }
 
     @Override
-    public Object evaluate(Environment<String, Token> env) {
+    public Object evaluate(EnvReWrite env) {
         if (base.toString().equals("2")) {
             return Math.log((double) arg.evaluate(env));
         } else return Math.log10((double) arg.evaluate(env));

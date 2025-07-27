@@ -1,6 +1,7 @@
 package AST.Nodes;
 
 import Interpreter.Tokenizer.Token;
+import Util.EnvReWrite;
 import Util.Environment;
 
 public class Tangent extends MathExpression {
@@ -21,7 +22,7 @@ public class Tangent extends MathExpression {
     }
 
     @Override
-    public Object evaluate(Environment<String, Token> env) {
+    public Object evaluate(EnvReWrite env) {
         return Math.tan((double) arg.evaluate(env));
     }
 

@@ -2,7 +2,9 @@ package AST.Nodes;
 
 import Interpreter.ErrorHandler;
 import Interpreter.Tokenizer.Token;
+import Util.EnvReWrite;
 import Util.Environment;
+import Util.VariableSymbol;
 import Util.WarningHandler;
 
 public class DeclarationNode extends Statement {
@@ -22,7 +24,7 @@ public class DeclarationNode extends Statement {
     // it's super easy really, we check the literal, and the type of the variable
     // if there's a mismatch, we crash the program OR we are nice and tolerate small mistakes, will see!
     @Override
-    public void execute(Environment<String, Token> env) {
+    public void execute(EnvReWrite env) {
         Object value = (initializer != null) ? initializer.evaluate(env) : null;
 
         switch (type.getKind()) {
@@ -50,8 +52,7 @@ public class DeclarationNode extends Statement {
                 break;
         }
 
-        env.setValue(variable.getLexeme(), new Token(type.getKind(), variable.getLexeme(), value, variable.getLine()));
-        env.showLookupTable();
+        env.declareVariable(variable.getLexeme(), new VariableSymbol(variable.getLexeme(), type.getKind(), value));
     }
 
     // will work on this in a later build, it's not necessary yet

@@ -1,6 +1,7 @@
 package AST.Nodes;
 
 import Interpreter.Tokenizer.Token;
+import Util.EnvReWrite;
 import Util.Environment;
 
 public class BooleanNode extends Expression {
@@ -15,7 +16,7 @@ public class BooleanNode extends Expression {
     }
 
     @Override
-    public Object evaluate(Environment<String, Token> env) {
+    public Object evaluate(EnvReWrite env) {
         return this;
     }
 
