@@ -6,8 +6,10 @@ import Interpreter.ErrorHandler;
 import Interpreter.Tokenizer.TokenKind;
 import Interpreter.Tokenizer.Token;
 import Util.Environment;
+import Util.FunctionSymbol;
 import Util.VariableSymbol;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -192,11 +194,72 @@ public class Parser {
     }
 
     private Statement parseFunctionDeclaration() { // we should build the logic to allow users to define a function
+        advance(); // consume the FUNC token
+        if (!match(TokenKind.VARIABLE)) { // should make sure you're not defining a function with a reserved keyword or literal
+            throw new ErrorHandler(
+                    "parsing",
+                    peek().getLine(),
+                    "Unexpected token: " + peek().getLexeme(),
+                    "Expected a function name after 'func' keyword."
+            );
+            //throw new RuntimeException(peek() + " Expected function name after 'func' keyword.");
+        }
+        Token functionName = previous(); // we get the name etc, then we have to build the FunctionSymbol somehow
+        if (!match(TokenKind.OPEN_PAREN)) {
+            throw new ErrorHandler(
+                    "parsing",
+                    peek().getLine(),
+                    "Unexpected token: " + peek().getLexeme(),
+                    "Expected '(' after function name."
+            );
+            //throw new RuntimeException(peek() + " Expected '(' after function name.");
+        }
+        // the parameters are optional, so we can have a function with no parameters
+        // but the logic will be implemented later on, since i have no idea how to do it now
+        List<Statement> parameters = parseFunctionParameters(); // this will parse the parameters of the function
+        consume(TokenKind.CLOSE_PAREN); // consume the closing parenthesis
+        // so, for built ins, probably we will handle them at the start of this method
+        if (!match(TokenKind.ARROW)) { // if we don't have an arrow, we assume it's a built-in function
+            throw new ErrorHandler(
+                    "parsing",
+                    peek().getLine(),
+                    "Unexpected token: " + peek().getLexeme(),
+                    "Expected '->' after function parameters. Declaring a return type is mandatory."
+            );
+            //throw new RuntimeException(peek() + " Expected '->' after function parameters.");
+        } // now we should get the return type of the function
+        TokenKind returnType = consume(TokenKind.VOID_TYPE,
+                                        TokenKind.INTEGER_TYPE,
+                                        TokenKind.FLOAT_TYPE,
+                                        TokenKind.BOOLEAN_TYPE,
+                                        TokenKind.MATRIX_TYPE,
+                                        TokenKind.SYMBOL_TYPE,
+                                        TokenKind.STRING_TYPE).getKind();
+        System.out.println("Function return type: " + returnType);
+        if (!match(TokenKind.OPEN_BRACE)) {
+            throw new ErrorHandler(
+                    "parsing",
+                    peek().getLine(),
+                    "Unexpected token: " + peek().getLexeme(),
+                    "Expected '{' after return type."
+            );
+            //throw new RuntimeException(peek() + " Expected '{' after return type.");
+        }
+        System.out.println("current: " + peek()); // sitting at return
 
+        // somehow the body has to be parsed before return
+        consume(TokenKind.RETURN); // consume the closing brace, we will handle the body later
 
-        return null;
-        // we will handle this later, for now we just want to parse the function call (handle builtins)
-        // actually this needs to be done, since the parser needs to go down the chain
+        Expression functionBody = null; // for now, we will just return null, since we don't have a body yet
+        consume(TokenKind.CLOSE_BRACE); // consume the closing brace, we will handle the body later
+
+        return new FunctionNode( // does FunctionNode need its environment passed as well? unsure, yes and no
+                functionName.getLexeme(),
+                returnType,
+                parameters,
+                functionBody,
+                environment
+        ); // this will create a FunctionNode with the name, return type, parameters and body
     }
 
     // i don't think i want to specify the return type of the built-in functions
@@ -225,11 +288,11 @@ public class Parser {
 
     // still have no idea how i will even apply these things, but it will happen at some point
     // for now all i can really do is just gather the params, but i can't do anything with them quite yet
-    private List<Expression> parseFunctionParameters() {
-        List<Expression> parameters = new java.util.ArrayList<>();
+    private List<Statement> parseFunctionParameters() {
+        List<Statement> parameters = new java.util.ArrayList<>();
         if (!check(TokenKind.CLOSE_PAREN)) { // if we don't have a closing parenthesis, we have parameters
             do {
-                parameters.add(parseExpression());
+                parameters.add(parseStatement());
             } while (match(TokenKind.COMMA)); // allow multiple parameters separated by commas
         }
         return parameters;
@@ -301,9 +364,14 @@ public class Parser {
         return false;
     }
 
-    private Token consume(TokenKind kind) {
-        if (check(kind)) return advance();
-        else throw new Error("No match for " + kind + " at line " + peek().getLine() + ". Expected: " + kind);
+    private Token consume(TokenKind... kinds) {
+        for (TokenKind expectedKind : kinds) {
+            if (check(expectedKind)) {
+                return advance();
+            }
+        }
+        throw new Error("No match for " + peek().getKind() + " at line " + peek().getLine()
+                + ". Expected one of: " + Arrays.toString(kinds));
     }
 
     private Token advance() {

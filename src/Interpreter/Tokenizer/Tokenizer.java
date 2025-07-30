@@ -37,7 +37,6 @@ public class Tokenizer {
             case '{': addToken(TokenKind.OPEN_BRACE, "{"); advance(); break;
             case '}': addToken(TokenKind.CLOSE_BRACE, "}"); advance(); break;
             case '+': addToken(TokenKind.PLUS, "+"); advance(); break;
-            // case '-': addToken(TokenKind.MINUS, "-"); advance(); break;
             case '-':
                 if (match('>')) { // check for '->' (arrow operator)
                     addToken(TokenKind.ARROW, "->");
