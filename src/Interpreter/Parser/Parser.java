@@ -5,13 +5,12 @@ import AST.Nodes.BuiltIns.BuiltIns;
 import Interpreter.ErrorHandler;
 import Interpreter.Tokenizer.TokenKind;
 import Interpreter.Tokenizer.Token;
-import Util.EnvReWrite;
+import Util.Environment;
 import Util.VariableSymbol;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
 
 // IMPORTANT NOTE
 // the parser is ONLY responsible for parsing the code and building the AST
@@ -23,7 +22,7 @@ public class Parser {
 
     private final List<Token> tokens;
     private int tokenPos = 0;
-    public EnvReWrite environment = new EnvReWrite(); // remember this initializes a global scope BY DEFAULT
+    public Environment environment = new Environment(); // remember this initializes a global scope BY DEFAULT
 
     public Parser(List<Token> tokens) {
         this.tokens = tokens;
@@ -43,7 +42,9 @@ public class Parser {
             return parseDeclaration();
         } else if (isFunction()) {
             System.out.println("here");
-            //return parseFunction();
+            // here i guess the function for calling functions, declaring functions happens
+            // so maybe we need two nodes, FunctionNode and FunctionDeclarationNode ? will see
+            return parseFunctionDeclaration();
         }
         return null;
     }
@@ -191,8 +192,47 @@ public class Parser {
     }
 
     private Statement parseFunctionDeclaration() { // we should build the logic to allow users to define a function
+
+
         return null;
         // we will handle this later, for now we just want to parse the function call (handle builtins)
+        // actually this needs to be done, since the parser needs to go down the chain
+    }
+
+    // i don't think i want to specify the return type of the built-in functions
+    // since they're built in, they should have a fixed return type in a way?
+//    private Expression parseFunctionCall() {
+//        environment.pushScope();
+//        if (BuiltIns.isBuiltInFunction(peek().getLexeme())) { // first we handle built-in functions (in library)
+//            FunctionNode builtInFunction = BuiltIns.getBuiltInFunction(peek().getLexeme());
+//            System.out.println("Parsing built-in function: " + builtInFunction.getName());
+//            TokenKind returnType = builtInFunction.getReturnType(); // get the return type of the built-in function
+//            advance(); // consume the function name
+//            consume(TokenKind.OPEN_PAREN); // consume the opening parenthesis
+//            List<Expression> parameters = parseFunctionParameters();
+//            consume(TokenKind.CLOSE_PAREN); // consume the closing parenthesis
+//            // for a built-in function, we don't have a body, so we can just return a FunctionNode with null body
+//            return new FunctionNode(builtInFunction.getName(), returnType, parameters, environment);
+//        } else {
+//            throw new ErrorHandler(
+//                    "parsing",
+//                    peek().getLine(),
+//                    "Unexpected token: " + peek().getLexeme(),
+//                    "Expected a built-in function call."
+//            );
+//        }
+//    }
+
+    // still have no idea how i will even apply these things, but it will happen at some point
+    // for now all i can really do is just gather the params, but i can't do anything with them quite yet
+    private List<Expression> parseFunctionParameters() {
+        List<Expression> parameters = new java.util.ArrayList<>();
+        if (!check(TokenKind.CLOSE_PAREN)) { // if we don't have a closing parenthesis, we have parameters
+            do {
+                parameters.add(parseExpression());
+            } while (match(TokenKind.COMMA)); // allow multiple parameters separated by commas
+        }
+        return parameters;
     }
 
 //    private Statement parseFunctionCall() {
@@ -289,8 +329,9 @@ public class Parser {
         return check(TokenKind.INTEGER_TYPE, TokenKind.FLOAT_TYPE, TokenKind.BOOLEAN_TYPE, TokenKind.MATRIX_TYPE, TokenKind.SYMBOL_TYPE, TokenKind.STRING_TYPE);
     }
 
+    // will check both if it's a built-in function or a user-defined function
     boolean isFunction() {
-        return BuiltIns.isBuiltInFunction(peek().getLexeme());
+        return BuiltIns.isBuiltInFunction(peek().getLexeme()) || check(TokenKind.FUNC);
     }
 
     // in future add support for all types

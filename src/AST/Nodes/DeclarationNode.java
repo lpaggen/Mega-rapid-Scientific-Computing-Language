@@ -2,7 +2,6 @@ package AST.Nodes;
 
 import Interpreter.ErrorHandler;
 import Interpreter.Tokenizer.Token;
-import Util.EnvReWrite;
 import Util.Environment;
 import Util.VariableSymbol;
 import Util.WarningHandler;
@@ -24,7 +23,7 @@ public class DeclarationNode extends Statement {
     // it's super easy really, we check the literal, and the type of the variable
     // if there's a mismatch, we crash the program OR we are nice and tolerate small mistakes, will see!
     @Override
-    public void execute(EnvReWrite env) {
+    public void execute(Environment env) {
         Object value = (initializer != null) ? initializer.evaluate(env) : null;
 
         switch (type.getKind()) {

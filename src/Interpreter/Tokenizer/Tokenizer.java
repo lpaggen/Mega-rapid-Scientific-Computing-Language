@@ -37,7 +37,15 @@ public class Tokenizer {
             case '{': addToken(TokenKind.OPEN_BRACE, "{"); advance(); break;
             case '}': addToken(TokenKind.CLOSE_BRACE, "}"); advance(); break;
             case '+': addToken(TokenKind.PLUS, "+"); advance(); break;
-            case '-': addToken(TokenKind.MINUS, "-"); advance(); break;
+            // case '-': addToken(TokenKind.MINUS, "-"); advance(); break;
+            case '-':
+                if (match('>')) { // check for '->' (arrow operator)
+                    addToken(TokenKind.ARROW, "->");
+                } else {
+                    addToken(TokenKind.MINUS, "-");
+                }
+                advance();
+                break;
             case '*': addToken(TokenKind.MUL, "*"); advance(); break;
             case '/': addToken(TokenKind.DIV, "/"); advance(); break;
             case '^': addToken(TokenKind.POWER, "**"); advance(); break;
@@ -133,7 +141,6 @@ public class Tokenizer {
         put("int", TokenKind.INTEGER_TYPE);
         put("float", TokenKind.FLOAT_TYPE);
         put("matrix", TokenKind.MATRIX_TYPE);
-        // put("print", TokenKind.PRINT);
         put("break", TokenKind.BREAK);
         put("continue", TokenKind.CONTINUE);
         put("wrt", TokenKind.WRT);
@@ -141,12 +148,16 @@ public class Tokenizer {
         put("null", TokenKind.NULL);
         put("bool", TokenKind.BOOLEAN_TYPE);
         put("str", TokenKind.STRING_TYPE);
+        put("->", TokenKind.ARROW); // this is used for function definitions, like in Python
+        put("void", TokenKind.VOID_TYPE);
     }};
 
     // using Character.isDigit() would allow for all kinds of weird characters, so i'm using this instead
     private boolean isDigit(char c) { // this does work, except apparently it also allows for all kinds of weird characters
         return c >= '0' && c <= '9';
     }
+
+
 
     private void tokenizeNumber() {
         StringBuilder lexeme = new StringBuilder();

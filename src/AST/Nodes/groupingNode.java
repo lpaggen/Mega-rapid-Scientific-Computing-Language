@@ -1,7 +1,5 @@
 package AST.Nodes;
 
-import Interpreter.Tokenizer.Token;
-import Util.EnvReWrite;
 import Util.Environment;
 
 public class groupingNode extends Expression {
@@ -16,7 +14,7 @@ public class groupingNode extends Expression {
     }
 
     @Override
-    public Object evaluate(EnvReWrite env) {
+    public Object evaluate(Environment env) {
         return expression.evaluate(env);
     }
 

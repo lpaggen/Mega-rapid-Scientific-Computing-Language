@@ -9,7 +9,7 @@ public class Main {
 
     public static void main(String[] args) {
         // obviously we should get the input from a file, but for now we will just use a string
-        String input = "int x = 5;"; // input goes here
+        String input = "fn hi() -> void {return null};"; // input goes here
 
         Tokenizer tokenizer = new Tokenizer(input);
         List<Token> tokens = tokenizer.tokenize();

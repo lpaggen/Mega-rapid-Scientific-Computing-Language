@@ -1,7 +1,5 @@
 package AST.Nodes;
 
-import Interpreter.Tokenizer.Token;
-import Util.EnvReWrite;
 import Util.Environment;
 
 public class Divide extends MathExpression {
@@ -13,7 +11,7 @@ public class Divide extends MathExpression {
     }
 
     @Override
-    public Object evaluate(EnvReWrite env) {
+    public Object evaluate(Environment env) {
         Object numResult = num.evaluate(env);
         Object denomResult = denom.evaluate(env);
 

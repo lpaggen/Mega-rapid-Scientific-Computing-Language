@@ -1,79 +1,63 @@
 package Util;
 
-import Interpreter.Tokenizer.Token;
-import Interpreter.Tokenizer.TokenKind;
-
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 
-// !!!! IMPORTANT FOR FUTURE BUILDS
-// we can either use (and painfully convert everything) SCOPED HASH MAPS
-// or maybe we can get away with implementing a "scopeID" in the Token class or the env itself?
-// second option is better, because it allows us to have a single lookup table for the entire program
-// it is much simpler on paper, but i do not know how exactly it would work in practice
+// scoped hash maps! super easy concept for the time being, use a stack to push and pop scope
+// so each "level" i call "scope" is its own environment
+// the idea is that we should now check the local scope, and just go up until we find a variable to find if it is declared or not
+public class Environment {
+    private final Deque<Map<String, Symbol>> envStack = new ArrayDeque<>();
 
-// TO DO refactor: V should not extend Token! Since we want to allow for functions too...
-// but why can't functions be tokens? am I missing something here?
-public class Environment<K, V extends Token> {
-    private final Map<K, V> map = new HashMap<>();
+    public Environment() {
+        // initialize with a global environment -- remember we can just change this anytime!
+        pushScope();
+    }
 
-    public TokenKind getType(K key) {
-        if (!map.containsKey(key)) {
-            throw new IllegalArgumentException("Variable '" + key + "' not declared");
+    public void pushScope() {
+        envStack.push(new HashMap<>());
+    }
+
+    // self-explanatory, this just goes up in scope
+    // obviously we can delete scopes when we go up, since we don't need them anymore
+    public void popScope() {
+        if (envStack.size() == 1) {
+            throw new IllegalStateException("Cannot pop global scope");
         }
-        return map.get(key).getKind();
+        envStack.pop();
     }
 
-    public String getLexeme(K key) {
-        if (!map.containsKey(key)) {
-            throw new IllegalArgumentException("Variable '" + key + "' not declared");
+    public void declareVariable(String name, Symbol value) {
+        Map<String, Symbol> currentScope = envStack.peek();
+        if (currentScope.containsKey(name)) {
+            throw new IllegalArgumentException("Variable '" + name + "' already declared in current scope");
         }
-        return map.get(key).getLexeme();
+        currentScope.put(name, value);
     }
 
-    public Object getLiteral(K key) {
-        if (!map.containsKey(key)) {
-            throw new IllegalArgumentException("Variable '" + key + "' not declared");
+    public Symbol lookup(String name) {
+        for (Map<String, Symbol> scope : envStack) {
+            if (scope.containsKey(name)) {
+                return scope.get(name);
+            }
         }
-        return map.get(key).getLiteral();
+        throw new IllegalArgumentException("Variable '" + name + "' not found in any scope");
     }
 
-    // this method is used to declare a variable in the lookup table
-    public void declareVariable(K key, V value) {
-        map.put(key, value);
+    public boolean isDeclared(String name) {
+        return envStack.peek().containsKey(name);
     }
 
-    // this method is used to change the value of a variable in the lookup table
-    public void setValue(K key, V value) {
-        if (!map.containsKey(key)) {
-            throw new IllegalArgumentException("Variable '" + key + "' not declared.");
+    // here we just set a new value for the variable
+    public void updateVariable(String name, Symbol value) {
+        for (Map<String, Symbol> scope : envStack) {
+            if (scope.containsKey(name)) {
+                scope.put(name, value);
+                return;
+            }
         }
-        map.put(key, value);
-    }
-
-    public boolean isDeclared(K key) {
-        return map.containsKey(key);
-    }
-
-    // this method simply prints the lookup table to the console, it is used for debugging
-    public void showLookupTable() {
-        final int typeWidth = 15;
-        final int keyWidth = 20;
-        final int valueWidth = 30;
-
-        System.out.printf("%-" + typeWidth + "s%-" + keyWidth + "s%-" + valueWidth + "s%n", "TOKEN TYPE", "VARIABLE NAME", "LITERAL VALUE");
-        System.out.println("-".repeat(typeWidth + keyWidth + valueWidth));
-
-        for (Map.Entry<K, V> entry : map.entrySet()) {
-            K key = entry.getKey();
-            V token = entry.getValue();
-
-            System.out.printf(
-                    "%-" + typeWidth + "s%-" + keyWidth + "s%-" + valueWidth + "s%n",
-                    token.getKind(),
-                    key.toString(),
-                    token.getLiteral() != null ? token.getLiteral().toString() : "null"
-            );
-        }
+        throw new IllegalArgumentException("Variable '" + name + "' not found in any scope");
     }
 }

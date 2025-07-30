@@ -1,7 +1,5 @@
 package AST.Nodes;
 
-import Interpreter.Tokenizer.Token;
-import Util.EnvReWrite;
 import Util.Environment;
 
 public class Multiply extends MathExpression {
@@ -27,7 +25,7 @@ public class Multiply extends MathExpression {
     }
 
     @Override
-    public Object evaluate(EnvReWrite env) {
+    public Object evaluate(Environment env) {
         Object leftResult = left.evaluate(env);
         Object rightResult = right.evaluate(env);
 

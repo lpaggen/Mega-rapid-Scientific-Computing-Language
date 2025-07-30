@@ -1,6 +1,7 @@
 package AST.Nodes.BuiltIns;
 
 import AST.Nodes.FunctionNode;
+import Interpreter.Tokenizer.TokenKind;
 
 import java.util.HashMap;
 import java.util.function.Function;
@@ -10,16 +11,39 @@ public class BuiltIns {
     // we treat built ins as functions, so we can use them as we normally would, i just like to save them at execution
     private static final HashMap<String, FunctionNode> builtInFunctions = new HashMap<>();
 
-    static { // this is the registry for built-in functions, we can just add whatever we want and use them as we normally would
-        builtInFunctions.put("print", new PrintFunction());
-        // we can add whatever else we want here, maybe also add the module they correspond to?
-    }
-
     public static FunctionNode getBuiltInFunction(String name) {
         return builtInFunctions.get(name);
     }
 
     public static boolean isBuiltInFunction(String name) {
         return builtInFunctions.containsKey(name);
+    }
+
+    public static void registerBuiltInFunction(String name, FunctionNode function) {
+        if (builtInFunctions.containsKey(name)) {
+            throw new IllegalArgumentException("Built-in function '" + name + "' is already registered.");
+        }
+        builtInFunctions.put(name, function);
+    }
+
+    public static void initializeBuiltIns() {
+        // Register built-in functions here
+        registerBuiltInFunction("print", new PrintFunction());
+        // Add more built-in functions as needed
+    }
+
+    public static void clearBuiltIns() {
+        builtInFunctions.clear();
+    }
+
+    public static HashMap<String, FunctionNode> getBuiltInFunctions() {
+        return builtInFunctions;
+    }
+
+    public static void printBuiltIns() {
+        System.out.println("Registered Built-in Functions:");
+        for (String name : builtInFunctions.keySet()) {
+            System.out.println("- " + name);
+        }
     }
 }

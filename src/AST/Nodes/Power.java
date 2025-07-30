@@ -1,7 +1,5 @@
 package AST.Nodes;
 
-import Interpreter.Tokenizer.Token;
-import Util.EnvReWrite;
 import Util.Environment;
 
 public class Power extends MathExpression {
@@ -23,7 +21,7 @@ public class Power extends MathExpression {
     }
 
     @Override
-    public Object evaluate(EnvReWrite env) {
+    public Object evaluate(Environment env) {
         return null;
     }
 

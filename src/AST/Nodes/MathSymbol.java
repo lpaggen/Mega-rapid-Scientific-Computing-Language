@@ -1,7 +1,5 @@
 package AST.Nodes;
 
-import Interpreter.Tokenizer.Token;
-import Util.EnvReWrite;
 import Util.Environment;
 
 // the MathSymbol datatype is unique to this language (afaik) - also Sympy uses it
@@ -22,7 +20,7 @@ public class MathSymbol extends MathExpression {
     }
 
     @Override
-    public Object evaluate(EnvReWrite env) {
+    public Object evaluate(Environment env) {
         return null;
     }
 

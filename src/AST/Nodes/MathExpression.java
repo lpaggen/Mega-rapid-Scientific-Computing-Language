@@ -1,13 +1,11 @@
 package AST.Nodes;
 
-import Interpreter.Tokenizer.Token;
-import Util.EnvReWrite;
 import Util.Environment;
 
 public abstract class MathExpression extends Expression {
 
     @Override
-    public abstract Object evaluate(EnvReWrite env);
+    public abstract Object evaluate(Environment env);
 
     @Override
     public abstract String toString();

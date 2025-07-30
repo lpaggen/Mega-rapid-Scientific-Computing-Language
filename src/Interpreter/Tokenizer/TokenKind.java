@@ -12,6 +12,7 @@ public enum TokenKind {
     NUM,
     STRING,
     NULL,
+    VOID, // this is a special type that means "no return value" or "no value at all"
 
     // some data structure tokens
     MATRIX,
@@ -75,6 +76,6 @@ public enum TokenKind {
     WHILE,
     BREAK,
     CONTINUE,
-    RETURN,
+    RETURN, ARROW, VOID_TYPE,
     // PRINT,
 }

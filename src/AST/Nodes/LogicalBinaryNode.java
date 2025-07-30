@@ -1,7 +1,6 @@
 package AST.Nodes;
 
 import Interpreter.Tokenizer.Token;
-import Util.EnvReWrite;
 import Util.Environment;
 
 // this class might be temporary, it serves as a placeholder for the actual implementation
@@ -18,7 +17,7 @@ public class LogicalBinaryNode extends Expression {
     }
 
     @Override
-    public Object evaluate(EnvReWrite env) {
+    public Object evaluate(Environment env) {
         Object lhsVal = lhs.evaluate(env);
         Object rhsVal = rhs.evaluate(env);
 

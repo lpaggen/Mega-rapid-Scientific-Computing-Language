@@ -1,7 +1,5 @@
 package AST.Nodes;
 
-import Interpreter.Tokenizer.Token;
-import Util.EnvReWrite;
 import Util.Environment;
 
 public class Cosec extends MathExpression {
@@ -27,7 +25,7 @@ public class Cosec extends MathExpression {
 
     // quite unsure if this will work, it should, given the right circumstances
     @Override
-    public Object evaluate(EnvReWrite env) {
+    public Object evaluate(Environment env) {
         return 1 / Math.sin((double) arg.evaluate(env));
     }
 
