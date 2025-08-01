@@ -1,5 +1,7 @@
 package Util;
 
+import AST.Nodes.FunctionNode;
+
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
@@ -29,10 +31,10 @@ public class Environment {
         envStack.pop();
     }
 
-    public void declareVariable(String name, Symbol value) {
+    public void declareSymbol(String name, Symbol value) {
         Map<String, Symbol> currentScope = envStack.peek();
         if (currentScope.containsKey(name)) {
-            throw new IllegalArgumentException("Variable '" + name + "' already declared in current scope");
+            throw new IllegalArgumentException("Symbol '" + name + "' already declared in current scope");
         }
         currentScope.put(name, value);
     }

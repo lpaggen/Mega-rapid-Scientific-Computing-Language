@@ -2,6 +2,8 @@ package Interpreter.Parser;
 
 import AST.Nodes.*;
 import AST.Nodes.BuiltIns.BuiltIns;
+import AST.Nodes.BuiltIns.BuiltIns.*;
+import AST.Nodes.BuiltIns.PrintFunction;
 import Interpreter.ErrorHandler;
 import Interpreter.Tokenizer.TokenKind;
 import Interpreter.Tokenizer.Token;
@@ -9,10 +11,7 @@ import Util.Environment;
 import Util.FunctionSymbol;
 import Util.VariableSymbol;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 // IMPORTANT NOTE
 // the parser is ONLY responsible for parsing the code and building the AST
@@ -25,6 +24,8 @@ public class Parser {
     private final List<Token> tokens;
     private int tokenPos = 0;
     public Environment environment = new Environment(); // remember this initializes a global scope BY DEFAULT
+
+    // BuiltIns.initializeBuiltIns(environment); // initialize built-in functions in the environment
 
     public Parser(List<Token> tokens) {
         this.tokens = tokens;
@@ -193,7 +194,22 @@ public class Parser {
         return new DeclarationNode(new Token(dataType, typeToken.getLexeme(), null, typeToken.getLine()), name, initializer);
     }
 
-    private Statement parseFunctionDeclaration() { // we should build the logic to allow users to define a function
+    private FunctionNode parseFunctionDeclaration() { // we should build the logic to allow users to define a function
+        if (BuiltIns.isBuiltInFunction(peek().getLexeme())) { // if it's a built-in function, we handle it differently
+            String builtInFunctionName = peek().getLexeme();
+            System.out.println("Parsing built-in function: " + builtInFunctionName);
+            // hardcode for print right now, just gotta test it to see if my design works or not
+            if (builtInFunctionName.equals("print")) {
+                advance(); // consume the FUNC token
+                consume(TokenKind.OPEN_PAREN); // consume the opening parenthesis
+                List<Statement> parameters = parseFunctionParameters(); // this will parse the parameters of the function
+                advance(); // advance to the next token, this should really be done in the parseArguments
+                consume(TokenKind.CLOSE_PAREN); // consume the closing parenthesis
+                consume(TokenKind.SEMICOLON); // consume the semicolon at the end of the print function call
+                return new PrintFunction(environment); // return a PrintNode with the parameters and environment
+            }
+            //return BuiltIns.getBuiltInFunction(builtInFunctionName); // this will return a FunctionNode for the built-in function
+        }
         advance(); // consume the FUNC token
         if (!match(TokenKind.VARIABLE)) { // should make sure you're not defining a function with a reserved keyword or literal
             throw new ErrorHandler(
@@ -250,7 +266,7 @@ public class Parser {
         // somehow the body has to be parsed before return
         consume(TokenKind.RETURN); // consume the closing brace, we will handle the body later
 
-        Expression functionBody = null; // for now, we will just return null, since we don't have a body yet
+        List<Statement> functionBody = null; // for now, we will just return null, since we don't have a body yet
         consume(TokenKind.CLOSE_BRACE); // consume the closing brace, we will handle the body later
 
         return new FunctionNode( // does FunctionNode need its environment passed as well? unsure, yes and no
@@ -259,7 +275,7 @@ public class Parser {
                 parameters,
                 functionBody,
                 environment
-        ); // this will create a FunctionNode with the name, return type, parameters and body
+        );
     }
 
     // i don't think i want to specify the return type of the built-in functions

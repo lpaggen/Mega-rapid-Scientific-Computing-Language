@@ -51,7 +51,7 @@ public class DeclarationNode extends Statement {
                 break;
         }
 
-        env.declareVariable(variable.getLexeme(), new VariableSymbol(variable.getLexeme(), type.getKind(), value));
+        env.declareSymbol(variable.getLexeme(), new VariableSymbol(variable.getLexeme(), type.getKind(), value));
     }
 
     // will work on this in a later build, it's not necessary yet

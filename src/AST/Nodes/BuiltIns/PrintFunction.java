@@ -2,16 +2,21 @@ package AST.Nodes.BuiltIns;
 
 import AST.Nodes.FunctionNode;
 import Interpreter.Tokenizer.TokenKind;
+import Util.Environment;
 
-public class PrintFunction extends FunctionNode {
+import java.util.List;
 
-    public PrintFunction() {
-        super("print", TokenKind.VOID, null, null); // 'void' is a placeholder for the return type
+public class PrintFunction extends BuiltInFunctionNode {
+    public PrintFunction(Environment env) {
+        super("print", TokenKind.VOID, List.of(), env);
     }
 
-    // hmm should this really be a string? i don't think so... let's see later on
-    // since these return types are hard coded, we should be able to get away with doing this
-    public TokenKind getReturnType() {
-        return TokenKind.VOID; // print function does not return a value
+    @Override
+    public void executeWithArgs(Environment env, List<Object> args) {
+        if (!args.isEmpty()) {
+            System.out.println(args.getFirst());
+        } else {
+            System.out.println();
+        }
     }
 }
