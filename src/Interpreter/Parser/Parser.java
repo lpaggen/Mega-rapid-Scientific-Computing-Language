@@ -44,9 +44,6 @@ public class Parser {
         if (isDeclarationStart()) {
             return parseDeclaration();
         } else if (isFunction()) {
-            System.out.println("here");
-            // here i guess the function for calling functions, declaring functions happens
-            // so maybe we need two nodes, FunctionNode and FunctionDeclarationNode ? will see
             return parseFunctionDeclaration();
         }
         return null;
@@ -206,7 +203,7 @@ public class Parser {
                 advance(); // advance to the next token, this should really be done in the parseArguments
                 consume(TokenKind.CLOSE_PAREN); // consume the closing parenthesis
                 consume(TokenKind.SEMICOLON); // consume the semicolon at the end of the print function call
-                return new PrintFunction(environment); // return a PrintNode with the parameters and environment
+                return new PrintFunction(); // return a PrintNode with the parameters and environment
             }
             //return BuiltIns.getBuiltInFunction(builtInFunctionName); // this will return a FunctionNode for the built-in function
         }
@@ -273,8 +270,7 @@ public class Parser {
                 functionName.getLexeme(),
                 returnType,
                 parameters,
-                functionBody,
-                environment
+                functionBody
         );
     }
 

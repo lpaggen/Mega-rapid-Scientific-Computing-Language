@@ -7,12 +7,12 @@ import Util.Environment;
 import java.util.List;
 
 public class PrintFunction extends BuiltInFunctionNode {
-    public PrintFunction(Environment env) {
-        super("print", TokenKind.VOID, List.of(), env);
+    public PrintFunction() {
+        super("print", TokenKind.VOID, List.of());
     }
 
     @Override
-    public void executeWithArgs(Environment env, List<Object> args) {
+    public void execute(Environment env, List<Object> args) {
         if (!args.isEmpty()) {
             System.out.println(args.getFirst());
         } else {

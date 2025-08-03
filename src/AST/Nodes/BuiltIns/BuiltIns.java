@@ -17,14 +17,8 @@ public class BuiltIns {
     public static final Map<String, FunctionNode> builtInSymbols = new HashMap<>();
 
     static {
-        builtInSymbols.put("print", new PrintFunction(new Environment()));
+        builtInSymbols.put("print", new PrintFunction());
         // add other built-ins here
-    }
-
-    public static void registerAllInto(Environment env) {
-        for (Map.Entry<String, FunctionNode> entry : builtInSymbols.entrySet()) {
-            env.declareSymbol(entry.getKey(), new FunctionSymbol(entry.getValue()));
-        }
     }
 
     public static boolean isBuiltInFunction(String name) {

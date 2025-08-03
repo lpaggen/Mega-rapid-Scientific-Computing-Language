@@ -12,20 +12,18 @@ public class FunctionNode extends Statement {
     private final TokenKind returnType; // this really should not be String, but until I implement a type system, this will do
     private List<Statement> arguments;
     private final List<Statement> body;
-    private final Environment environment;
 
     // this is the other constructor for user-defined stuff
-    public FunctionNode(String name, TokenKind returnType, List<Statement> arguments, List<Statement> body, Environment environment) {
+    public FunctionNode(String name, TokenKind returnType, List<Statement> arguments, List<Statement> body) {
         this.name = name;
         this.returnType = returnType;
         this.arguments = arguments;
         this.body = body;
-        this.environment = environment;
     }
 
     // for built-ins: no body needed
-    public FunctionNode(String name, TokenKind returnType, List<Statement> arguments, Environment environment) {
-        this(name, returnType, arguments, List.of(), environment);
+    public FunctionNode(String name, TokenKind returnType, List<Statement> arguments) {
+        this(name, returnType, arguments, List.of());
     }
 
     public TokenKind getReturnType() {
@@ -42,14 +40,25 @@ public class FunctionNode extends Statement {
         // this is where we would execute the function, but for now we will just print the name
         System.out.println("Executing function: " + name);
         // we should also check if the function has a body, and if it does, execute it
-        if (body != null) {
+        if (!body.isEmpty()) {
             for (Statement statement : body) {
-                statement.execute(env); // assuming each statement can be executed in the environment
+                statement.execute(env);
             }
         } else {
             System.out.println("No body to execute for function: " + name);
         }
+
+    public String getName() {
+        return name;
     }
 
-    // so we might want to implement some form of "execute" method
+    public Statement[] getBody() {
+        if (body.isEmpty()) {
+            // if the body is empty, we return an empty array
+            return new Statement[0];
+        } else {
+            // otherwise, we return the body as an array
+            return body.toArray(new Statement[0]);
+        }
+    }
 }
