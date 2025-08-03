@@ -149,6 +149,9 @@ public class Tokenizer {
         put("str", TokenKind.STRING_TYPE);
         put("->", TokenKind.ARROW); // this is used for function definitions, like in Python
         put("void", TokenKind.VOID_TYPE);
+        put("include", TokenKind.INCLUDE);
+        put("read", TokenKind.READ);
+        put("write", TokenKind.WRITE);
     }};
 
     // using Character.isDigit() would allow for all kinds of weird characters, so i'm using this instead

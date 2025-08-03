@@ -1,18 +1,17 @@
 package AST.Nodes.BuiltIns;
 
-import AST.Nodes.FunctionNode;
 import Interpreter.Tokenizer.TokenKind;
 import Util.Environment;
+import Util.FunctionSymbol;
 
 import java.util.List;
 
-public class PrintFunction extends BuiltInFunctionNode {
+public class PrintFunction extends BuiltInFunctionSymbol {
     public PrintFunction() {
-        super("print", TokenKind.VOID, List.of());
+        super("print");
     }
 
-    @Override
-    public void execute(Environment env, List<Object> args) {
+    public void call(Environment env, List<Object> args) {
         if (!args.isEmpty()) {
             System.out.println(args.getFirst());
         } else {

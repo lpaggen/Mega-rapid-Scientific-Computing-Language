@@ -6,13 +6,13 @@ import Util.Environment;
 import Util.VariableSymbol;
 import Util.WarningHandler;
 
-public class DeclarationNode extends Statement {
+public class VariableDeclarationNode extends Statement {
     private final Token type;
     private final Token variable;
     private final Expression initializer;
     private final WarningHandler warningHandler = new WarningHandler();
 
-    public DeclarationNode(Token type, Token variable, Expression initializer) {
+    public VariableDeclarationNode(Token type, Token variable, Expression initializer) {
         this.type = type;
         this.variable = variable;
         this.initializer = initializer;

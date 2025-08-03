@@ -1,8 +1,6 @@
 package Util;
 
-import AST.Nodes.ASTNode;
-import AST.Nodes.BuiltIns.BuiltInFunctionNode;
-import AST.Nodes.FunctionNode;
+import AST.Nodes.BuiltIns.BuiltInFunctionSymbol;
 import AST.Nodes.Statement;
 import Interpreter.Tokenizer.TokenKind;
 
@@ -10,19 +8,19 @@ import java.util.List;
 
 public class FunctionSymbol extends Symbol {
     private final List<Statement> parameters;
-    private final ASTNode body;
-    private final BuiltInFunctionNode builtIn;
+    private final List<Statement> body;
+    private final BuiltInFunctionSymbol builtIn; // null if not a built-in function
 
     // User-defined
-    public FunctionSymbol(String name, TokenKind returnType, List<Statement> parameters, ASTNode body) {
+    public FunctionSymbol(String name, TokenKind returnType, List<Statement> parameters, List<Statement> body) {
         super(name, returnType);
         this.parameters = parameters;
         this.body = body;
         this.builtIn = null;
     }
 
-    // Built-in
-    public FunctionSymbol(BuiltInFunctionNode builtIn) {
+    // built ins
+    public FunctionSymbol(BuiltInFunctionSymbol builtIn) {
         super(builtIn.getName(), builtIn.getReturnType());
         this.parameters = List.of(); // or builtIn.getParameters()
         this.body = null;
@@ -36,15 +34,7 @@ public class FunctionSymbol extends Symbol {
     public void call(Environment env, List<Object> args) {
         if (isBuiltIn()) {
             builtIn.execute(env, args);
-        } else {
-            // TODO: bind args to parameters, etc.
-            if (body instanceof FunctionNode functionNode) {
-                for (Statement s : functionNode.getBody()) {
-                    s.execute(env);
-                }
-            } else {
-                throw new RuntimeException("Invalid function body type: " + body.getClass());
-            }
         }
+        // TODO: add support to bind arguments to the function, so users can define their own functions. atm testing only builtins
     }
 }

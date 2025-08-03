@@ -1,7 +1,5 @@
 package Util;
 
-import AST.Nodes.FunctionNode;
-
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
@@ -61,5 +59,15 @@ public class Environment {
             }
         }
         throw new IllegalArgumentException("Variable '" + name + "' not found in any scope");
+    }
+
+    public void loadModule(Map<String, Symbol> moduleSymbols) {
+        // load a module into the current scope (this is going to be global always)
+        Map<String, Symbol> currentScope = envStack.peek();
+        for (Map.Entry<String, Symbol> entry : moduleSymbols.entrySet()) {
+            String name = entry.getKey();
+            Symbol symbol = entry.getValue();
+            currentScope.put(name, symbol);
+        }
     }
 }

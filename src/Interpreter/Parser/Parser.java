@@ -2,13 +2,13 @@ package Interpreter.Parser;
 
 import AST.Nodes.*;
 import AST.Nodes.BuiltIns.BuiltIns;
-import AST.Nodes.BuiltIns.BuiltIns.*;
+import AST.Nodes.BuiltIns.FunctionDeclarationNode;
+import AST.Nodes.BuiltIns.ImportNode;
 import AST.Nodes.BuiltIns.PrintFunction;
 import Interpreter.ErrorHandler;
 import Interpreter.Tokenizer.TokenKind;
 import Interpreter.Tokenizer.Token;
 import Util.Environment;
-import Util.FunctionSymbol;
 import Util.VariableSymbol;
 
 import java.util.*;
@@ -43,8 +43,21 @@ public class Parser {
         System.out.println("current token at parseStatement: " + peek());
         if (isDeclarationStart()) {
             return parseDeclaration();
-        } else if (isFunction()) {
+        } else if (isFunctionDeclarationStart()) {
             return parseFunctionDeclaration();
+        } else if (isFunctionCall()) {
+            System.out.println("Parsing function call: " + peek().getLexeme());
+            return parseFunctionCall();
+        } else if (isModuleImport()) { // i'll move all this to a separate method later
+            switch (peek().getKind()) {
+                case INCLUDE -> {
+                    advance(); // consume the IMPORT token
+                    Token moduleName = consume(TokenKind.VARIABLE); // consume the module name
+
+                    consume(TokenKind.SEMICOLON); // consume the semicolon
+                    return new ImportNode(moduleName.getLexeme(), null); // no alias for now
+                }
+            }
         }
         return null;
     }
@@ -144,7 +157,7 @@ public class Parser {
     // for now i just want to be able to recognize variables and declare them into the env
     // atm we can declare with or without a value
     // !! type mismatch errors happen at another stage of the interpreter
-    private DeclarationNode parseDeclaration() {
+    private VariableDeclarationNode parseDeclaration() {
 
         // this surely can't be optimal, but it will work until i figure something better out
         // the idea is to just fetch the type from the declaration
@@ -188,25 +201,10 @@ public class Parser {
         // environment.declareVariable(name.getLexeme(), variableSymbol);
 
         // environment.declareVariable(name.getLexeme(), new Token(dataType, name.getLexeme(), null, typeToken.getLine()));
-        return new DeclarationNode(new Token(dataType, typeToken.getLexeme(), null, typeToken.getLine()), name, initializer);
+        return new VariableDeclarationNode(new Token(dataType, typeToken.getLexeme(), null, typeToken.getLine()), name, initializer);
     }
 
-    private FunctionNode parseFunctionDeclaration() { // we should build the logic to allow users to define a function
-        if (BuiltIns.isBuiltInFunction(peek().getLexeme())) { // if it's a built-in function, we handle it differently
-            String builtInFunctionName = peek().getLexeme();
-            System.out.println("Parsing built-in function: " + builtInFunctionName);
-            // hardcode for print right now, just gotta test it to see if my design works or not
-            if (builtInFunctionName.equals("print")) {
-                advance(); // consume the FUNC token
-                consume(TokenKind.OPEN_PAREN); // consume the opening parenthesis
-                List<Statement> parameters = parseFunctionParameters(); // this will parse the parameters of the function
-                advance(); // advance to the next token, this should really be done in the parseArguments
-                consume(TokenKind.CLOSE_PAREN); // consume the closing parenthesis
-                consume(TokenKind.SEMICOLON); // consume the semicolon at the end of the print function call
-                return new PrintFunction(); // return a PrintNode with the parameters and environment
-            }
-            //return BuiltIns.getBuiltInFunction(builtInFunctionName); // this will return a FunctionNode for the built-in function
-        }
+    private FunctionDeclarationNode parseFunctionDeclaration() { // we should build the logic to allow users to define a function
         advance(); // consume the FUNC token
         if (!match(TokenKind.VARIABLE)) { // should make sure you're not defining a function with a reserved keyword or literal
             throw new ErrorHandler(
@@ -266,7 +264,7 @@ public class Parser {
         List<Statement> functionBody = null; // for now, we will just return null, since we don't have a body yet
         consume(TokenKind.CLOSE_BRACE); // consume the closing brace, we will handle the body later
 
-        return new FunctionNode( // does FunctionNode need its environment passed as well? unsure, yes and no
+        return new FunctionDeclarationNode( // does FunctionNode need its environment passed as well? unsure, yes and no
                 functionName.getLexeme(),
                 returnType,
                 parameters,
@@ -307,7 +305,15 @@ public class Parser {
                 parameters.add(parseStatement());
             } while (match(TokenKind.COMMA)); // allow multiple parameters separated by commas
         }
+        System.out.println("Parsed function parameters: " + parameters); // this is not being reached for some reason
         return parameters;
+    }
+
+    private Statement parseFunctionCall() {
+        if (BuiltIns.isBuiltInFunction(peek().getLexeme())) { // first we handle built-in functions (in library)
+            System.out.println("Parsing built-in function: " + peek().getLexeme());
+        }
+        return new FunctionCallNode(peek().getLexeme(), parseFunctionParameters());
     }
 
 //    private Statement parseFunctionCall() {
@@ -405,13 +411,24 @@ public class Parser {
         return peek().getKind() == TokenKind.EOF;
     }
 
-    boolean isDeclarationStart() {
+    private boolean isDeclarationStart() {
         return check(TokenKind.INTEGER_TYPE, TokenKind.FLOAT_TYPE, TokenKind.BOOLEAN_TYPE, TokenKind.MATRIX_TYPE, TokenKind.SYMBOL_TYPE, TokenKind.STRING_TYPE);
     }
 
-    // will check both if it's a built-in function or a user-defined function
-    boolean isFunction() {
-        return BuiltIns.isBuiltInFunction(peek().getLexeme()) || check(TokenKind.FUNC);
+    // will check if a user-defined function IS BEING DECLARED. calls will happen later
+    private boolean isFunctionDeclarationStart() {
+        return check(TokenKind.FUNC);
+    }
+
+    private boolean isFunctionCall() {
+        // a function call starts with a variable name followed by an open parenthesis
+        // return check(TokenKind.VARIABLE) && peek().getKind() == TokenKind.OPEN_PAREN;
+        // we could just check the environment
+        return environment.isDeclared(peek().getLexeme()); // the logic here should be that a built-in would always be loaded already
+    }
+
+    private boolean isModuleImport() {
+        return check(TokenKind.INCLUDE); // we can add more keywords for imports later
     }
 
     // in future add support for all types

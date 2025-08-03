@@ -78,4 +78,7 @@ public enum TokenKind {
     CONTINUE,
     RETURN, ARROW, VOID_TYPE,
     // PRINT,
+    INCLUDE,
+    READ,
+    WRITE,
 }
