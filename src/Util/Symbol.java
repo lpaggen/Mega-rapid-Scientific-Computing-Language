@@ -1,5 +1,6 @@
 package Util;
 
+import AST.Nodes.Expression;
 import Interpreter.Tokenizer.TokenKind;
 
 // the Symbol interface can represent both variables and functions in the environment

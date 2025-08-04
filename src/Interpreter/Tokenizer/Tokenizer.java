@@ -159,8 +159,6 @@ public class Tokenizer {
         return c >= '0' && c <= '9';
     }
 
-
-
     private void tokenizeNumber() {
         StringBuilder lexeme = new StringBuilder();
         boolean isDecimal = false;
@@ -221,7 +219,7 @@ public class Tokenizer {
         String keyword = lexeme.toString();
         TokenKind kind = keywords.get(keyword);
         if (kind == null) {
-            kind = TokenKind.VARIABLE;
+            kind = TokenKind.IDENTIFIER;
         }
         addToken(kind, keyword, null);
     }

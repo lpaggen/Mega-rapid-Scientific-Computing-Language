@@ -13,6 +13,7 @@ public enum TokenKind {
     STRING,
     NULL,
     VOID, // this is a special type that means "no return value" or "no value at all"
+    IDENTIFIER,
 
     // some data structure tokens
     MATRIX,

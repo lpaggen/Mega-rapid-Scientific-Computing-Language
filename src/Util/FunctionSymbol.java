@@ -7,12 +7,12 @@ import Interpreter.Tokenizer.TokenKind;
 import java.util.List;
 
 public class FunctionSymbol extends Symbol {
-    private final List<Statement> parameters;
+    private final List<VariableSymbol> parameters;
     private final List<Statement> body;
     private final BuiltInFunctionSymbol builtIn; // null if not a built-in function
 
     // User-defined
-    public FunctionSymbol(String name, TokenKind returnType, List<Statement> parameters, List<Statement> body) {
+    public FunctionSymbol(String name, TokenKind returnType, List<VariableSymbol> parameters, List<Statement> body) {
         super(name, returnType);
         this.parameters = parameters;
         this.body = body;

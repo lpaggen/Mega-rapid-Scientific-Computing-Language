@@ -2,10 +2,10 @@ package AST.Nodes;
 
 import Util.Environment;
 
-public class groupingNode extends Expression {
+public class GroupingNode extends Expression {
     private final Expression expression;
 
-    public groupingNode(Expression expression) {
+    public GroupingNode(Expression expression) {
         this.expression = expression;
     }
 

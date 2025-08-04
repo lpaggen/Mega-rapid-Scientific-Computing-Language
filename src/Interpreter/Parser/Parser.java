@@ -52,7 +52,7 @@ public class Parser {
             switch (peek().getKind()) {
                 case INCLUDE -> {
                     advance(); // consume the IMPORT token
-                    Token moduleName = consume(TokenKind.VARIABLE); // consume the module name
+                    Token moduleName = consume(TokenKind.IDENTIFIER); // consume the module name
 
                     consume(TokenKind.SEMICOLON); // consume the semicolon
                     return new ImportNode(moduleName.getLexeme(), null); // no alias for now
@@ -117,32 +117,22 @@ public class Parser {
     }
 
     private Expression parsePrimary() {
-        if (match(TokenKind.FALSE)) return new primaryNode(false);
-        if (match(TokenKind.TRUE)) return new primaryNode(true);
-        if (match(TokenKind.NULL)) return new primaryNode(null);
+        System.out.println("current token at parsePrimary: " + peek());
+        if (match(TokenKind.FALSE)) return new PrimaryNode(false);
+        if (match(TokenKind.TRUE)) return new PrimaryNode(true);
+        if (match(TokenKind.NULL)) return new PrimaryNode(null);
         if (match(TokenKind.INTEGER, TokenKind.FLOAT, TokenKind.STRING)) {
-            return new primaryNode(previous().getLiteral());
+            System.out.println("Parsing literal: " + previous().getLiteral());
+            return new PrimaryNode(previous().getLiteral());
         }
         if (match(TokenKind.OPEN_PAREN)) {
-            Expression expression = parseExpression(); // TO FIX: for some odd reason, everything becomes NULL
-            consume(TokenKind.CLOSE_PAREN); // this is like match, we're looking for a closing parenthesis
-            return new groupingNode(expression);
-        } // atm we can't really execute any computations, will check what to do in later build
-        if (match(TokenKind.VARIABLE)) {
+            Expression expr = parseExpression();
+            consume(TokenKind.CLOSE_PAREN);
+            return new GroupingNode(expr);
+        }
+        if (match(TokenKind.IDENTIFIER)) {
             Token variableToken = previous();
-            if (!environment.isDeclared(variableToken.getLexeme())) {
-                throw new ErrorHandler(
-                        "parsing",
-                        variableToken.getLine(),
-                        "Variable not declared: " + variableToken.getLexeme(),
-                        "Please declare the variable before using it."
-                );
-                //throw new RuntimeException("Variable not declared: " + variableToken.getLexeme() + " at line " + variableToken.getLine());
-            } // so now, we should maybe do a recursive call to parsePrimary(), or just take the value directly and out a primaryNode
-            //return new VariableNode(variableToken);
-            VariableSymbol var = (VariableSymbol) environment.lookup(variableToken.getLexeme());
-            Object value = var.getValue();
-            return new primaryNode(value); // this will return the value of the variable, not the variable itself
+            return new VariableNode(variableToken); // need to bring this back somehow, what we did before was not parser-behavior
         }
         throw new ErrorHandler(
                 "parsing",
@@ -150,8 +140,8 @@ public class Parser {
                 "Unexpected token: " + peek().getLexeme(),
                 "Expected an expression, variable, or literal value."
         );
-        //throw new RuntimeException(peek() + " Expected expression.");
     }
+
 
     // this method handles variable declarations, i will add more error checks at some stage
     // for now i just want to be able to recognize variables and declare them into the env
@@ -227,7 +217,7 @@ public class Parser {
         }
         // the parameters are optional, so we can have a function with no parameters
         // but the logic will be implemented later on, since i have no idea how to do it now
-        List<Statement> parameters = parseFunctionParameters(); // this will parse the parameters of the function
+        List<VariableSymbol> parameters = parseFunctionParameters(); // this will parse the parameters of the function
         consume(TokenKind.CLOSE_PAREN); // consume the closing parenthesis
         // so, for built ins, probably we will handle them at the start of this method
         if (!match(TokenKind.ARROW)) { // if we don't have an arrow, we assume it's a built-in function
@@ -272,89 +262,48 @@ public class Parser {
         );
     }
 
-    // i don't think i want to specify the return type of the built-in functions
-    // since they're built in, they should have a fixed return type in a way?
-//    private Expression parseFunctionCall() {
-//        environment.pushScope();
-//        if (BuiltIns.isBuiltInFunction(peek().getLexeme())) { // first we handle built-in functions (in library)
-//            FunctionNode builtInFunction = BuiltIns.getBuiltInFunction(peek().getLexeme());
-//            System.out.println("Parsing built-in function: " + builtInFunction.getName());
-//            TokenKind returnType = builtInFunction.getReturnType(); // get the return type of the built-in function
-//            advance(); // consume the function name
-//            consume(TokenKind.OPEN_PAREN); // consume the opening parenthesis
-//            List<Expression> parameters = parseFunctionParameters();
-//            consume(TokenKind.CLOSE_PAREN); // consume the closing parenthesis
-//            // for a built-in function, we don't have a body, so we can just return a FunctionNode with null body
-//            return new FunctionNode(builtInFunction.getName(), returnType, parameters, environment);
-//        } else {
-//            throw new ErrorHandler(
-//                    "parsing",
-//                    peek().getLine(),
-//                    "Unexpected token: " + peek().getLexeme(),
-//                    "Expected a built-in function call."
-//            );
-//        }
-//    }
-
     // still have no idea how i will even apply these things, but it will happen at some point
     // for now all i can really do is just gather the params, but i can't do anything with them quite yet
-    private List<Statement> parseFunctionParameters() {
-        List<Statement> parameters = new java.util.ArrayList<>();
-        if (!check(TokenKind.CLOSE_PAREN)) { // if we don't have a closing parenthesis, we have parameters
+    private List<VariableSymbol> parseFunctionParameters() {
+        List<VariableSymbol> parameters = new ArrayList<>();
+        if (!check(TokenKind.CLOSE_PAREN)) {
+            System.out.println("Parsing function parameters...");
             do {
-                parameters.add(parseStatement());
-            } while (match(TokenKind.COMMA)); // allow multiple parameters separated by commas
+                Token type = consume(
+                        TokenKind.INTEGER, TokenKind.FLOAT, TokenKind.STRING,
+                        TokenKind.BOOLEAN, TokenKind.MATRIX, TokenKind.SYMBOL
+                ); // parameter type
+
+                Token name = consume(TokenKind.IDENTIFIER);
+                parameters.add(new VariableSymbol(name.getLexeme(), type.getKind(), null));
+            } while (match(TokenKind.COMMA));
         }
-        System.out.println("Parsed function parameters: " + parameters); // this is not being reached for some reason
+        System.out.println("Function parameters parsed: " + parameters.size());
         return parameters;
     }
 
-    private Statement parseFunctionCall() {
-        if (BuiltIns.isBuiltInFunction(peek().getLexeme())) { // first we handle built-in functions (in library)
-            System.out.println("Parsing built-in function: " + peek().getLexeme());
+    private List<ASTNode> parseArguments() {
+        List<ASTNode> arguments = new ArrayList<>();
+        if (!check(TokenKind.CLOSE_PAREN)) {
+            do {
+                ASTNode arg = parseExpression();
+                System.out.println(arg);
+                arguments.add(arg);
+            } while (match(TokenKind.COMMA));
         }
-        return new FunctionCallNode(peek().getLexeme(), parseFunctionParameters());
+        return arguments;
     }
 
-//    private Statement parseFunctionCall() {
-//        if (BuiltIns.isBuiltInFunction(peek().getLexeme())) { // first we handle built-in functions (in library)
-//            FunctionNode builtInFunction = BuiltIns.getBuiltInFunction(peek().getLexeme());
-//            advance(); // consume the function name
-//            consume(TokenKind.OPEN_PAREN); // consume the opening parenthesis
-//            List<Expression> parameters = parseFunctionParameters();
-//            consume(TokenKind.CLOSE_PAREN); // consume the closing parenthesis
-//            return new FunctionNode(builtInFunction, parameters);
-//        } else {
-//            throw new ErrorHandler(
-//                    "parsing",
-//                    peek().getLine(),
-//                    "Unexpected token: " + peek().getLexeme(),
-//                    "Expected a built-in function call."
-//            );
-//        }
-//    }
+    private Statement parseFunctionCall() {
+        Token functionNameToken = consume(TokenKind.IDENTIFIER); // consume function name
+        consume(TokenKind.OPEN_PAREN); // consume '('
 
-    // here we need a way to do things correctly
-//    private Statement parseFunctionCall() {
-//        if (BuiltIns.isBuiltInFunction(peek().getLexeme())) { // first we handle built-in functions (in library) ? why ?
-//            FunctionNode builtInFunction = BuiltIns.getBuiltInFunction(peek().getLexeme());
-//            advance(); // consume the function name
-//            consume(TokenKind.OPEN_PAREN); // consume the opening parenthesis
-//            List<Expression> parameters = parseFunctionParameters();
-//            consume(TokenKind.CLOSE_PAREN); // consume the closing parenthesis
-//            return new FunctionNode(builtInFunction, parameters);
-//        } else {
-//            // handle user-defined functions
-//            Token functionName = consume(TokenKind.VARIABLE);
-//            consume(TokenKind.OPEN_PAREN);
-//            List<Expression> parameters = parseFunctionParameters();
-//            consume(TokenKind.CLOSE_PAREN);
-//            consume(TokenKind.OPEN_BRACE);
-//            List<Statement> body = parseFunctionBody();
-//            consume(TokenKind.CLOSE_BRACE);
-//            return new FunctionNode(functionName.getLexeme(), parameters, body);
-//        }
-//    }
+        List<ASTNode> arguments = parseArguments(); // parse argument expressions
+
+        consume(TokenKind.CLOSE_PAREN); // consume ')'
+
+        return new FunctionCallNode(functionNameToken.getLexeme(), arguments);
+    }
 
     private boolean match(TokenKind... expectedKinds) {
         for (TokenKind expectedKind : expectedKinds) {
