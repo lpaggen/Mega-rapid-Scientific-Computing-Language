@@ -1,5 +1,6 @@
 package AST.Nodes.BuiltIns;
 
+import AST.Nodes.ASTNode;
 import Interpreter.Tokenizer.TokenKind;
 import Util.Environment;
 import Util.FunctionSymbol;
@@ -15,7 +16,7 @@ public class BuiltInFunctionSymbol extends FunctionSymbol {
     }
 
     @Override
-    public void call(Environment env, List<Object> args) {
+    public void call(Environment env, List<ASTNode> args) {
         // This method should be overridden in subclasses for specific built-in functions
         throw new UnsupportedOperationException("Built-in function '" + name + "' is not implemented.");
     }
@@ -28,7 +29,7 @@ public class BuiltInFunctionSymbol extends FunctionSymbol {
         return TokenKind.VOID; // Built-in functions may not have a specific return type
     }
 
-    public void execute(Environment env, List<Object> args) {
+    public void execute(Environment env, List<ASTNode> args) {
         // This method should be overridden in subclasses for specific built-in functions
         throw new UnsupportedOperationException("Built-in function '" + name + "' is not implemented.");
     }

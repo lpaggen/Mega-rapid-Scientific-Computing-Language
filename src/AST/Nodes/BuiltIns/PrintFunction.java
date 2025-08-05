@@ -1,5 +1,6 @@
 package AST.Nodes.BuiltIns;
 
+import AST.Nodes.ASTNode;
 import Interpreter.Tokenizer.TokenKind;
 import Util.Environment;
 import Util.FunctionSymbol;
@@ -11,7 +12,7 @@ public class PrintFunction extends BuiltInFunctionSymbol {
         super("print");
     }
 
-    public void call(Environment env, List<Object> args) {
+    public void call(Environment env, List<ASTNode> args) {
         if (!args.isEmpty()) {
             System.out.println(args.getFirst());
         } else {

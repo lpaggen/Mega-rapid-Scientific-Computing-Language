@@ -1,5 +1,6 @@
 package Util;
 
+import AST.Nodes.ASTNode;
 import AST.Nodes.BuiltIns.BuiltInFunctionSymbol;
 import AST.Nodes.Statement;
 import Interpreter.Tokenizer.TokenKind;
@@ -31,7 +32,7 @@ public class FunctionSymbol extends Symbol {
         return builtIn != null;
     }
 
-    public void call(Environment env, List<Object> args) {
+    public void call(Environment env, List<ASTNode> args) {
         if (isBuiltIn()) {
             builtIn.execute(env, args);
         }

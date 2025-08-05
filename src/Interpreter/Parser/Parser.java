@@ -132,7 +132,7 @@ public class Parser {
         }
         if (match(TokenKind.IDENTIFIER)) {
             Token variableToken = previous();
-            return new VariableNode(variableToken); // need to bring this back somehow, what we did before was not parser-behavior
+            return new VariableNode(variableToken.getLexeme());
         }
         throw new ErrorHandler(
                 "parsing",
@@ -286,8 +286,8 @@ public class Parser {
         List<ASTNode> arguments = new ArrayList<>();
         if (!check(TokenKind.CLOSE_PAREN)) {
             do {
-                ASTNode arg = parseExpression();
-                System.out.println(arg);
+                Expression arg = parseExpression();
+                System.out.println("Parsing argument: " + (arg != null ? arg.toString() : "null"));
                 arguments.add(arg);
             } while (match(TokenKind.COMMA));
         }

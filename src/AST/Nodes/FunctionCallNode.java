@@ -24,7 +24,7 @@ public class FunctionCallNode extends Statement {
         FunctionSymbol functionSymbol = (FunctionSymbol) env.lookup(functionName);
         if (BuiltIns.isBuiltInFunction(functionName)) {
             System.out.println("calling execute on the function symbol: " + functionSymbol.getName());
-            functionSymbol.call(env, Collections.singletonList(arguments));
+            functionSymbol.call(env, arguments);
         }
     }
 }

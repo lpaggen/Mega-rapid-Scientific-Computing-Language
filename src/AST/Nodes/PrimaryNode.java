@@ -16,6 +16,6 @@ public class PrimaryNode extends Expression {
 
     @Override
     public String toString() {
-        return "";
+        return value.toString(); // can't believe i didn't implement toString before.
     }
 }
