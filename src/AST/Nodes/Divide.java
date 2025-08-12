@@ -11,7 +11,7 @@ public class Divide extends MathExpression {
     }
 
     @Override
-    public Object evaluate(Environment env) {
+    public Expression evaluate(Environment env) {
         Object numResult = num.evaluate(env);
         Object denomResult = denom.evaluate(env);
 

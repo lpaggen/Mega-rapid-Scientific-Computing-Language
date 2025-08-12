@@ -6,25 +6,28 @@ import Util.FunctionSymbol;
 import Util.Symbol;
 import Util.VariableSymbol;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class FunctionCallNode extends Statement {
     private final String functionName;
-    private final List<ASTNode> arguments;
+    // at this stage, we assume that the function is already declared in the environment
+    // so arguments must be cast to Expression
+    // in declaration time, they are VariableSymbols, now they must inherit Expression
+    private final List<Expression> arguments; // we need to keep Expression; eg print(x + y);
 
-    public FunctionCallNode(String functionName, List<ASTNode> arguments) {
+    public FunctionCallNode(String functionName, List<Expression> arguments) {
         this.functionName = functionName;
         this.arguments = arguments;
     }
 
-    @Override
     public void execute(Environment env) {
-        // first we'll handle the built-in functions
-        FunctionSymbol functionSymbol = (FunctionSymbol) env.lookup(functionName);
-        if (BuiltIns.isBuiltInFunction(functionName)) {
-            System.out.println("calling execute on the function symbol: " + functionSymbol.getName());
-            functionSymbol.call(env, arguments);
+        FunctionSymbol function = (FunctionSymbol) env.lookup(functionName);
+        List<Expression> evaluatedArgs = new ArrayList<>();
+        for (Expression arg : arguments) {
+            evaluatedArgs.add(arg.evaluate(env)); // <-- This is crucial!
         }
+        function.call(env, evaluatedArgs);
     }
 }

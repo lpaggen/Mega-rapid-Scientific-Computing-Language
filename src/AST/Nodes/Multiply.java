@@ -25,7 +25,7 @@ public class Multiply extends MathExpression {
     }
 
     @Override
-    public Object evaluate(Environment env) {
+    public Expression evaluate(Environment env) {
         Object leftResult = left.evaluate(env);
         Object rightResult = right.evaluate(env);
 

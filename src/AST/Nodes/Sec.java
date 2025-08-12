@@ -22,7 +22,7 @@ public class Sec extends MathExpression {
     }
 
     @Override
-    public Object evaluate(Environment env) {
+    public Expression evaluate(Environment env) {
         return 1 / Math.cos((double) arg.evaluate(env));
     }
 

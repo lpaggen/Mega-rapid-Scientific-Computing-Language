@@ -21,7 +21,7 @@ public class Sine extends MathExpression {
     }
 
     @Override
-    public Object evaluate(Environment env) {
+    public Expression evaluate(Environment env) {
         return Math.sin((double) arg.evaluate(env));
     }
 

@@ -5,7 +5,7 @@ import Util.Environment;
 public abstract class MathExpression extends Expression {
 
     @Override
-    public abstract Object evaluate(Environment env);
+    public abstract Expression evaluate(Environment env);
 
     @Override
     public abstract String toString();

@@ -20,7 +20,7 @@ public class Tangent extends MathExpression {
     }
 
     @Override
-    public Object evaluate(Environment env) {
+    public Expression evaluate(Environment env) {
         return Math.tan((double) arg.evaluate(env));
     }
 

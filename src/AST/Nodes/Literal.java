@@ -14,7 +14,7 @@ public class Literal extends Expression {
     }
 
     @Override
-    public Object evaluate(Environment env) {
+    public Expression evaluate(Environment env) {
         return value;
     }
 

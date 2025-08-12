@@ -34,6 +34,11 @@ public class Parser {
     public void interpretCode() {
         while (!isAtEnd()) {
             Statement statement = parseStatement();
+            if (statement == null) {
+                // if we reach here, it means we have an empty statement or an unrecognized token
+                advance(); // just consume the token and continue -- will have to fix this in a future build
+                continue;
+            }
             statement.execute(environment);
         }
     }
@@ -132,6 +137,7 @@ public class Parser {
         }
         if (match(TokenKind.IDENTIFIER)) {
             Token variableToken = previous();
+            System.out.println("Parsing variable: " + variableToken.getLexeme());
             return new VariableNode(variableToken.getLexeme());
         }
         throw new ErrorHandler(
@@ -169,8 +175,9 @@ public class Parser {
             );
             //throw new RuntimeException(peek() + " Expected type keyword.");
         }
+        System.out.println("Parsing variable declaration: " + peek().getLexeme());
         Token typeToken = advance();
-        if (!match(TokenKind.VARIABLE)) {
+        if (!match(TokenKind.IDENTIFIER)) {
             throw new ErrorHandler(
                     "parsing",
                     peek().getLine(),
@@ -196,7 +203,7 @@ public class Parser {
 
     private FunctionDeclarationNode parseFunctionDeclaration() { // we should build the logic to allow users to define a function
         advance(); // consume the FUNC token
-        if (!match(TokenKind.VARIABLE)) { // should make sure you're not defining a function with a reserved keyword or literal
+        if (!match(TokenKind.IDENTIFIER)) { // should make sure you're not defining a function with a reserved keyword or literal
             throw new ErrorHandler(
                     "parsing",
                     peek().getLine(),
@@ -282,11 +289,13 @@ public class Parser {
         return parameters;
     }
 
-    private List<ASTNode> parseArguments() {
-        List<ASTNode> arguments = new ArrayList<>();
+    // arguments are the values passed to the function, while parameters are the variables defined in the function signature
+    // so these may actually be Expression
+    private List<Expression> parseFunctionArguments() {
+        List<Expression> arguments = new ArrayList<>();
         if (!check(TokenKind.CLOSE_PAREN)) {
             do {
-                Expression arg = parseExpression();
+                Expression arg = parseExpression(); // this is wrong, we don't need to parseExpression here (i mean we could)
                 System.out.println("Parsing argument: " + (arg != null ? arg.toString() : "null"));
                 arguments.add(arg);
             } while (match(TokenKind.COMMA));
@@ -298,7 +307,7 @@ public class Parser {
         Token functionNameToken = consume(TokenKind.IDENTIFIER); // consume function name
         consume(TokenKind.OPEN_PAREN); // consume '('
 
-        List<ASTNode> arguments = parseArguments(); // parse argument expressions
+        List<Expression> arguments = parseFunctionArguments(); // parse argument expressions
 
         consume(TokenKind.CLOSE_PAREN); // consume ')'
 

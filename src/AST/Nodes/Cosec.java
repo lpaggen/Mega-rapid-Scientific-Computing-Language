@@ -25,7 +25,7 @@ public class Cosec extends MathExpression {
 
     // quite unsure if this will work, it should, given the right circumstances
     @Override
-    public Object evaluate(Environment env) {
+    public Expression evaluate(Environment env) {
         return 1 / Math.sin((double) arg.evaluate(env));
     }
 

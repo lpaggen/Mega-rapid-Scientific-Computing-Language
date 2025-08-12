@@ -1,14 +1,14 @@
 package Util;
 
-import AST.Nodes.ASTNode;
 import AST.Nodes.BuiltIns.BuiltInFunctionSymbol;
+import AST.Nodes.Expression;
 import AST.Nodes.Statement;
 import Interpreter.Tokenizer.TokenKind;
 
 import java.util.List;
 
 public class FunctionSymbol extends Symbol {
-    private final List<VariableSymbol> parameters;
+    private final List<VariableSymbol> parameters; // User-defined functions have parameters
     private final List<Statement> body;
     private final BuiltInFunctionSymbol builtIn; // null if not a built-in function
 
@@ -32,7 +32,7 @@ public class FunctionSymbol extends Symbol {
         return builtIn != null;
     }
 
-    public void call(Environment env, List<ASTNode> args) {
+    public void call(Environment env, List<Expression> args) {
         if (isBuiltIn()) {
             builtIn.execute(env, args);
         }

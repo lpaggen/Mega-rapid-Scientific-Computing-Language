@@ -17,7 +17,7 @@ public class LogicalBinaryNode extends Expression {
     }
 
     @Override
-    public Object evaluate(Environment env) {
+    public Expression evaluate(Environment env) {
         Object lhsVal = lhs.evaluate(env);
         Object rhsVal = rhs.evaluate(env);
 

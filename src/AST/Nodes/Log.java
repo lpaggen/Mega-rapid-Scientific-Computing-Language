@@ -26,7 +26,7 @@ public class Log extends MathExpression {
     }
 
     @Override
-    public Object evaluate(Environment env) {
+    public Expression evaluate(Environment env) {
         if (base.toString().equals("2")) {
             return Math.log((double) arg.evaluate(env));
         } else return Math.log10((double) arg.evaluate(env));

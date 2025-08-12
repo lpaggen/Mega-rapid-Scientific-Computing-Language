@@ -20,7 +20,7 @@ public class MathSymbol extends MathExpression {
     }
 
     @Override
-    public Object evaluate(Environment env) {
+    public Expression evaluate(Environment env) {
         return null;
     }
 

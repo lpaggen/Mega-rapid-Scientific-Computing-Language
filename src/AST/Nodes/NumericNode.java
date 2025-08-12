@@ -29,7 +29,7 @@ public class NumericNode extends Expression {
 
     // this isn't really ideal, maybe this should just be an expression
     @Override
-    public Object evaluate(Environment env) {
+    public Expression evaluate(Environment env) {
         return value;
     }
 }

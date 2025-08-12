@@ -21,7 +21,7 @@ public class Cosine extends MathExpression {
     }
 
     @Override
-    public Object evaluate(Environment env) {
+    public Expression evaluate(Environment env) {
         return Math.cos((double) arg.evaluate(env));
     }
 

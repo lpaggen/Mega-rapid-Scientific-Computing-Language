@@ -21,8 +21,8 @@ public class unaryNode extends Expression {
     }
 
     @Override
-    public Object evaluate(Environment env) {
-        Object rightValue = rhs.evaluate(env);
+    public Expression evaluate(Environment env) {
+        Expression rightValue = rhs.evaluate(env);
         return switch (operator.getKind()) {
             case MINUS -> evaluateMinus(rightValue);
             case NOT_EQUAL -> !isTruthy(rightValue);
@@ -37,14 +37,15 @@ public class unaryNode extends Expression {
 
     // this block makes it so that we can also evaluate 0 and 1s as T/F
     private boolean isTruthy(Object rightValue) {
-        if (rightValue instanceof Boolean) { return (Boolean) rightValue; }
         if (rightValue instanceof BooleanNode) { return ((BooleanNode) rightValue).getValue(); }
         if (rightValue == null) { return false; }
         throw new RuntimeException("Cannot apply '!' to non-boolean value.");
     }
 
-    private Object evaluateMinus(Object rightValue) {
-        if (rightValue instanceof Number) { return -((Number) rightValue).doubleValue(); }
+    private Expression evaluateMinus(Expression rightValue) {
+        if (rightValue instanceof Constant) {
+            return new Multiply(new Constant(-1), (Constant) rightValue);
+        }
         if (rightValue instanceof MathExpression) { return new Multiply(new Constant(-1), (MathExpression) rightValue); }
         throw new RuntimeException("Cannot apply '-' to non-numeric (algebraic) value.");
     }

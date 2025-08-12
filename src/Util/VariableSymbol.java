@@ -10,7 +10,7 @@ public class VariableSymbol extends Symbol {
 
     public VariableSymbol(String name, TokenKind type, Object value) {
         super(name, type);
-        this.value = value;
+        this.value = value; // we would be using VariableSymbol for function parameters, no need for their own class
     }
 
     public Object getValue() {

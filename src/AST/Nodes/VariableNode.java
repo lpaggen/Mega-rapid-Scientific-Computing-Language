@@ -12,7 +12,7 @@ public class VariableNode extends Expression {
     }
 
     @Override
-    public Object evaluate(Environment env) {
+    public Expression evaluate(Environment env) {
         // Retrieve the variable value from the environment
         Symbol symbol = env.lookup(name);
         if (symbol instanceof VariableSymbol) {

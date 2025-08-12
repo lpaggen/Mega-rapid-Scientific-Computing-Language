@@ -14,7 +14,7 @@ public class Constant extends MathExpression {
     }
 
     @Override
-    public Object evaluate(Environment env) {
+    public Expression evaluate(Environment env) {
         return value;
     }
 
