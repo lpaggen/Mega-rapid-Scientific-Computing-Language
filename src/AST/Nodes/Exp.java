@@ -2,31 +2,24 @@ package AST.Nodes;
 
 import Util.Environment;
 
-public class Exp extends MathExpression {
-    private final MathExpression arg;
+public class Exp extends Expression {
+    private final Expression arg;
 
-    public Exp(MathExpression arg) {
+    public Exp(Expression arg) {
         this.arg = arg;
     }
 
     @Override
-    public MathExpression derive(String variable) {
-        // chain rule of e, should be correct
-        return new Multiply(arg.derive(variable), new Exp(arg));
-    }
-
-    @Override
-    public MathExpression substitute(String... args) {
-        return new Exp(arg.substitute(args));
-    }
-
-    @Override
-    public Expression evaluate(Environment env) {
-        return Math.exp((double) arg.evaluate(env));
+    public double evaluate(Environment env) {
+        return Math.exp(arg.evaluate(env));
     }
 
     @Override
     public String toString() {
         return "exp(" + arg.toString() + ")";
+    }
+
+    public Expression getArg() {
+        return arg;
     }
 }

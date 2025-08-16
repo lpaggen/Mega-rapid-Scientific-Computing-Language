@@ -2,21 +2,21 @@ package AST.Nodes;
 
 import Util.Environment;
 
-public class Cot extends Expression {
+public class Tan extends Expression {
     private final Expression arg;
 
-    public Cot(Expression arg) {
+    public Tan(Expression arg) {
         this.arg = arg;
     }
 
     @Override
     public double evaluate(Environment env) {
-        return Math.cos(arg.evaluate(env)) / Math.sin(arg.evaluate(env));
+        return Math.tan(arg.evaluate(env));
     }
 
     @Override
     public String toString() {
-        return "cot(" + arg.toString() + ")";
+        return "tan(" + arg.toString() + ")";
     }
 
     public Expression getArg() {

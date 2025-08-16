@@ -44,9 +44,9 @@ public class unaryNode extends Expression {
 
     private Expression evaluateMinus(Expression rightValue) {
         if (rightValue instanceof Constant) {
-            return new Multiply(new Constant(-1), (Constant) rightValue);
+            return new Mul(new Constant(-1), (Constant) rightValue);
         }
-        if (rightValue instanceof MathExpression) { return new Multiply(new Constant(-1), (MathExpression) rightValue); }
+        if (rightValue instanceof MathExpression) { return new Mul(new Constant(-1), (MathExpression) rightValue); }
         throw new RuntimeException("Cannot apply '-' to non-numeric (algebraic) value.");
     }
 }

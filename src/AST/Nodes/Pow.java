@@ -2,11 +2,11 @@ package AST.Nodes;
 
 import Util.Environment;
 
-public class Power extends Expression {
+public class Pow extends Expression {
 
     private final Expression arg, exponent;
 
-    public Power(Expression arg, Expression exponent) {
+    public Pow(Expression arg, Expression exponent) {
         this.arg = arg;
         this.exponent = exponent;
     }

@@ -2,10 +2,10 @@ package AST.Nodes;
 
 import Util.Environment;
 
-public class Multiply extends Expression {
+public class Mul extends Expression {
     private final Expression left, right;
 
-    public Multiply(Expression left, Expression right) {
+    public Mul(Expression left, Expression right) {
         this.left = left;
         this.right = right;
     }
