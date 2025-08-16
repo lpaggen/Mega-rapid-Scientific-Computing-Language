@@ -132,15 +132,15 @@ public class AlgebraUtils {
 
                 // this is the case for everything with exponents, like x^4 / x^1 will work too!
                 if (numerator instanceof Pow nPow && denominator instanceof Pow dPow && nPow.getBase().equals(dPow.getBase())) {
-                    return new Pow(nPow.getBase(), new Subtract(nPow.getExponent(), dPow.getExponent())); // x^n / x^m = x^(n-m)
+                    return new Pow(nPow.getBase(), new Sub(nPow.getExponent(), dPow.getExponent())); // x^n / x^m = x^(n-m)
                 }
 
                 if (numerator instanceof Pow nPow && denominator instanceof VariableNode dVar && nPow.getBase().equals(dVar)) {
-                    return new Pow(nPow.getBase(), new Subtract(nPow.getExponent(), new Constant(1))); // x^n / x = x^(n-1)
+                    return new Pow(nPow.getBase(), new Sub(nPow.getExponent(), new Constant(1))); // x^n / x = x^(n-1)
                 }
 
                 if (numerator instanceof VariableNode nVar && denominator instanceof Pow dPow && dPow.getBase().equals(nVar)) {
-                    return new Pow(nVar, new Subtract(dPow.getExponent(), new Constant(1))); // x / x^n = x^(1-n)
+                    return new Pow(nVar, new Sub(dPow.getExponent(), new Constant(1))); // x / x^n = x^(1-n)
                 }
 
                 // some special trigonometric identities!!

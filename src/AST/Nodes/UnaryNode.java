@@ -1,28 +1,21 @@
 package AST.Nodes;
 
 import Interpreter.Tokenizer.Token;
+import Interpreter.Tokenizer.TokenKind;
 import Util.Environment;
 
-public class unaryNode extends Expression {
+public class UnaryNode extends Expression {
     private final Token operator;
     private final Expression rhs;
 
-    public unaryNode(Token operator, Expression rhs) {
-        this.operator = operator;
-        this.rhs = rhs;
-    }
-
-    // i'm not sure yet what to do, a 2nd constructor could work
-    // we have to accept stuff like this: !true, -5, !true, but also -x ...
-    // i will implement at a later stage, first i need to make sure this works
-    public unaryNode(Token operator, MathExpression rhs) {
+    public UnaryNode(Token operator, Expression rhs) {
         this.operator = operator;
         this.rhs = rhs;
     }
 
     @Override
-    public Expression evaluate(Environment env) {
-        Expression rightValue = rhs.evaluate(env);
+    public Object evaluate(Environment env) {
+        Expression rightValue = (Expression) rhs.evaluate(env);
         return switch (operator.getKind()) {
             case MINUS -> evaluateMinus(rightValue);
             case NOT_EQUAL -> !isTruthy(rightValue);
@@ -46,7 +39,22 @@ public class unaryNode extends Expression {
         if (rightValue instanceof Constant) {
             return new Mul(new Constant(-1), (Constant) rightValue);
         }
-        if (rightValue instanceof MathExpression) { return new Mul(new Constant(-1), (MathExpression) rightValue); }
-        throw new RuntimeException("Cannot apply '-' to non-numeric (algebraic) value.");
+        if (rightValue instanceof VariableNode) {
+            return new Mul(new Constant(-1), rightValue);
+        }
+        if (rightValue instanceof UnaryNode unary) {
+            if (unary.operator.getKind() == TokenKind.MINUS) {
+                return unary.rhs; // double negation cancels out
+            }
+        }
+        return new Mul(new Constant(-1), rightValue);
+    }
+
+    public Token getOperator() {
+        return operator;
+    }
+
+    public Expression getArg() {
+        return rhs;
     }
 }

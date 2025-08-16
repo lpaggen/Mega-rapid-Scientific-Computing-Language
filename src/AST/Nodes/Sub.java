@@ -2,21 +2,21 @@ package AST.Nodes;
 
 import Util.Environment;
 
-public class Add extends Expression {
+public class Sub extends Expression {
     private final Expression left, right;
 
-    public Add(Expression left, Expression right) {
+    public Sub(Expression left, Expression right) {
         this.left = left;
         this.right = right;
     }
 
     private Integer evaluateInteger(Object lhsVal, Object rhsVal) {
-        return (Integer) lhsVal + (Integer) rhsVal;
-        }
+        return (Integer) lhsVal - (Integer) rhsVal;
+    }
 
     private Float evaluateFloat(Object lhsVal, Object rhsVal) {
-            return (Float) lhsVal + (Float) rhsVal;
-        };
+        return (Float) lhsVal - (Float) rhsVal;
+    };
 
     private Float evaluateFloatTolerant(Object lhsVal, Object rhsVal) {
         // this is a tolerant version of the float evaluation, it will convert int to float
@@ -42,6 +42,8 @@ public class Add extends Expression {
                 (leftVal instanceof Float && rightVal instanceof Integer)) {
             return evaluateFloatTolerant(leftVal, rightVal);
         }
+        // If we reach here, it's an unsupported type combination
+        throw new UnsupportedOperationException("Unsupported types for subtraction: " + leftVal.getClass() + " and " + rightVal.getClass());
     }
 
     @Override

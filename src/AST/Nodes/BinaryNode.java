@@ -16,37 +16,6 @@ public class BinaryNode extends Expression {
 
     // evaluate in our case is going to need much more than just a double, so we need to change this to Object
     // it's also going to be quite extensive, because we have a lot of type matches to check
-    @Override
-    public Expression evaluate(Environment env) {
-        Object lhsVal = lhs.evaluate(env);
-        Object rhsVal = rhs.evaluate(env);
-
-        if (lhsVal instanceof BooleanNode && rhsVal instanceof BooleanNode) {
-            return evaluateBoolean(((BooleanNode) lhsVal).getValue(), ((BooleanNode) rhsVal).getValue());
-        }
-        if (lhsVal instanceof Integer && rhsVal instanceof Integer) {
-            return evaluateInteger(lhsVal, rhsVal);
-        }
-        if (lhsVal instanceof Float && rhsVal instanceof Float) {
-            return evaluateFloat(lhsVal, rhsVal);
-        }
-        if (lhsVal instanceof Integer && rhsVal instanceof Float) {
-            return evaluateFloatTolerant(lhsVal, rhsVal);
-        }
-        if (lhsVal instanceof Float && rhsVal instanceof Integer) {
-            return evaluateFloatTolerant(lhsVal, rhsVal);
-        }
-        if (lhsVal instanceof MathExpression && rhsVal instanceof MathExpression) {
-            return new BinaryNode((MathExpression) lhsVal, operator, (MathExpression) rhsVal);
-            }
-        if (lhsVal instanceof MathExpression) {
-            return new BinaryNode((MathExpression) lhsVal, operator, rhs);
-        }
-        if (rhsVal instanceof MathExpression) {
-            return new BinaryNode(lhs, operator, (MathExpression) rhsVal);
-        }
-        throw new UnsupportedOperationException("Unsupported types for" + operator.getLexeme() + ": " + lhsVal.getClass() + " and " + rhsVal.getClass());
-    }
 
     private Integer evaluateInteger(Object lhsVal, Object rhsVal) {
         return switch (operator.getKind()) {
@@ -88,7 +57,44 @@ public class BinaryNode extends Expression {
     }
 
     @Override
+    public Object evaluate(Environment env) {
+        Object leftVal = lhs.evaluate(env);
+        Object rightVal = rhs.evaluate(env);
+
+        // Handle numeric operations
+        if (leftVal instanceof Integer && rightVal instanceof Integer) {
+            return evaluateInteger(leftVal, rightVal);
+        } else if ((leftVal instanceof Float && rightVal instanceof Float) ||
+                (leftVal instanceof Integer && rightVal instanceof Float) ||
+                (leftVal instanceof Float && rightVal instanceof Integer)) {
+            return evaluateFloatTolerant(leftVal, rightVal);
+        }
+
+        // Handle boolean operations
+        if (leftVal instanceof Boolean && rightVal instanceof Boolean) {
+            return evaluateBoolean((Boolean) leftVal, (Boolean) rightVal);
+        }
+
+        // If we reach here, it's an unsupported type combination
+        throw new RuntimeException("Type error: Cannot apply operator " + operator.getLexeme() +
+                " to types " + leftVal.getClass().getSimpleName() +
+                " and " + rightVal.getClass().getSimpleName());
+    }
+
+    @Override
     public String toString() {
         return lhs + " " + operator + " " + rhs;
+    }
+
+    public Expression getLeft() {
+        return lhs;
+    }
+
+    public Expression getRight() {
+        return rhs;
+    }
+
+    public Token getOperator() {
+        return operator;
     }
 }

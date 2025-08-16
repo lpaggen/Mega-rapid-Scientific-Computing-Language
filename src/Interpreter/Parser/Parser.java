@@ -1,10 +1,8 @@
 package Interpreter.Parser;
 
 import AST.Nodes.*;
-import AST.Nodes.BuiltIns.BuiltIns;
 import AST.Nodes.BuiltIns.FunctionDeclarationNode;
 import AST.Nodes.BuiltIns.ImportNode;
-import AST.Nodes.BuiltIns.PrintFunction;
 import Interpreter.ErrorHandler;
 import Interpreter.Tokenizer.TokenKind;
 import Interpreter.Tokenizer.Token;
@@ -116,7 +114,7 @@ public class Parser {
         if (match(TokenKind.NOT, TokenKind.MINUS)) { // handle both ! and negation
             Token operator = previous();
             Expression rhs = parseUnary();
-            return new unaryNode(operator, rhs);
+            return new UnaryNode(operator, rhs);
         }
         return parsePrimary();
     }
