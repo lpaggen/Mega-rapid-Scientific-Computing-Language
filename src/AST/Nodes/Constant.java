@@ -1,8 +1,9 @@
 package AST.Nodes;
 
 import Util.Environment;
+import Util.WarningHandler;
 
-public class Constant extends MathExpression {
+public class Constant extends Expression {
     public double value;
 
     public Constant(double value) {
@@ -15,12 +16,12 @@ public class Constant extends MathExpression {
 
     @Override
     public Expression evaluate(Environment env) {
-        return value;
+        throw new UnsupportedOperationException("Constants cannot be evaluated in the environment.");
     }
 
     @Override
     public String toString() {
-        return value + "";
+        return STR."\{value}";
     }
 
     @Override

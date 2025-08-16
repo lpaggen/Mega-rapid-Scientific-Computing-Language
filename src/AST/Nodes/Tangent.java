@@ -2,30 +2,24 @@ package AST.Nodes;
 
 import Util.Environment;
 
-public class Tangent extends MathExpression {
-    private final MathExpression arg;
+public class Tangent extends Expression {
+    private final Expression arg;
 
-    public Tangent(MathExpression arg) {
+    public Tangent(Expression arg) {
         this.arg = arg;
     }
 
     @Override
-    public MathExpression derive(String variable) {
-        return new Multiply(new Sec(arg), arg.derive(variable));
-    }
-
-    @Override
-    public MathExpression substitute(String... args) {
-        return new Tangent(arg.substitute(args));
-    }
-
-    @Override
-    public Expression evaluate(Environment env) {
-        return Math.tan((double) arg.evaluate(env));
+    public double evaluate(Environment env) {
+        return Math.tan(arg.evaluate(env));
     }
 
     @Override
     public String toString() {
         return "tan(" + arg.toString() + ")";
+    }
+
+    public Expression getArg() {
+        return arg;
     }
 }

@@ -2,15 +2,33 @@ package AST.Nodes;
 
 import Util.Environment;
 
-public abstract class MathExpression extends Expression {
+public class MathExpression {
+    // i'm gonna go for composition as opposed to OOP for this one
+    // this is a base class for all math expressions in the AST.
+    private Expression expression;
 
-    @Override
-    public abstract Expression evaluate(Environment env);
+    public String toString() {
+        if (expression == null) {
+            return ""; // whatever
+        }
+        return expression.toString();
+    }
 
-    @Override
-    public abstract String toString();
+    public Expression evaluate(Environment env) {
+        if (expression == null) {
+            return null; // whatever
+        }
+        return expression.evaluate(env);
+    }
 
-    public abstract MathExpression derive(String var);
 
-    public abstract MathExpression substitute(String... args);
+
+    public MathExpression derive(String var) { // might not really be string, will see
+        if (expression == null) {
+            return null;
+        }
+        return expression.derive(var);
+    }
+
+    public MathExpression substitute(String... args);
 }

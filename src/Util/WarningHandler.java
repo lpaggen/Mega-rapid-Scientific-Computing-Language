@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class WarningHandler {
+public class WarningHandler extends Throwable{
     private final List<String> warnings = new ArrayList<>();
     private final HashMap<Integer, String> severityLevels = new HashMap<>();
     public WarningHandler() {
@@ -19,7 +19,6 @@ public class WarningHandler {
         if (severity < 1 || severity > 3) {
             throw new IllegalArgumentException("Severity must be between 1 and 3.");
         }
-
         warnings.add(severityLevels.get(severity) + "Warning at line " + line + ": " + warning);
     }
 
