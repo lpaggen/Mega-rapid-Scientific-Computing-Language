@@ -2,7 +2,7 @@ package AST.Nodes;
 
 import Util.Environment;
 
-public class Mul extends BinaryNode {
+public class Mul extends ArithmeticBinaryNode {
     public Mul(Expression lhs, Expression rhs) {
         super(lhs, rhs);
     }

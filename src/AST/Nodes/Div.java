@@ -2,7 +2,7 @@ package AST.Nodes;
 
 import Util.Environment;
 
-public class Div extends BinaryNode {
+public class Div extends ArithmeticBinaryNode {
 
     public Div(Expression lhs, Expression rhs) {
         super(lhs, rhs);

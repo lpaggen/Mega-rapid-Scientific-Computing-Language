@@ -2,7 +2,7 @@ package AST.Nodes;
 
 import Util.Environment;
 
-public class Add extends BinaryNode {
+public class Add extends ArithmeticBinaryNode {
     public Add(Expression lhs, Expression rhs) {
         super(lhs, rhs);
     }

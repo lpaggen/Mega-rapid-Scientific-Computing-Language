@@ -74,7 +74,7 @@ public class Parser {
         while (match(TokenKind.EQUAL_EQUAL, TokenKind.NOT_EQUAL)) {
             Token operator = previous();
             Expression rhs = parseComparison();
-            expression = new LogicalBinaryNode(expression, operator, rhs);
+            expression = new EqualTo(expression, rhs);
         }
         return expression;
     }
@@ -84,7 +84,7 @@ public class Parser {
         while (match(TokenKind.GREATER, TokenKind.LESS, TokenKind.GREATER_EQUAL, TokenKind.LESS_EQUAL)) {
             Token operator = previous(); // because match() consumes the token (advances position)
             Expression rhs = parseTerm(); // here we are also consuming the next token, which ensures the while loop actually works
-            expression = new LogicalBinaryNode(expression, operator, rhs);
+            expression = inferLogicalBinaryNodeFromOperator(operator.getKind(), expression, rhs);
         }
         return expression;
     }
@@ -409,6 +409,23 @@ public class Parser {
                 peek().getLine(),
                 "Unsupported operator: " + operator,
                 "Expected a valid arithmetic operator (+, -, *, /)."
+        );
+    }
+
+    private BinaryNode inferLogicalBinaryNodeFromOperator(TokenKind operator, Expression lhs, Expression rhs) {
+        switch (operator) {
+            case GREATER -> new GreaterThan(lhs, rhs);
+            case LESS -> new SmallerThan(lhs, rhs);
+            case GREATER_EQUAL -> new GreaterEqualThan(lhs, rhs);
+            case LESS_EQUAL -> new SmallerEqualThan(lhs, rhs);
+            case EQUAL_EQUAL -> new EqualTo(lhs, rhs);
+            case NOT_EQUAL -> new NotEqualTo(lhs, rhs);
+        }
+        throw new ErrorHandler(
+                "parsing",
+                peek().getLine(),
+                "Unsupported operator: " + operator,
+                "Expected a valid comparison operator (>, <, >=, <=, ==, !=)."
         );
     }
 }

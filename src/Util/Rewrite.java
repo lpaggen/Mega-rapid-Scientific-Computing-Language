@@ -4,11 +4,7 @@ import AST.Nodes.*;
 
 public class Rewrite {
     private static Expression rewrite(Expression expr) {
-        if (expr instanceof BinaryNode binaryExpr) {
-            Expression left = rewrite(binaryExpr.getLeft());
-            Expression right = rewrite(binaryExpr.getRight());
-            return new BinaryNode(left, binaryExpr.getOperator(), right);
-        } else if (expr instanceof UnaryNode unaryExpr) {
+        if (expr instanceof UnaryNode unaryExpr) {
             Expression arg = rewrite(unaryExpr.getArg());
             return new UnaryNode(unaryExpr.getOperator(), arg);
         } else if (expr instanceof Constant || expr instanceof VariableNode) {
