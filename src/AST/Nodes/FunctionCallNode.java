@@ -1,13 +1,9 @@
 package AST.Nodes;
 
-import AST.Nodes.BuiltIns.BuiltIns;
 import Util.Environment;
 import Util.FunctionSymbol;
-import Util.Symbol;
-import Util.VariableSymbol;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class FunctionCallNode extends Statement {

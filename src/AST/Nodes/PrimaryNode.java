@@ -10,7 +10,7 @@ public class PrimaryNode extends Expression {
     }
 
     @Override
-    public Expression evaluate(Environment env) {
+    public Object evaluate(Environment env) {
         return value;
     }
 

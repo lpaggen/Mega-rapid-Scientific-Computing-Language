@@ -11,7 +11,7 @@ public class Sec extends Expression {
     }
 
     @Override
-    public double evaluate(Environment env) {
+    public Object evaluate(Environment env) {
         return 1 / Math.cos((double) arg.evaluate(env));
     }
 

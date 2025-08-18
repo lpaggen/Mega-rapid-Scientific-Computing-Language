@@ -18,7 +18,6 @@ import java.util.*;
 // the parser will throw runtime exceptions if it encounters unexpected tokens
 // the parser ONLY cares about SYNTAX AND GRAMMAR
 public class Parser {
-
     private final List<Token> tokens;
     private int tokenPos = 0;
     public Environment environment = new Environment(); // remember this initializes a global scope BY DEFAULT
@@ -95,7 +94,7 @@ public class Parser {
         while (match(TokenKind.PLUS, TokenKind.MINUS)) {
             Token operator = previous();
             Expression rhs = parseFactor();
-            expression = new BinaryNode(expression, operator, rhs);
+            expression = inferBinaryNodeFromOperator(operator.getKind(), expression, rhs);
         }
         return expression;
     }
@@ -105,7 +104,7 @@ public class Parser {
         while (match(TokenKind.MUL, TokenKind.DIV)) {
             Token operator = previous();
             Expression rhs = parseUnary();
-            expression = new BinaryNode(expression, operator, rhs);
+            expression = inferBinaryNodeFromOperator(operator.getKind(), expression, rhs);
         }
         return expression;
     }
@@ -235,12 +234,12 @@ public class Parser {
             //throw new RuntimeException(peek() + " Expected '->' after function parameters.");
         } // now we should get the return type of the function
         TokenKind returnType = consume(TokenKind.VOID_TYPE,
-                                        TokenKind.INTEGER_TYPE,
-                                        TokenKind.FLOAT_TYPE,
-                                        TokenKind.BOOLEAN_TYPE,
-                                        TokenKind.MATRIX_TYPE,
-                                        TokenKind.SYMBOL_TYPE,
-                                        TokenKind.STRING_TYPE).getKind();
+                TokenKind.INTEGER_TYPE,
+                TokenKind.FLOAT_TYPE,
+                TokenKind.BOOLEAN_TYPE,
+                TokenKind.MATRIX_TYPE,
+                TokenKind.SYMBOL_TYPE,
+                TokenKind.STRING_TYPE).getKind();
         System.out.println("Function return type: " + returnType);
         if (!match(TokenKind.OPEN_BRACE)) {
             throw new ErrorHandler(
@@ -396,6 +395,22 @@ public class Parser {
             TokenKind.SYMBOL_TYPE,
             TokenKind.STRING_TYPE
     );
+
+    private BinaryNode inferBinaryNodeFromOperator(TokenKind operator, Expression lhs, Expression rhs) {
+        switch (operator) {
+            case PLUS -> new Add(lhs, rhs);
+            case MINUS -> new Sub(lhs, rhs);
+            case MUL -> new Mul(lhs, rhs);
+            case DIV -> new Div(lhs, rhs);
+            //case MOD -> new Mod(lhs, rhs);
+        }
+        throw new ErrorHandler(
+                "parsing",
+                peek().getLine(),
+                "Unsupported operator: " + operator,
+                "Expected a valid arithmetic operator (+, -, *, /)."
+        );
+    }
 }
 
 // BUGS detected that need fixing

@@ -23,14 +23,4 @@ public class Constant extends Expression {
     public String toString() {
         return STR."\{value}";
     }
-
-    @Override
-    public MathExpression derive(String var) {
-        return new Constant(0);
-    }
-
-    @Override
-    public MathExpression substitute(String... args) {
-        throw new UnsupportedOperationException("Cannot substitute constants.");
-    }
 }

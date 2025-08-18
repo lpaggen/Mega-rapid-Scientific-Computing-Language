@@ -280,7 +280,6 @@ public class AlgebraUtils {
                 // For other types of expressions, we might not have a transformation defined
                 return expression; // no transformation needed
         }
-        return expression;
     }
 
     public static Expression expand(Expression expression) {

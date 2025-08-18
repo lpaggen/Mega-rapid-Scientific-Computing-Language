@@ -2,12 +2,9 @@ package AST.Nodes;
 
 import Util.Environment;
 
-public class Add extends Expression {
-    private final Expression left, right;
-
-    public Add(Expression left, Expression right) {
-        this.left = left;
-        this.right = right;
+public class Add extends BinaryNode {
+    public Add(Expression lhs, Expression rhs) {
+        super(lhs, rhs);
     }
 
     private Integer evaluateInteger(Object lhsVal, Object rhsVal) {
@@ -31,8 +28,8 @@ public class Add extends Expression {
 
     @Override
     public Object evaluate(Environment env) {
-        Object leftVal = left.evaluate(env);
-        Object rightVal = right.evaluate(env);
+        Object leftVal = lhs.evaluate(env);
+        Object rightVal = rhs.evaluate(env);
 
         // Handle numeric operations
         if (leftVal instanceof Integer && rightVal instanceof Integer) {
@@ -46,14 +43,14 @@ public class Add extends Expression {
 
     @Override
     public String toString() {
-        return left.toString() + " + " + right.toString();
+        return lhs.toString() + " + " + rhs.toString();
     }
 
     public Expression getLeft() {
-        return left;
+        return lhs;
     }
 
     public Expression getRight() {
-        return right;
+        return rhs;
     }
 }

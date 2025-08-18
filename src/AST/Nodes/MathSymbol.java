@@ -6,8 +6,8 @@ import Util.Environment;
 // it allows for algebraic mathematical operations
 // as such, 2a + a will return 3a
 // !! symbol will handle int and float instead of being a separate data type
-public class MathSymbol extends MathExpression {
-    private final String name; // name of a symbol can only be
+public class MathSymbol extends Expression {
+    private String name; // name of a symbol can only be
 
     public MathSymbol(String name) {
         this.name = name;
@@ -29,20 +29,12 @@ public class MathSymbol extends MathExpression {
         return name;
     }
 
-    @Override
-    public MathExpression derive(String var) {
-        if (var.equals(name)) {
-            return new Constant(1);
-        }
-        return new Constant(0);
+    public String getName() {
+        return name;
     }
 
-    // this should be enhanced maybe to support more data types
-    @Override
-    public MathExpression substitute(String... args) {
-        if (args.length != 1) {
-            throw new IllegalArgumentException("Number of arguments must be 1");
-        }
-        return new Constant(Integer.parseInt(args[0]));
+    public void setName(String name) {
+        validateName(name);
+        this.name = name;
     }
 }

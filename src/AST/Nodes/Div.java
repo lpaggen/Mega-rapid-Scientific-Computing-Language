@@ -2,12 +2,10 @@ package AST.Nodes;
 
 import Util.Environment;
 
-public class Div extends Expression {
-    private final Expression num, denom;
+public class Div extends BinaryNode {
 
-    public Div(Expression num, Expression denom) {
-        this.num = num;
-        this.denom = denom;
+    public Div(Expression lhs, Expression rhs) {
+        super(lhs, rhs);
     }
 
     private int evaluateInteger(Object lhsVal, Object rhsVal) {
@@ -31,8 +29,8 @@ public class Div extends Expression {
 
     @Override
     public Object evaluate(Environment env) {
-        Object numVal = num.evaluate(env);
-        Object denomVal = denom.evaluate(env);
+        Object numVal = lhs.evaluate(env);
+        Object denomVal = rhs.evaluate(env);
 
         // Handle numeric operations
         if (numVal instanceof Integer && denomVal instanceof Integer) {
@@ -48,14 +46,14 @@ public class Div extends Expression {
 
     @Override
     public String toString() {
-        return num.toString() + " / " + denom.toString();
+        return lhs.toString() + " / " + rhs.toString();
     }
 
     public Expression getNum() {
-        return num;
+        return lhs;
     }
 
     public Expression getDenom() {
-        return denom;
+        return rhs;
     }
 }
