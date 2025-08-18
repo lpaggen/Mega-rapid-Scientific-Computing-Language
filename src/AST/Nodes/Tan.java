@@ -10,8 +10,12 @@ public class Tan extends Expression {
     }
 
     @Override
-    public double evaluate(Environment env) {
-        return Math.tan(arg.evaluate(env));
+    public Object evaluate(Environment env) {
+        Object argValue = arg.evaluate(env);
+        if (!(argValue instanceof Number)) {
+            throw new RuntimeException("Argument to tangent must be a number, got: " + argValue.getClass());
+        }
+        return Math.tan((double) argValue);
     }
 
     @Override

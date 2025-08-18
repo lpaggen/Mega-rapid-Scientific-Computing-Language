@@ -20,7 +20,7 @@ public class FunctionCallNode extends Statement {
 
     public void execute(Environment env) {
         FunctionSymbol function = (FunctionSymbol) env.lookup(functionName);
-        List<Expression> evaluatedArgs = new ArrayList<>();
+        List<Object> evaluatedArgs = new ArrayList<>();
         for (Expression arg : arguments) {
             evaluatedArgs.add(arg.evaluate(env)); // <-- This is crucial!
         }

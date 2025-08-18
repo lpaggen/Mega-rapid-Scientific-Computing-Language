@@ -402,7 +402,7 @@ public class Parser {
             case MINUS -> new Sub(lhs, rhs);
             case MUL -> new Mul(lhs, rhs);
             case DIV -> new Div(lhs, rhs);
-            //case MOD -> new Mod(lhs, rhs);
+            case MOD -> new Mod(lhs, rhs);
         }
         throw new ErrorHandler(
                 "parsing",

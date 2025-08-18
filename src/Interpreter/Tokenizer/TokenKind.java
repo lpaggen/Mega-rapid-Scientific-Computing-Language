@@ -43,6 +43,7 @@ public enum TokenKind {
     MINUS,
     DIV,
     MUL,
+    MOD, // modulo operator
     POWER,
 
     EQUAL,

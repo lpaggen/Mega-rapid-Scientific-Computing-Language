@@ -11,8 +11,12 @@ public class Csc extends Expression {
     }
 
     @Override
-    public double evaluate(Environment env) {
-        return 1 / Math.sin(arg.evaluate(env));
+    public Object evaluate(Environment env) {
+        Object argValue = arg.evaluate(env);
+        if (!(argValue instanceof Number)) {
+            throw new RuntimeException("Argument to cosecant must be a number, got: " + argValue.getClass());
+        }
+        return 1 / Math.sin((double) argValue);
     }
 
     @Override

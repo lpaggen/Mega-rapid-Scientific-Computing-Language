@@ -10,8 +10,12 @@ public class Exp extends Expression {
     }
 
     @Override
-    public double evaluate(Environment env) {
-        return Math.exp(arg.evaluate(env));
+    public Object evaluate(Environment env) {
+        Object argValue = arg.evaluate(env);
+        if (!(argValue instanceof Number)) {
+            throw new RuntimeException("Argument to exp must be a number, got: " + argValue.getClass());
+        }
+        return Math.exp((double) argValue);
     }
 
     @Override

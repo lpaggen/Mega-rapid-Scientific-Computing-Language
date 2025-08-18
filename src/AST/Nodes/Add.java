@@ -39,6 +39,7 @@ public class Add extends ArithmeticBinaryNode {
                 (leftVal instanceof Float && rightVal instanceof Integer)) {
             return evaluateFloatTolerant(leftVal, rightVal);
         }
+        throw new RuntimeException("Unsupported types for addition operation: " + leftVal.getClass() + " and " + rightVal.getClass());
     }
 
     @Override

@@ -10,8 +10,12 @@ public class Cos extends Expression {
     }
 
     @Override
-    public double evaluate(Environment env) {
-        return Math.cos(arg.evaluate(env));
+    public Object evaluate(Environment env) {
+        Object argValue = this.arg.evaluate(env);
+        if (!(argValue instanceof Number)) {
+            throw new RuntimeException("Argument to cosine must be a number, got: " + arg.getClass());
+        }
+        return Math.cos((double) argValue);
     }
 
     @Override

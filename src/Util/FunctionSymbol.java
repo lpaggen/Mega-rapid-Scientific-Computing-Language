@@ -32,7 +32,7 @@ public class FunctionSymbol extends Symbol {
         return builtIn != null;
     }
 
-    public void call(Environment env, List<Expression> args) {
+    public void call(Environment env, List<Object> args) {
         if (isBuiltIn()) {
             builtIn.execute(env, args);
         }

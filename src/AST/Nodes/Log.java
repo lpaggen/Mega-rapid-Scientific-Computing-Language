@@ -12,10 +12,14 @@ public class Log extends Expression {
     }
 
     @Override
-    public double evaluate(Environment env) {
+    public Object evaluate(Environment env) {
+        Object argValue = arg.evaluate(env);
+        if (!(argValue instanceof Number)) {
+            throw new RuntimeException("Argument to log must be a number, got: " + argValue.getClass());
+        }
         if (base instanceof Exp bExp && bExp.getArg().toString().equals("1")) {
-            return Math.log((arg.evaluate(env)));
-        } else return Math.log10(arg.evaluate(env));
+            return Math.log((double) argValue);
+        } else return Math.log10((double) argValue) / Math.log10((double) base.evaluate(env));
     }
 
     @Override
