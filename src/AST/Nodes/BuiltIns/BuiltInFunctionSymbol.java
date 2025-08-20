@@ -16,7 +16,7 @@ public class BuiltInFunctionSymbol extends FunctionSymbol {
     }
 
     @Override
-    public void call(Environment env, List<Object> args) {
+    public Object call(Environment env, List<Object> args) {
         // This method should be overridden in subclasses for specific built-in functions
         throw new UnsupportedOperationException("Built-in function '" + name + "' is not implemented.");
     }

@@ -12,11 +12,12 @@ public class PrintFunction extends BuiltInFunctionSymbol {
         super("print");
     }
 
-    public void call(Environment env, List<Object> args) {
+    public Object call(Environment env, List<Object> args) {
         if (!args.isEmpty()) {
             System.out.println(args.getFirst());
         } else {
             System.out.println();
         }
+        return null;
     }
 }

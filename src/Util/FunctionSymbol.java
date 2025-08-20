@@ -32,10 +32,11 @@ public class FunctionSymbol extends Symbol {
         return builtIn != null;
     }
 
-    public void call(Environment env, List<Object> args) {
+    public Object call(Environment env, List<Object> args) {
         if (isBuiltIn()) {
             builtIn.execute(env, args);
         }
         // TODO: add support to bind arguments to the function, so users can define their own functions. atm testing only builtins
+        throw new UnsupportedOperationException("Function '" + getName() + "' is not implemented or is not a built-in function.");
     }
 }
