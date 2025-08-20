@@ -2,7 +2,7 @@ package AST.Nodes.BuiltIns;
 
 import AST.Nodes.Statement;
 import Util.Environment;
-import Util.StandardLib;
+import Util.BuiltInLibraryNames;
 import Util.Symbol;
 
 import java.util.Map;
@@ -27,7 +27,7 @@ public class ImportNode extends Statement {
     @Override
     public void execute(Environment env) {
         try {
-            StandardLib libName = StandardLib.valueOf(moduleName.toUpperCase());
+            BuiltInLibraryNames libName = BuiltInLibraryNames.valueOf(moduleName.toUpperCase());
         } catch (IllegalArgumentException e) {
             throw new RuntimeException("Module '" + moduleName + "' not found in standard library.", e);
         }

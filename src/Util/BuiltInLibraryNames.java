@@ -1,9 +1,10 @@
 package Util;
 
-public enum StandardLib {
+public enum BuiltInLibraryNames {
     STDLIB, // this guy should have all the stuff like print etc
     TRIG,
     LINALG,
     STATS,
     MATHS,
+    RANDOM
 }
