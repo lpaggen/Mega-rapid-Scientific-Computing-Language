@@ -22,6 +22,7 @@ public class FunctionCallNode extends Statement {
         FunctionSymbol function = (FunctionSymbol) env.lookup(functionName);
         List<Object> evaluatedArgs = new ArrayList<>();
         for (Expression arg : arguments) {
+            System.out.println("class of arg: " + arg.getClass().getSimpleName());
             evaluatedArgs.add(arg.evaluate(env)); // <-- This is crucial!
         }
         function.call(env, evaluatedArgs);

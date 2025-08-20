@@ -1,9 +1,6 @@
 package Util;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 // scoped hash maps! super easy concept for the time being, use a stack to push and pop scope
 // so each "level" i call "scope" is its own environment
@@ -59,6 +56,15 @@ public class Environment {
             }
         }
         throw new IllegalArgumentException("Variable '" + name + "' not found in any scope");
+    }
+
+    public List<Symbol> getAllSymbols() {
+        // returns all symbols in the current environment
+        List<Symbol> symbols = new ArrayList<>();
+        for (Map<String, Symbol> scope : envStack) {
+            symbols.addAll(scope.values());
+        }
+        return symbols;
     }
 
     public void loadModule(Map<String, Symbol> moduleSymbols) {

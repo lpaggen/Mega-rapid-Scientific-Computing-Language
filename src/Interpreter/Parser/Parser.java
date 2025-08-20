@@ -398,11 +398,21 @@ public class Parser {
 
     private BinaryNode inferBinaryNodeFromOperator(TokenKind operator, Expression lhs, Expression rhs) {
         switch (operator) {
-            case PLUS -> new Add(lhs, rhs);
-            case MINUS -> new Sub(lhs, rhs);
-            case MUL -> new Mul(lhs, rhs);
-            case DIV -> new Div(lhs, rhs);
-            case MOD -> new Mod(lhs, rhs);
+            case PLUS -> {
+                return new Add(lhs, rhs); // TODO: fix these constructors, atm Add is not working and causes the error
+            }
+            case MINUS -> {
+                return new Sub(lhs, rhs);
+            }
+            case MUL -> {
+                return new Mul(lhs, rhs);
+            }
+            case DIV -> {
+                return new Div(lhs, rhs);
+            }
+            case MOD -> {
+                return new Mod(lhs, rhs);
+            }
         }
         throw new ErrorHandler(
                 "parsing",
@@ -414,12 +424,24 @@ public class Parser {
 
     private BinaryNode inferLogicalBinaryNodeFromOperator(TokenKind operator, Expression lhs, Expression rhs) {
         switch (operator) {
-            case GREATER -> new GreaterThan(lhs, rhs);
-            case LESS -> new SmallerThan(lhs, rhs);
-            case GREATER_EQUAL -> new GreaterEqualThan(lhs, rhs);
-            case LESS_EQUAL -> new SmallerEqualThan(lhs, rhs);
-            case EQUAL_EQUAL -> new EqualTo(lhs, rhs);
-            case NOT_EQUAL -> new NotEqualTo(lhs, rhs);
+            case GREATER -> {
+                return new GreaterThan(lhs, rhs);
+            }
+            case LESS -> {
+                return new SmallerThan(lhs, rhs);
+            }
+            case GREATER_EQUAL -> {
+                return new GreaterEqualThan(lhs, rhs);
+            }
+            case LESS_EQUAL -> {
+                return new SmallerEqualThan(lhs, rhs);
+            }
+            case EQUAL_EQUAL -> {
+                return new EqualTo(lhs, rhs);
+            }
+            case NOT_EQUAL -> {
+                return new NotEqualTo(lhs, rhs);
+            }
         }
         throw new ErrorHandler(
                 "parsing",
