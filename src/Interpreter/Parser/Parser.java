@@ -22,7 +22,7 @@ public class Parser {
     private int tokenPos = 0;
     public Environment environment = new Environment(); // remember this initializes a global scope BY DEFAULT
 
-    // BuiltIns.initializeBuiltIns(environment); // initialize built-in functions in the environment
+    // StandardLibrary.initializeBuiltIns(environment); // initialize built-in functions in the environment
 
     public Parser(List<Token> tokens) {
         this.tokens = tokens;
