@@ -306,8 +306,13 @@ public class Parser {
     private List<Expression> parseFunctionArguments() {
         List<Expression> arguments = new ArrayList<>();
         if (!check(TokenKind.CLOSE_PAREN)) {
+            // we also must be checking if we're passing a function as argument!!
+            if (isFunctionCall()) {
+                arguments.add(parseFunctionCall()); // if the first argument is a function call, we parse it
+                return arguments; // we return immediately, since we can't have more than one function call as an argument
+            }
             do {
-                Expression arg = parseExpression(); // this is wrong, we don't need to parseExpression here (i mean we could)
+                Expression arg = parseExpression();
                 System.out.println("Parsing argument: " + (arg != null ? arg.toString() : "null"));
                 arguments.add(arg);
             } while (match(TokenKind.COMMA));
