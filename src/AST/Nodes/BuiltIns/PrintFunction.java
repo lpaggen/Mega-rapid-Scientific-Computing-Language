@@ -14,7 +14,7 @@ public class PrintFunction extends BuiltInFunctionSymbol {
 
     public Object call(Environment env, List<Object> args) {
         if (!args.isEmpty()) {
-            System.out.println(args.getFirst());
+            System.out.println(args.getFirst().toString());
         } else {
             System.out.println();
         }

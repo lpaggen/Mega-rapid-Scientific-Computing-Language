@@ -24,6 +24,7 @@ public class VariableDeclarationNode extends Statement {
     // if there's a mismatch, we crash the program OR we are nice and tolerate small mistakes, will see!
     @Override
     public void execute(Environment env) {
+        // we might want to check if we have a function call
         Object value = (initializer != null) ? initializer.evaluate(env) : null;
 
         switch (type.getKind()) {

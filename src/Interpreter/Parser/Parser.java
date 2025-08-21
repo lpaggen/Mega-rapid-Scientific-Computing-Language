@@ -45,11 +45,11 @@ public class Parser {
         System.out.println("current token at parseStatement: " + peek());
         if (isDeclarationStart()) {
             return parseDeclaration();
+        } else if (isFunctionCall()) { // this is where we can return the ExpressionStatementNode wrapper
+            Expression functionCall = parseFunctionCall();
+            return new ExpressionStatementNode(functionCall);
         } else if (isFunctionDeclarationStart()) {
             return parseFunctionDeclaration();
-        } else if (isFunctionCall()) {
-            System.out.println("Parsing function call: " + peek().getLexeme());
-            return parseFunctionCall();
         } else if (isModuleImport()) { // i'll move all this to a separate method later
             switch (peek().getKind()) {
                 case INCLUDE -> {
@@ -185,7 +185,14 @@ public class Parser {
         }
         Token name = previous();
         Expression initializer = null;
-        if (match(TokenKind.EQUAL)) {
+        if (match(TokenKind.EQUAL)) { // now two cases, either Expression, or it's a function call
+            if (isFunctionCall()) {
+                return new VariableDeclarationNode(
+                        new Token(TokenKind.SYMBOL, typeToken.getLexeme(), null, typeToken.getLine()),
+                        name,
+                        parseFunctionCall() // this will return a FunctionCallNode, which is an Expression
+                );
+            }
             initializer = parseExpression();
         }
         consume(TokenKind.SEMICOLON);
@@ -300,7 +307,7 @@ public class Parser {
         return arguments;
     }
 
-    private Statement parseFunctionCall() {
+    private Expression parseFunctionCall() {
         Token functionNameToken = consume(TokenKind.IDENTIFIER); // consume function name
         consume(TokenKind.OPEN_PAREN); // consume '('
 
