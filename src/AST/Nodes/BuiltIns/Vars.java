@@ -2,20 +2,40 @@ package AST.Nodes.BuiltIns;
 
 import Interpreter.Tokenizer.TokenKind;
 import Util.Environment;
+import Util.Symbol;
+import Util.VariableSymbol;
 
 import java.util.List;
+import java.util.Map;
 
 public class Vars extends BuiltInFunctionSymbol {
     Environment env;
 
     public Vars() {
-        super("vars");
+        super("vars", TokenKind.VOID);
     }
 
     @Override
     public Object call(Environment env, List<Object> args) {
-        // This function should return a list of all variables in the environment
-        // that's what it does, not sure how it will look right now however
-        return env.getAllSymbols();
+        PrintFunction printFunction = new PrintFunction();
+        this.env = env;
+        // Call the print function to print all variables in the environment
+        Map<String, Symbol> variables = env.getAllSymbols();
+        for (Map.Entry<String, Symbol> entry : variables.entrySet()) {
+            String varName = entry.getKey();
+            Symbol symbol = entry.getValue();
+            // Print the variable name and its value
+            if (symbol instanceof VariableSymbol vSymbol && vSymbol.getValue() != null) {
+                printFunction.call(env, List.of(varName + " = " + vSymbol.getValue()));
+            } else { // if it's a function: we should print its name, return type, params
+                StringBuilder sb = new StringBuilder(varName + " = ");
+                sb.append("Function: ").append(symbol.getName()).append(", Type: ").append(symbol.getType());
+                if (symbol instanceof VariableSymbol vSymbol) {
+                    sb.append(", Value: ").append(vSymbol.getValue());
+                }
+                printFunction.call(env, List.of(sb.toString()));
+            }
+        }
+        return null; // No return value, just prints the variables
     }
 }

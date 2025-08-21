@@ -1,5 +1,6 @@
 package AST.Nodes.BuiltIns;
 
+import Interpreter.Tokenizer.TokenKind;
 import Util.Environment;
 
 import java.time.LocalTime;
@@ -7,7 +8,7 @@ import java.util.List;
 
 public class Time extends BuiltInFunctionSymbol {
     public Time() {
-        super("time");
+        super("time", TokenKind.STRING);
     }
 
     private static final String[] validArguments = {"h", "m", "s", "ms"};

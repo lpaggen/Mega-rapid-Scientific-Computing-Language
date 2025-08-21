@@ -54,6 +54,14 @@ public class Parser {
             switch (peek().getKind()) {
                 case INCLUDE -> {
                     advance(); // consume the IMPORT token
+                    if (!check(TokenKind.IDENTIFIER)) {
+                        throw new ErrorHandler(
+                                "parsing",
+                                peek().getLine(),
+                                "Unexpected token: " + peek().getLexeme(),
+                                "Expected a module name after 'include' keyword."
+                        );
+                    }
                     Token moduleName = consume(TokenKind.IDENTIFIER); // consume the module name
 
                     consume(TokenKind.SEMICOLON); // consume the semicolon

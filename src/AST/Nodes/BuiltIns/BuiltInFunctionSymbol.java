@@ -9,10 +9,12 @@ import java.util.List;
 
 public class BuiltInFunctionSymbol extends FunctionSymbol {
     private final String name;
+    private final TokenKind returnType;
 
-    public BuiltInFunctionSymbol(String name) {
-        super(name, null, null, null);
+    public BuiltInFunctionSymbol(String name, TokenKind returnType) {
+        super(name, returnType, null, null);
         this.name = name;
+        this.returnType = returnType;
     }
 
     @Override
@@ -26,7 +28,7 @@ public class BuiltInFunctionSymbol extends FunctionSymbol {
     }
 
     public TokenKind getReturnType() {
-        return TokenKind.VOID; // Built-in functions may not have a specific return type
+        return TokenKind.VOID; // some built in functions can return stuff, TODO: add support for this feature
     }
 
     public void execute(Environment env, List<Object> args) {

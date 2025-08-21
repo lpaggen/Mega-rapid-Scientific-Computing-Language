@@ -15,6 +15,7 @@ public class StandardLibrary {
     static {
         builtInSymbols.put("print", new PrintFunction());
         builtInSymbols.put("time", new Time());
+        builtInSymbols.put("vars", new Vars());
     }
 
     public static boolean isBuiltInFunction(String name) {

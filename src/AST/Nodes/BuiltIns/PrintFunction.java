@@ -9,7 +9,7 @@ import java.util.List;
 
 public class PrintFunction extends BuiltInFunctionSymbol {
     public PrintFunction() {
-        super("print");
+        super("print", TokenKind.VOID);
     }
 
     public Object call(Environment env, List<Object> args) {
