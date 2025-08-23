@@ -1,9 +1,9 @@
 package AST.Nodes;
 
-import Interpreter.ErrorHandler;
+import Util.ErrorHandler;
 import Interpreter.Tokenizer.Token;
-import Util.Environment;
-import Util.VariableSymbol;
+import Interpreter.Runtime.Environment;
+import Interpreter.Parser.VariableSymbol;
 import Util.WarningHandler;
 
 public class VariableDeclarationNode extends Statement {

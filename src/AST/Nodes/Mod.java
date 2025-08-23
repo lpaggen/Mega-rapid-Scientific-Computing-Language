@@ -1,6 +1,6 @@
 package AST.Nodes;
 
-import Util.Environment;
+import Interpreter.Runtime.Environment;
 
 public class Mod extends ArithmeticBinaryNode {
     public Mod(Expression lhs, Expression rhs) {

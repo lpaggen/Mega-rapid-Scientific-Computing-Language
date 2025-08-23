@@ -1,6 +1,6 @@
 package Interpreter.Tokenizer;
 
-import Interpreter.ErrorHandler;
+import Util.ErrorHandler;
 
 import java.util.*;
 
@@ -142,7 +142,6 @@ public class Tokenizer {
         put("break", TokenKind.BREAK);
         put("continue", TokenKind.CONTINUE);
         put("wrt", TokenKind.WRT);
-        put("symbol", TokenKind.SYMBOL_TYPE);
         put("null", TokenKind.NULL);
         put("bool", TokenKind.BOOLEAN_TYPE);
         put("str", TokenKind.STRING_TYPE);

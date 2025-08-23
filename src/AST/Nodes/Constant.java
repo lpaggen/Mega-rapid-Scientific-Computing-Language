@@ -1,7 +1,6 @@
 package AST.Nodes;
 
-import Util.Environment;
-import Util.WarningHandler;
+import Interpreter.Runtime.Environment;
 
 public class Constant extends Expression {
     public double value;

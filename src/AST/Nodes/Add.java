@@ -1,6 +1,6 @@
 package AST.Nodes;
 
-import Util.Environment;
+import Interpreter.Runtime.Environment;
 
 public class Add extends ArithmeticBinaryNode {
     public Add(Expression lhs, Expression rhs) {

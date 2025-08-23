@@ -1,6 +1,6 @@
 package AST.Nodes;
 
-import Util.Environment;
+import Interpreter.Runtime.Environment;
 
 public abstract class BinaryNode extends Expression {
     protected final Expression lhs;

@@ -1,8 +1,8 @@
 package AST.Nodes;
 
-import Util.Environment;
-import Util.Symbol;
-import Util.VariableSymbol;
+import Interpreter.Runtime.Environment;
+import Interpreter.Parser.Symbol;
+import Interpreter.Parser.VariableSymbol;
 
 public class VariableNode extends Expression {
     private final String name;

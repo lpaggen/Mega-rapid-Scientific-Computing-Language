@@ -1,6 +1,6 @@
 package AST.Nodes;
 
-import Util.Environment;
+import Interpreter.Runtime.Environment;
 
 // this class is a wrapper for functions that can be called without returning a value
 // so we can work around the fact that functions extend Expression this way

@@ -1,6 +1,6 @@
 package AST.Nodes;
 
-import Util.Environment;
+import Interpreter.Runtime.Environment;
 
 public class Tan extends Expression {
     private final Expression arg;

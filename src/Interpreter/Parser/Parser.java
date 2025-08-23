@@ -1,13 +1,14 @@
 package Interpreter.Parser;
 
 import AST.Nodes.*;
-import AST.Nodes.BuiltIns.FunctionDeclarationNode;
-import AST.Nodes.BuiltIns.ImportNode;
-import Interpreter.ErrorHandler;
+import AST.Nodes.Functions.FunctionCallNode;
+import AST.Nodes.Functions.FunctionDeclarationNode;
+import AST.Nodes.Functions.BuiltIns.ImportNode;
+import AST.Nodes.Conditional.*;
+import Util.ErrorHandler;
 import Interpreter.Tokenizer.TokenKind;
 import Interpreter.Tokenizer.Token;
-import Util.Environment;
-import Util.VariableSymbol;
+import Interpreter.Runtime.Environment;
 
 import java.util.*;
 
@@ -43,6 +44,7 @@ public class Parser {
     // everything should really start from the Statement, since we have to declare variables, functions, etc.
     private Statement parseStatement() {
         System.out.println("current token at parseStatement: " + peek());
+        // currently INCLUDE is being caught somewhere it shouldn't be, so i will just check for it here
         if (isDeclarationStart()) {
             return parseDeclaration();
         } else if (isFunctionCall()) { // this is where we can return the ExpressionStatementNode wrapper
@@ -50,24 +52,21 @@ public class Parser {
             return new ExpressionStatementNode(functionCall);
         } else if (isFunctionDeclarationStart()) {
             return parseFunctionDeclaration();
-        } else if (isModuleImport()) { // i'll move all this to a separate method later
-            switch (peek().getKind()) {
-                case INCLUDE -> {
-                    advance(); // consume the IMPORT token
-                    if (!check(TokenKind.IDENTIFIER)) {
-                        throw new ErrorHandler(
-                                "parsing",
-                                peek().getLine(),
-                                "Unexpected token: " + peek().getLexeme(),
-                                "Expected a module name after 'include' keyword."
-                        );
-                    }
-                    Token moduleName = consume(TokenKind.IDENTIFIER); // consume the module name
-
-                    consume(TokenKind.SEMICOLON); // consume the semicolon
-                    return new ImportNode(moduleName.getLexeme(), null); // no alias for now
-                }
+        } else if (Objects.requireNonNull(peek().getKind()) == TokenKind.INCLUDE) {
+            System.out.println("Parsing module import statement: " + peek());
+            advance(); // consume the INCLUDE token
+            if (!check(TokenKind.IDENTIFIER)) {
+                throw new ErrorHandler(
+                        "parsing",
+                        peek().getLine(),
+                        "Unexpected token: " + peek().getLexeme(),
+                        "Expected a module name after 'include' keyword."
+                );
             }
+            Token moduleName = consume(TokenKind.IDENTIFIER); // consume the module name
+
+            consume(TokenKind.SEMICOLON); // consume the semicolon
+            return new ImportNode(moduleName.getLexeme(), null); // no alias for now
         }
         return null;
     }
@@ -307,11 +306,14 @@ public class Parser {
         List<Expression> arguments = new ArrayList<>();
         if (!check(TokenKind.CLOSE_PAREN)) {
             // we also must be checking if we're passing a function as argument!!
+            // there is a confusion happening here, print(x) where x is suddenly treated as a function call, but it is not
+            System.out.println("token at parseFunctionArguments: " + peek());
             if (isFunctionCall()) {
                 arguments.add(parseFunctionCall()); // if the first argument is a function call, we parse it
                 return arguments; // we return immediately, since we can't have more than one function call as an argument
             }
             do {
+                System.out.println("");
                 Expression arg = parseExpression();
                 System.out.println("Parsing argument: " + (arg != null ? arg.toString() : "null"));
                 arguments.add(arg);
@@ -399,6 +401,13 @@ public class Parser {
         // a function call starts with a variable name followed by an open parenthesis
         // return check(TokenKind.VARIABLE) && peek().getKind() == TokenKind.OPEN_PAREN;
         // we could just check the environment
+        // sure, makes sense, but check if it's a FUNCTION...
+        if (!check(TokenKind.IDENTIFIER)) { // if you don't check this, even a variable will be treated as a function call
+            return false; // if the next token is not an identifier, it can't be a function call
+        }
+        if (!(environment.lookup(peek().getLexeme()) instanceof FunctionSymbol)) {
+            return false; // if it's not a variable, it can't be a function call
+        }
         return environment.isDeclared(peek().getLexeme()); // the logic here should be that a built-in would always be loaded already
     }
 

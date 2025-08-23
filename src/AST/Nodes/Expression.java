@@ -1,6 +1,6 @@
 package AST.Nodes;
 
-import Util.Environment;
+import Interpreter.Runtime.Environment;
 
 public abstract class Expression extends ASTNode {
     // this is getting the variable from the lookup table (which we call env)

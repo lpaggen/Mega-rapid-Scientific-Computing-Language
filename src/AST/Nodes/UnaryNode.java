@@ -1,8 +1,9 @@
 package AST.Nodes;
 
+import AST.Nodes.Conditional.BooleanNode;
 import Interpreter.Tokenizer.Token;
 import Interpreter.Tokenizer.TokenKind;
-import Util.Environment;
+import Interpreter.Runtime.Environment;
 
 public class UnaryNode extends Expression {
     private final Token operator;

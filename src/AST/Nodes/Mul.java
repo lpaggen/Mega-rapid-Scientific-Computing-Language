@@ -1,6 +1,6 @@
 package AST.Nodes;
 
-import Util.Environment;
+import Interpreter.Runtime.Environment;
 
 public class Mul extends ArithmeticBinaryNode {
     public Mul(Expression lhs, Expression rhs) {

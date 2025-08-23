@@ -2,15 +2,21 @@ import Interpreter.Parser.Parser;
 import Interpreter.Tokenizer.Tokenizer;
 import Interpreter.Tokenizer.Token;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         // obviously we should get the input from a file, but for now we will just use a string
-        String input = "include stdlib;\nprint(time());"; // input goes here
+        // String input = "include stdlib;\nint x = 0;";  // input goes here
 
-        Tokenizer tokenizer = new Tokenizer(input);
+        // trying to check if we can read from a .marcel file
+        String code = Files.readString(Path.of("src/example.marcel"));
+
+        Tokenizer tokenizer = new Tokenizer(code);
         List<Token> tokens = tokenizer.tokenize();
         System.out.println(tokens);
         System.out.println();
