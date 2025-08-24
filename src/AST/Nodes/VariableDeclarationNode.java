@@ -26,6 +26,7 @@ public class VariableDeclarationNode extends Statement {
     public void execute(Environment env) {
         // we might want to check if we have a function call
         Object value = (initializer != null) ? initializer.evaluate(env) : null;
+        System.out.println("class of the initializer: " + (value != null ? value.getClass().getSimpleName() : "null"));
 
         switch (type.getKind()) {
             case FLOAT:

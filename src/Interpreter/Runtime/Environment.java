@@ -34,7 +34,7 @@ public class Environment {
     public void declareSymbol(String name, Symbol value) {
         Map<String, Symbol> currentScope = envStack.peek();
         if (currentScope.containsKey(name)) {
-            throw new IllegalArgumentException("Symbol '" + name + "' already declared in current scope");
+            updateVariable(name, value);
         }
         currentScope.put(name, value);
     }

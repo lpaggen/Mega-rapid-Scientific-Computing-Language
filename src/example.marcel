@@ -3,3 +3,5 @@ include stdlib;
 # example of a program that prints "Hello, World!" to the console
 str x = "Hello, World!";
 print(x);
+
+float neg = -1.0;

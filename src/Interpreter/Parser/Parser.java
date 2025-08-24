@@ -79,7 +79,6 @@ public class Parser {
     private Expression parseEquality() {
         Expression expression = parseComparison();
         while (match(TokenKind.EQUAL_EQUAL, TokenKind.NOT_EQUAL)) {
-            Token operator = previous();
             Expression rhs = parseComparison();
             expression = new EqualTo(expression, rhs);
         }
@@ -99,6 +98,7 @@ public class Parser {
     private Expression parseTerm() {
         Expression expression = parseFactor();
         while (match(TokenKind.PLUS, TokenKind.MINUS)) {
+            System.out.println("current token at parseTerm: " + peek());
             Token operator = previous();
             Expression rhs = parseFactor();
             expression = inferBinaryNodeFromOperator(operator.getKind(), expression, rhs);
@@ -109,6 +109,7 @@ public class Parser {
     private Expression parseFactor() {
         Expression expression = parseUnary();
         while (match(TokenKind.MUL, TokenKind.DIV)) {
+            System.out.println("current token at parseFactor: " + peek());
             Token operator = previous();
             Expression rhs = parseUnary();
             expression = inferBinaryNodeFromOperator(operator.getKind(), expression, rhs);
@@ -118,10 +119,14 @@ public class Parser {
 
     private Expression parseUnary() {
         if (match(TokenKind.NOT, TokenKind.MINUS)) { // handle both ! and negation
+            // with match() we skip the token and advance the position
             Token operator = previous();
             Expression rhs = parseUnary();
+            System.out.println("class of rhs: " + rhs.getClass());
+            System.out.println("Parsing unary operator: " + operator.getLexeme() + " with rhs: " + rhs);
             return new UnaryNode(operator, rhs);
         }
+        System.out.println("current token at parseUnary: " + peek());
         return parsePrimary();
     }
 
@@ -130,9 +135,17 @@ public class Parser {
         if (match(TokenKind.FALSE)) return new PrimaryNode(false);
         if (match(TokenKind.TRUE)) return new PrimaryNode(true);
         if (match(TokenKind.NULL)) return new PrimaryNode(null);
-        if (match(TokenKind.INTEGER, TokenKind.FLOAT, TokenKind.STRING)) {
+        if (match(TokenKind.STRING)) {
             System.out.println("Parsing literal: " + previous().getLiteral());
-            return new PrimaryNode(previous().getLiteral());
+            return new PrimaryNode(previous().getLiteral()); // this will return a Constant node with the literal value
+        }
+        if (match(TokenKind.INTEGER)) {
+            System.out.println("Parsing numeric literal: " + previous().getLiteral());
+            return new Constant(Integer.parseInt(previous().getLexeme())); // this will return a Constant node with the numeric value
+        }
+        if (match(TokenKind.FLOAT)) {
+            System.out.println("Parsing numeric literal: " + Float.parseFloat(previous().getLexeme()));
+            return new Constant(Float.parseFloat(previous().getLexeme())); // this will return a Constant node with the numeric value
         }
         if (match(TokenKind.OPEN_PAREN)) {
             Expression expr = parseExpression();

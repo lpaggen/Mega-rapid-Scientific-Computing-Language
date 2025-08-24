@@ -16,6 +16,9 @@ public class Main {
         // trying to check if we can read from a .marcel file
         String code = Files.readString(Path.of("src/example.marcel"));
 
+        // check the time to run a .marcel program
+        int startTime = (int) System.currentTimeMillis();
+
         Tokenizer tokenizer = new Tokenizer(code);
         List<Token> tokens = tokenizer.tokenize();
         System.out.println(tokens);
@@ -24,5 +27,8 @@ public class Main {
         // this is where the parser would go
         Parser parser = new Parser(tokens);
         parser.interpretCode();
+
+        int endTime = (int) System.currentTimeMillis();
+        System.out.println("Execution time: " + (endTime - startTime) + " ms");
     }
 }

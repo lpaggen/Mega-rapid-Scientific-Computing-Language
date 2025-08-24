@@ -15,7 +15,7 @@ public class Constant extends Expression {
 
     @Override
     public Expression evaluate(Environment env) {
-        throw new UnsupportedOperationException("Constants cannot be evaluated in the environment.");
+        return this;
     }
 
     @Override

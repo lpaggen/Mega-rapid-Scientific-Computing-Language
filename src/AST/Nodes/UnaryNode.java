@@ -15,8 +15,8 @@ public class UnaryNode extends Expression {
     }
 
     @Override
-    public Object evaluate(Environment env) {
-        Expression rightValue = (Expression) rhs.evaluate(env);
+    public Expression evaluate(Environment env) {
+        Object rightValue = rhs.evaluate(env);
         return switch (operator.getKind()) {
             case MINUS -> evaluateMinus(rightValue);
             case NOT_EQUAL -> !isTruthy(rightValue);
@@ -37,16 +37,11 @@ public class UnaryNode extends Expression {
     }
 
     private Expression evaluateMinus(Expression rightValue) {
-        if (rightValue instanceof Constant) {
-            return new Mul(new Constant(-1), (Constant) rightValue);
+        if (rightValue instanceof Constant c) {
+            return new Constant(-c.getValue());
         }
-        if (rightValue instanceof VariableNode) {
-            return new Mul(new Constant(-1), rightValue);
-        }
-        if (rightValue instanceof UnaryNode unary) {
-            if (unary.operator.getKind() == TokenKind.MINUS) {
-                return unary.rhs; // double negation cancels out
-            }
+        if (rightValue instanceof UnaryNode unary && unary.operator.getKind() == TokenKind.MINUS) {
+            return unary.rhs; // cancel double negation
         }
         return new Mul(new Constant(-1), rightValue);
     }
