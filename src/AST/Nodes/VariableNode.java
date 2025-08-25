@@ -12,14 +12,19 @@ public class VariableNode extends Expression {
     }
 
     @Override
-    public Object evaluate(Environment env) {
+    public Expression evaluate(Environment env) {
         // retrieve the variable value from the environment
         Symbol symbol = env.lookup(name);
-        if (symbol instanceof VariableSymbol) {
-            return ((VariableSymbol) symbol).getValue();
+        if (symbol instanceof VariableSymbol vs) {
+            return vs.getValue();
         } else {
-            throw new RuntimeException("Variable " + name + " not found in environment.");
+            throw new RuntimeException("Variable " + name + " not found or not a variable");
         }
+    }
+
+    @Override
+    public double evaluateNumeric(Environment env) {
+        return 0; // not sure what this should be atm, will figure it out in later build
     }
 
     @Override

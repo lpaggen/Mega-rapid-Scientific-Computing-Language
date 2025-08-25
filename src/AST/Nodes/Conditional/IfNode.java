@@ -19,7 +19,7 @@ public IfNode(Expression condition, Statement thenBranch, Statement elseBranch) 
 
     @Override
     public void execute(Environment env) {
-        if (condition.evaluate(env) instanceof Boolean bool && bool) {
+        if (condition.evaluate(env) instanceof BooleanNode bool && bool.getValue()) {
             thenBranch.execute(env);
         } else if (elseBranch != null) {
             elseBranch.execute(env);

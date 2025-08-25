@@ -25,28 +25,28 @@ public class VariableDeclarationNode extends Statement {
     @Override
     public void execute(Environment env) {
         // we might want to check if we have a function call
-        Object value = (initializer != null) ? initializer.evaluate(env) : null;
+        Expression value = (initializer != null) ? initializer.evaluate(env) : null;
         System.out.println("class of the initializer: " + (value != null ? value.getClass().getSimpleName() : "null"));
 
         switch (type.getKind()) {
             case FLOAT:
-                if (value instanceof Integer) {
+                if (value instanceof Constant v && ((Constant) value).getValue() instanceof Integer) {
                     // convert integer to float if needed -- but throw warning somehow...
-                    value = ((Integer) value).floatValue();
+                    value = new Constant(v.getDoubleValue());
                     warningHandler.addWarning(1, "Implicit conversion from integer to float at line " + variable.getLine(), variable.getLine());
-                } else if (!(value instanceof Float) && !(value instanceof Double)) {
+                } else if (!(value instanceof Constant v && v.getValue() instanceof Double)) {
                     throw new ErrorHandler("execution", variable.getLine(), "Type mismatch: expected float, got " + (value != null ? value.getClass().getSimpleName() : "null"), "Please ensure the initializer is a float.");
                     //throw new RuntimeException("Type mismatch: expected float, got " + (value != null ? value.getClass().getSimpleName() : "null") + " at line " + variable.getLine());
                 }
                 break;
             case INTEGER:
-                if (!(value instanceof Integer)) {
+                if (!(value instanceof Constant v && v.getValue() instanceof Integer)) {
                     throw new ErrorHandler("execution", variable.getLine(), "Type mismatch: expected integer, got " + (value != null ? value.getClass().getSimpleName() : "null"), "Please ensure the initializer is an integer.");
                     //throw new RuntimeException("Type mismatch: expected integer, got " + (value != null ? value.getClass().getSimpleName() : "null") + " at line " + variable.getLine());
                 }
                 break;
             case STRING:
-                if (!(value instanceof String)) {
+                if (!(value instanceof StringNode)) {
                     throw new ErrorHandler("execution", variable.getLine(), "Type mismatch: expected string, got " + (value != null ? value.getClass().getSimpleName() : "null"), "Please ensure the initializer is a string.");
                     //throw new RuntimeException("Type mismatch: expected string, got " + (value != null ? value.getClass().getSimpleName() : "null") + " at line " + variable.getLine());
                 }
@@ -57,6 +57,7 @@ public class VariableDeclarationNode extends Statement {
     }
 
     // will work on this in a later build, it's not necessary yet
+    // we just need to log them all in a separate file if the debugger is active
     public void printWarnings() {
         warningHandler.printWarnings();
     }

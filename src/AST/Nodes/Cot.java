@@ -10,12 +10,25 @@ public class Cot extends Expression {
     }
 
     @Override
-    public Object evaluate(Environment env) {
-        Object argValue = arg.evaluate(env);
-        if (!(argValue instanceof Number)) {
-            throw new RuntimeException("Argument to cotangent must be a number, got: " + argValue.getClass());
+    public Expression evaluate(Environment env) {
+        Expression argValue = arg.evaluate(env);
+        if (argValue instanceof Constant c) {
+            double value = c.getDoubleValue();
+            if (value == 0) {
+                throw new ArithmeticException("Cotangent is undefined for 0");
+            }
+            return new Constant(1.0 / Math.tan(value));
         }
-        return Math.cos((double) argValue) / Math.sin((double) argValue);
+        return new Cot(argValue);
+    }
+
+    @Override
+    public double evaluateNumeric(Environment env) {
+        double argValue = arg.evaluateNumeric(env);
+        if (argValue == 0) {
+            throw new ArithmeticException("Cotangent is undefined for 0");
+        }
+        return 1.0 / Math.tan(argValue);
     }
 
     @Override

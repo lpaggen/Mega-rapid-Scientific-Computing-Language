@@ -3,14 +3,14 @@ package AST.Nodes;
 import Interpreter.Runtime.Environment;
 
 public class PrimaryNode extends Expression {
-    private final Object value;
+    private final Expression value;
 
-    public PrimaryNode(Object value) {
+    public PrimaryNode(Expression value) {
         this.value = value;
     }
 
     @Override
-    public Object evaluate(Environment env) {
+    public Expression evaluate(Environment env) {
         return value;
     }
 

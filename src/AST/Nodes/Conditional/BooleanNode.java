@@ -26,6 +26,6 @@ public class BooleanNode extends Expression {
     }
 
     public Constant toNumeric() {
-        return new Constant(value ? 1.0 : 0.0);
+        return new Constant(value ? 1 : 0);
     }
 }

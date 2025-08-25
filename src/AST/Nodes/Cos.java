@@ -10,12 +10,17 @@ public class Cos extends Expression {
     }
 
     @Override
-    public Object evaluate(Environment env) {
-        Object argValue = this.arg.evaluate(env);
-        if (!(argValue instanceof Number)) {
-            throw new RuntimeException("Argument to cosine must be a number, got: " + arg.getClass());
+    public Expression evaluate(Environment env) {
+        Expression argValue = this.arg.evaluate(env);
+        if (argValue instanceof Constant c) {
+            return new Constant(Math.cos(c.getDoubleValue()));
         }
-        return Math.cos((double) argValue);
+        return new Cos(argValue);
+    }
+
+    public double evaluateNumeric(Environment env) {
+        double argValue = arg.evaluateNumeric(env);
+        return Math.cos(argValue);
     }
 
     @Override

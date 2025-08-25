@@ -9,7 +9,7 @@ public abstract class ArithmeticBinaryNode extends BinaryNode {
     }
 
     @Override
-    public Object evaluate(Environment env) {
+    public Expression evaluate(Environment env) {
         return null;
     }
 

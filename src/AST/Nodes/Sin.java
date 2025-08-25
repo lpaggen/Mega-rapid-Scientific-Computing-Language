@@ -10,12 +10,17 @@ public class Sin extends Expression {
     }
 
     @Override
-    public Object evaluate(Environment env) {
-        Object argValue = arg.evaluate(env);
-        if (!(argValue instanceof Number)) {
-            throw new RuntimeException("Argument to sine must be a number, got: " + argValue.getClass());
+    public Expression evaluate(Environment env) {
+        Expression argValue = arg.evaluate(env);
+        if (argValue instanceof Constant c) {
+            return new Constant(Math.sin(c.getDoubleValue()));
         }
-        return Math.sin((double) argValue);
+        return new Sin(argValue);
+    }
+
+    public double evaluateNumeric(Environment env) {
+        double argValue = arg.evaluateNumeric(env);
+        return Math.sin(argValue);
     }
 
     @Override

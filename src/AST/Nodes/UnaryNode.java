@@ -16,10 +16,10 @@ public class UnaryNode extends Expression {
 
     @Override
     public Expression evaluate(Environment env) {
-        Object rightValue = rhs.evaluate(env);
+        Expression rightValue = rhs.evaluate(env);
         return switch (operator.getKind()) {
             case MINUS -> evaluateMinus(rightValue);
-            case NOT_EQUAL -> !isTruthy(rightValue);
+            case NOT_EQUAL -> new BooleanNode(!isTruthy(rightValue));
             default -> throw new RuntimeException("Unsupported unary operator: " + operator.getKind());
         };
     }
@@ -31,14 +31,27 @@ public class UnaryNode extends Expression {
 
     // this block makes it so that we can also evaluate 0 and 1s as T/F
     private boolean isTruthy(Object rightValue) {
-        if (rightValue instanceof BooleanNode) { return ((BooleanNode) rightValue).getValue(); }
+        if (rightValue instanceof BooleanNode r) { return r.getValue(); }
         if (rightValue == null) { return false; }
         throw new RuntimeException("Cannot apply '!' to non-boolean value.");
     }
 
+    // doesn't seem quite right. will fix
+    public double evaluateNumeric() {
+        Environment env = new Environment();
+        Expression rightValue = rhs.evaluate(env);
+        if (rightValue instanceof Constant c) {
+            return c.evaluateNumeric(env);
+        }
+        if (rightValue instanceof BooleanNode b) {
+            return b.toNumeric().evaluateNumeric(env);
+        }
+        throw new RuntimeException("Cannot evaluate numeric value for unary operation: " + operator.getKind());
+    }
+
     private Expression evaluateMinus(Expression rightValue) {
         if (rightValue instanceof Constant c) {
-            return new Constant(-c.getValue());
+            return new Constant(-c.evaluateNumeric(new Environment()));
         }
         if (rightValue instanceof UnaryNode unary && unary.operator.getKind() == TokenKind.MINUS) {
             return unary.rhs; // cancel double negation

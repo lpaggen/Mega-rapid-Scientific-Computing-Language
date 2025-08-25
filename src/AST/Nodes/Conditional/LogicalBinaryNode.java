@@ -1,6 +1,7 @@
 package AST.Nodes.Conditional;
 
 import AST.Nodes.BinaryNode;
+import AST.Nodes.Constant;
 import AST.Nodes.Expression;
 import Interpreter.Runtime.Environment;
 
@@ -11,8 +12,8 @@ public abstract class LogicalBinaryNode extends BinaryNode {
     }
 
     @Override
-    public Object evaluate(Environment env) {
-        return null;
+    public Expression evaluate(Environment env) {
+        return null; // can't call on this
     }
 
     @Override

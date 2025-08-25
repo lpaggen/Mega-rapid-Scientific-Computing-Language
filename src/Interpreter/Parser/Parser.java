@@ -76,11 +76,12 @@ public class Parser {
         return parseEquality();
     }
 
+    // i don't know if this still even works anymore
     private Expression parseEquality() {
         Expression expression = parseComparison();
         while (match(TokenKind.EQUAL_EQUAL, TokenKind.NOT_EQUAL)) {
             Expression rhs = parseComparison();
-            expression = new EqualTo(expression, rhs);
+            expression = new ComparisonNode(expression, TokenKind.EQUAL, rhs);
         }
         return expression;
     }
@@ -90,7 +91,7 @@ public class Parser {
         while (match(TokenKind.GREATER, TokenKind.LESS, TokenKind.GREATER_EQUAL, TokenKind.LESS_EQUAL)) {
             Token operator = previous(); // because match() consumes the token (advances position)
             Expression rhs = parseTerm(); // here we are also consuming the next token, which ensures the while loop actually works
-            expression = inferLogicalBinaryNodeFromOperator(operator.getKind(), expression, rhs);
+            expression = new ComparisonNode(expression, operator.getKind(), rhs);
         }
         return expression;
     }
@@ -132,12 +133,12 @@ public class Parser {
 
     private Expression parsePrimary() {
         System.out.println("current token at parsePrimary: " + peek());
-        if (match(TokenKind.FALSE)) return new PrimaryNode(false);
-        if (match(TokenKind.TRUE)) return new PrimaryNode(true);
+        if (match(TokenKind.FALSE)) return new PrimaryNode(new BooleanNode(false)); // this will return a PrimaryNode with a BooleanNode inside
+        if (match(TokenKind.TRUE)) return new PrimaryNode(new BooleanNode(true)); // this will return a PrimaryNode with a BooleanNode inside
         if (match(TokenKind.NULL)) return new PrimaryNode(null);
         if (match(TokenKind.STRING)) {
             System.out.println("Parsing literal: " + previous().getLiteral());
-            return new PrimaryNode(previous().getLiteral()); // this will return a Constant node with the literal value
+            return new StringNode(previous().getLexeme()); // this will return a Constant node with the literal value
         }
         if (match(TokenKind.INTEGER)) {
             System.out.println("Parsing numeric literal: " + previous().getLiteral());
@@ -461,35 +462,6 @@ public class Parser {
                 peek().getLine(),
                 "Unsupported operator: " + operator,
                 "Expected a valid arithmetic operator (+, -, *, /)."
-        );
-    }
-
-    private BinaryNode inferLogicalBinaryNodeFromOperator(TokenKind operator, Expression lhs, Expression rhs) {
-        switch (operator) {
-            case GREATER -> {
-                return new GreaterThan(lhs, rhs);
-            }
-            case LESS -> {
-                return new SmallerThan(lhs, rhs);
-            }
-            case GREATER_EQUAL -> {
-                return new GreaterEqualThan(lhs, rhs);
-            }
-            case LESS_EQUAL -> {
-                return new SmallerEqualThan(lhs, rhs);
-            }
-            case EQUAL_EQUAL -> {
-                return new EqualTo(lhs, rhs);
-            }
-            case NOT_EQUAL -> {
-                return new NotEqualTo(lhs, rhs);
-            }
-        }
-        throw new ErrorHandler(
-                "parsing",
-                peek().getLine(),
-                "Unsupported operator: " + operator,
-                "Expected a valid comparison operator (>, <, >=, <=, ==, !=)."
         );
     }
 }

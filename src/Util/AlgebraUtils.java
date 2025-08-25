@@ -11,24 +11,24 @@ public class AlgebraUtils {
                 Expression rightMul = simplify(multiply.getRight());
 
                 // if either side is a constant, we can simplify
-                if (leftMul instanceof Constant lConst && lConst.getValue() == 1) {
+                if (leftMul instanceof Constant lConst && lConst.getDoubleValue() == 1.0) {
                     return rightMul; // 1 * x = x
                 }
-                if (rightMul instanceof Constant rConst && rConst.getValue() == 1) {
+                if (rightMul instanceof Constant rConst && rConst.getDoubleValue() == 1.0) {
                     return leftMul; // x * 1 = x
                 }
 
-                if (leftMul instanceof Constant lConst && lConst.getValue() == 0) {
+                if (leftMul instanceof Constant lConst && lConst.getDoubleValue() == 0.0) {
                     return new Constant(0); // 0 * x = 0
                 }
-                if (rightMul instanceof Constant rConst && rConst.getValue() == 0) {
+                if (rightMul instanceof Constant rConst && rConst.getDoubleValue() == 0.0) {
                     return new Constant(0); // x * 0 = 0
                 }
 
-                if (leftMul instanceof Constant lConst && lConst.getValue() == -1) {
+                if (leftMul instanceof Constant lConst && lConst.getDoubleValue() == -1.0) {
                     return new Mul(new Constant(-1), rightMul); // -1 * x = -x
                 }
-                if (rightMul instanceof Constant rConst && rConst.getValue() == -1) {
+                if (rightMul instanceof Constant rConst && rConst.getDoubleValue() == -1.0) {
                     return new Mul(leftMul, new Constant(-1)); // x * -1 = -x
                 }
 
@@ -63,10 +63,10 @@ public class AlgebraUtils {
                 Expression rightAdd = simplify(add.getRight());
 
                 // if either side is a constant, we can simplify
-                if (leftAdd instanceof Constant lConst && lConst.getValue() == 0) {
+                if (leftAdd instanceof Constant lConst && lConst.getDoubleValue() == 0.0) {
                     return rightAdd; // 0 + x = x
                 }
-                if (rightAdd instanceof Constant rConst && rConst.getValue() == 0) {
+                if (rightAdd instanceof Constant rConst && rConst.getDoubleValue() == 0.0) {
                     return leftAdd; // x + 0 = x
                 }
 
@@ -80,10 +80,10 @@ public class AlgebraUtils {
                 }
 
                 // pythagoras identity
-                if (leftAdd instanceof Pow lPow && lPow.getBase() instanceof Tan lTan && rightAdd instanceof Constant rConst && rConst.getValue() == 1) {
+                if (leftAdd instanceof Pow lPow && lPow.getBase() instanceof Tan lTan && rightAdd instanceof Constant rConst && rConst.getDoubleValue() == 1.0) {
                     return new Pow(new Sec(lTan.getArg()), new Constant(2)); // tan2(x) + 1 = sec^2(x)
                 }
-                if (leftAdd instanceof Pow lPow && lPow.getBase() instanceof Cot lCot && rightAdd instanceof Constant rConst && rConst.getValue() == 1) {
+                if (leftAdd instanceof Pow lPow && lPow.getBase() instanceof Cot lCot && rightAdd instanceof Constant rConst && rConst.getDoubleValue() == 1.0) {
                     return new Pow(new Csc(lCot.getArg()), new Constant(2)); // cot2(x) + 1 = csc^2(x)
                 }
 
@@ -106,23 +106,23 @@ public class AlgebraUtils {
                 Expression numerator = simplify(divide.getNum());
                 Expression denominator = simplify(divide.getDenom());
 
-                if (denominator instanceof Constant dConst && dConst.getValue() == 1) {
+                if (denominator instanceof Constant dConst && dConst.getDoubleValue() == 1.0) {
                     return numerator; // x / 1 = x
                 }
 
-                if (denominator instanceof Constant dConst && dConst.getValue() == 0) {
+                if (denominator instanceof Constant dConst && dConst.getDoubleValue() == 0.0) {
                     return new Constant(Double.NaN); // x / 0 = NaN
                 }
 
-                if (numerator instanceof Constant nConst && nConst.getValue() == 0) {
+                if (numerator instanceof Constant nConst && nConst.getDoubleValue() == 0.0) {
                     return new Constant(0); // 0 / x = 0
                 }
 
-                if (numerator instanceof Constant nConst && nConst.getValue() == 1 && denominator instanceof VariableNode dVar) {
+                if (numerator instanceof Constant nConst && nConst.getDoubleValue() == 1.0 && denominator instanceof VariableNode dVar) {
                     return new Pow(dVar, new Constant(-1)); // 1 / x = x^(-1)
                 }
 
-                if (numerator instanceof VariableNode nVar && denominator instanceof Constant dConst && dConst.getValue() == -1) {
+                if (numerator instanceof VariableNode nVar && denominator instanceof Constant dConst && dConst.getDoubleValue() == -1.0) {
                     return new Mul(new Constant(-1), nVar); // x / -1 = -x
                 }
 
@@ -153,12 +153,12 @@ public class AlgebraUtils {
                 }
 
                 // simplify to sec
-                if (numerator instanceof Constant nConst && nConst.getValue() == 1 && denominator instanceof Cos dCos) {
+                if (numerator instanceof Constant nConst && nConst.getDoubleValue() == 1.0 && denominator instanceof Cos dCos) {
                     return new Sec(dCos.getArg()); // 1 / cos(x) = sec(x)
                 }
 
                 // simplify to csc
-                if (numerator instanceof Constant nConst && nConst.getValue() == 1 && denominator instanceof Sin dSin) {
+                if (numerator instanceof Constant nConst && nConst.getDoubleValue() == 1.0 && denominator instanceof Sin dSin) {
                     return new Csc(dSin.getArg()); // 1 / sin(x) = csc(x)
                 }
 
@@ -223,10 +223,9 @@ public class AlgebraUtils {
                 Expression base = simplify(log.getBase());
 
                 // if the base is 1, we can simplify to 0
-                if (base instanceof Constant bConst && bConst.getValue() == 1 && arg instanceof Constant aConst && aConst.getValue() != 1) {
+                if (base instanceof Constant bConst && bConst.getDoubleValue() == 1.0 && arg instanceof Constant aConst && aConst.getDoubleValue() != 1.0) {
                     throw new UnsupportedOperationException("Logarithm with base 1 is undefined for values other than 1");
                 }
-
 
 
                 return new Log(arg, base);

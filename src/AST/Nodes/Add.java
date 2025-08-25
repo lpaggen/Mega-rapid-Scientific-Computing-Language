@@ -7,39 +7,19 @@ public class Add extends ArithmeticBinaryNode {
         super(lhs, rhs);
     }
 
-    private Integer evaluateInteger(Object lhsVal, Object rhsVal) {
-        return (Integer) lhsVal + (Integer) rhsVal;
-        }
+    @Override
+    public Expression evaluate(Environment env) {
+        Expression leftVal = lhs.evaluate(env);
+        Expression rightVal = rhs.evaluate(env);
 
-    private Float evaluateFloat(Object lhsVal, Object rhsVal) {
-            return (Float) lhsVal + (Float) rhsVal;
-        };
-
-    private Float evaluateFloatTolerant(Object lhsVal, Object rhsVal) {
-        // this is a tolerant version of the float evaluation, it will convert int to float
-        if (lhsVal instanceof Integer) {
-            lhsVal = ((Integer) lhsVal).floatValue();
+        if (leftVal instanceof Constant l && rightVal instanceof Constant r) {
+            return Constant.add(l, r);
         }
-        if (rhsVal instanceof Integer) {
-            rhsVal = ((Integer) rhsVal).floatValue();
-        }
-        return evaluateFloat(lhsVal, rhsVal);
+        return new Add(leftVal, rightVal);
     }
 
-    @Override
-    public Object evaluate(Environment env) {
-        Object leftVal = lhs.evaluate(env);
-        Object rightVal = rhs.evaluate(env);
-
-        // Handle numeric operations
-        if (leftVal instanceof Integer && rightVal instanceof Integer) {
-            return evaluateInteger(leftVal, rightVal);
-        } else if ((leftVal instanceof Float && rightVal instanceof Float) ||
-                (leftVal instanceof Integer && rightVal instanceof Float) ||
-                (leftVal instanceof Float && rightVal instanceof Integer)) {
-            return evaluateFloatTolerant(leftVal, rightVal);
-        }
-        throw new RuntimeException("Unsupported types for addition operation: " + leftVal.getClass() + " and " + rightVal.getClass());
+    public double evaluateNumeric(Environment env) {
+        return lhs.evaluateNumeric(env) + rhs.evaluateNumeric(env);
     }
 
     @Override

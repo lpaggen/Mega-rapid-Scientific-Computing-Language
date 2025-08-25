@@ -7,20 +7,20 @@ public class Mod extends ArithmeticBinaryNode {
         super(lhs, rhs);
     }
 
-    @Override
-    public Object evaluate(Environment env) {
-        Object leftVal = lhs.evaluate(env);
-        Object rightVal = rhs.evaluate(env);
+    public double evaluateNumeric(Environment env) {
+        double leftVal = lhs.evaluateNumeric(env);
+        double rightVal = rhs.evaluateNumeric(env);
+        return leftVal % rightVal;
+    }
 
-        if (leftVal instanceof Integer && rightVal instanceof Integer) {
-            return (Integer) leftVal % (Integer) rightVal;
-        } else if (leftVal instanceof Float && rightVal instanceof Float) {
-            return (Float) leftVal % (Float) rightVal;
-        } else if (leftVal instanceof Integer && rightVal instanceof Float) {
-            return ((Integer) leftVal).floatValue() % (Float) rightVal;
-        } else if (leftVal instanceof Float && rightVal instanceof Integer) {
-            return (Float) leftVal % ((Integer) rightVal).floatValue();
+    @Override
+    public Expression evaluate(Environment env) {
+        Expression leftVal = lhs.evaluate(env);
+        Expression rightVal = rhs.evaluate(env);
+        if (leftVal instanceof Constant l && rightVal instanceof Constant r) {
+            int result = (int) l.getDoubleValue() % (int) r.getDoubleValue();
+            return new Constant(result);
         }
-        throw new RuntimeException("Unsupported types for modulus operation: " + leftVal.getClass() + " and " + rightVal.getClass());
+        return new Mod(leftVal, rightVal);
     }
 }

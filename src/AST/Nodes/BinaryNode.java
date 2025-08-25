@@ -20,7 +20,7 @@ public abstract class BinaryNode extends Expression {
     }
 
     @Override
-    public abstract Object evaluate(Environment env);
+    public abstract Expression evaluate(Environment env);
 
     @Override
     public abstract String toString();

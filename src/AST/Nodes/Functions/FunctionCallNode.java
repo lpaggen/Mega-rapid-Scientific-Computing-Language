@@ -24,14 +24,14 @@ public class FunctionCallNode extends Expression {
     }
 
     @Override
-    public Object evaluate(Environment env) {
+    public Expression evaluate(Environment env) {
         FunctionSymbol function = (FunctionSymbol) env.lookup(functionName);
         List<Object> evaluatedArgs = new ArrayList<>();
         for (Expression arg : arguments) {
             System.out.println("class of arg: " + arg.getClass().getSimpleName());
             evaluatedArgs.add(arg.evaluate(env)); // <-- This is crucial!
         }
-        return function.call(env, evaluatedArgs);
+        return (Expression) function.call(env, evaluatedArgs);
     }
 
     @Override

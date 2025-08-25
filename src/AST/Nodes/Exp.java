@@ -10,12 +10,19 @@ public class Exp extends Expression {
     }
 
     @Override
-    public Object evaluate(Environment env) {
-        Object argValue = arg.evaluate(env);
-        if (!(argValue instanceof Number)) {
-            throw new RuntimeException("Argument to exp must be a number, got: " + argValue.getClass());
+    public double evaluateNumeric(Environment env) {
+        double argValue = arg.evaluateNumeric(env);
+        return Math.exp(argValue);
+    }
+
+    // so this is how we make the distinction between numeric or not, numeric are now wrapped in Constant
+    public Expression evaluate(Environment env) {
+        Expression evaluatedArg = arg.evaluate(env);
+        if (evaluatedArg instanceof Constant) {
+            double argValue = evaluatedArg.evaluateNumeric(env);
+            return new Constant(Math.exp(argValue));
         }
-        return Math.exp((double) argValue);
+        return new Exp(evaluatedArg);
     }
 
     @Override
