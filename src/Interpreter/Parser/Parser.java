@@ -153,10 +153,15 @@ public class Parser {
             consume(TokenKind.CLOSE_PAREN);
             return new GroupingNode(expr);
         }
+        // function calls should also be handled here since they are primary expressions
         if (match(TokenKind.IDENTIFIER)) {
-            Token variableToken = previous();
-            System.out.println("Parsing variable: " + variableToken.getLexeme());
-            return new VariableNode(variableToken.getLexeme());
+            Token name = previous();
+            if (match(TokenKind.OPEN_PAREN)) {   // function call detected
+                List<Expression> args = parseFunctionArguments();
+                consume(TokenKind.CLOSE_PAREN);
+                return new FunctionCallNode(name.getLexeme(), args);
+            }
+            return new VariableNode(name.getLexeme()); // simple variable
         }
         throw new ErrorHandler(
                 "parsing",
@@ -165,7 +170,6 @@ public class Parser {
                 "Expected an expression, variable, or literal value."
         );
     }
-
 
     // this method handles variable declarations, i will add more error checks at some stage
     // for now i just want to be able to recognize variables and declare them into the env
@@ -207,13 +211,13 @@ public class Parser {
         Token name = previous();
         Expression initializer = null;
         if (match(TokenKind.EQUAL)) { // now two cases, either Expression, or it's a function call
-            if (isFunctionCall()) {
-                return new VariableDeclarationNode(
-                        new Token(TokenKind.SYMBOL, typeToken.getLexeme(), null, typeToken.getLine()),
-                        name,
-                        parseFunctionCall() // this will return a FunctionCallNode, which is an Expression
-                );
-            }
+//            if (isFunctionCall()) {
+//                return new VariableDeclarationNode(
+//                        new Token(TokenKind.SYMBOL, typeToken.getLexeme(), null, typeToken.getLine()),
+//                        name,
+//                        parseFunctionCall() // this will return a FunctionCallNode, which is an Expression
+//                );
+//            }
             initializer = parseExpression();
         }
         consume(TokenKind.SEMICOLON);
@@ -315,10 +319,8 @@ public class Parser {
     private List<Expression> parseFunctionArguments() {
         List<Expression> arguments = new ArrayList<>();
         if (!check(TokenKind.CLOSE_PAREN)) {
-            // we also must be checking if we're passing a function as argument!!
-            // there is a confusion happening here, print(x) where x is suddenly treated as a function call, but it is not
             System.out.println("token at parseFunctionArguments: " + peek());
-            if (isFunctionCall()) {
+            if (isFunctionCall()) { // just check if it's a function call in the arg (recursive allowed)
                 arguments.add(parseFunctionCall()); // if the first argument is a function call, we parse it
                 return arguments; // we return immediately, since we can't have more than one function call as an argument
             }
@@ -437,7 +439,8 @@ public class Parser {
     private BinaryNode inferBinaryNodeFromOperator(TokenKind operator, Expression lhs, Expression rhs) {
         switch (operator) {
             case PLUS -> {
-                return new Add(lhs, rhs); // TODO: fix these constructors, atm Add is not working and causes the error
+                System.out.println("Creating Add node with lhs: " + lhs + " and rhs: " + rhs);
+                return new Add(lhs, rhs);
             }
             case MINUS -> {
                 return new Sub(lhs, rhs);

@@ -26,7 +26,6 @@ public class VariableDeclarationNode extends Statement {
     public void execute(Environment env) {
         // we might want to check if we have a function call
         Expression value = (initializer != null) ? initializer.evaluate(env) : null;
-        System.out.println("class of the initializer: " + (value != null ? value.getClass().getSimpleName() : "null"));
 
         switch (type.getKind()) {
             case FLOAT:
@@ -34,13 +33,12 @@ public class VariableDeclarationNode extends Statement {
                     // convert integer to float if needed -- but throw warning somehow...
                     value = new Constant(v.getDoubleValue());
                     warningHandler.addWarning(1, "Implicit conversion from integer to float at line " + variable.getLine(), variable.getLine());
-                } else if (!(value instanceof Constant v && v.getValue() instanceof Double)) {
+                } else if (!(value instanceof Constant v && v.getValue() instanceof Float)) {
                     throw new ErrorHandler("execution", variable.getLine(), "Type mismatch: expected float, got " + (value != null ? value.getClass().getSimpleName() : "null"), "Please ensure the initializer is a float.");
                     //throw new RuntimeException("Type mismatch: expected float, got " + (value != null ? value.getClass().getSimpleName() : "null") + " at line " + variable.getLine());
                 }
                 break;
             case INTEGER:
-                System.out.println(((Constant) value).getValue());
                 if (!(value instanceof Constant v && v.getValue() instanceof Integer)) {
                     throw new ErrorHandler("execution", variable.getLine(), "Type mismatch: expected integer, got " + (value != null ? value.getClass().getSimpleName() : "null"), "Please ensure the initializer is an integer.");
                     //throw new RuntimeException("Type mismatch: expected integer, got " + (value != null ? value.getClass().getSimpleName() : "null") + " at line " + variable.getLine());

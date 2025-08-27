@@ -1,9 +1,6 @@
 package AST.Nodes.Functions.BuiltIns;
 
-import AST.Nodes.Functions.BuiltIns.StandardLib.PrintFunction;
-import AST.Nodes.Functions.BuiltIns.StandardLib.Time;
-import AST.Nodes.Functions.BuiltIns.StandardLib.Type;
-import AST.Nodes.Functions.BuiltIns.StandardLib.Vars;
+import AST.Nodes.Functions.BuiltIns.StandardLib.*;
 import Interpreter.Parser.Symbol;
 
 import java.util.HashMap;
@@ -20,6 +17,7 @@ public class StandardLibrary {
         builtInSymbols.put("time", new Time());
         builtInSymbols.put("vars", new Vars());
         builtInSymbols.put("type", new Type());
+        builtInSymbols.put("cast", new Cast()); // i had a cool int() etc version but it conflicts with reserved keywords like int, float, etc.
     }
 
     public static boolean isBuiltInFunction(String name) {

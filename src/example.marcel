@@ -1,10 +1,9 @@
 include stdlib;
 
 # example of a program that prints "Hello, World!" to the console
-str x = "Hello, World!";
-print(x);
 
-print(time("h"));
+int x = 5;
 
-int neg = 1;
-vars();
+float y = cast(x, "float");
+
+print(y);

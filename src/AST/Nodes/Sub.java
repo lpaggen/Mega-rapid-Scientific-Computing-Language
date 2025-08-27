@@ -2,8 +2,6 @@ package AST.Nodes;
 
 import Interpreter.Runtime.Environment;
 
-import java.awt.font.NumericShaper;
-
 public class Sub extends ArithmeticBinaryNode {
     public Sub(Expression lhs, Expression rhs) {
         super(lhs, rhs);
@@ -17,7 +15,7 @@ public class Sub extends ArithmeticBinaryNode {
 
         // check if we have constants
         if (leftVal instanceof Constant l && rightVal instanceof Constant r) {
-            return Constant.substract(l, r);
+            return Constant.subtract(l, r);
         }
         // if we don't have constants, we return a new Sub node
         return new Sub(leftVal, rightVal);
@@ -31,7 +29,7 @@ public class Sub extends ArithmeticBinaryNode {
 
     @Override
     public String toString() {
-        return lhs.toString() + " + " + rhs.toString();
+        return lhs.toString() + " - " + rhs.toString();
     }
 
     public Expression getLeft() {

@@ -29,7 +29,7 @@ public class Constant extends Expression {
     }
 
     // this all makes for less boilerplate in the ArithmeticBinaryNode classes, since we can just use them as is
-    public static Constant substract (Constant left, Constant right) {
+    public static Constant subtract(Constant left, Constant right) {
         Number leftValue = left.getValue();
         Number rightValue = right.getValue();
 
