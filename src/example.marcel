@@ -4,4 +4,7 @@ include stdlib;
 str x = "Hello, World!";
 print(x);
 
-float neg = -1.0;
+print(time("h"));
+
+int neg = 1;
+vars();

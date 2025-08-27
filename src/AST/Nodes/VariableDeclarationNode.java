@@ -30,7 +30,7 @@ public class VariableDeclarationNode extends Statement {
 
         switch (type.getKind()) {
             case FLOAT:
-                if (value instanceof Constant v && ((Constant) value).getValue() instanceof Integer) {
+                if (value instanceof Constant v && v.getValue() instanceof Integer) {
                     // convert integer to float if needed -- but throw warning somehow...
                     value = new Constant(v.getDoubleValue());
                     warningHandler.addWarning(1, "Implicit conversion from integer to float at line " + variable.getLine(), variable.getLine());
@@ -40,6 +40,7 @@ public class VariableDeclarationNode extends Statement {
                 }
                 break;
             case INTEGER:
+                System.out.println(((Constant) value).getValue());
                 if (!(value instanceof Constant v && v.getValue() instanceof Integer)) {
                     throw new ErrorHandler("execution", variable.getLine(), "Type mismatch: expected integer, got " + (value != null ? value.getClass().getSimpleName() : "null"), "Please ensure the initializer is an integer.");
                     //throw new RuntimeException("Type mismatch: expected integer, got " + (value != null ? value.getClass().getSimpleName() : "null") + " at line " + variable.getLine());

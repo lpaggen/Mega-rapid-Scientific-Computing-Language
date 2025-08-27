@@ -5,7 +5,7 @@ import Interpreter.Runtime.Environment;
 public class Constant extends Expression {
     private final Number value; // means we can have both int and float
 
-    public Constant(double value) {
+    public Constant(Number value) { // changed to Number to allow Integers and Floats -- not just double
         this.value = value;
     }
 
@@ -79,10 +79,12 @@ public class Constant extends Expression {
         return new Constant(leftValue.doubleValue() / rightValue.doubleValue());
     }
 
-    // not that we really have to but the i and f might be cool
+    // this is fine, not clean but it will work just fine
     @Override
     public String toString() {
-        if (value instanceof Integer) {return value.intValue() + "i";}
-        return value.doubleValue() + "f";
+        if (value instanceof Integer) {
+            return value.intValue() + "";
+        }
+        return value.doubleValue() + "";
     }
 }

@@ -1,5 +1,6 @@
 package AST.Nodes.Functions.BuiltIns.StandardLib;
 
+import AST.Nodes.Constant;
 import AST.Nodes.Functions.BuiltIns.BuiltInFunctionSymbol;
 import Interpreter.Tokenizer.TokenKind;
 import Interpreter.Runtime.Environment;
@@ -26,15 +27,13 @@ public class Time extends BuiltInFunctionSymbol {
             String unit = args.getFirst().toString().toLowerCase();
             LocalTime now = java.time.LocalTime.now();
             return switch (unit) {
-                case "h" -> now.getHour();
-                case "m" -> now.getMinute();
-                case "s" -> now.getSecond();
-                case "ms" -> now.toString(); // milliseconds since epoch
+                case "h" -> new Constant(now.getHour()); // we have to use our wrappers for everything now, good fun!
+                case "m" -> new Constant(now.getMinute());
+                case "s" -> new Constant(now.getSecond());
+                case "ms" -> new Constant((int) (System.nanoTime() / 1000000)); // convert to ms
                 default -> throw new IllegalArgumentException("Invalid arguments for time function. Expected one of: " + String.join(", ", validArguments));
             };
-        } else if (args.size() > 1) {
-            throw new IllegalArgumentException("time function accepts at most one argument.");
         }
-        throw new IllegalArgumentException("Invalid arguments for time function. Expected one of: " + String.join(", ", validArguments));
+        throw new IllegalArgumentException("time function accepts at most one argument.");
     }
 }

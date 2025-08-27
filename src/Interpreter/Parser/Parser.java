@@ -219,10 +219,7 @@ public class Parser {
         consume(TokenKind.SEMICOLON);
         TokenKind dataType = mapDeclarationToDatatype.get(typeToken.getKind());
         System.out.println("Declaring variable: " + name.getLexeme() + " of type: " + dataType);
-        // VariableSymbol variableSymbol = new VariableSymbol(name.getLexeme(), dataType, initializer);
-        // environment.declareVariable(name.getLexeme(), variableSymbol);
-
-        // environment.declareVariable(name.getLexeme(), new Token(dataType, name.getLexeme(), null, typeToken.getLine()));
+        System.out.println("Initializer: " + (initializer != null ? initializer.toString() : "null"));
         return new VariableDeclarationNode(new Token(dataType, typeToken.getLexeme(), null, typeToken.getLine()), name, initializer);
     }
 
@@ -278,7 +275,6 @@ public class Parser {
             );
             //throw new RuntimeException(peek() + " Expected '{' after return type.");
         }
-        System.out.println("current: " + peek()); // sitting at return
 
         // somehow the body has to be parsed before return
         consume(TokenKind.RETURN); // consume the closing brace, we will handle the body later
@@ -327,8 +323,7 @@ public class Parser {
                 return arguments; // we return immediately, since we can't have more than one function call as an argument
             }
             do {
-                System.out.println("");
-                Expression arg = parseExpression();
+                Expression arg = parseExpression(); // STRING NODE for now
                 System.out.println("Parsing argument: " + (arg != null ? arg.toString() : "null"));
                 arguments.add(arg);
             } while (match(TokenKind.COMMA));
