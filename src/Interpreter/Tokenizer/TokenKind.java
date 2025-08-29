@@ -45,6 +45,8 @@ public enum TokenKind {
     MUL,
     MOD, // modulo operator
     POWER,
+    INCREMENT,
+    DECREMENT,
 
     EQUAL,
     GREATER,

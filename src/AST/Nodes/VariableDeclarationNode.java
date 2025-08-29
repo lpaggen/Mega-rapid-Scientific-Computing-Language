@@ -1,5 +1,6 @@
 package AST.Nodes;
 
+import AST.Nodes.Conditional.BooleanNode;
 import Util.ErrorHandler;
 import Interpreter.Tokenizer.Token;
 import Interpreter.Runtime.Environment;
@@ -50,9 +51,39 @@ public class VariableDeclarationNode extends Statement {
                     //throw new RuntimeException("Type mismatch: expected string, got " + (value != null ? value.getClass().getSimpleName() : "null") + " at line " + variable.getLine());
                 }
                 break;
+            case BOOLEAN:
+                if (!(value instanceof BooleanNode)) {
+                    throw new ErrorHandler("execution", variable.getLine(), "Type mismatch: expected boolean, got " + (value != null ? value.getClass().getSimpleName() : "null"), "Please ensure the initializer is a boolean.");
+                    //throw new RuntimeException("Type mismatch: expected boolean, got " + (value != null ? value.getClass().getSimpleName() : "null") + " at line " + variable.getLine());
+                }
+                break;
         }
-
         env.declareSymbol(variable.getLexeme(), new VariableSymbol(variable.getLexeme(), type.getKind(), value));
+    }
+
+    private BooleanNode convertTruthy(Object value) {
+        switch (value) {
+            case null -> {
+                return new BooleanNode(false);
+            }
+            case Boolean b -> {
+                return new BooleanNode(b);
+            }
+            case Constant i -> {
+                if (i.getDoubleValue() == 0.0) {
+                    return new BooleanNode(false);
+                } else if (i.getDoubleValue() == 1.0) {
+                    return new BooleanNode(true);
+                }
+            }
+            case String s -> {
+                return new BooleanNode(!s.isEmpty());
+            }
+            default -> {
+                throw new UnsupportedOperationException("Cannot convert type " + value.getClass().getSimpleName() + " to boolean.");
+            }
+        }
+        return new BooleanNode(false);
     }
 
     // will work on this in a later build, it's not necessary yet

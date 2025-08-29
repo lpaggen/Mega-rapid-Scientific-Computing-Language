@@ -35,10 +35,19 @@ public class Tokenizer {
             case ')': addToken(TokenKind.CLOSE_PAREN, ")"); advance(); break;
             case '{': addToken(TokenKind.OPEN_BRACE, "{"); advance(); break;
             case '}': addToken(TokenKind.CLOSE_BRACE, "}"); advance(); break;
-            case '+': addToken(TokenKind.PLUS, "+"); advance(); break;
+            case '+':
+                if (match('+')) { // check for '++' (increment operator)
+                    addToken(TokenKind.INCREMENT, "++");
+                } else {
+                    addToken(TokenKind.PLUS, "+");
+                }
+                advance();
+                break;
             case '-':
                 if (match('>')) { // check for '->' (arrow operator)
                     addToken(TokenKind.ARROW, "->");
+                } else if (match('-')) { // check for '--' (decrement operator)
+                    addToken(TokenKind.DECREMENT, "--");
                 } else {
                     addToken(TokenKind.MINUS, "-");
                 }

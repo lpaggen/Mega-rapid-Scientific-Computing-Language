@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class WarningHandler extends Throwable{
+public class WarningHandler {
     private final List<String> warnings = new ArrayList<>();
     private final HashMap<Integer, String> severityLevels = new HashMap<>();
     public WarningHandler() {
@@ -28,7 +28,7 @@ public class WarningHandler extends Throwable{
             return;
         }
 
-        System.out.println("Warnings:");
+        System.out.println("Generated warnings for your script...:");
         for (String warning : warnings) {
             System.out.println(warning);
         }

@@ -9,6 +9,7 @@ import Util.ErrorHandler;
 import Interpreter.Tokenizer.TokenKind;
 import Interpreter.Tokenizer.Token;
 import Interpreter.Runtime.Environment;
+import Util.WarningHandler;
 
 import java.util.*;
 
@@ -30,6 +31,7 @@ public class Parser {
     }
 
     public void interpretCode() {
+        WarningHandler warningHandler = new WarningHandler();
         while (!isAtEnd()) {
             Statement statement = parseStatement();
             if (statement == null) {
@@ -39,18 +41,21 @@ public class Parser {
             }
             statement.execute(environment);
         }
+        warningHandler.printWarnings();
     }
 
     // everything should really start from the Statement, since we have to declare variables, functions, etc.
     private Statement parseStatement() {
         System.out.println("current token at parseStatement: " + peek());
-        // currently INCLUDE is being caught somewhere it shouldn't be, so i will just check for it here
         if (isDeclarationStart()) {
+            System.out.println("Parsing variable declaration...");
             return parseDeclaration();
         } else if (isFunctionCall()) { // this is where we can return the ExpressionStatementNode wrapper
+            System.out.println("Parsing function call...");
             Expression functionCall = parseFunctionCall();
             return new ExpressionStatementNode(functionCall);
         } else if (isFunctionDeclarationStart()) {
+            System.out.println("Parsing function declaration...");
             return parseFunctionDeclaration();
         } else if (Objects.requireNonNull(peek().getKind()) == TokenKind.INCLUDE) {
             System.out.println("Parsing module import statement: " + peek());
@@ -64,10 +69,13 @@ public class Parser {
                 );
             }
             Token moduleName = consume(TokenKind.IDENTIFIER); // consume the module name
-
             consume(TokenKind.SEMICOLON); // consume the semicolon
             return new ImportNode(moduleName.getLexeme(), null); // no alias for now
+        } else if (peek().getKind() == TokenKind.IDENTIFIER) { // handle both i++ and i--
+            Expression expr = parseExpression();
+            return new ExpressionStatementNode(expr);
         }
+        // anything like saying i++ is being caught up here...
         return null;
     }
 
@@ -133,19 +141,19 @@ public class Parser {
 
     private Expression parsePrimary() {
         System.out.println("current token at parsePrimary: " + peek());
-        if (match(TokenKind.FALSE)) return new PrimaryNode(new BooleanNode(false)); // this will return a PrimaryNode with a BooleanNode inside
-        if (match(TokenKind.TRUE)) return new PrimaryNode(new BooleanNode(true)); // this will return a PrimaryNode with a BooleanNode inside
+        if (match(TokenKind.FALSE)) return new BooleanNode(false); // this will return a PrimaryNode with a BooleanNode inside
+        if (match(TokenKind.TRUE)) return new BooleanNode(true); // this will return a PrimaryNode with a BooleanNode inside
         if (match(TokenKind.NULL)) return new PrimaryNode(null);
         if (match(TokenKind.STRING)) {
-            System.out.println("Parsing literal: " + previous().getLiteral());
+            System.out.println("Parsing string literal: " + previous().getLiteral());
             return new StringNode(previous().getLexeme()); // this will return a Constant node with the literal value
         }
         if (match(TokenKind.INTEGER)) {
-            System.out.println("Parsing numeric literal: " + previous().getLiteral());
+            System.out.println("Parsing integer literal: " + previous().getLiteral());
             return new Constant(Integer.parseInt(previous().getLexeme())); // this will return a Constant node with the numeric value
         }
         if (match(TokenKind.FLOAT)) {
-            System.out.println("Parsing numeric literal: " + Float.parseFloat(previous().getLexeme()));
+            System.out.println("Parsing float literal: " + Float.parseFloat(previous().getLexeme()));
             return new Constant(Float.parseFloat(previous().getLexeme())); // this will return a Constant node with the numeric value
         }
         if (match(TokenKind.OPEN_PAREN)) {
@@ -153,13 +161,21 @@ public class Parser {
             consume(TokenKind.CLOSE_PAREN);
             return new GroupingNode(expr);
         }
-        // function calls should also be handled here since they are primary expressions
+        // this is really not good and not safe, and it's a dumb check. but it works until i figure something better out
+        // debug to see if we are parsing identifier i
         if (match(TokenKind.IDENTIFIER)) {
+            System.out.println("current token at IDENTIFIER in parsePrimary: " + peek());
             Token name = previous();
-            if (match(TokenKind.OPEN_PAREN)) {   // function call detected
+            if (match(TokenKind.OPEN_PAREN)) {  // function call detected
                 List<Expression> args = parseFunctionArguments();
                 consume(TokenKind.CLOSE_PAREN);
                 return new FunctionCallNode(name.getLexeme(), args);
+            }
+            System.out.println("Parsing variable: " + name.getLexeme());
+            // just check for increment here
+            if (match(TokenKind.INCREMENT, TokenKind.DECREMENT)) {
+                Token operator = previous();
+                return new IncrementNode(operator.getKind(), new VariableNode(name.getLexeme()));
             }
             return new VariableNode(name.getLexeme()); // simple variable
         }
@@ -211,13 +227,6 @@ public class Parser {
         Token name = previous();
         Expression initializer = null;
         if (match(TokenKind.EQUAL)) { // now two cases, either Expression, or it's a function call
-//            if (isFunctionCall()) {
-//                return new VariableDeclarationNode(
-//                        new Token(TokenKind.SYMBOL, typeToken.getLexeme(), null, typeToken.getLine()),
-//                        name,
-//                        parseFunctionCall() // this will return a FunctionCallNode, which is an Expression
-//                );
-//            }
             initializer = parseExpression();
         }
         consume(TokenKind.SEMICOLON);

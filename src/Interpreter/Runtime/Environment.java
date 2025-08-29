@@ -39,6 +39,11 @@ public class Environment {
         currentScope.put(name, value);
     }
 
+    public void setVariable(String name, Symbol value) {
+        Map<String, Symbol> currentScope = envStack.peek();
+        currentScope.put(name, value);
+    }
+
     public Symbol lookup(String name) {
         for (Map<String, Symbol> scope : envStack) {
             if (scope.containsKey(name)) {

@@ -94,7 +94,7 @@ public class Cast extends BuiltInFunctionSymbol {
             case "int" -> new Constant(Integer.parseInt(value.toString()));
             case "float" -> new Constant(Float.parseFloat(value.toString()));
             case "bool" -> new BooleanNode(Boolean.parseBoolean(value.toString()));
-            case "string" -> new StringNode(value.toString());  // there's some exceptions here we should handle later
+            case "str" -> new StringNode(value.toString());  // there's some exceptions here we should handle later
             default -> throw new IllegalArgumentException("Unsupported cast type: " + targetType + "." +
                     " Supported types are: " + String.join(", ", supportedTypes) + ".");
         };
