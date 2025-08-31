@@ -3,4 +3,4 @@ include stdlib;
 # example of a program that prints "Hello, World!" to the console
 # marcel is the most powerful language every created
 
-int numbers[5] = {1, 2, 3, 4, 5};  # now the first challenge, implement the array
+vec numbers = {1, 2, 3, 4, 5};  # now the first challenge, implement the array
