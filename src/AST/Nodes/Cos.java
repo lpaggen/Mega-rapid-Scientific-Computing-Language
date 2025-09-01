@@ -13,7 +13,7 @@ public class Cos extends Expression {
     public Expression evaluate(Environment env) {
         Expression argValue = this.arg.evaluate(env);
         if (argValue instanceof Constant c) {
-            return new Constant(Math.cos(c.getDoubleValue()));
+            return new Constant(Math.cos(c.getDoubleValue()), c.isRaw());
         }
         return new Cos(argValue);
     }

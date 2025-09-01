@@ -50,13 +50,14 @@ public class UnaryNode extends Expression {
     }
 
     private Expression evaluateMinus(Expression rightValue) {
+        boolean raw = (rightValue instanceof Constant c && c.isRaw());
         if (rightValue instanceof Constant c) {
-            return new Constant(-c.evaluateNumeric(new Environment()));
+            return new Constant(-c.evaluateNumeric(new Environment()), c.isRaw());
         }
         if (rightValue instanceof UnaryNode unary && unary.operator.getKind() == TokenKind.MINUS) {
             return unary.rhs; // cancel double negation
         }
-        return new Mul(new Constant(-1), rightValue);
+        return new Mul(new Constant(-1, raw), rightValue);
     }
 
     public Token getOperator() {

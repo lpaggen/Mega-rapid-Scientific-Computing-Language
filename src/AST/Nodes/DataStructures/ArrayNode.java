@@ -4,15 +4,11 @@ import AST.Nodes.Constant;
 import AST.Nodes.Expression;
 import Interpreter.Runtime.Environment;
 
-// this is the classic static Array
-// it's just beautiful because it's static and doesn't change size
+
 public class ArrayNode extends Expression {
     private final Expression[] elements;
 
-    public ArrayNode(Expression[] elements, Constant size) {
-        if ((int) size.getValue() != elements.length) {
-            throw new IllegalArgumentException("Array size does not match the number of elements. Expected size: " + size.getValue() + ", but got: " + elements.length);
-        }
+    public ArrayNode(Expression[] elements) {
         this.elements = elements;
     }
 

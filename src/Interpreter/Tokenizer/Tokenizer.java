@@ -94,6 +94,8 @@ public class Tokenizer {
             case '#':
                 while (peek() != '\n' && pos < input.length()) advance();
                 break;
+            case '$':
+                addToken(TokenKind.RAW, "$"); advance(); break;
             case '[':
                 addToken(TokenKind.OPEN_BRACKET, "["); advance(); break;
             case ']':
@@ -149,6 +151,8 @@ public class Tokenizer {
         put("int", TokenKind.INTEGER_TYPE);
         put("float", TokenKind.FLOAT_TYPE);
         put("matrix", TokenKind.MATRIX_TYPE);
+        put("vec", TokenKind.VECTOR_TYPE);
+        put("expr", TokenKind.MATH_TYPE);
         put("break", TokenKind.BREAK);
         put("continue", TokenKind.CONTINUE);
         put("wrt", TokenKind.WRT);
@@ -162,8 +166,7 @@ public class Tokenizer {
         put("write", TokenKind.WRITE);
     }};
 
-    // using Character.isDigit() would allow for all kinds of weird characters, so i'm using this instead
-    private boolean isDigit(char c) { // this does work, except apparently it also allows for all kinds of weird characters
+    private boolean isDigit(char c) {
         return c >= '0' && c <= '9';
     }
 

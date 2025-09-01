@@ -19,7 +19,7 @@ public class Mod extends ArithmeticBinaryNode {
         Expression rightVal = rhs.evaluate(env);
         if (leftVal instanceof Constant l && rightVal instanceof Constant r) {
             int result = (int) l.getDoubleValue() % (int) r.getDoubleValue();
-            return new Constant(result);
+            return new Constant(result, l.isRaw());
         }
         return new Mod(leftVal, rightVal);
     }

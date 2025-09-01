@@ -1,6 +1,7 @@
 package Interpreter.Parser;
 
 import AST.Nodes.*;
+import AST.Nodes.DataStructures.ArrayNode;
 import AST.Nodes.Functions.FunctionCallNode;
 import AST.Nodes.Functions.FunctionDeclarationNode;
 import AST.Nodes.Functions.BuiltIns.ImportNode;
@@ -150,21 +151,25 @@ public class Parser {
         }
         if (match(TokenKind.INTEGER)) {
             System.out.println("Parsing integer literal: " + previous().getLiteral());
-            return new Constant(Integer.parseInt(previous().getLexeme())); // this will return a Constant node with the numeric value
+            boolean isRawType = match(TokenKind.RAW); // check if the next token is a RAW type indicator
+            return new Constant(Integer.parseInt(previous().getLexeme()), isRawType); // this will return a Constant node with the numeric value
         }
         if (match(TokenKind.FLOAT)) {
             System.out.println("Parsing float literal: " + Float.parseFloat(previous().getLexeme()));
-            return new Constant(Float.parseFloat(previous().getLexeme())); // this will return a Constant node with the numeric value
+            boolean isRawType = match(TokenKind.RAW); // check if the next token is a RAW type indicator
+            return new Constant(Float.parseFloat(previous().getLexeme()), isRawType); // this will return a Constant node with the numeric value
         }
         if (match(TokenKind.OPEN_PAREN)) {
             Expression expr = parseExpression();
             consume(TokenKind.CLOSE_PAREN);
             return new GroupingNode(expr);
         }
+        if (match(TokenKind.OPEN_BRACKET)) {
+            return parseArray();
+        }
         // this is really not good and not safe, and it's a dumb check. but it works until i figure something better out
         // debug to see if we are parsing identifier i
         if (match(TokenKind.IDENTIFIER)) {
-            System.out.println("current token at IDENTIFIER in parsePrimary: " + peek());
             Token name = previous();
             if (match(TokenKind.OPEN_PAREN)) {  // function call detected
                 List<Expression> args = parseFunctionArguments();
@@ -182,9 +187,23 @@ public class Parser {
         throw new ErrorHandler(
                 "parsing",
                 peek().getLine(),
-                "Unexpected token: " + peek().getLexeme(),
+                "ParsePrimary Unexpected token: " + peek().getLexeme(),
                 "Expected an expression, variable, or literal value."
         );
+    }
+
+    private Expression parseArray() {
+        List<Expression> elements = new ArrayList<>();
+        if (!check(TokenKind.CLOSE_BRACKET)) {  // if it's empty array
+            do {
+                Expression element = parseExpression();
+                System.out.println("Parsing array element: " + (element != null ? element.toString() : "null"));
+                elements.add(element);
+            } while (match(TokenKind.COMMA)); // comma separate elements of the 1D array
+        }
+        consume(TokenKind.CLOSE_BRACKET); // consume the closing ]
+        Expression[] arrayElementsArray = elements.toArray(new Expression[0]);
+        return new ArrayNode(arrayElementsArray);
     }
 
     // this method handles variable declarations, i will add more error checks at some stage
@@ -201,9 +220,9 @@ public class Parser {
                 TokenKind.BOOLEAN_TYPE, TokenKind.BOOLEAN,
                 TokenKind.MATRIX_TYPE, TokenKind.MATRIX,
                 TokenKind.SYMBOL_TYPE, TokenKind.SYMBOL,
-                TokenKind.STRING_TYPE, TokenKind.STRING
+                TokenKind.STRING_TYPE, TokenKind.STRING,
+                TokenKind.VECTOR_TYPE, TokenKind.VECTOR
         );
-
         if (!typeKeywords.contains(peek().getKind())) {
             throw new ErrorHandler(
                     "parsing",
@@ -271,13 +290,7 @@ public class Parser {
             );
             //throw new RuntimeException(peek() + " Expected '->' after function parameters.");
         } // now we should get the return type of the function
-        TokenKind returnType = consume(TokenKind.VOID_TYPE,
-                TokenKind.INTEGER_TYPE,
-                TokenKind.FLOAT_TYPE,
-                TokenKind.BOOLEAN_TYPE,
-                TokenKind.MATRIX_TYPE,
-                TokenKind.SYMBOL_TYPE,
-                TokenKind.STRING_TYPE).getKind();
+        TokenKind returnType = consume(typeKeywords).getKind();
         System.out.println("Function return type: " + returnType);
         if (!match(TokenKind.OPEN_BRACE)) {
             throw new ErrorHandler(
@@ -310,11 +323,7 @@ public class Parser {
         if (!check(TokenKind.CLOSE_PAREN)) {
             System.out.println("Parsing function parameters...");
             do {
-                Token type = consume(
-                        TokenKind.INTEGER, TokenKind.FLOAT, TokenKind.STRING,
-                        TokenKind.BOOLEAN, TokenKind.MATRIX, TokenKind.SYMBOL
-                ); // parameter type
-
+                Token type = consume(typeKeywords); // parameter type
                 Token name = consume(TokenKind.IDENTIFIER);
                 parameters.add(new VariableSymbol(name.getLexeme(), type.getKind(), null));
             } while (match(TokenKind.COMMA));
@@ -379,6 +388,15 @@ public class Parser {
         return false;
     }
 
+    private boolean check (Set<TokenKind> expectedKinds) {
+        for (TokenKind expectedKind : expectedKinds) {
+            if (check(expectedKind)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private Token consume(TokenKind... kinds) {
         for (TokenKind expectedKind : kinds) {
             if (check(expectedKind)) {
@@ -387,6 +405,16 @@ public class Parser {
         }
         throw new Error("No match for " + peek().getKind() + " at line " + peek().getLine()
                 + ". Expected one of: " + Arrays.toString(kinds));
+    }
+
+    private Token consume(Set<TokenKind> tokenKinds) {
+        for (TokenKind expectedKind : tokenKinds) {
+            if (check(expectedKind)) {
+                return advance();
+            }
+        }
+        throw new Error("No match for " + peek().getKind() + " at line " + peek().getLine()
+                + ". Expected one of: " + tokenKinds);
     }
 
     private Token advance() {
@@ -409,7 +437,7 @@ public class Parser {
     }
 
     private boolean isDeclarationStart() {
-        return check(TokenKind.INTEGER_TYPE, TokenKind.FLOAT_TYPE, TokenKind.BOOLEAN_TYPE, TokenKind.MATRIX_TYPE, TokenKind.SYMBOL_TYPE, TokenKind.STRING_TYPE);
+        return check(typeKeywords);
     }
 
     // will check if a user-defined function IS BEING DECLARED. calls will happen later
@@ -442,7 +470,9 @@ public class Parser {
             TokenKind.BOOLEAN_TYPE,
             TokenKind.MATRIX_TYPE,
             TokenKind.SYMBOL_TYPE,
-            TokenKind.STRING_TYPE
+            TokenKind.STRING_TYPE,
+            TokenKind.VOID_TYPE,
+            TokenKind.VECTOR_TYPE
     );
 
     private BinaryNode inferBinaryNodeFromOperator(TokenKind operator, Expression lhs, Expression rhs) {

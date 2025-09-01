@@ -1,12 +1,15 @@
 package AST.Nodes;
 
+import AST.Nodes.Conditional.BooleanNode;
 import Interpreter.Runtime.Environment;
 
 public class Constant extends Expression {
     private final Number value; // means we can have both int and float
+    private boolean isRaw = false; // to differentiate between raw numbers and evaluated constants
 
-    public Constant(Number value) { // changed to Number to allow Integers and Floats -- not just double
+    public Constant(Number value, Boolean isRaw) { // changed to Number to allow Integers and Floats -- not just double
         this.value = value;
+        this.isRaw = isRaw;
     }
 
     @Override
@@ -32,51 +35,91 @@ public class Constant extends Expression {
     public static Constant subtract(Constant left, Constant right) {
         Number leftValue = left.getValue();
         Number rightValue = right.getValue();
+        boolean leftRaw = left.isRaw();
+        boolean rightRaw = right.isRaw();
 
-        // return a float if either is a float, else return integer
-        if (leftValue instanceof Float || rightValue instanceof Float) {
-            return new Constant(leftValue.doubleValue() - rightValue.doubleValue());
+        if (leftRaw != rightRaw) {
+            throw new RuntimeException("Cannot subtract raw and non-raw constants");
         }
-        return new Constant(leftValue.intValue() - rightValue.intValue());
+
+        boolean isFloatingPoint = (leftValue instanceof Float || leftValue instanceof Double
+                || rightValue instanceof Float || rightValue instanceof Double);
+
+        if (isFloatingPoint) {
+            return new Constant(leftValue.doubleValue() - rightValue.doubleValue(), leftRaw);
+        } else {
+            return new Constant(leftValue.intValue() - rightValue.intValue(), leftRaw);
+        }
     }
 
     public static Constant add (Constant left, Constant right) {
         Number leftValue = left.getValue();
         Number rightValue = right.getValue();
+        Boolean leftRaw = left.isRaw();
+        Boolean rightRaw = right.isRaw();
 
-        // return a float if either is a float, else return integer
-        if (leftValue instanceof Float || rightValue instanceof Float) {
-            return new Constant(leftValue.doubleValue() + rightValue.doubleValue());
+        if (leftRaw != rightRaw) {
+            throw new RuntimeException("Cannot add raw and non-raw constants");
         }
-        return new Constant(leftValue.intValue() + rightValue.intValue());
+
+        boolean isFloatingPoint = (leftValue instanceof Float || leftValue instanceof Double
+                || rightValue instanceof Float || rightValue instanceof Double);
+
+        if (isFloatingPoint) {
+            return new Constant(leftValue.doubleValue() + rightValue.doubleValue(), leftRaw);
+        } else {
+            return new Constant(leftValue.intValue() + rightValue.intValue(), leftRaw);
+        }
     }
 
     public static Constant multiply (Constant left, Constant right) {
         Number leftValue = left.getValue();
         Number rightValue = right.getValue();
+        Boolean leftRaw = left.isRaw();
+        Boolean rightRaw = right.isRaw();
 
-        // return a float if either is a float, else return integer
-        if (leftValue instanceof Float || rightValue instanceof Float) {
-            return new Constant(leftValue.doubleValue() * rightValue.doubleValue());
+        if (leftRaw != rightRaw) {
+            throw new RuntimeException("Cannot multiply raw and non-raw constants");
         }
-        return new Constant(leftValue.intValue() * rightValue.intValue());
+
+        boolean isFloatingPoint = (leftValue instanceof Float || leftValue instanceof Double
+                || rightValue instanceof Float || rightValue instanceof Double);
+
+        if (isFloatingPoint) {
+            return new Constant(leftValue.doubleValue() * rightValue.doubleValue(), leftRaw);
+        } else {
+            return new Constant(leftValue.intValue() * rightValue.intValue(), leftRaw);
+        }
     }
 
     public static Constant divide (Constant left, Constant right) {
         Number leftValue = left.getValue();
         Number rightValue = right.getValue();
+        Boolean leftRaw = left.isRaw();
+        Boolean rightRaw = right.isRaw();
 
-        // division by zero check
-        if (rightValue.doubleValue() == 0) {
-            throw new ArithmeticException("Division by zero");
+        if (leftRaw != rightRaw) {
+            throw new RuntimeException("Cannot divide raw and non-raw constants");
         }
 
-        // then we can check if division will return a float or not with modulus
-        if (leftValue.doubleValue() % rightValue.doubleValue() == 0) {
-            // if it does, we return a float
-            return new Constant(leftValue.intValue() / rightValue.intValue());
+        boolean isFloatingPoint = (leftValue instanceof Float || leftValue instanceof Double
+                || rightValue instanceof Float || rightValue instanceof Double);
+
+        if (isFloatingPoint) {
+            if (rightValue.doubleValue() == 0.0) {
+                throw new ArithmeticException("Division by zero");
+            }
+            return new Constant(leftValue.doubleValue() / rightValue.doubleValue(), leftRaw);
+        } else {
+            if (rightValue.intValue() == 0) {
+                throw new ArithmeticException("Division by zero");
+            }
+            return new Constant(leftValue.intValue() / rightValue.intValue(), leftRaw);
         }
-        return new Constant(leftValue.doubleValue() / rightValue.doubleValue());
+    }
+
+    public Boolean isRaw() {
+        return isRaw;
     }
 
     // this is fine, not clean but it will work just fine

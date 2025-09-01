@@ -27,10 +27,10 @@ public class Time extends BuiltInFunctionSymbol {
             String unit = args.getFirst().toString().toLowerCase();
             LocalTime now = java.time.LocalTime.now();
             return switch (unit) {
-                case "h" -> new Constant(now.getHour()); // we have to use our wrappers for everything now, good fun!
-                case "m" -> new Constant(now.getMinute());
-                case "s" -> new Constant(now.getSecond());
-                case "ms" -> new Constant((int) (System.nanoTime() / 1000000)); // convert to ms
+                case "h" -> new Constant(now.getHour(), false); // we have to use our wrappers for everything now, good fun!
+                case "m" -> new Constant(now.getMinute(), false);
+                case "s" -> new Constant(now.getSecond(), false);
+                case "ms" -> new Constant((int) (System.nanoTime() / 1000000), false); // convert to ms
                 default -> throw new IllegalArgumentException("Invalid arguments for time function. Expected one of: " + String.join(", ", validArguments));
             };
         }

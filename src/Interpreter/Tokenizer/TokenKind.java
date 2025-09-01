@@ -8,12 +8,14 @@ public enum TokenKind {
     INTEGER,
     BOOLEAN,
     FLOAT,
+    VECTOR,
     SYMBOL,
     NUM,
     STRING,
     NULL,
     VOID, // this is a special type that means "no return value" or "no value at all"
     IDENTIFIER,
+    MATH, // for mathematical expressions
 
     // some data structure tokens
     MATRIX,
@@ -22,13 +24,14 @@ public enum TokenKind {
 
     FUNC,
 
-    // SYMBOL_TYPE,
+    MATH_TYPE,
     INTEGER_TYPE,
     FLOAT_TYPE,
     MATRIX_TYPE,
     SYMBOL_TYPE,
     BOOLEAN_TYPE,
     STRING_TYPE,
+    VECTOR_TYPE,
 
     DERIVE,
     WRT, // say "with respect to ..."
@@ -38,6 +41,7 @@ public enum TokenKind {
     OPEN_BRACE, // for blocks of code
     CLOSE_BRACE, // for blocks of code
     COMMA, // for multiple function arguments
+    RAW, // $ symbol for raw numeric types (raw types CANNOT be used with Expression)
 
     PLUS,
     MINUS,

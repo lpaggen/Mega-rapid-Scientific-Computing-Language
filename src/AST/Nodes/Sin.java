@@ -13,7 +13,7 @@ public class Sin extends Expression {
     public Expression evaluate(Environment env) {
         Expression argValue = arg.evaluate(env);
         if (argValue instanceof Constant c) {
-            return new Constant(Math.sin(c.getDoubleValue()));
+            return new Constant(Math.sin(c.getDoubleValue()), c.isRaw());
         }
         return new Sin(argValue);
     }

@@ -32,7 +32,8 @@ public class VariableDeclarationNode extends Statement {
             case FLOAT:
                 if (value instanceof Constant v && v.getValue() instanceof Integer) {
                     // convert integer to float if needed -- but throw warning somehow...
-                    value = new Constant(v.getDoubleValue());
+                    boolean isRaw = v.isRaw();
+                    value = new Constant(v.getDoubleValue(), isRaw);
                     warningHandler.addWarning(1, "Implicit conversion from integer to float at line " + variable.getLine(), variable.getLine());
                 } else if (!(value instanceof Constant v && v.getValue() instanceof Float)) {
                     throw new ErrorHandler("execution", variable.getLine(), "Type mismatch: expected float, got " + (value != null ? value.getClass().getSimpleName() : "null"), "Please ensure the initializer is a float.");

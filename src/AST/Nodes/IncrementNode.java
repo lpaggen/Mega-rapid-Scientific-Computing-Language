@@ -22,7 +22,7 @@ public class IncrementNode extends Expression {
     public Expression evaluate(Environment env) {
         Expression argValue = arg.evaluate(env);
         if (argValue instanceof Constant v && v.getValue() instanceof Integer) {
-            Constant newValue = new Constant((Integer) v.getValue() + (operator == TokenKind.INCREMENT ? 1 : -1));
+            Constant newValue = new Constant((Integer) v.getValue() + (operator == TokenKind.INCREMENT ? 1 : -1), v.isRaw());
             env.updateVariable(arg.toString(), new VariableSymbol(arg.toString(), TokenKind.INTEGER, newValue));
             // now we just want to return a new Constant with the new value
             return argValue;

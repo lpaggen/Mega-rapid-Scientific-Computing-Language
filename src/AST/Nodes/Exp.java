@@ -18,9 +18,9 @@ public class Exp extends Expression {
     // so this is how we make the distinction between numeric or not, numeric are now wrapped in Constant
     public Expression evaluate(Environment env) {
         Expression evaluatedArg = arg.evaluate(env);
-        if (evaluatedArg instanceof Constant) {
-            double argValue = evaluatedArg.evaluateNumeric(env);
-            return new Constant(Math.exp(argValue));
+        if (evaluatedArg instanceof Constant c) {
+            double argValue = c.evaluateNumeric(env);
+            return new Constant(Math.exp(argValue), c.isRaw());
         }
         return new Exp(evaluatedArg);
     }
