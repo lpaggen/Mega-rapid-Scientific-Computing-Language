@@ -1,11 +1,15 @@
 package AST.Nodes;
 
 import AST.Nodes.Conditional.BooleanNode;
+import AST.Nodes.DataStructures.ArrayNode;
+import Interpreter.Tokenizer.TokenKind;
 import Util.ErrorHandler;
 import Interpreter.Tokenizer.Token;
 import Interpreter.Runtime.Environment;
 import Interpreter.Parser.VariableSymbol;
 import Util.WarningHandler;
+
+import java.util.Vector;
 
 public class VariableDeclarationNode extends Statement {
     private final Token type;
@@ -58,9 +62,35 @@ public class VariableDeclarationNode extends Statement {
                     //throw new RuntimeException("Type mismatch: expected boolean, got " + (value != null ? value.getClass().getSimpleName() : "null") + " at line " + variable.getLine());
                 }
                 break;
+            case VECTOR:
+                ArrayNode v = (ArrayNode) value;
+                if (v.isEmpty()) {
+                    warningHandler.addWarning(2, "Initialized vector is empty at line " + variable.getLine(), variable.getLine());
+                }
+                if (v == null) {
+                    throw new ErrorHandler("execution", variable.getLine(), "Type mismatch: expected vector, got " + (value != null ? value.getClass().getSimpleName() : "null"), "Please ensure the initializer is a vector.");
+                    //throw new RuntimeException("Type mismatch: expected vector, got " + (value != null ? value.getClass().getSimpleName() : "null") + " at line " + variable.getLine());
+                }
+                break;
         }
         env.declareSymbol(variable.getLexeme(), new VariableSymbol(variable.getLexeme(), type.getKind(), value));
     }
+
+//    // we can assume this would only be called for arrays and maps etc
+//    private boolean isStructureContentValid(Environment env, TokenKind type) {
+//        if (initializer instanceof ArrayNode arrayNode) {
+//            Expression[] elements = arrayNode.getElements();
+//            for (Expression element : elements) {
+//                TokenKind elementType = element.getType(env);
+//                System.out.println("Element type: " + elementType + ", Expected type: " + type);
+//                if (elementType != type) {
+//                    return false; // Found an invalid element
+//                }
+//            }
+//            return true; // All elements are valid
+//        }
+//        return false; // Not a structure we can validate
+//    }
 
     private BooleanNode convertTruthy(Object value) {
         switch (value) {

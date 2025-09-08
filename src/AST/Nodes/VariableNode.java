@@ -3,10 +3,10 @@ package AST.Nodes;
 import Interpreter.Runtime.Environment;
 import Interpreter.Parser.Symbol;
 import Interpreter.Parser.VariableSymbol;
+import Interpreter.Tokenizer.TokenKind;
 
 public class VariableNode extends Expression {
     private final String name;
-
     public VariableNode(String name) {
         this.name = name;
     }
@@ -20,6 +20,11 @@ public class VariableNode extends Expression {
         } else {
             throw new RuntimeException("Variable " + name + " not found or not a variable");
         }
+    }
+
+    @Override
+    public TokenKind getType(Environment env) {
+        return env.getType(name);
     }
 
     @Override

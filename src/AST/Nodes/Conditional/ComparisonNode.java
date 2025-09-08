@@ -7,7 +7,6 @@ import Interpreter.Tokenizer.TokenKind;
 
 // we don't need a separate node for everything, this handles it all easily
 public class ComparisonNode extends LogicalBinaryNode {
-
     private final TokenKind operator;
 
     public ComparisonNode(Expression lhs, TokenKind operator, Expression rhs) {
@@ -36,6 +35,11 @@ public class ComparisonNode extends LogicalBinaryNode {
             };
         }
         return new ComparisonNode(lhs, operator, rhs);
+    }
+
+    @Override
+    public TokenKind getType(Environment env) {
+        return TokenKind.BOOLEAN;
     }
 
     @Override

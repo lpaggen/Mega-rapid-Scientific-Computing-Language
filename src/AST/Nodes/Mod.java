@@ -1,5 +1,6 @@
 package AST.Nodes;
 
+import AST.Nodes.BinaryOperations.Scalar.ArithmeticBinaryNode;
 import Interpreter.Runtime.Environment;
 
 public class Mod extends ArithmeticBinaryNode {

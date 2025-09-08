@@ -1,5 +1,6 @@
 package AST.Nodes;
 
+import AST.Nodes.BinaryOperations.Scalar.Mul;
 import AST.Nodes.Conditional.BooleanNode;
 import Interpreter.Tokenizer.Token;
 import Interpreter.Tokenizer.TokenKind;

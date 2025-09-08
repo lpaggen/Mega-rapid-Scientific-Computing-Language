@@ -1,5 +1,6 @@
-package AST.Nodes;
+package AST.Nodes.BinaryOperations;
 
+import AST.Nodes.Expression;
 import Interpreter.Runtime.Environment;
 
 public abstract class BinaryNode extends Expression {

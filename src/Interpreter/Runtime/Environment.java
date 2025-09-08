@@ -1,6 +1,7 @@
 package Interpreter.Runtime;
 
 import Interpreter.Parser.Symbol;
+import Interpreter.Tokenizer.TokenKind;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -75,6 +76,11 @@ public class Environment {
             allSymbols.putAll(scope);
         }
         return allSymbols;
+    }
+
+    public TokenKind getType(String name) {
+        Symbol symbol = lookup(name);
+        return symbol.getType();
     }
 
     public void loadModule(Map<String, Symbol> moduleSymbols) {

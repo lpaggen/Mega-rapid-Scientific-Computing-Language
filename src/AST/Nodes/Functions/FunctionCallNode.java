@@ -3,6 +3,7 @@ package AST.Nodes.Functions;
 import AST.Nodes.Expression;
 import Interpreter.Runtime.Environment;
 import Interpreter.Parser.FunctionSymbol;
+import Interpreter.Tokenizer.TokenKind;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +33,11 @@ public class FunctionCallNode extends Expression {
             evaluatedArgs.add(arg.evaluate(env)); // <-- This is crucial!
         }
         return (Expression) function.call(env, evaluatedArgs);
+    }
+
+    @Override
+    public TokenKind getType(Environment env) {
+        return env.lookup(functionName).getType();
     }
 
     @Override

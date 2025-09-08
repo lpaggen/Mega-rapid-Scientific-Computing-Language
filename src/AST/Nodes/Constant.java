@@ -2,6 +2,7 @@ package AST.Nodes;
 
 import AST.Nodes.Conditional.BooleanNode;
 import Interpreter.Runtime.Environment;
+import Interpreter.Tokenizer.TokenKind;
 
 public class Constant extends Expression {
     private final Number value; // means we can have both int and float
@@ -15,6 +16,20 @@ public class Constant extends Expression {
     @Override
     public Expression evaluate(Environment env) {
         return this;
+    }
+
+    @Override
+    public TokenKind getType(Environment env) {
+        String name = value.getClass().getSimpleName();
+        switch (name) {
+            case "Integer" -> {
+                return TokenKind.INTEGER;
+            }
+            case "Double", "Float" -> {
+                return TokenKind.FLOAT;
+            }
+            default -> throw new RuntimeException("Unknown constant type: " + name);
+        }
     }
 
     @Override

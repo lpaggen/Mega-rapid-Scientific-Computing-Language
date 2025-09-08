@@ -1,6 +1,7 @@
 package AST.Nodes;
 
 import Interpreter.Runtime.Environment;
+import Interpreter.Tokenizer.TokenKind;
 
 public class Sin extends Expression {
     private final Expression arg;

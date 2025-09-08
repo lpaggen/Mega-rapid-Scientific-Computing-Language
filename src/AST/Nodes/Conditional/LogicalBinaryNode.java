@@ -1,7 +1,6 @@
 package AST.Nodes.Conditional;
 
-import AST.Nodes.BinaryNode;
-import AST.Nodes.Constant;
+import AST.Nodes.BinaryOperations.BinaryNode;
 import AST.Nodes.Expression;
 import Interpreter.Runtime.Environment;
 

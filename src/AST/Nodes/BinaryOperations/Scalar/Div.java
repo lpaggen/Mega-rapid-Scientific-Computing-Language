@@ -1,6 +1,9 @@
-package AST.Nodes;
+package AST.Nodes.BinaryOperations.Scalar;
 
+import AST.Nodes.Constant;
+import AST.Nodes.Expression;
 import Interpreter.Runtime.Environment;
+import Interpreter.Tokenizer.TokenKind;
 
 public class Div extends ArithmeticBinaryNode {
 
@@ -19,6 +22,11 @@ public class Div extends ArithmeticBinaryNode {
         }
         // If we reach here, it's an unsupported type combination
         return new Div(numVal, denomVal);
+    }
+
+    @Override
+    public TokenKind getType(Environment env) {
+        return super.getType(env);
     }
 
     public double evaluateNumeric(Environment env) {

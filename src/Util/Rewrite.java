@@ -1,6 +1,10 @@
 package Util;
 
 import AST.Nodes.*;
+import AST.Nodes.BinaryOperations.Scalar.Add;
+import AST.Nodes.BinaryOperations.Scalar.Div;
+import AST.Nodes.BinaryOperations.Scalar.Mul;
+import AST.Nodes.BinaryOperations.Scalar.Sub;
 
 public class Rewrite {
     private static Expression rewrite(Expression expr) {

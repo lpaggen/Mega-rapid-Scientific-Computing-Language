@@ -1,5 +1,7 @@
-package AST.Nodes;
+package AST.Nodes.BinaryOperations.Scalar;
 
+import AST.Nodes.Constant;
+import AST.Nodes.Expression;
 import Interpreter.Runtime.Environment;
 
 public class Sub extends ArithmeticBinaryNode {

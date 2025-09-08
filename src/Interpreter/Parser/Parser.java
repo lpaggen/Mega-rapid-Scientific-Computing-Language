@@ -1,6 +1,12 @@
 package Interpreter.Parser;
 
 import AST.Nodes.*;
+import AST.Nodes.BinaryOperations.Linalg.LinalgAdd;
+import AST.Nodes.BinaryOperations.Scalar.Add;
+import AST.Nodes.BinaryOperations.BinaryNode;
+import AST.Nodes.BinaryOperations.Scalar.Div;
+import AST.Nodes.BinaryOperations.Scalar.Mul;
+import AST.Nodes.BinaryOperations.Scalar.Sub;
 import AST.Nodes.DataStructures.ArrayNode;
 import AST.Nodes.Functions.FunctionCallNode;
 import AST.Nodes.Functions.FunctionDeclarationNode;
@@ -20,12 +26,14 @@ import java.util.*;
 // that is the job of the interpreter or a separate semantic analyzer
 // the parser will throw runtime exceptions if it encounters unexpected tokens
 // the parser ONLY cares about SYNTAX AND GRAMMAR
+// -> so "int x = 5.7;" is perfectly fine for the parser, but not for the interpreter
 public class Parser {
     private final List<Token> tokens;
     private int tokenPos = 0;
     public Environment environment = new Environment(); // remember this initializes a global scope BY DEFAULT
-
-    // StandardLibrary.initializeBuiltIns(environment); // initialize built-in functions in the environment
+    private TokenKind currentFunctionReturnType = null; // to keep track of the current function's return type during parsing
+    private TokenKind currentLoopType = null; // to keep track of the current loop type (for break/continue statements)
+    private TokenKind currentDataType = null; // to keep track of the current data type being processed
 
     public Parser(List<Token> tokens) {
         this.tokens = tokens;
@@ -112,6 +120,8 @@ public class Parser {
             Token operator = previous();
             Expression rhs = parseFactor();
             expression = inferBinaryNodeFromOperator(operator.getKind(), expression, rhs);
+            // override just for testing
+            expression = new LinalgAdd(expression, rhs);
         }
         return expression;
     }
@@ -192,18 +202,17 @@ public class Parser {
         );
     }
 
-    private Expression parseArray() {
+    private Expression parseArray() {  // there will be parallel arrays too by default in a later build
         List<Expression> elements = new ArrayList<>();
         if (!check(TokenKind.CLOSE_BRACKET)) {  // if it's empty array
             do {
                 Expression element = parseExpression();
-                System.out.println("Parsing array element: " + (element != null ? element.toString() : "null"));
-                elements.add(element);
+                elements.add(element);  // this is the easiest thing to do but also we could handle elsewhere
             } while (match(TokenKind.COMMA)); // comma separate elements of the 1D array
         }
         consume(TokenKind.CLOSE_BRACKET); // consume the closing ]
         Expression[] arrayElementsArray = elements.toArray(new Expression[0]);
-        return new ArrayNode(arrayElementsArray);
+        return new ArrayNode(arrayElementsArray, currentDataType);
     }
 
     // this method handles variable declarations, i will add more error checks at some stage
@@ -233,7 +242,41 @@ public class Parser {
             //throw new RuntimeException(peek() + " Expected type keyword.");
         }
         System.out.println("Parsing variable declaration: " + peek().getLexeme());
-        Token typeToken = advance();
+        System.out.println("Current token at parseDeclaration: " + peek());
+        Token typeToken = advance(); // consume the type token
+        System.out.println("Type token: " + typeToken.getLexeme());
+        if (typeToken.getKind() == TokenKind.VECTOR_TYPE) { // this will be something else for all types requiring this step
+            if (!match(TokenKind.LESS)) {
+                throw new ErrorHandler(
+                        "parsing",
+                        peek().getLine(),
+                        "Unexpected token: " + peek().getLexeme(),
+                        "Expected '<' after 'vector' type declaration."
+                );
+                //throw new RuntimeException(peek() + " Expected '<' after 'vector' type declaration.");
+            }
+            if (!typeKeywords.contains(peek().getKind())) {
+                throw new ErrorHandler(
+                        "parsing",
+                        peek().getLine(),
+                        "Unexpected token: " + peek().getLexeme(),
+                        "Expected a type keyword (int, float, bool, matrix, symbol) inside vector declaration."
+                );
+                //throw new RuntimeException(peek() + " Expected type keyword inside vector declaration.");
+            }
+            Token innerTypeToken = advance(); // consume the inner type token
+            System.out.println("Inner type token for vector: " + innerTypeToken.getLexeme());
+            if (!match(TokenKind.GREATER)) {
+                throw new ErrorHandler(
+                        "parsing",
+                        peek().getLine(),
+                        "Unexpected token: " + peek().getLexeme(),
+                        "Expected '>' after inner type in vector declaration."
+                );
+                //throw new RuntimeException(peek() + " Expected '>' after inner type in vector declaration.");
+            }
+            currentDataType = mapDeclarationToDatatype.get(innerTypeToken.getKind());
+        }
         if (!match(TokenKind.IDENTIFIER)) {
             throw new ErrorHandler(
                     "parsing",
@@ -250,8 +293,7 @@ public class Parser {
         }
         consume(TokenKind.SEMICOLON);
         TokenKind dataType = mapDeclarationToDatatype.get(typeToken.getKind());
-        System.out.println("Declaring variable: " + name.getLexeme() + " of type: " + dataType);
-        System.out.println("Initializer: " + (initializer != null ? initializer.toString() : "null"));
+        currentDataType = dataType; // set the current data type being processed
         return new VariableDeclarationNode(new Token(dataType, typeToken.getLexeme(), null, typeToken.getLine()), name, initializer);
     }
 
@@ -475,10 +517,12 @@ public class Parser {
             TokenKind.VECTOR_TYPE
     );
 
+    // probably we need some more operators here later on
+    // also for the linearalgebra either we handle it through Add etc, or we make new nodes
+
     private BinaryNode inferBinaryNodeFromOperator(TokenKind operator, Expression lhs, Expression rhs) {
         switch (operator) {
             case PLUS -> {
-                System.out.println("Creating Add node with lhs: " + lhs + " and rhs: " + rhs);
                 return new Add(lhs, rhs);
             }
             case MINUS -> {

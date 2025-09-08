@@ -1,22 +1,21 @@
 package AST.Nodes;
 
+import AST.Nodes.BinaryOperations.Scalar.ArithmeticBinaryNode;
+import AST.Nodes.BinaryOperations.Scalar.Div;
 import Interpreter.Runtime.Environment;
 import Interpreter.Tokenizer.TokenKind;
 
-public class Pow extends Expression {
+public class Pow extends ArithmeticBinaryNode {
 
-    private final Expression arg, exponent;
-
-    public Pow(Expression arg, Expression exponent) {
-        this.arg = arg;
-        this.exponent = exponent;
+    public Pow(Expression lhs, Expression rhs) {
+        super(lhs, rhs);
     }
 
     // this isn't everything we need, will adapt as we need it
     @Override
     public Expression evaluate(Environment env) {
-        Expression baseExpr = arg.evaluate(env);
-        Expression expExpr = exponent.evaluate(env);
+        Expression baseExpr = lhs.evaluate(env);
+        Expression expExpr = rhs.evaluate(env);
         boolean raw = (baseExpr instanceof Constant b && b.isRaw())
                 || (expExpr instanceof Constant e && e.isRaw());
         if (baseExpr instanceof Constant b && expExpr instanceof Constant e) {
@@ -55,22 +54,26 @@ public class Pow extends Expression {
         return new Pow(baseExpr, expExpr);
     }
 
+    public TokenKind getType(Environment env) {
+        return super.getType(env);
+    }
+
     public double evaluateNumeric(Environment env) {
-        double base = arg.evaluateNumeric(env);
-        double exp = exponent.evaluateNumeric(env);
+        double base = lhs.evaluateNumeric(env);
+        double exp = rhs.evaluateNumeric(env);
         return Math.pow(base, exp);
     }
 
     @Override
     public String toString() {
-        return arg.toString() + "^" + exponent.toString();
+        return lhs.toString() + "^" + rhs.toString();
     }
 
     public Expression getBase() {
-        return arg;
+        return lhs;
     }
 
     public Expression getExponent() {
-        return exponent;
+        return rhs;
     }
 }

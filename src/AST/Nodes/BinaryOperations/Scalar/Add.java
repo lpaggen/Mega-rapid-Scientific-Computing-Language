@@ -1,6 +1,9 @@
-package AST.Nodes;
+package AST.Nodes.BinaryOperations.Scalar;
 
+import AST.Nodes.Constant;
+import AST.Nodes.Expression;
 import Interpreter.Runtime.Environment;
+import Interpreter.Tokenizer.TokenKind;
 
 public class Add extends ArithmeticBinaryNode {
     public Add(Expression lhs, Expression rhs) {
@@ -25,6 +28,10 @@ public class Add extends ArithmeticBinaryNode {
     @Override
     public String toString() {
         return lhs.toString() + " + " + rhs.toString();
+    }
+
+    public TokenKind getType(Environment env) {
+        return super.getType(env);
     }
 
     public Expression getLeft() {
