@@ -2,20 +2,17 @@ package AST.Nodes;
 
 import AST.Nodes.Conditional.BooleanNode;
 import AST.Nodes.DataStructures.ArrayNode;
-import Interpreter.Tokenizer.TokenKind;
 import Util.ErrorHandler;
 import Interpreter.Tokenizer.Token;
 import Interpreter.Runtime.Environment;
 import Interpreter.Parser.VariableSymbol;
-import Util.WarningHandler;
-
-import java.util.Vector;
+import Util.WarningLogger;
 
 public class VariableDeclarationNode extends Statement {
     private final Token type;
     private final Token variable;
     private final Expression initializer;
-    private final WarningHandler warningHandler = new WarningHandler();
+    private final WarningLogger warningLogger = new WarningLogger();
 
     public VariableDeclarationNode(Token type, Token variable, Expression initializer) {
         this.type = type;
@@ -38,7 +35,7 @@ public class VariableDeclarationNode extends Statement {
                     // convert integer to float if needed -- but throw warning somehow...
                     boolean isRaw = v.isRaw();
                     value = new Constant(v.getDoubleValue(), isRaw);
-                    warningHandler.addWarning(1, "Implicit conversion from integer to float at line " + variable.getLine(), variable.getLine());
+                    warningLogger.addWarning(1, "Implicit conversion from integer to float at line " + variable.getLine(), variable.getLine());
                 } else if (!(value instanceof Constant v && v.getValue() instanceof Float)) {
                     throw new ErrorHandler("execution", variable.getLine(), "Type mismatch: expected float, got " + (value != null ? value.getClass().getSimpleName() : "null"), "Please ensure the initializer is a float.");
                     //throw new RuntimeException("Type mismatch: expected float, got " + (value != null ? value.getClass().getSimpleName() : "null") + " at line " + variable.getLine());
@@ -65,7 +62,7 @@ public class VariableDeclarationNode extends Statement {
             case VECTOR:
                 ArrayNode v = (ArrayNode) value;
                 if (v.isEmpty()) {
-                    warningHandler.addWarning(2, "Initialized vector is empty at line " + variable.getLine(), variable.getLine());
+                    warningLogger.addWarning(2, "Initialized vector is empty at line " + variable.getLine(), variable.getLine());
                 }
                 if (v == null) {
                     throw new ErrorHandler("execution", variable.getLine(), "Type mismatch: expected vector, got " + (value != null ? value.getClass().getSimpleName() : "null"), "Please ensure the initializer is a vector.");
@@ -120,6 +117,6 @@ public class VariableDeclarationNode extends Statement {
     // will work on this in a later build, it's not necessary yet
     // we just need to log them all in a separate file if the debugger is active
     public void printWarnings() {
-        warningHandler.printWarnings();
+        warningLogger.printWarnings();
     }
 }

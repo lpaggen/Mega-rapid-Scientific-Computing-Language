@@ -2,6 +2,9 @@ package Interpreter.Parser;
 
 import AST.Nodes.*;
 import AST.Nodes.BinaryOperations.Linalg.LinalgAdd;
+import AST.Nodes.BinaryOperations.Linalg.LinalgDiv;
+import AST.Nodes.BinaryOperations.Linalg.LinalgMul;
+import AST.Nodes.BinaryOperations.Linalg.LinalgSub;
 import AST.Nodes.BinaryOperations.Scalar.Add;
 import AST.Nodes.BinaryOperations.BinaryNode;
 import AST.Nodes.BinaryOperations.Scalar.Div;
@@ -16,7 +19,7 @@ import Util.ErrorHandler;
 import Interpreter.Tokenizer.TokenKind;
 import Interpreter.Tokenizer.Token;
 import Interpreter.Runtime.Environment;
-import Util.WarningHandler;
+import Util.WarningLogger;
 
 import java.util.*;
 
@@ -40,7 +43,7 @@ public class Parser {
     }
 
     public void interpretCode() {
-        WarningHandler warningHandler = new WarningHandler();
+        WarningLogger warningHandler = new WarningLogger();
         while (!isAtEnd()) {
             Statement statement = parseStatement();
             if (statement == null) {
@@ -120,8 +123,6 @@ public class Parser {
             Token operator = previous();
             Expression rhs = parseFactor();
             expression = inferBinaryNodeFromOperator(operator.getKind(), expression, rhs);
-            // override just for testing
-            expression = new LinalgAdd(expression, rhs);
         }
         return expression;
     }
@@ -132,6 +133,10 @@ public class Parser {
             System.out.println("current token at parseFactor: " + peek());
             Token operator = previous();
             Expression rhs = parseUnary();
+//            if (LinearAlgebraOperators.contains(expression.getType(environment)) || LinearAlgebraOperators.contains(rhs.getType(environment))) {
+//                expression = new LinalgMul(expression, rhs);
+//                continue;
+//            }
             expression = inferBinaryNodeFromOperator(operator.getKind(), expression, rhs);
         }
         return expression;
@@ -517,10 +522,33 @@ public class Parser {
             TokenKind.VECTOR_TYPE
     );
 
+    private static final Set<TokenKind> LinearAlgebraOperators = Set.of(
+            TokenKind.VECTOR,
+            TokenKind.MATRIX
+    );
+
     // probably we need some more operators here later on
     // also for the linearalgebra either we handle it through Add etc, or we make new nodes
 
     private BinaryNode inferBinaryNodeFromOperator(TokenKind operator, Expression lhs, Expression rhs) {
+        System.out.println("inferBinaryNodeFromOperator called with operator: " + operator);
+        if (LinearAlgebraOperators.contains(lhs.getType(environment)) || LinearAlgebraOperators.contains(rhs.getType(environment))) {
+            System.out.println("Creating Linalg binary node for operator: " + operator);
+            switch (operator) {
+                case PLUS -> {
+                    return new LinalgAdd(lhs, rhs);
+                }
+                case MUL -> {
+                    return new LinalgMul(lhs, rhs);
+                }
+                case DIV -> {
+                    return new LinalgDiv(lhs, rhs);
+                }
+                case MINUS -> {
+                    return new LinalgSub(lhs, rhs);
+                }
+            }
+        }
         switch (operator) {
             case PLUS -> {
                 return new Add(lhs, rhs);
@@ -546,7 +574,3 @@ public class Parser {
         );
     }
 }
-
-// BUGS detected that need fixing
-// can't declare variables with null values, this goes against my original ideas
-// when declaring a variable, wrong Error is returned in case of eg: int x == 5; ???? why ??

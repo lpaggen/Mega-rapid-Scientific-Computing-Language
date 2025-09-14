@@ -12,7 +12,7 @@ public class Main {
     public static void main(String[] args) throws IOException {
         // obviously we should get the input from a file, but for now we will just use a string
         // String input = "include stdlib;\nint x = 0;";  // input goes here
-
+		
         // trying to check if we can read from a .marcel file
         String code = Files.readString(Path.of("src/example.marcel"));
 

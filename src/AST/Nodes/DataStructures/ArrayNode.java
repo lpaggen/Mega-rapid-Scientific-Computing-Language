@@ -3,15 +3,26 @@ package AST.Nodes.DataStructures;
 import AST.Nodes.Constant;
 import AST.Nodes.Expression;
 import Interpreter.Runtime.Environment;
+import Interpreter.Tokenizer.Token;
 import Interpreter.Tokenizer.TokenKind;
+import Util.WarningLogger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 
 public class ArrayNode extends Expression {
     private final Expression[] elements;
     private TokenKind type; // The type of elements in the array
+    private static final Set<TokenKind> supportedTypes = Set.of(
+            TokenKind.INTEGER,
+            TokenKind.FLOAT,
+            TokenKind.BOOLEAN,
+            TokenKind.STRING
+    );
+
+    static private WarningLogger warningLogger = new WarningLogger();
 
     public ArrayNode(Expression[] elements, TokenKind type) {
         this.elements = elements;
@@ -135,25 +146,175 @@ public class ArrayNode extends Expression {
         return new ArrayNode(filteredElements.toArray(new Expression[0]), type);
     }
 
-    // this could get more complex, for now just a demo to see if it does work or not
-    // now to remember where this crap is called from
-    public static ArrayNode add(ArrayNode left, ArrayNode right) {
-        if (left.length() != right.length()) {
-            throw new RuntimeException("Array size mismatch: left array size " + left.length() + ", right array size " + right.length());
+////    // this could get more complex, for now just a demo to see if it does work or not
+////    // at some point, we probably want to support more complex expressions
+////    // also, we need support for scalar addition and what not
+////    public static ArrayNode add(ArrayNode left, ArrayNode right) {
+////        if (left.length() != right.length()) {
+////            throw new RuntimeException("Array size mismatch: left array size " + left.length() + ", right array size " + right.length());
+////        }
+//////        if (left.getType() != right.getType()) {
+//////            throw new RuntimeException("Array type mismatch: left array type " + left.getType() + ", right array type " + right.getType());
+//////        }
+////        if (left.getType() != TokenKind.INTEGER && left.getType() != TokenKind.FLOAT) {
+////            throw new RuntimeException("Array type must be INTEGER or FLOAT for addition, got " + left.getType());
+////        }
+////        Expression[] result = new Expression[left.length()];
+////        for (int i = 0; i < left.length(); i++) {
+////            Constant leftElement = (Constant) left.getElement(i);
+////            Constant rightElement = (Constant) right.getElement(i);
+////            result[i] = Constant.add(leftElement, rightElement);
+////        }
+////        return new ArrayNode(result, left.getType());
+////    }
+//
+//    public static ArrayNode add(ArrayNode left, Constant right) {
+//        Expression[] result = new Expression[left.length()];
+//        for (int i = 0; i < left.length(); i++) {
+//            Constant leftElement = (Constant) left.getElement(i);
+//            result[i] = Constant.add(leftElement, right);
+//        }
+//        return new ArrayNode(result, left.getType());
+//    }
+
+    public static ArrayNode add(Expression left, Expression right) {
+        Constant leftScalar = left instanceof Constant ? (Constant) left : null;
+        Constant rightScalar = right instanceof Constant ? (Constant) right : null;
+
+        ArrayNode leftArray = left instanceof ArrayNode ? (ArrayNode) left : null;
+        ArrayNode rightArray = right instanceof ArrayNode ? (ArrayNode) right : null;
+
+        int length = 1;
+        TokenKind type = null;
+        // now we check the combinations
+        if (leftArray != null) { // if the left array is NOT null, it means it's an array else it's a scalar
+            length = leftArray.length();
+            type = leftArray.getType();
+        } else if (rightArray != null) {
+            length = rightArray.length();
+            type = rightArray.getType();
+        } else {
+            // both are scalars, we can just add them -- atm hardcoded to INTEGER, will figure out a fix at some point
+            return new ArrayNode(new Expression[]{Constant.add(leftScalar, rightScalar)}, TokenKind.INTEGER);
         }
-        if (left.getType() != right.getType()) {
-            throw new RuntimeException("Array type mismatch: left array type " + left.getType() + ", right array type " + right.getType());
+
+        if (type != TokenKind.INTEGER && type != TokenKind.FLOAT) {
+            throw new RuntimeException("Operands must be INTEGER or FLOAT");
         }
-        if (left.getType() != TokenKind.INTEGER && left.getType() != TokenKind.FLOAT) {
-            throw new RuntimeException("Array type must be INTEGER or FLOAT for addition, got " + left.getType());
-        }
-        Expression[] result = new Expression[left.length()];
-        for (int i = 0; i < left.length(); i++) {
-            Constant leftElement = (Constant) left.getElement(i);
-            Constant rightElement = (Constant) right.getElement(i);
+
+        Expression[] result = new Expression[length];
+        for (int i = 0; i < length; i++) {
+            Constant leftElement = leftArray != null ? (Constant) leftArray.getElement(i) : leftScalar;
+            Constant rightElement = rightArray != null ? (Constant) rightArray.getElement(i) : rightScalar;
             result[i] = Constant.add(leftElement, rightElement);
         }
-        return new ArrayNode(result, left.getType());
+
+        return new ArrayNode(result, type);
+    }
+
+    public static ArrayNode mul(Expression left, Expression right) {
+        Constant leftScalar = left instanceof Constant ? (Constant) left : null;
+        Constant rightScalar = right instanceof Constant ? (Constant) right : null;
+
+        ArrayNode leftArray = left instanceof ArrayNode ? (ArrayNode) left : null;
+        ArrayNode rightArray = right instanceof ArrayNode ? (ArrayNode) right : null;
+
+        int length = 1;
+        TokenKind type = null;
+        // now we check the combinations
+        if (leftArray != null) { // if the left array is NOT null, it means it's an array else it's a scalar
+            length = leftArray.length();
+            type = leftArray.getType();
+        } else if (rightArray != null) {
+            length = rightArray.length();
+            type = rightArray.getType();
+        } else {
+            // both are scalars, we can just add them -- atm hardcoded to INTEGER, will figure out a fix at some point
+            return new ArrayNode(new Expression[]{Constant.multiply(leftScalar, rightScalar)}, TokenKind.INTEGER);
+        }
+
+        if (type != TokenKind.INTEGER && type != TokenKind.FLOAT) {
+            throw new RuntimeException("Operands must be INTEGER or FLOAT");
+        }
+
+        Expression[] result = new Expression[length];
+        for (int i = 0; i < length; i++) {
+            Constant leftElement = leftArray != null ? (Constant) leftArray.getElement(i) : leftScalar;
+            Constant rightElement = rightArray != null ? (Constant) rightArray.getElement(i) : rightScalar;
+            result[i] = Constant.multiply(leftElement, rightElement); // this could all be streamlined quite easily, maybe later
+        }
+
+        return new ArrayNode(result, type);
+    }
+
+    public static ArrayNode div(Expression left, Expression right) {
+        Constant leftScalar = left instanceof Constant ? (Constant) left : null;
+        Constant rightScalar = right instanceof Constant ? (Constant) right : null;
+
+        ArrayNode leftArray = left instanceof ArrayNode ? (ArrayNode) left : null;
+        ArrayNode rightArray = right instanceof ArrayNode ? (ArrayNode) right : null;
+
+        int length = 1;
+        TokenKind type = null;
+        // now we check the combinations
+        if (leftArray != null) { // if the left array is NOT null, it means it's an array else it's a scalar
+            length = leftArray.length();
+            type = leftArray.getType();
+        } else if (rightArray != null) {
+            length = rightArray.length();
+            type = rightArray.getType();
+        } else {
+            // both are scalars, we can just add them -- atm hardcoded to INTEGER, will figure out a fix at some point
+            return new ArrayNode(new Expression[]{Constant.divide(leftScalar, rightScalar)}, TokenKind.INTEGER);
+        }
+
+        if (type != TokenKind.INTEGER && type != TokenKind.FLOAT) {
+            throw new RuntimeException("Operands must be INTEGER or FLOAT");
+        }
+
+        Expression[] result = new Expression[length];
+        for (int i = 0; i < length; i++) {
+            Constant leftElement = leftArray != null ? (Constant) leftArray.getElement(i) : leftScalar;
+            Constant rightElement = rightArray != null ? (Constant) rightArray.getElement(i) : rightScalar;
+            result[i] = Constant.divide(leftElement, rightElement);
+        }
+
+        return new ArrayNode(result, type);
+    }
+
+    public static ArrayNode sub(Expression left, Expression right) {
+        Constant leftScalar = left instanceof Constant ? (Constant) left : null;
+        Constant rightScalar = right instanceof Constant ? (Constant) right : null;
+
+        ArrayNode leftArray = left instanceof ArrayNode ? (ArrayNode) left : null;
+        ArrayNode rightArray = right instanceof ArrayNode ? (ArrayNode) right : null;
+
+        int length = 1;
+        TokenKind type = null;
+        // now we check the combinations
+        if (leftArray != null) { // if the left array is NOT null, it means it's an array else it's a scalar
+            length = leftArray.length();
+            type = leftArray.getType();
+        } else if (rightArray != null) {
+            length = rightArray.length();
+            type = rightArray.getType();
+        } else {
+            // both are scalars, we can just add them -- atm hardcoded to INTEGER, will figure out a fix at some point
+            return new ArrayNode(new Expression[]{Constant.subtract(leftScalar, rightScalar)}, TokenKind.INTEGER);
+        }
+
+        if (type != TokenKind.INTEGER && type != TokenKind.FLOAT) {
+            throw new RuntimeException("Operands must be INTEGER or FLOAT");
+        }
+
+        Expression[] result = new Expression[length];
+        for (int i = 0; i < length; i++) {
+            Constant leftElement = leftArray != null ? (Constant) leftArray.getElement(i) : leftScalar;
+            Constant rightElement = rightArray != null ? (Constant) rightArray.getElement(i) : rightScalar;
+            result[i] = Constant.subtract(leftElement, rightElement);
+        }
+
+        return new ArrayNode(result, type);
     }
 
     @Override
