@@ -3,6 +3,7 @@ include stdlib;
 vec<int> x = [5, 2 * 2, 8 * 3];
 vec<float> y = [1.0, 1.0, 0.0];
 
-vec<float> z = x + 7;
+str s = "Hello, World!";
+vec<float> z = x + s;
 
 print(z);
