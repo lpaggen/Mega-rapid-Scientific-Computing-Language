@@ -9,6 +9,7 @@ public abstract class Expression extends ASTNode {
     public TokenKind getType(Environment env) {
         throw new RuntimeException("getType not implemented for " + this.getClass().getSimpleName());
     }
+
     public double evaluateNumeric(Environment env) {
         // default implementation, can be overridden by subclasses
         Expression evaluated = evaluate(env);

@@ -1,9 +1,12 @@
 package AST.Nodes.Functions.BuiltIns;
 
+import AST.Nodes.Functions.BuiltIns.Linalg.LinalgLibrary;
+import AST.Nodes.Functions.BuiltIns.StandardLib.StandardLibrary;
 import AST.Nodes.Statement;
 import Interpreter.Runtime.Environment;
 import Interpreter.Parser.Symbol;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class ImportNode extends Statement {
@@ -26,20 +29,25 @@ public class ImportNode extends Statement {
     @Override
     public void execute(Environment env) {
         try {
-            BuiltInLibraryNames libName = BuiltInLibraryNames.valueOf(moduleName.toUpperCase());
+            Library libName = Library.valueOf(moduleName.toUpperCase());
         } catch (IllegalArgumentException e) {
             throw new RuntimeException("Module '" + moduleName + "' not found in standard library.", e);
         }
-        // In a real interpreter, this would load the module and make its symbols available in the environment.
-        // For now, we just print a message indicating the import.
         if (alias != null && !alias.isEmpty()) {
             System.out.println("Importing module '" + moduleName + "' as alias '" + alias + "'.");
         } else {
             System.out.println("Importing module '" + moduleName + "'.");
         }
 
-        // first we'll get the module map from the built-ins
-        Map<String, Symbol> moduleMap = StandardLibrary.builtInSymbols;
+        Map<String, Symbol> moduleMap = getModuleMap();
         env.loadModule(moduleMap);
+    }
+
+    private HashMap<String, Symbol> getModuleMap() {
+        return switch (moduleName.toLowerCase()) {
+            case "stdlib" -> StandardLibrary.builtInSymbols;
+            case "linalg" -> LinalgLibrary.LinalgSymbols;
+            default -> throw new IllegalArgumentException("Module '" + moduleName + "' not found in standard library.");
+        };
     }
 }

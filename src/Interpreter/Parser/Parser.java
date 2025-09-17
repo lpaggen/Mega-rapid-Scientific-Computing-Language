@@ -87,7 +87,6 @@ public class Parser {
             Expression expr = parseExpression();
             return new ExpressionStatementNode(expr);
         }
-        // anything like saying i++ is being caught up here...
         return null;
     }
 

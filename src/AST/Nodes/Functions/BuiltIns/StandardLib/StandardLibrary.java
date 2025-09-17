@@ -1,4 +1,4 @@
-package AST.Nodes.Functions.BuiltIns;
+package AST.Nodes.Functions.BuiltIns.StandardLib;
 
 import AST.Nodes.Functions.BuiltIns.StandardLib.*;
 import Interpreter.Parser.Symbol;

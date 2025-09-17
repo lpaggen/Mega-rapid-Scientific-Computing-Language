@@ -1,6 +1,7 @@
 package AST.Nodes;
 
 import Interpreter.Runtime.Environment;
+import Interpreter.Tokenizer.TokenKind;
 
 public class StringNode extends Expression {
     private final String value;
@@ -21,5 +22,10 @@ public class StringNode extends Expression {
 
     public String getValue() {
         return value;
+    }
+
+    @Override
+    public TokenKind getType(Environment env) {
+        return TokenKind.STRING;
     }
 }

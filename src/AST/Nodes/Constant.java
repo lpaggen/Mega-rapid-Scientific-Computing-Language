@@ -32,6 +32,15 @@ public class Constant extends Expression {
         }
     }
 
+    // am not a fan of doing this, but it does work for now
+    // of course, using Number breaks this logic, doubleValue is not great, but it does work
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Constant other)) return false;
+        return value.doubleValue() == other.getDoubleValue();
+    }
+
     @Override
     public double evaluateNumeric(Environment env) {
         return value.doubleValue();

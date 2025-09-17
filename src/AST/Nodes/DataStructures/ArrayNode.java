@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 
+// this one is going to change to ArrayList later on
 public class ArrayNode extends Expression {
     private final Expression[] elements;
     private TokenKind type; // The type of elements in the array
@@ -36,6 +37,7 @@ public class ArrayNode extends Expression {
     public TokenKind getType() {
         return type;
     }
+
     public Expression getElement(int index) {
         if (!isValidIndex(index)) {
             throw new IndexOutOfBoundsException("Index " + index + " is out of bounds for array of size " + elements.length);
@@ -64,7 +66,9 @@ public class ArrayNode extends Expression {
             if (expectedType == null) {
                 expectedType = evaluated.getType(env);
             } else if (evaluated.getType(env) != expectedType) {
-                throw new RuntimeException("Array type mismatch: expected " + expectedType + ", got " + evaluated.getType(env) + " in element " + evaluated + " at position " + position);
+                throw new RuntimeException("Array type mismatch: expected "
+                        + expectedType + ", got " + evaluated.getType(env)
+                        + " in element " + evaluated + " at position " + position);
             }
             evaluatedElements.add(evaluated);
             position++;
@@ -108,15 +112,6 @@ public class ArrayNode extends Expression {
         return true;
     }
 
-    public boolean anyMatch(Expression value) {
-        for (Expression element : elements) {
-            if (element.equals(value)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public boolean noneMatch(Expression value) {
         for (Expression element : elements) {
             if (element.equals(value)) {
@@ -146,37 +141,7 @@ public class ArrayNode extends Expression {
         return new ArrayNode(filteredElements.toArray(new Expression[0]), type);
     }
 
-////    // this could get more complex, for now just a demo to see if it does work or not
-////    // at some point, we probably want to support more complex expressions
-////    // also, we need support for scalar addition and what not
-////    public static ArrayNode add(ArrayNode left, ArrayNode right) {
-////        if (left.length() != right.length()) {
-////            throw new RuntimeException("Array size mismatch: left array size " + left.length() + ", right array size " + right.length());
-////        }
-//////        if (left.getType() != right.getType()) {
-//////            throw new RuntimeException("Array type mismatch: left array type " + left.getType() + ", right array type " + right.getType());
-//////        }
-////        if (left.getType() != TokenKind.INTEGER && left.getType() != TokenKind.FLOAT) {
-////            throw new RuntimeException("Array type must be INTEGER or FLOAT for addition, got " + left.getType());
-////        }
-////        Expression[] result = new Expression[left.length()];
-////        for (int i = 0; i < left.length(); i++) {
-////            Constant leftElement = (Constant) left.getElement(i);
-////            Constant rightElement = (Constant) right.getElement(i);
-////            result[i] = Constant.add(leftElement, rightElement);
-////        }
-////        return new ArrayNode(result, left.getType());
-////    }
-//
-//    public static ArrayNode add(ArrayNode left, Constant right) {
-//        Expression[] result = new Expression[left.length()];
-//        for (int i = 0; i < left.length(); i++) {
-//            Constant leftElement = (Constant) left.getElement(i);
-//            result[i] = Constant.add(leftElement, right);
-//        }
-//        return new ArrayNode(result, left.getType());
-//    }
-
+    // a lot of this is boilerplate, will clean it up eventually in later build
     public static ArrayNode add(Expression left, Expression right) {
         Constant leftScalar = left instanceof Constant ? (Constant) left : null;
         Constant rightScalar = right instanceof Constant ? (Constant) right : null;
@@ -184,8 +149,8 @@ public class ArrayNode extends Expression {
         ArrayNode leftArray = left instanceof ArrayNode ? (ArrayNode) left : null;
         ArrayNode rightArray = right instanceof ArrayNode ? (ArrayNode) right : null;
 
-        int length = 1;
-        TokenKind type = null;
+        int length;
+        TokenKind type;
         // now we check the combinations
         if (leftArray != null) { // if the left array is NOT null, it means it's an array else it's a scalar
             length = leftArray.length();
