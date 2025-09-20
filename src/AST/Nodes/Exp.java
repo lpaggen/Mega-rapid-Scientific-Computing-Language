@@ -1,5 +1,7 @@
 package AST.Nodes;
 
+import AST.Nodes.DataTypes.Constant;
+import AST.Nodes.DataTypes.FloatConstant;
 import Interpreter.Runtime.Environment;
 
 public class Exp extends Expression {
@@ -20,7 +22,7 @@ public class Exp extends Expression {
         Expression evaluatedArg = arg.evaluate(env);
         if (evaluatedArg instanceof Constant c) {
             double argValue = c.evaluateNumeric(env);
-            return new Constant(Math.exp(argValue), c.isRaw());
+            return new FloatConstant(Math.exp(argValue), c.isRaw());
         }
         return new Exp(evaluatedArg);
     }

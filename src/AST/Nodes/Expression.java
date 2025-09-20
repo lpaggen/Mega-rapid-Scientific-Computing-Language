@@ -1,5 +1,6 @@
 package AST.Nodes;
 
+import AST.Nodes.DataTypes.Constant;
 import Interpreter.Runtime.Environment;
 import Interpreter.Tokenizer.TokenKind;
 

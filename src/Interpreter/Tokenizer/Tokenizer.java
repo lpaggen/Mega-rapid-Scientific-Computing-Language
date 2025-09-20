@@ -299,8 +299,8 @@ public class Tokenizer {
 //        int startPos = pos;
 //        int openBrackets = 0;
 //        int closeBrackets = 0;
-//        List<List<Token>> rows = new ArrayList<>();
-//        List<Token> currentRow = new ArrayList<>();
+//        Array<Array<Token>> rows = new ArrayList<>();
+//        Array<Token> currentRow = new ArrayList<>();
 //
 //        // First pass: Extract matrix elements and check bracket balance
 //        while (pos < input.length()) {
@@ -348,7 +348,7 @@ public class Tokenizer {
 //        // Determine the number of columns and check for consistency
 //        int numRows = rows.size();
 //        int numCols = rows.get(0).size();
-//        for (List<Token> row : rows) {
+//        for (Array<Token> row : rows) {
 //            if (row.size() != numCols) {
 //                throw new RuntimeException("Syntax error: Inconsistent number of columns in matrix at line " + line);
 //            }
@@ -357,8 +357,8 @@ public class Tokenizer {
 //        // Construct the matrix lexeme and literal
 //        StringBuilder matrixLexeme = new StringBuilder();
 //        matrixLexeme.append(numRows).append(" ").append(numCols);
-//        List<Token> matrixLiteralTokens = new ArrayList<>();
-//        for (List<Token> row : rows) {
+//        Array<Token> matrixLiteralTokens = new ArrayList<>();
+//        for (Array<Token> row : rows) {
 //            for (Token token : row) {
 //                matrixLexeme.append(" ").append(token.getLexeme());
 //                matrixLiteralTokens.add(token);

@@ -1,5 +1,7 @@
 package AST.Nodes;
 
+import AST.Nodes.DataTypes.Constant;
+import AST.Nodes.DataTypes.FloatConstant;
 import Interpreter.Runtime.Environment;
 
 public class Csc extends Expression {
@@ -14,7 +16,7 @@ public class Csc extends Expression {
     public Expression evaluate(Environment env) {
         Expression argValue = arg.evaluate(env);
         if (argValue instanceof Constant c) {
-            return new Constant(1 / Math.sin(c.getDoubleValue()), c.isRaw());
+            return new FloatConstant(1 / Math.sin(c.getDoubleValue()), c.isRaw());
         }
         return new Csc(argValue);
     }

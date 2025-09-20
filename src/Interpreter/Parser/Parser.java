@@ -10,7 +10,10 @@ import AST.Nodes.BinaryOperations.BinaryNode;
 import AST.Nodes.BinaryOperations.Scalar.Div;
 import AST.Nodes.BinaryOperations.Scalar.Mul;
 import AST.Nodes.BinaryOperations.Scalar.Sub;
-import AST.Nodes.DataStructures.ArrayNode;
+import AST.Nodes.DataStructures.Array;
+import AST.Nodes.DataTypes.Constant;
+import AST.Nodes.DataTypes.FloatConstant;
+import AST.Nodes.DataTypes.IntegerConstant;
 import AST.Nodes.Functions.FunctionCallNode;
 import AST.Nodes.Functions.FunctionDeclarationNode;
 import AST.Nodes.Functions.BuiltIns.ImportNode;
@@ -31,14 +34,14 @@ import java.util.*;
 // the parser ONLY cares about SYNTAX AND GRAMMAR
 // -> so "int x = 5.7;" is perfectly fine for the parser, but not for the interpreter
 public class Parser {
-    private final List<Token> tokens;
+    private final java.util.List<Token> tokens;
     private int tokenPos = 0;
     public Environment environment = new Environment(); // remember this initializes a global scope BY DEFAULT
     private TokenKind currentFunctionReturnType = null; // to keep track of the current function's return type during parsing
     private TokenKind currentLoopType = null; // to keep track of the current loop type (for break/continue statements)
     private TokenKind currentDataType = null; // to keep track of the current data type being processed
 
-    public Parser(List<Token> tokens) {
+    public Parser(java.util.List<Token> tokens) {
         this.tokens = tokens;
     }
 
@@ -166,12 +169,12 @@ public class Parser {
         if (match(TokenKind.INTEGER)) {
             System.out.println("Parsing integer literal: " + previous().getLiteral());
             boolean isRawType = match(TokenKind.RAW); // check if the next token is a RAW type indicator
-            return new Constant(Integer.parseInt(previous().getLexeme()), isRawType); // this will return a Constant node with the numeric value
+            return new IntegerConstant(Integer.parseInt(previous().getLexeme()), isRawType); // this will return a Constant node with the numeric value
         }
         if (match(TokenKind.FLOAT)) {
             System.out.println("Parsing float literal: " + Float.parseFloat(previous().getLexeme()));
             boolean isRawType = match(TokenKind.RAW); // check if the next token is a RAW type indicator
-            return new Constant(Float.parseFloat(previous().getLexeme()), isRawType); // this will return a Constant node with the numeric value
+            return new FloatConstant(Float.parseFloat(previous().getLexeme()), isRawType); // this will return a Constant node with the numeric value
         }
         if (match(TokenKind.OPEN_PAREN)) {
             Expression expr = parseExpression();
@@ -186,7 +189,7 @@ public class Parser {
         if (match(TokenKind.IDENTIFIER)) {
             Token name = previous();
             if (match(TokenKind.OPEN_PAREN)) {  // function call detected
-                List<Expression> args = parseFunctionArguments();
+                java.util.List<Expression> args = parseFunctionArguments();
                 consume(TokenKind.CLOSE_PAREN);
                 return new FunctionCallNode(name.getLexeme(), args);
             }
@@ -207,7 +210,7 @@ public class Parser {
     }
 
     private Expression parseArray() {  // there will be parallel arrays too by default in a later build
-        List<Expression> elements = new ArrayList<>();
+        ArrayList<Expression> elements = new ArrayList<>();
         if (!check(TokenKind.CLOSE_BRACKET)) {  // if it's empty array
             do {
                 Expression element = parseExpression();
@@ -215,8 +218,8 @@ public class Parser {
             } while (match(TokenKind.COMMA)); // comma separate elements of the 1D array
         }
         consume(TokenKind.CLOSE_BRACKET); // consume the closing ]
-        Expression[] arrayElementsArray = elements.toArray(new Expression[0]);
-        return new ArrayNode(arrayElementsArray, currentDataType);
+//        Expression[] arrayElementsArray = elements.toArray(new Expression[0]);
+        return new Array(elements, currentDataType);
     }
 
     // this method handles variable declarations, i will add more error checks at some stage
@@ -324,7 +327,7 @@ public class Parser {
         }
         // the parameters are optional, so we can have a function with no parameters
         // but the logic will be implemented later on, since i have no idea how to do it now
-        List<VariableSymbol> parameters = parseFunctionParameters(); // this will parse the parameters of the function
+        java.util.List<VariableSymbol> parameters = parseFunctionParameters(); // this will parse the parameters of the function
         consume(TokenKind.CLOSE_PAREN); // consume the closing parenthesis
         // so, for built ins, probably we will handle them at the start of this method
         if (!match(TokenKind.ARROW)) { // if we don't have an arrow, we assume it's a built-in function
@@ -351,7 +354,7 @@ public class Parser {
         // somehow the body has to be parsed before return
         consume(TokenKind.RETURN); // consume the closing brace, we will handle the body later
 
-        List<Statement> functionBody = null; // for now, we will just return null, since we don't have a body yet
+        java.util.List<Statement> functionBody = null; // for now, we will just return null, since we don't have a body yet
         consume(TokenKind.CLOSE_BRACE); // consume the closing brace, we will handle the body later
 
         return new FunctionDeclarationNode( // does FunctionNode need its environment passed as well? unsure, yes and no
@@ -364,8 +367,8 @@ public class Parser {
 
     // still have no idea how i will even apply these things, but it will happen at some point
     // for now all i can really do is just gather the params, but i can't do anything with them quite yet
-    private List<VariableSymbol> parseFunctionParameters() {
-        List<VariableSymbol> parameters = new ArrayList<>();
+    private java.util.List<VariableSymbol> parseFunctionParameters() {
+        java.util.List<VariableSymbol> parameters = new ArrayList<>();
         if (!check(TokenKind.CLOSE_PAREN)) {
             System.out.println("Parsing function parameters...");
             do {
@@ -380,8 +383,8 @@ public class Parser {
 
     // arguments are the values passed to the function, while parameters are the variables defined in the function signature
     // so these may actually be Expression
-    private List<Expression> parseFunctionArguments() {
-        List<Expression> arguments = new ArrayList<>();
+    private java.util.List<Expression> parseFunctionArguments() {
+        java.util.List<Expression> arguments = new ArrayList<>();
         if (!check(TokenKind.CLOSE_PAREN)) {
             System.out.println("token at parseFunctionArguments: " + peek());
             if (isFunctionCall()) { // just check if it's a function call in the arg (recursive allowed)
@@ -401,7 +404,7 @@ public class Parser {
         Token functionNameToken = consume(TokenKind.IDENTIFIER); // consume function name
         consume(TokenKind.OPEN_PAREN); // consume '('
 
-        List<Expression> arguments = parseFunctionArguments(); // parse argument expressions
+        java.util.List<Expression> arguments = parseFunctionArguments(); // parse argument expressions
 
         consume(TokenKind.CLOSE_PAREN); // consume ')'
 

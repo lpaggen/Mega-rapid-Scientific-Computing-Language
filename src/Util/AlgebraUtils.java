@@ -5,6 +5,9 @@ import AST.Nodes.BinaryOperations.Scalar.Add;
 import AST.Nodes.BinaryOperations.Scalar.Div;
 import AST.Nodes.BinaryOperations.Scalar.Mul;
 import AST.Nodes.BinaryOperations.Scalar.Sub;
+import AST.Nodes.DataTypes.Constant;
+import AST.Nodes.DataTypes.FloatConstant;
+import AST.Nodes.DataTypes.IntegerConstant;
 
 public class AlgebraUtils {
     public static Expression simplify(Expression expression) {
@@ -24,29 +27,29 @@ public class AlgebraUtils {
                 }
 
                 if (leftMul instanceof Constant lConst && lConst.getDoubleValue() == 0.0) {
-                    return new Constant(0, isRaw); // 0 * x = 0
+                    return new IntegerConstant(0, isRaw); // 0 * x = 0
                 }
                 if (rightMul instanceof Constant rConst && rConst.getDoubleValue() == 0.0) {
-                    return new Constant(0, isRaw); // x * 0 = 0
+                    return new IntegerConstant(0, isRaw); // x * 0 = 0
                 }
 
                 if (leftMul instanceof Constant lConst && lConst.getDoubleValue() == -1.0) {
-                    return new Mul(new Constant(-1, isRaw), rightMul); // -1 * x = -x
+                    return new Mul(new IntegerConstant(-1, isRaw), rightMul); // -1 * x = -x
                 }
                 if (rightMul instanceof Constant rConst && rConst.getDoubleValue() == -1.0) {
-                    return new Mul(leftMul, new Constant(-1, isRaw)); // x * -1 = -x
+                    return new Mul(leftMul, new IntegerConstant(-1, isRaw)); // x * -1 = -x
                 }
 
                 // now we need to check situations for which we have say, x*x
                 if (leftMul instanceof VariableNode lVar && rightMul instanceof VariableNode rVar && lVar.getName().equals(rVar.getName())) {
-                    return new Pow(lVar, new Constant(2, isRaw)); // x * x = x^2
+                    return new Pow(lVar, new IntegerConstant(2, isRaw)); // x * x = x^2
                 }
 
                 if (leftMul instanceof Pow lPow && rightMul instanceof VariableNode rVar && lPow.getBase().equals(rVar)) {
-                    return new Pow(lPow.getBase(), new Add(lPow.getExponent(), new Constant(1, isRaw))); // x^n * x = x^(n+1)
+                    return new Pow(lPow.getBase(), new Add(lPow.getExponent(), new IntegerConstant(1, isRaw))); // x^n * x = x^(n+1)
                 }
                 if (leftMul instanceof VariableNode lVar && rightMul instanceof Pow rPow && rPow.getBase().equals(lVar)) {
-                    return new Pow(lVar, new Add(rPow.getExponent(), new Constant(1, isRaw))); // x * x^n = x^(n+1)
+                    return new Pow(lVar, new Add(rPow.getExponent(), new IntegerConstant(1, isRaw))); // x * x^n = x^(n+1)
                 }
 
                 if (leftMul instanceof Pow lPow && rightMul instanceof Pow rPow && lPow.getBase().equals(rPow.getBase())) {
@@ -57,7 +60,7 @@ public class AlgebraUtils {
                 // really we might need more granular logic here, but for now we will just return the multiplication
                 // it's fine if we do it later, the logic is set up to handle it
                 if (leftMul.equals(rightMul)) {
-                    return new Pow(leftMul, new Constant(2, isRaw)); // x * x = x^2 -- fallback case
+                    return new Pow(leftMul, new IntegerConstant(2, isRaw)); // x * x = x^2 -- fallback case
                 }
 
                 return new Mul(leftMul, rightMul);
@@ -77,27 +80,27 @@ public class AlgebraUtils {
 
                 // handle the case where both sides are the same variable
                 if (leftAdd instanceof VariableNode lVar && rightAdd instanceof VariableNode rVar && lVar.getName().equals(rVar.getName())) {
-                    return new Mul(new Constant(2, isRaw), lVar); // x + x = 2x
+                    return new Mul(new IntegerConstant(2, isRaw), lVar); // x + x = 2x
                 }
 
                 if (leftAdd.equals(rightAdd)) {
-                    return new Mul(new Constant(2, isRaw), leftAdd); // cos(x) + cos(x) = 2cos(x) -- fallback case
+                    return new Mul(new IntegerConstant(2, isRaw), leftAdd); // cos(x) + cos(x) = 2cos(x) -- fallback case
                 }
 
                 // pythagoras identity
                 if (leftAdd instanceof Pow lPow && lPow.getBase() instanceof Tan lTan && rightAdd instanceof Constant rConst && rConst.getDoubleValue() == 1.0) {
-                    return new Pow(new Sec(lTan.getArg()), new Constant(2, isRaw)); // tan2(x) + 1 = sec^2(x)
+                    return new Pow(new Sec(lTan.getArg()), new IntegerConstant(2, isRaw)); // tan2(x) + 1 = sec^2(x)
                 }
                 if (leftAdd instanceof Pow lPow && lPow.getBase() instanceof Cot lCot && rightAdd instanceof Constant rConst && rConst.getDoubleValue() == 1.0) {
-                    return new Pow(new Csc(lCot.getArg()), new Constant(2, isRaw)); // cot2(x) + 1 = csc^2(x)
+                    return new Pow(new Csc(lCot.getArg()), new IntegerConstant(2, isRaw)); // cot2(x) + 1 = csc^2(x)
                 }
 
                 // cos2x + sin2x = 1
                 if (leftAdd instanceof Pow lPow && lPow.getBase() instanceof Cos lCos && rightAdd instanceof Pow rPow && rPow.getBase() instanceof Sin rSin && lCos.getArg().equals(rSin.getArg())) {
-                    return new Constant(1, isRaw); // cos(x) + sin(x) = 1
+                    return new IntegerConstant(1, isRaw); // cos(x) + sin(x) = 1
                 }
                 if (leftAdd instanceof Pow lPow && lPow.getBase() instanceof Sin lSin && rightAdd instanceof Pow rPow && rPow.getBase() instanceof Cos rCos && lSin.getArg().equals(rCos.getArg())) {
-                    return new Constant(1, isRaw); // sin(x) + cos(x) = 1
+                    return new IntegerConstant(1, isRaw); // sin(x) + cos(x) = 1
                 }
 
                 // there is like tons more to add, this is of course gonna take a little while...
@@ -116,23 +119,23 @@ public class AlgebraUtils {
                 }
 
                 if (denominator instanceof Constant dConst && dConst.getDoubleValue() == 0.0) {
-                    return new Constant(Double.NaN, isRaw); // x / 0 = NaN
+                    return new FloatConstant(Double.NaN, isRaw); // x / 0 = NaN
                 }
 
                 if (numerator instanceof Constant nConst && nConst.getDoubleValue() == 0.0) {
-                    return new Constant(0, isRaw); // 0 / x = 0
+                    return new IntegerConstant(0, isRaw); // 0 / x = 0
                 }
 
                 if (numerator instanceof Constant nConst && nConst.getDoubleValue() == 1.0 && denominator instanceof VariableNode dVar) {
-                    return new Pow(dVar, new Constant(-1, isRaw)); // 1 / x = x^(-1)
+                    return new Pow(dVar, new IntegerConstant(-1, isRaw)); // 1 / x = x^(-1)
                 }
 
                 if (numerator instanceof VariableNode nVar && denominator instanceof Constant dConst && dConst.getDoubleValue() == -1.0) {
-                    return new Mul(new Constant(-1, isRaw), nVar); // x / -1 = -x
+                    return new Mul(new IntegerConstant(-1, isRaw), nVar); // x / -1 = -x
                 }
 
                 if (numerator instanceof VariableNode nVar && denominator instanceof VariableNode dVar && nVar.getName().equals(dVar.getName())) {
-                    return new Constant(1, isRaw); // x / x = 1
+                    return new IntegerConstant(1, isRaw); // x / x = 1
                 }
 
                 // this is the case for everything with exponents, like x^4 / x^1 will work too!
@@ -141,11 +144,11 @@ public class AlgebraUtils {
                 }
 
                 if (numerator instanceof Pow nPow && denominator instanceof VariableNode dVar && nPow.getBase().equals(dVar)) {
-                    return new Pow(nPow.getBase(), new Sub(nPow.getExponent(), new Constant(1, isRaw))); // x^n / x = x^(n-1)
+                    return new Pow(nPow.getBase(), new Sub(nPow.getExponent(), new IntegerConstant(1, isRaw))); // x^n / x = x^(n-1)
                 }
 
                 if (numerator instanceof VariableNode nVar && denominator instanceof Pow dPow && dPow.getBase().equals(nVar)) {
-                    return new Pow(nVar, new Sub(dPow.getExponent(), new Constant(1, isRaw))); // x / x^n = x^(1-n)
+                    return new Pow(nVar, new Sub(dPow.getExponent(), new IntegerConstant(1, isRaw))); // x / x^n = x^(1-n)
                 }
 
                 // some special trigonometric identities!!
@@ -179,12 +182,12 @@ public class AlgebraUtils {
 
                 // tan / cot tan**2
                 if (numerator instanceof Tan nTan && denominator instanceof Cot dCot) {
-                    return new Pow(nTan.getArg(), new Constant(2, isRaw)); // tan(x) / cot(x) = tan^2(x)
+                    return new Pow(nTan.getArg(), new IntegerConstant(2, isRaw)); // tan(x) / cot(x) = tan^2(x)
                 }
 
                 // cot / tan cot**2
                 if (numerator instanceof Cot nCot && denominator instanceof Tan dTan) {
-                    return new Pow(nCot.getArg(), new Constant(2, isRaw)); // cot(x) / tan(x) = cot^2(x)
+                    return new Pow(nCot.getArg(), new IntegerConstant(2, isRaw)); // cot(x) / tan(x) = cot^2(x)
                 }
 
                 // tan / sec sin
@@ -199,17 +202,17 @@ public class AlgebraUtils {
 
                 // cot / sec cos**2/sin
                 if (numerator instanceof Cot nCot && denominator instanceof Sec dSec) {
-                    return new Div(new Pow(nCot.getArg(), new Constant(2, isRaw)), new Sin(nCot.getArg())); // cot(x) / sec(x) = cos^2(x) / sin(x)
+                    return new Div(new Pow(nCot.getArg(), new IntegerConstant(2, isRaw)), new Sin(nCot.getArg())); // cot(x) / sec(x) = cos^2(x) / sin(x)
                 }
 
                 // tan / csc sin**2/cos
                 if (numerator instanceof Tan nTan && denominator instanceof Csc dCsc) {
-                    return new Div(new Pow(nTan.getArg(), new Constant(2, isRaw)), new Cos(nTan.getArg())); // tan(x) / csc(x) = sin^2(x) / cos(x)
+                    return new Div(new Pow(nTan.getArg(), new IntegerConstant(2, isRaw)), new Cos(nTan.getArg())); // tan(x) / csc(x) = sin^2(x) / cos(x)
                 }
 
                 // this is the case for anything else, like cos(x) / cos(x), which could be '1'
                 if (numerator.equals(denominator)) {
-                    return new Constant(1, isRaw); // cos(x) / cos(x) = 1 -- fallback case
+                    return new IntegerConstant(1, isRaw); // cos(x) / cos(x) = 1 -- fallback case
                 }
 
                 // sec / tan = 1/sin
@@ -260,15 +263,15 @@ public class AlgebraUtils {
             case "Cot":
                 Cot cot = (Cot) expression;
                 // transform cot(x) to 1/tan(x)
-                return new Div(new Constant(1, isRaw), new Tan(cot.getArg()));
+                return new Div(new IntegerConstant(1, isRaw), new Tan(cot.getArg()));
             case "Csc":
                 Csc csc = (Csc) expression;
                 // transform csc(x) to 1/sin(x)
-                return new Div(new Constant(1, isRaw), new Sin(csc.getArg()));
+                return new Div(new IntegerConstant(1, isRaw), new Sin(csc.getArg()));
             case "Sec":
                 Sec sec = (Sec) expression;
                 // transform sec(x) to 1/cos(x)
-                return new Div(new Constant(1, isRaw), new Cos(sec.getArg()));
+                return new Div(new IntegerConstant(1, isRaw), new Cos(sec.getArg()));
             case "Cos":
                 Cos cos = (Cos) expression;
                 // transform cos(x) to 1/sec(x)

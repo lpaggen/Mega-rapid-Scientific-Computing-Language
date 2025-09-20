@@ -1,6 +1,6 @@
 package AST.Nodes.BinaryOperations.Scalar;
 
-import AST.Nodes.Constant;
+import AST.Nodes.DataTypes.Constant;
 import AST.Nodes.Expression;
 import Interpreter.Runtime.Environment;
 

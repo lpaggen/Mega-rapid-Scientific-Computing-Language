@@ -1,5 +1,7 @@
 package AST.Nodes;
 
+import AST.Nodes.DataTypes.Constant;
+import AST.Nodes.DataTypes.FloatConstant;
 import Interpreter.Runtime.Environment;
 
 public class Cos extends Expression {
@@ -13,7 +15,7 @@ public class Cos extends Expression {
     public Expression evaluate(Environment env) {
         Expression argValue = this.arg.evaluate(env);
         if (argValue instanceof Constant c) {
-            return new Constant(Math.cos(c.getDoubleValue()), c.isRaw());
+            return new FloatConstant(Math.cos(c.getDoubleValue()), c.isRaw());
         }
         return new Cos(argValue);
     }

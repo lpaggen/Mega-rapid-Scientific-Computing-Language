@@ -1,6 +1,8 @@
 package AST.Nodes;
 
 import AST.Nodes.BinaryOperations.Scalar.ArithmeticBinaryNode;
+import AST.Nodes.DataTypes.Constant;
+import AST.Nodes.DataTypes.IntegerConstant;
 import Interpreter.Runtime.Environment;
 
 public class Mod extends ArithmeticBinaryNode {
@@ -20,7 +22,7 @@ public class Mod extends ArithmeticBinaryNode {
         Expression rightVal = rhs.evaluate(env);
         if (leftVal instanceof Constant l && rightVal instanceof Constant r) {
             int result = (int) l.getDoubleValue() % (int) r.getDoubleValue();
-            return new Constant(result, l.isRaw());
+            return new IntegerConstant(result, l.isRaw());
         }
         return new Mod(leftVal, rightVal);
     }

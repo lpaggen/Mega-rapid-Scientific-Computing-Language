@@ -1,7 +1,9 @@
 package AST.Nodes;
 
 import AST.Nodes.Conditional.BooleanNode;
-import AST.Nodes.DataStructures.ArrayNode;
+import AST.Nodes.DataStructures.Array;
+import AST.Nodes.DataTypes.Constant;
+import AST.Nodes.DataTypes.FloatConstant;
 import Util.ErrorHandler;
 import Interpreter.Tokenizer.Token;
 import Interpreter.Runtime.Environment;
@@ -34,7 +36,7 @@ public class VariableDeclarationNode extends Statement {
                 if (value instanceof Constant v && v.getValue() instanceof Integer) {
                     // convert integer to float if needed -- but throw warning somehow...
                     boolean isRaw = v.isRaw();
-                    value = new Constant(v.getDoubleValue(), isRaw);
+                    value = new FloatConstant(v.getDoubleValue(), isRaw);
                     warningLogger.addWarning(1, "Implicit conversion from integer to float at line " + variable.getLine(), variable.getLine());
                 } else if (!(value instanceof Constant v && v.getValue() instanceof Float)) {
                     throw new ErrorHandler("execution", variable.getLine(), "Type mismatch: expected float, got " + (value != null ? value.getClass().getSimpleName() : "null"), "Please ensure the initializer is a float.");
@@ -60,7 +62,7 @@ public class VariableDeclarationNode extends Statement {
                 }
                 break;
             case VECTOR:
-                ArrayNode v = (ArrayNode) value;
+                Array v = (Array) value;
                 if (v.isEmpty()) {
                     warningLogger.addWarning(2, "Initialized vector is empty at line " + variable.getLine(), variable.getLine());
                 }
@@ -75,7 +77,7 @@ public class VariableDeclarationNode extends Statement {
 
 //    // we can assume this would only be called for arrays and maps etc
 //    private boolean isStructureContentValid(Environment env, TokenKind type) {
-//        if (initializer instanceof ArrayNode arrayNode) {
+//        if (initializer instanceof Array arrayNode) {
 //            Expression[] elements = arrayNode.getElements();
 //            for (Expression element : elements) {
 //                TokenKind elementType = element.getType(env);

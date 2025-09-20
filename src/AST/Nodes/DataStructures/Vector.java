@@ -1,29 +1,160 @@
 package AST.Nodes.DataStructures;
 
-import AST.Nodes.Constant;
+import AST.Nodes.DataTypes.Constant;
 import AST.Nodes.Expression;
 import Interpreter.Runtime.Environment;
 import Interpreter.Tokenizer.TokenKind;
 
-import java.util.ArrayList;
+import java.util.AbstractMap;
 import java.util.Iterator;
-import java.util.Spliterator;
-import java.util.function.Consumer;
+import java.util.Map;
 
-public class Vector extends Expression implements ArrayLike {
+public class Vector extends Expression implements VectorLike {
     private final Expression[] elements;
-
+    int numRows;
+    int numCols;
     public Vector(Expression[] elements, TokenKind type) {
         this.elements = elements;
     }
+
+    public static TokenKind[] allowedTypes = {TokenKind.INTEGER, TokenKind.FLOAT};  // extend this with the maths stuff, later
 
     @Override
     public Expression evaluate(Environment env) {
         return null;
     }
 
+    public static boolean checkType(TokenKind type) {
+        for (TokenKind allowedType : allowedTypes) {
+            if (allowedType == type) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
-    public int size() {
+    public int rows() {
+        return elements.length;
+    }
+
+    @Override
+    public int cols() {
+        return elements.length;
+    }
+
+    @Override
+    public Expression get(int row, int col) {
+        return null;
+    }
+
+    @Override
+    public VectorLike getColumns(int... col) {
+        return null;
+    }
+
+    @Override
+    public VectorLike getRows(int... row) {
+        return null;
+    }
+
+//    @Override
+//    public Expression getColumns(Constant... col) {
+//        return null;
+//    }
+//
+//    @Override
+//    public Expression getRows(Constant... row) {
+//        return null;
+//    }
+
+//    @Override
+//    public Expression get(Constant index) {
+//        return null;
+//    }
+
+    @Override
+    public Expression[] getElements() {
+        return new Expression[0];
+    }
+
+    @Override
+    public VectorLike add(VectorLike other) {
+        return null;
+    }
+
+    @Override
+    public VectorLike sub(VectorLike other) {
+        return null;
+    }
+
+    @Override
+    public VectorLike mul(VectorLike other) {
+        return null;
+    }
+
+    @Override
+    public VectorLike div(VectorLike other) {
+        return null;
+    }
+
+    @Override
+    public VectorLike dot(VectorLike other) {
+        return null;
+    }
+
+    @Override
+    public VectorLike outer(VectorLike other) {
+        return null;
+    }
+
+//    @Override
+//    public Vector add(Vector other) {
+//        return null;
+//    }
+//
+//    @Override
+//    public Vector subtract(Vector other) {
+//        return null;
+//    }
+//
+//    @Override
+//    public Vector multiply(Vector other) {
+//        return null;
+//    }
+//
+//    @Override
+//    public Vector divide(Vector other) {
+//        return null;
+//    }
+//
+//    @Override
+//    public Vector dot(Vector other) {
+//        return null;
+//    }
+//
+//    @Override
+//    public Vector outer(Vector other) {
+//        return null;
+//    }
+
+//    @Override
+//    public Vector mod(Expression element) {
+//        return null;
+//    }
+
+    @Override
+    public Vector pow(Expression element) {
+        return null;
+    }
+
+    @Override
+    public VectorLike transpose() {
+        return null;
+    }
+
+    @Override
+    public int length() {
         return 0;
     }
 
@@ -33,47 +164,22 @@ public class Vector extends Expression implements ArrayLike {
     }
 
     @Override
-    public Expression[] getElements() {
-        return new Expression[0];
+    public int[][] shape() {
+        return new int[numRows][numCols];
     }
 
     @Override
-    public ArrayList<Expression> toList() {
-        return null;
+    public void set(int index, Expression element) {
+
     }
 
     @Override
-    public ArrayLike add(Expression element) {
-        return null;
+    public boolean isEmpty() {
+        return elements.length == 0;
     }
 
     @Override
-    public ArrayLike subtract(Expression element) {
-        return null;
-    }
-
-    @Override
-    public ArrayLike multiply(Expression element) {
-        return null;
-    }
-
-    @Override
-    public ArrayLike divide(Expression element) {
-        return null;
-    }
-
-    @Override
-    public ArrayLike mod(Expression element) {
-        return null;
-    }
-
-    @Override
-    public ArrayLike pow(Expression element) {
-        return null;
-    }
-
-    @Override
-    public ArrayLike concat(ArrayLike other) {
+    public String toString() {
         return null;
     }
 
@@ -83,22 +189,7 @@ public class Vector extends Expression implements ArrayLike {
     }
 
     @Override
-    public int indexOf(Expression element) {
-        return 0;
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return false;
-    }
-
-    @Override
-    public void clear() {
-
-    }
-
-    @Override
-    public String toString() {
+    public TokenKind getType() {
         return null;
     }
 
@@ -106,8 +197,8 @@ public class Vector extends Expression implements ArrayLike {
         Constant leftScalar = left instanceof Constant ? (Constant) left : null;
         Constant rightScalar = right instanceof Constant ? (Constant) right : null;
 
-        ArrayNode leftArray = left instanceof ArrayNode ? (ArrayNode) left : null;
-        ArrayNode rightArray = right instanceof ArrayNode ? (ArrayNode) right : null;
+        Vector leftArray = left instanceof Vector ? (Vector) left : null;
+        Vector rightArray = right instanceof Vector ? (Vector) right : null;
 
         int length;
         TokenKind type;
@@ -129,8 +220,8 @@ public class Vector extends Expression implements ArrayLike {
 
         Expression[] result = new Expression[length];
         for (int i = 0; i < length; i++) {
-            Constant leftElement = leftArray != null ? (Constant) leftArray.getElement(i) : leftScalar;
-            Constant rightElement = rightArray != null ? (Constant) rightArray.getElement(i) : rightScalar;
+            Constant leftElement = leftArray != null ? (Constant) leftArray.get(i) : leftScalar;
+            Constant rightElement = rightArray != null ? (Constant) rightArray.get(i) : rightScalar;
             result[i] = Constant.add(leftElement, rightElement);
         }
 
@@ -139,16 +230,18 @@ public class Vector extends Expression implements ArrayLike {
 
     @Override
     public Iterator<Expression> iterator() {
-        return null;
-    }
+        return new Iterator<Expression>() {
+            private int currentIndex = 0;
 
-    @Override
-    public void forEach(Consumer<? super Expression> action) {
-        ArrayLike.super.forEach(action);
-    }
+            @Override
+            public boolean hasNext() {
+                return currentIndex < elements.length;
+            }
 
-    @Override
-    public Spliterator<Expression> spliterator() {
-        return ArrayLike.super.spliterator();
+            @Override
+            public Expression next() {
+                return elements[currentIndex++];
+            }
+        };
     }
 }

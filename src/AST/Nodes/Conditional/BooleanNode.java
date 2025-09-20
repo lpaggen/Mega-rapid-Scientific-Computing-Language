@@ -1,9 +1,9 @@
 package AST.Nodes.Conditional;
 
-import AST.Nodes.Constant;
+import AST.Nodes.DataTypes.Constant;
+import AST.Nodes.DataTypes.IntegerConstant;
 import AST.Nodes.Expression;
 import Interpreter.Runtime.Environment;
-import Interpreter.Tokenizer.TokenKind;
 
 public class BooleanNode extends Expression {
     private final boolean value;
@@ -27,6 +27,6 @@ public class BooleanNode extends Expression {
     }
 
     public Constant toNumeric() { // this is gonna move or change, i don't know why it's there to begin with
-        return new Constant(value ? 1 : 0, false);
+        return new IntegerConstant(value ? 1 : 0, false);
     }
 }

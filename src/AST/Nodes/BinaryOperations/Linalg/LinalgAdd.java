@@ -1,8 +1,6 @@
 package AST.Nodes.BinaryOperations.Linalg;
 
-import AST.Nodes.BinaryOperations.Scalar.Add;
-import AST.Nodes.Constant;
-import AST.Nodes.DataStructures.ArrayNode;
+import AST.Nodes.DataStructures.Array;
 import AST.Nodes.Expression;
 import AST.Nodes.StringNode;
 import Interpreter.Runtime.Environment;
@@ -19,19 +17,19 @@ public class LinalgAdd extends LinalgBinaryNode {
 
         if (leftVal instanceof StringNode || rightVal instanceof StringNode) {
             throw new UnsupportedOperationException("Cannot perform addition on String types in linear algebra operations.");
-        } else if (!(leftVal instanceof ArrayNode || rightVal instanceof ArrayNode)) {
-            throw new UnsupportedOperationException("At least one operand must be an ArrayNode for linear algebra addition.");
+        } else if (!(leftVal instanceof Array || rightVal instanceof Array)) {
+            throw new UnsupportedOperationException("At least one operand must be an Array for linear algebra addition.");
         }
 
-//        if (leftVal instanceof ArrayNode l && rightVal instanceof ArrayNode r) {
-//            return ArrayNode.add(l, r);
-//        } else if (leftVal instanceof ArrayNode l && rightVal instanceof Constant r) {
-//            return ArrayNode.add(l, r);
-//        } else if (leftVal instanceof Constant l && rightVal instanceof ArrayNode r) {
-//            return ArrayNode.add(r, l);
+//        if (leftVal instanceof Array l && rightVal instanceof Array r) {
+//            return Array.add(l, r);
+//        } else if (leftVal instanceof Array l && rightVal instanceof Constant r) {
+//            return Array.add(l, r);
+//        } else if (leftVal instanceof Constant l && rightVal instanceof Array r) {
+//            return Array.add(r, l);
 //        }
 //        return new LinalgAdd(leftVal, rightVal);
-        return ArrayNode.add(leftVal, rightVal);
+        return Array.add(leftVal, rightVal);
     }
 
     @Override

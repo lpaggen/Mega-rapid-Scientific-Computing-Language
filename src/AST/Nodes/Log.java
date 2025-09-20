@@ -1,5 +1,8 @@
 package AST.Nodes;
 
+import AST.Nodes.DataTypes.Constant;
+import AST.Nodes.DataTypes.FloatConstant;
+import AST.Nodes.DataTypes.IntegerConstant;
 import Interpreter.Runtime.Environment;
 
 public class Log extends Expression {
@@ -18,9 +21,9 @@ public class Log extends Expression {
         if (argVal instanceof Constant a && baseVal instanceof Constant b) {
             double argNum = a.getDoubleValue();
             double baseNum = b.getDoubleValue();
-            if (argNum == 1.0) return new Constant(0.0, a.isRaw() && b.isRaw());
-            if (argNum == baseNum) return new Constant(1.0, a.isRaw() && b.isRaw());
-            return new Constant(Math.log(argNum) / Math.log(baseNum), a.isRaw() && b.isRaw());
+            if (argNum == 1.0) return new IntegerConstant(0, a.isRaw() && b.isRaw());
+            if (argNum == baseNum) return new IntegerConstant(1, a.isRaw() && b.isRaw());
+            return new FloatConstant(Math.log(argNum) / Math.log(baseNum), a.isRaw() && b.isRaw());
         }
         return new Log(argVal, baseVal);
     }

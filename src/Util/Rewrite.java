@@ -5,6 +5,7 @@ import AST.Nodes.BinaryOperations.Scalar.Add;
 import AST.Nodes.BinaryOperations.Scalar.Div;
 import AST.Nodes.BinaryOperations.Scalar.Mul;
 import AST.Nodes.BinaryOperations.Scalar.Sub;
+import AST.Nodes.DataTypes.Constant;
 
 public class Rewrite {
     private static Expression rewrite(Expression expr) {
