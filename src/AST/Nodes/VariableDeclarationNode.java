@@ -2,6 +2,7 @@ package AST.Nodes;
 
 import AST.Nodes.Conditional.BooleanNode;
 import AST.Nodes.DataStructures.Array;
+import AST.Nodes.DataStructures.Vector;
 import AST.Nodes.DataTypes.Constant;
 import AST.Nodes.DataTypes.FloatConstant;
 import Util.ErrorHandler;
@@ -62,7 +63,7 @@ public class VariableDeclarationNode extends Statement {
                 }
                 break;
             case VECTOR:
-                Array v = (Array) value;
+                Vector v = (Vector) value;
                 if (v.isEmpty()) {
                     warningLogger.addWarning(2, "Initialized vector is empty at line " + variable.getLine(), variable.getLine());
                 }

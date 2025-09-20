@@ -164,6 +164,7 @@ public class Tokenizer {
         put("include", TokenKind.INCLUDE);
         put("read", TokenKind.READ);
         put("write", TokenKind.WRITE);
+        put("arr", TokenKind.ARRAY_TYPE);
     }};
 
     private boolean isDigit(char c) {

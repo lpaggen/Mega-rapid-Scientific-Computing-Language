@@ -4,11 +4,11 @@ package Interpreter.Tokenizer;
 // so we can also (and should) define concepts like "derive", "newton", etc. for all optimization techniques we want to implement
 public enum TokenKind {
     EOF,
-    CONST,
     INTEGER,
     BOOLEAN,
     FLOAT,
     VECTOR,
+    ARRAY,
     SYMBOL,
     NUM,
     STRING,
@@ -32,6 +32,7 @@ public enum TokenKind {
     BOOLEAN_TYPE,
     STRING_TYPE,
     VECTOR_TYPE,
+    ARRAY_TYPE,
 
     DERIVE,
     WRT, // say "with respect to ..."

@@ -11,6 +11,7 @@ import AST.Nodes.BinaryOperations.Scalar.Div;
 import AST.Nodes.BinaryOperations.Scalar.Mul;
 import AST.Nodes.BinaryOperations.Scalar.Sub;
 import AST.Nodes.DataStructures.Array;
+import AST.Nodes.DataStructures.Vector;
 import AST.Nodes.DataTypes.Constant;
 import AST.Nodes.DataTypes.FloatConstant;
 import AST.Nodes.DataTypes.IntegerConstant;
@@ -182,7 +183,7 @@ public class Parser {
             return new GroupingNode(expr);
         }
         if (match(TokenKind.OPEN_BRACKET)) {
-            return parseArray();
+            return parseVector();
         }
         // this is really not good and not safe, and it's a dumb check. but it works until i figure something better out
         // debug to see if we are parsing identifier i
@@ -209,17 +210,17 @@ public class Parser {
         );
     }
 
-    private Expression parseArray() {  // there will be parallel arrays too by default in a later build
+    private Expression parseVector() {  // there will be parallel arrays too by default in a later build
         ArrayList<Expression> elements = new ArrayList<>();
         if (!check(TokenKind.CLOSE_BRACKET)) {  // if it's empty array
             do {
                 Expression element = parseExpression();
-                elements.add(element);  // this is the easiest thing to do but also we could handle elsewhere
+                elements.add(element);
             } while (match(TokenKind.COMMA)); // comma separate elements of the 1D array
         }
         consume(TokenKind.CLOSE_BRACKET); // consume the closing ]
-//        Expression[] arrayElementsArray = elements.toArray(new Expression[0]);
-        return new Array(elements, currentDataType);
+        Expression[] arrayElementsArray = elements.toArray(new Expression[0]);
+        return new Vector(arrayElementsArray, currentDataType);
     }
 
     // this method handles variable declarations, i will add more error checks at some stage
@@ -237,7 +238,9 @@ public class Parser {
                 TokenKind.MATRIX_TYPE, TokenKind.MATRIX,
                 TokenKind.SYMBOL_TYPE, TokenKind.SYMBOL,
                 TokenKind.STRING_TYPE, TokenKind.STRING,
-                TokenKind.VECTOR_TYPE, TokenKind.VECTOR
+                TokenKind.VECTOR_TYPE, TokenKind.VECTOR,
+                TokenKind.VOID_TYPE, TokenKind.VOID,
+                TokenKind.ARRAY_TYPE, TokenKind.ARRAY
         );
         if (!typeKeywords.contains(peek().getKind())) {
             throw new ErrorHandler(
@@ -534,6 +537,7 @@ public class Parser {
 
     private BinaryNode inferBinaryNodeFromOperator(TokenKind operator, Expression lhs, Expression rhs) {
         System.out.println("inferBinaryNodeFromOperator called with operator: " + operator);
+        System.out.println("lhs type: " + lhs.getType(environment) + ", rhs type: " + rhs.getType(environment));
         if (LinearAlgebraOperators.contains(lhs.getType(environment)) || LinearAlgebraOperators.contains(rhs.getType(environment))) {
             System.out.println("Creating Linalg binary node for operator: " + operator);
             switch (operator) {

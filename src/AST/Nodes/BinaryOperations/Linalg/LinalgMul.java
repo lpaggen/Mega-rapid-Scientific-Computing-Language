@@ -1,6 +1,6 @@
 package AST.Nodes.BinaryOperations.Linalg;
 
-import AST.Nodes.DataStructures.Array;
+import AST.Nodes.DataStructures.Vector;
 import AST.Nodes.Expression;
 import Interpreter.Runtime.Environment;
 
@@ -14,9 +14,8 @@ public class LinalgMul extends LinalgBinaryNode {
         Expression leftVal = lhs.evaluate(env);
         Expression rightVal = rhs.evaluate(env);
 
-        if (leftVal instanceof Array l && rightVal instanceof Array r) {
-            System.out.println("Multiplying two arrays");
-            return Array.mul(l, r);
+        if (leftVal instanceof Vector l && rightVal instanceof Vector r) {
+            return Vector.mul(l, r);
         }
         return new LinalgAdd(leftVal, rightVal);
     }
