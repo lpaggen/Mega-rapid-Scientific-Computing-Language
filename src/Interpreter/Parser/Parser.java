@@ -533,8 +533,7 @@ public class Parser {
     );
 
     // probably we need some more operators here later on
-    // also for the linearalgebra either we handle it through Add etc, or we make new nodes
-
+    // also for the linear algebra either we handle it through Add etc, or we make new nodes
     private BinaryNode inferBinaryNodeFromOperator(TokenKind operator, Expression lhs, Expression rhs) {
         System.out.println("inferBinaryNodeFromOperator called with operator: " + operator);
         System.out.println("lhs type: " + lhs.getType(environment) + ", rhs type: " + rhs.getType(environment));

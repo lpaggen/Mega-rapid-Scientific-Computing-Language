@@ -22,14 +22,6 @@ public class LinalgAdd extends LinalgBinaryNode {
             throw new UnsupportedOperationException("At least one operand must be an Array for linear algebra addition.");
         }
 
-//        if (leftVal instanceof Array l && rightVal instanceof Array r) {
-//            return Array.add(l, r);
-//        } else if (leftVal instanceof Array l && rightVal instanceof Constant r) {
-//            return Array.add(l, r);
-//        } else if (leftVal instanceof Constant l && rightVal instanceof Array r) {
-//            return Array.add(r, l);
-//        }
-//        return new LinalgAdd(leftVal, rightVal);
         return Vector.add(leftVal, rightVal);
     }
 

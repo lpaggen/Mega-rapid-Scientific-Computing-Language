@@ -13,8 +13,9 @@ import java.util.Map;
 
 public class Vector extends Expression implements VectorLike {
     private final Expression[] elements;
-    int numRows;
     int numCols;
+    int numRows;
+    int length;
     private final TokenKind type;
     public Vector(Expression[] elements, TokenKind type) {
         this.elements = elements;
@@ -37,7 +38,7 @@ public class Vector extends Expression implements VectorLike {
                         + expectedType + ", got " + evaluated.getType(env)
                         + " in element " + evaluated + " at position " + position);
             }
-            evaluatedElements[position] = (evaluated);
+            evaluatedElements[position] = evaluated;
             position++;
         }
         return new Vector(evaluatedElements, expectedType);
@@ -54,17 +55,12 @@ public class Vector extends Expression implements VectorLike {
 
     @Override
     public int rows() {
-        return elements.length;
+        return 1;  // this always has 1 row, else matrix
     }
 
     @Override
     public int cols() {
         return elements.length;
-    }
-
-    @Override
-    public Expression get(int row, int col) {
-        return null;
     }
 
     @Override
@@ -77,55 +73,20 @@ public class Vector extends Expression implements VectorLike {
         return null;
     }
 
-//    @Override
-//    public Expression getColumns(Constant... col) {
-//        return null;
-//    }
-//
-//    @Override
-//    public Expression getRows(Constant... row) {
-//        return null;
-//    }
-
-//    @Override
-//    public Expression get(Constant index) {
-//        return null;
-//    }
-
     @Override
     public Expression[] getElements() {
         return new Expression[0];
     }
 
-    @Override
-    public VectorLike add(VectorLike other) {
-        return null;
-    }
-
-    @Override
-    public VectorLike sub(VectorLike other) {
-        return null;
-    }
-
-    @Override
-    public VectorLike mul(VectorLike other) {
-        return null;
-    }
-
-    @Override
-    public VectorLike div(VectorLike other) {
-        return null;
-    }
-
-    @Override
-    public VectorLike dot(VectorLike other) {
-        return null;
-    }
-
-    @Override
-    public VectorLike outer(VectorLike other) {
-        return null;
-    }
+//    @Override
+//    public VectorLike dot(VectorLike other) {
+//        return null;
+//    }
+//
+//    @Override
+//    public VectorLike outer(Expression left, Expression right) {
+//        return null;
+//    }
 
 //    @Override
 //    public Vector add(Vector other) {
@@ -179,12 +140,17 @@ public class Vector extends Expression implements VectorLike {
 
     @Override
     public Expression get(int index) {
-        return null;
+        return elements[index];
     }
 
     @Override
-    public int[][] shape() {
-        return new int[numRows][numCols];
+    public int[] shape() {
+        return new int[length];
+    }
+
+    @Override
+    public Expression get(int row, int col) {
+        return null;
     }
 
     @Override
@@ -199,8 +165,17 @@ public class Vector extends Expression implements VectorLike {
 
     @Override
     public String toString() {
-        return null;
+        StringBuilder sb = new StringBuilder("[");
+        for (int i = 0; i < cols(); i++) {
+            sb.append(elements[i].toString());
+            if (i < cols() - 1) {
+                sb.append(", ");
+            }
+        }
+        sb.append("]");
+        return sb.toString();
     }
+
 
     @Override
     public boolean contains(Expression element) {
@@ -223,10 +198,10 @@ public class Vector extends Expression implements VectorLike {
         TokenKind type;
         // now we check the combinations
         if (leftArray != null) { // if the left array is NOT null, it means it's an array else it's a scalar
-            length = leftArray.length();
+            length = leftArray.cols();
             type = leftArray.getType();
         } else if (rightArray != null) {
-            length = rightArray.length();
+            length = rightArray.cols();
             type = rightArray.getType();
         } else {
             // both are scalars, we can just add them -- atm hardcoded to INTEGER, will figure out a fix at some point
@@ -258,10 +233,10 @@ public class Vector extends Expression implements VectorLike {
         TokenKind type;
         // now we check the combinations
         if (leftArray != null) { // if the left array is NOT null, it means it's an array else it's a scalar
-            length = leftArray.length();
+            length = leftArray.cols();
             type = leftArray.getType();
         } else if (rightArray != null) {
-            length = rightArray.length();
+            length = rightArray.cols();
             type = rightArray.getType();
         } else {
             // both are scalars, we can just add them -- atm hardcoded to INTEGER, will figure out a fix at some point
@@ -293,10 +268,10 @@ public class Vector extends Expression implements VectorLike {
         TokenKind type;
         // now we check the combinations
         if (leftArray != null) { // if the left array is NOT null, it means it's an array else it's a scalar
-            length = leftArray.length();
+            length = leftArray.cols();
             type = leftArray.getType();
         } else if (rightArray != null) {
-            length = rightArray.length();
+            length = rightArray.cols();
             type = rightArray.getType();
         } else {
             // both are scalars, we can just add them -- atm hardcoded to INTEGER, will figure out a fix at some point
@@ -317,6 +292,16 @@ public class Vector extends Expression implements VectorLike {
         return new Vector(result, type);
     }
 
+    @Override
+    public VectorLike dot(Expression left, Expression right) {
+        return null;
+    }
+
+    @Override
+    public VectorLike outer(Expression left, Expression right) {
+        return null;
+    }
+
     public static Vector mul(Expression left, Expression right) {
         Constant leftScalar = left instanceof Constant ? (Constant) left : null;
         Constant rightScalar = right instanceof Constant ? (Constant) right : null;
@@ -328,10 +313,10 @@ public class Vector extends Expression implements VectorLike {
         TokenKind type;
         // now we check the combinations
         if (leftArray != null) { // if the left array is NOT null, it means it's an array else it's a scalar
-            length = leftArray.length();
+            length = leftArray.cols();
             type = leftArray.getType();
         } else if (rightArray != null) {
-            length = rightArray.length();
+            length = rightArray.cols();
             type = rightArray.getType();
         } else {
             // both are scalars, we can just add them -- atm hardcoded to INTEGER, will figure out a fix at some point
@@ -354,12 +339,12 @@ public class Vector extends Expression implements VectorLike {
 
     @Override
     public Iterator<Expression> iterator() {
-        return new Iterator<Expression>() {
+        return new Iterator<>() {
             private int currentIndex = 0;
 
             @Override
             public boolean hasNext() {
-                return currentIndex < elements.length;
+                return currentIndex < cols();
             }
 
             @Override

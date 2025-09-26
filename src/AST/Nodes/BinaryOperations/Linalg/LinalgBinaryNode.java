@@ -23,6 +23,8 @@ public abstract class LinalgBinaryNode extends BinaryNode {
         // this isn't right, but it should do just fine until I need it
         if (leftType == TokenKind.MATRIX && rightType == TokenKind.MATRIX) {
             return TokenKind.MATRIX;
+        } else if (leftType == TokenKind.VECTOR && rightType == TokenKind.VECTOR) {
+            return TokenKind.VECTOR;
         }
         throw new RuntimeException("Type error in linear algebra operation: " + leftType + " and " + rightType);
     }

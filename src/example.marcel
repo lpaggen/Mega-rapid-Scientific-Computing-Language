@@ -4,4 +4,6 @@ include linalg;
 vec<int> x = [5, 2 * 2, 8 * 3];
 vec<float> y = [1.0, 1.0, 0.0];
 
-vec<float> z = x + y;
+vec<float> z = x / x * y;
+
+print(z);
