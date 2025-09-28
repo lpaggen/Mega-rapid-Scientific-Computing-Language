@@ -210,7 +210,9 @@ public class Parser {
         );
     }
 
-    private Expression parseVector() {  // there will be parallel arrays too by default in a later build
+    // need support for ndVector ? or separate parser for each
+    // really this should work fine, because we can get nested arrays
+    private Expression parseVector() {
         ArrayList<Expression> elements = new ArrayList<>();
         if (!check(TokenKind.CLOSE_BRACKET)) {  // if it's empty array
             do {

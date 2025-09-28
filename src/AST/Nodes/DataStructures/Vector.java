@@ -15,7 +15,6 @@ public class Vector extends Expression implements VectorLike {
     private final Expression[] elements;
     int numCols;
     int numRows;
-    int length;
     private final TokenKind type;
     public Vector(Expression[] elements, TokenKind type) {
         this.elements = elements;
@@ -23,6 +22,11 @@ public class Vector extends Expression implements VectorLike {
     }
 
     public static TokenKind[] allowedTypes = {TokenKind.INTEGER, TokenKind.FLOAT};  // extend this with the maths stuff, later
+
+    @Override
+    public TokenKind getType(Environment env) {
+        return type;
+    }
 
     @Override
     public Expression evaluate(Environment env) {
@@ -78,59 +82,20 @@ public class Vector extends Expression implements VectorLike {
         return new Expression[0];
     }
 
-//    @Override
-//    public VectorLike dot(VectorLike other) {
-//        return null;
-//    }
-//
-//    @Override
-//    public VectorLike outer(Expression left, Expression right) {
-//        return null;
-//    }
-
-//    @Override
-//    public Vector add(Vector other) {
-//        return null;
-//    }
-//
-//    @Override
-//    public Vector subtract(Vector other) {
-//        return null;
-//    }
-//
-//    @Override
-//    public Vector multiply(Vector other) {
-//        return null;
-//    }
-//
-//    @Override
-//    public Vector divide(Vector other) {
-//        return null;
-//    }
-//
-//    @Override
-//    public Vector dot(Vector other) {
-//        return null;
-//    }
-//
-//    @Override
-//    public Vector outer(Vector other) {
-//        return null;
-//    }
-
-//    @Override
-//    public Vector mod(Expression element) {
-//        return null;
-//    }
-
     @Override
     public Vector pow(Expression element) {
         return null;
     }
 
     @Override
-    public VectorLike transpose() {
-        return null;
+    public Matrix transpose() {
+        Expression[][] transposed = new Expression[cols()][rows()];
+        for (int i = 0; i < rows(); i++) {
+            for (int j = 0; j < cols(); j++) {
+                transposed[j][i] = elements[j];
+            }
+        }
+        return new Matrix(transposed, type);
     }
 
     @Override
@@ -145,7 +110,7 @@ public class Vector extends Expression implements VectorLike {
 
     @Override
     public int[] shape() {
-        return new int[length];
+        return new int[]{rows(), cols()};
     }
 
     @Override
@@ -175,7 +140,6 @@ public class Vector extends Expression implements VectorLike {
         sb.append("]");
         return sb.toString();
     }
-
 
     @Override
     public boolean contains(Expression element) {
@@ -212,6 +176,9 @@ public class Vector extends Expression implements VectorLike {
             throw new RuntimeException("Operands must be INTEGER or FLOAT");
         }
 
+        // this version assumes the arrays contain only scalars, which is wrong
+        // they can contain other types of Expression, like Vector, nested Arrays, etc.
+        // so we need a map<allowed internal> or something
         Expression[] result = new Expression[length];
         for (int i = 0; i < length; i++) {
             Constant leftElement = leftArray != null ? (Constant) leftArray.get(i) : leftScalar;

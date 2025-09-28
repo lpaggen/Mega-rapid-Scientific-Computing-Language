@@ -14,7 +14,9 @@ public class LinalgLibrary {
         LinalgSymbols.put("matchAny", new MatchAny());
         LinalgSymbols.put("get", new Get());
         LinalgSymbols.put("matchAll", new MatchAll());
-//        LinalgSymbols.put("countMatches", new Type());
-//        LinalgSymbols.put("noneMatch", new Cast()); // i had a cool int() etc version but it conflicts with reserved keywords like int, float, etc.
+        LinalgSymbols.put("indexOf", new IndexOf());
+        LinalgSymbols.put("dot", new Dot());
+        LinalgSymbols.put("shape", new Shape());
+        LinalgSymbols.put("T", new Transpose());
     }
 }

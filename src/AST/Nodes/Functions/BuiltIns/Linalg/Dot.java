@@ -2,6 +2,7 @@ package AST.Nodes.Functions.BuiltIns.Linalg;
 
 import AST.Nodes.Conditional.BooleanNode;
 import AST.Nodes.DataStructures.Array;
+import AST.Nodes.DataStructures.Matrix;
 import AST.Nodes.DataStructures.Vector;
 import AST.Nodes.Expression;
 import AST.Nodes.Functions.BuiltIns.BuiltInFunctionSymbol;
@@ -22,20 +23,23 @@ public class Dot extends BuiltInFunctionSymbol {
         }
         Object m1 = args.get(0);
         Object m2 = args.get(1);
-        if (!(m1 instanceof Vector ar1) || !(m2 instanceof Vector ar2)) {
+        if ((!(m1 instanceof Vector v1) || !(m2 instanceof Vector v2)) &&
+                (!(m1 instanceof Matrix) || !(m2 instanceof Matrix)) &&
+                (!(m1 instanceof Vector) || !(m2 instanceof Matrix)) &&
+                (!(m1 instanceof Matrix) || !(m2 instanceof Vector))) {
             throw new IllegalArgumentException("dot product requires both arguments to be Matrix-like.");
         }
-        if (ar1.length() != ar2.length()) {
-            throw new IllegalArgumentException("dot product requires both arguments to be the same size.");
-        }
-        Expression[][] output = new Expression[ar2.length()][ar1.length()];
-        for (Expression x : ar1.getElements()) {
-            for (Expression y : ar2.getElements()) {
-                if (!(x.equals(y))) {
-                    return new BooleanNode(false);
-                }
-            }
-        }
+//        if (ar1.rows() != ar2.cols()) {
+//            throw new IllegalArgumentException("dot product requires both arguments to be the same size.");
+//        }
+//        // need to determine what is being multiplied, scalar vs vector, vector vs vector, etc.
+//        Expression[][] output = new Expression[ar2.rows()][ar1.cols()];
+//        for (int x = 0; x < ar1.rows(); x++) {
+//            for (int y = 0; y < ar2.cols(); y++) {
+//                String a = output[x][y].getClass().getSimpleName();
+//                System.out.println(a);
+//            }
+//        }
         return new BooleanNode(true);
     }
 }
