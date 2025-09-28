@@ -1,8 +1,7 @@
-    __  _______  _____ ________ 
-   /  |/  / __ \/ ___// ____/ / 
-  / /|_/ / /_/ /\__ \/ /   / /      Minimal Rapid Scientific Computing Language
- / /  / / _, _/___/ / /___/ /___
-/_/  /_/_/ |_|/____/\____/_____/
+<p align="center">
+  <img src="logo.png" alt="MRSCL Logo" width="600">
+</p>
+
 
 Currently WIP. Maybe master's thesis or academic publication down the line, will think about it and evaluate if this is even possible with the time constraints i am facing
 
