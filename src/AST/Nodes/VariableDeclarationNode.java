@@ -1,8 +1,7 @@
 package AST.Nodes;
 
 import AST.Nodes.Conditional.BooleanNode;
-import AST.Nodes.DataStructures.Array;
-import AST.Nodes.DataStructures.Vector;
+import AST.Nodes.DataStructures.Matrix;
 import AST.Nodes.DataTypes.Constant;
 import AST.Nodes.DataTypes.FloatConstant;
 import Util.ErrorHandler;
@@ -62,13 +61,13 @@ public class VariableDeclarationNode extends Statement {
                     //throw new RuntimeException("Type mismatch: expected boolean, got " + (value != null ? value.getClass().getSimpleName() : "null") + " at line " + variable.getLine());
                 }
                 break;
-            case VECTOR:
-                Vector v = (Vector) value;
+            case MATRIX:
+                Matrix v = (Matrix) value;
                 if (v.isEmpty()) {
-                    warningLogger.addWarning(2, "Initialized vector is empty at line " + variable.getLine(), variable.getLine());
+                    warningLogger.addWarning(2, "Initialized matrix is empty at line " + variable.getLine(), variable.getLine());
                 }
                 if (v == null) {
-                    throw new ErrorHandler("execution", variable.getLine(), "Type mismatch: expected vector, got " + (value != null ? value.getClass().getSimpleName() : "null"), "Please ensure the initializer is a vector.");
+                    throw new ErrorHandler("execution", variable.getLine(), "Type mismatch: expected matrix, got " + (value != null ? value.getClass().getSimpleName() : "null"), "Please ensure the initializer is a matrix.");
                     //throw new RuntimeException("Type mismatch: expected vector, got " + (value != null ? value.getClass().getSimpleName() : "null") + " at line " + variable.getLine());
                 }
                 break;

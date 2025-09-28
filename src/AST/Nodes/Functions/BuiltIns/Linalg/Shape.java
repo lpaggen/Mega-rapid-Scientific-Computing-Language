@@ -1,7 +1,7 @@
 package AST.Nodes.Functions.BuiltIns.Linalg;
 
 import AST.Nodes.DataStructures.Array;
-import AST.Nodes.DataTypes.Constant;
+import AST.Nodes.DataStructures.Matrix;
 import AST.Nodes.DataTypes.IntegerConstant;
 import AST.Nodes.Expression;
 import AST.Nodes.Functions.BuiltIns.BuiltInFunctionSymbol;
@@ -20,10 +20,10 @@ public class Shape extends BuiltInFunctionSymbol {
             throw new IllegalArgumentException("Shape function requires exactly one argument.");
         }
         Object arg = args.getFirst();
-        if (arg instanceof AST.Nodes.DataStructures.Vector vec) {
+        if (arg instanceof Matrix mat) {
             ArrayList<Expression> shape = new ArrayList<>();
-            shape.add(new IntegerConstant(vec.rows(), true));
-            shape.add(new IntegerConstant(vec.cols(), true));
+            shape.add(new IntegerConstant(mat.rows(), true));
+            shape.add(new IntegerConstant(mat.cols(), true));
             return new Array(shape, TokenKind.INTEGER);
         } else {
             throw new IllegalArgumentException("Shape function requires a Vector or Matrix as an argument.");

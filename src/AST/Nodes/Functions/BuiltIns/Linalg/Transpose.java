@@ -17,11 +17,7 @@ public class Transpose extends BuiltInFunctionSymbol {
         if (arg instanceof AST.Nodes.DataStructures.Matrix mat) {
             System.out.println("Transposing a Matrix");
             return mat.transpose();
-        } else if (arg instanceof AST.Nodes.DataStructures.Vector vec) {
-            System.out.println("Transposing a Vector");
-            return vec.transpose();
-        } else {
-            throw new IllegalArgumentException("Transpose function requires a Vector-like as an argument.");
         }
+        throw new IllegalArgumentException("Transpose function requires a Vector-like as an argument.");
     }
 }

@@ -1,10 +1,7 @@
 package AST.Nodes.Functions.BuiltIns.Linalg;
 
 import AST.Nodes.Conditional.BooleanNode;
-import AST.Nodes.DataStructures.Array;
 import AST.Nodes.DataStructures.Matrix;
-import AST.Nodes.DataStructures.Vector;
-import AST.Nodes.Expression;
 import AST.Nodes.Functions.BuiltIns.BuiltInFunctionSymbol;
 import Interpreter.Runtime.Environment;
 
@@ -23,10 +20,7 @@ public class Dot extends BuiltInFunctionSymbol {
         }
         Object m1 = args.get(0);
         Object m2 = args.get(1);
-        if ((!(m1 instanceof Vector v1) || !(m2 instanceof Vector v2)) &&
-                (!(m1 instanceof Matrix) || !(m2 instanceof Matrix)) &&
-                (!(m1 instanceof Vector) || !(m2 instanceof Matrix)) &&
-                (!(m1 instanceof Matrix) || !(m2 instanceof Vector))) {
+        if (!(m1 instanceof Matrix) || !(m2 instanceof Matrix)) {
             throw new IllegalArgumentException("dot product requires both arguments to be Matrix-like.");
         }
 //        if (ar1.rows() != ar2.cols()) {

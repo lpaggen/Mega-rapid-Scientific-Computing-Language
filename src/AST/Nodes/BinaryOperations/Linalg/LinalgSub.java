@@ -1,6 +1,6 @@
 package AST.Nodes.BinaryOperations.Linalg;
 
-import AST.Nodes.DataStructures.Vector;
+import AST.Nodes.DataStructures.Matrix;
 import AST.Nodes.Expression;
 import Interpreter.Runtime.Environment;
 
@@ -14,8 +14,8 @@ public class LinalgSub extends LinalgBinaryNode {
         Expression leftVal = lhs.evaluate(env);
         Expression rightVal = rhs.evaluate(env);
 
-        if (leftVal instanceof Vector l && rightVal instanceof Vector r) {
-            return Vector.sub(l, r);
+        if (leftVal instanceof Matrix l && rightVal instanceof Matrix r) {
+            return Matrix.sub(l, r);
         }
         return new LinalgSub(leftVal, rightVal);
     }

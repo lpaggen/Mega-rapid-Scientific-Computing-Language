@@ -21,12 +21,13 @@ public abstract class LinalgBinaryNode extends BinaryNode {
         TokenKind rightType = rhs.getType(env);
 
         // this isn't right, but it should do just fine until I need it
-        if (leftType == TokenKind.MATRIX && rightType == TokenKind.MATRIX) {
+        // maybe it works, tbh, it's not causing any issues
+        if (leftType == TokenKind.MATRIX || rightType == TokenKind.MATRIX) {
             return TokenKind.MATRIX;
-        } else if (leftType == TokenKind.VECTOR && rightType == TokenKind.VECTOR) {
-            return TokenKind.VECTOR;
         }
-        throw new RuntimeException("Type error in linear algebra operation: " + leftType + " and " + rightType);
+        // vector is deprecated, need to just consider Constant and Matrix
+        // and know if Constant is INTEGER or FLOAT
+        throw new UnsupportedOperationException("Linalg operations currently only support MATRIX types.");
     }
 
     @Override

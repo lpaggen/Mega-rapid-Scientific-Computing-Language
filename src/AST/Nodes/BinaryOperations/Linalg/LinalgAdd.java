@@ -1,8 +1,6 @@
 package AST.Nodes.BinaryOperations.Linalg;
 
-import AST.Nodes.DataStructures.Array;
 import AST.Nodes.DataStructures.Matrix;
-import AST.Nodes.DataStructures.Vector;
 import AST.Nodes.Expression;
 import AST.Nodes.StringNode;
 import Interpreter.Runtime.Environment;

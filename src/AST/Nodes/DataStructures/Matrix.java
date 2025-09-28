@@ -4,13 +4,12 @@ import AST.Nodes.DataTypes.Constant;
 import AST.Nodes.Expression;
 import Interpreter.Runtime.Environment;
 import Interpreter.Tokenizer.TokenKind;
-import Util.ErrorHandler;
 
 import java.util.Iterator;
 
 // this is fully compatible with Vector
 // e.g. Matrix m = new Matrix(...); vs Vector v = new Vector(...);
-public class Matrix extends Expression implements VectorLike {
+public class Matrix extends Expression implements MatrixLike {
     private final Expression[][] elements;
     int numRows;
     int numCols;
@@ -77,12 +76,12 @@ public class Matrix extends Expression implements VectorLike {
     }
 
     @Override
-    public VectorLike getColumns(int... col) {
+    public MatrixLike getColumns(int... col) {
         return null;
     }
 
     @Override
-    public VectorLike getRows(int... row) {
+    public MatrixLike getRows(int... row) {
         return null;
     }
 
@@ -92,22 +91,22 @@ public class Matrix extends Expression implements VectorLike {
     }
 
     @Override
-    public VectorLike dot(Expression left, Expression right) {
+    public MatrixLike dot(Expression left, Expression right) {
         return null;
     }
 
     @Override
-    public VectorLike outer(Expression left, Expression right) {
+    public MatrixLike outer(Expression left, Expression right) {
         return null;
     }
 
     @Override
-    public VectorLike pow(Expression exponent) {
+    public MatrixLike pow(Expression exponent) {
         return null;
     }
 
     @Override
-    public VectorLike transpose() {
+    public MatrixLike transpose() {
         Expression[][] transposed = new Expression[numCols][numRows];
         for (int i = 0; i < numRows; i++) {
             for (int j = 0; j < numCols; j++) {
@@ -165,6 +164,18 @@ public class Matrix extends Expression implements VectorLike {
 
     private boolean dimensionsMatch(Matrix other) {
         return this.numRows == other.numRows && this.numCols == other.numCols;
+    }
+
+    public static Expression div(Expression left, Expression right) {
+        throw new UnsupportedOperationException("Matrix division not implemented yet.");
+    }
+
+    public static Expression sub(Expression left, Expression right) {
+        throw new UnsupportedOperationException("Matrix subtraction not implemented yet.");
+    }
+
+    public static Expression mul(Expression left, Expression right) {
+        throw new UnsupportedOperationException("Matrix multiplication not implemented yet.");
     }
 
     public static Expression add(Expression left, Expression right) {

@@ -1,7 +1,6 @@
 package AST.Nodes.Functions.BuiltIns.Linalg;
 
 import AST.Nodes.DataStructures.Array;
-import AST.Nodes.DataStructures.Vector;
 import AST.Nodes.Expression;
 import AST.Nodes.Functions.BuiltIns.BuiltInFunctionSymbol;
 import Interpreter.Runtime.Environment;

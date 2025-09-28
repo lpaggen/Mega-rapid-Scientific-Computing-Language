@@ -1,7 +1,6 @@
 package AST.Nodes.BinaryOperations.Linalg;
 
-import AST.Nodes.DataStructures.Vector;
-import AST.Nodes.DataStructures.Vector;
+import AST.Nodes.DataStructures.Matrix;
 import AST.Nodes.Expression;
 import Interpreter.Runtime.Environment;
 
@@ -15,8 +14,8 @@ public class LinalgDiv extends LinalgBinaryNode {
         Expression leftVal = lhs.evaluate(env);
         Expression rightVal = rhs.evaluate(env);
 
-        if (leftVal instanceof Vector l && rightVal instanceof Vector r) {
-            return Vector.div(l, r);
+        if (leftVal instanceof Matrix l && rightVal instanceof Matrix r) {
+            return Matrix.div(l, r);
         }
         return new LinalgDiv(leftVal, rightVal);
     }
