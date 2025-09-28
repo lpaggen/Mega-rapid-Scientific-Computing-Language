@@ -150,8 +150,7 @@ public class Tokenizer {
         put("return", TokenKind.RETURN);
         put("int", TokenKind.INTEGER_TYPE);
         put("float", TokenKind.FLOAT_TYPE);
-        put("matrix", TokenKind.MATRIX_TYPE);
-        put("vec", TokenKind.VECTOR_TYPE);
+        put("mat", TokenKind.MATRIX_TYPE);
         put("expr", TokenKind.MATH_TYPE);
         put("break", TokenKind.BREAK);
         put("continue", TokenKind.CONTINUE);
@@ -161,7 +160,7 @@ public class Tokenizer {
         put("str", TokenKind.STRING_TYPE);
         put("->", TokenKind.ARROW); // this is used for function definitions, like in Python
         put("void", TokenKind.VOID_TYPE);
-        put("include", TokenKind.INCLUDE);
+        put("load", TokenKind.INCLUDE);
         put("read", TokenKind.READ);
         put("write", TokenKind.WRITE);
         put("arr", TokenKind.ARRAY_TYPE);
@@ -288,84 +287,4 @@ public class Tokenizer {
         if (pos >= input.length()) return '\0';
         return input.charAt(pos);
     }
-
-    // i don't see how to avoid nested loops to check correctness of the matrix + determine number of columns
-    // maybe one day i will write a program that avoids nested loops
-    // Feb 08 25 is not that day
-    // hope this works
-    // right now this constructs a String, which definitely is not ideal... -> i fixed this by using the MatrixToken class
-//    private void tokenizeMatrix() { // TO DO: handle errors regarding dimensions of matrices
-//        System.out.println("tok matrix");
-//        System.out.println("Matrix tokenization...");
-//        int startPos = pos;
-//        int openBrackets = 0;
-//        int closeBrackets = 0;
-//        Array<Array<Token>> rows = new ArrayList<>();
-//        Array<Token> currentRow = new ArrayList<>();
-//
-//        // First pass: Extract matrix elements and check bracket balance
-//        while (pos < input.length()) {
-//            char c = peek();
-//            if (c == '[') {
-//                openBrackets++;
-//                advance();
-//            } else if (c == ']') {
-//                closeBrackets++;
-//                advance();
-//                rows.add(new ArrayList<>(currentRow)); // End of a row
-//                currentRow.clear();
-//            } else if (isDigit(c) || c == '.') {
-//                Token numberToken =
-//                        tokenizeNumberReturnDouble();
-//                currentRow.add(numberToken);
-//            } else if (Character.isWhitespace(c)) {
-//                advance();
-//            } else if (c == ';') {
-//                advance(); // Move to the next element in the current row
-//            } else {
-//                throw new RuntimeException("Unexpected character in matrix: " + c + " at line " + line);
-//            }
-//            if (openBrackets > 0 && openBrackets == closeBrackets) {
-//                break; // End of the matrix
-//            }
-//            if (pos >= input.length() && openBrackets != closeBrackets) {
-//                throw new RuntimeException("Syntax error: Unclosed matrix at line " + line);
-//            }
-//        }
-//
-//        if (openBrackets == 0 || closeBrackets == 0) {
-//            throw new RuntimeException("Syntax error: Malformed matrix, missing brackets at line " + line);
-//        }
-//
-//        if (openBrackets != closeBrackets) {
-//            throw new RuntimeException("Syntax error: Mismatched brackets in matrix at line " + line);
-//        }
-//
-//        if (rows.isEmpty()) {
-//            tokens.add(new MatrixToken(TokenKind.MATRIX, "0 0", null, line, new ArrayList<>()));
-//            return;
-//        }
-//
-//        // Determine the number of columns and check for consistency
-//        int numRows = rows.size();
-//        int numCols = rows.get(0).size();
-//        for (Array<Token> row : rows) {
-//            if (row.size() != numCols) {
-//                throw new RuntimeException("Syntax error: Inconsistent number of columns in matrix at line " + line);
-//            }
-//        }
-//
-//        // Construct the matrix lexeme and literal
-//        StringBuilder matrixLexeme = new StringBuilder();
-//        matrixLexeme.append(numRows).append(" ").append(numCols);
-//        Array<Token> matrixLiteralTokens = new ArrayList<>();
-//        for (Array<Token> row : rows) {
-//            for (Token token : row) {
-//                matrixLexeme.append(" ").append(token.getLexeme());
-//                matrixLiteralTokens.add(token);
-//            }
-//        }
-//
-//        tokens.add(new MatrixToken(TokenKind.MATRIX, matrixLexeme.toString(), null, line, matrixLiteralTokens));
-//    }
 }

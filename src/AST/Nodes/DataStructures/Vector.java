@@ -179,13 +179,13 @@ public class Vector extends Expression implements VectorLike {
         // this version assumes the arrays contain only scalars, which is wrong
         // they can contain other types of Expression, like Vector, nested Arrays, etc.
         // so we need a map<allowed internal> or something
+        // now it assumes all is constant or already constant from scalar
         Expression[] result = new Expression[length];
         for (int i = 0; i < length; i++) {
             Constant leftElement = leftArray != null ? (Constant) leftArray.get(i) : leftScalar;
             Constant rightElement = rightArray != null ? (Constant) rightArray.get(i) : rightScalar;
             result[i] = Constant.add(leftElement, rightElement);
         }
-
         return new Vector(result, type);
     }
 

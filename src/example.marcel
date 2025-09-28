@@ -1,7 +1,7 @@
-include stdlib;
-include linalg;
+load stdlib;
+load linalg;
 
-vec<int> x = [5, 2 * 2, 8 * 3];
-vec<int> y = [1, [2, 6, 7], 3];
+mat<int> x = [[5, 2 * 2, 8], [1, 0, 3 + 2]];
+mat<int> y = [[1, 8, 7], [3, 4, 5]];
 
 print(y + x);

@@ -11,7 +11,7 @@ import AST.Nodes.BinaryOperations.Scalar.Div;
 import AST.Nodes.BinaryOperations.Scalar.Mul;
 import AST.Nodes.BinaryOperations.Scalar.Sub;
 import AST.Nodes.DataStructures.Array;
-import AST.Nodes.DataStructures.Vector;
+import AST.Nodes.DataStructures.Matrix;
 import AST.Nodes.DataTypes.Constant;
 import AST.Nodes.DataTypes.FloatConstant;
 import AST.Nodes.DataTypes.IntegerConstant;
@@ -183,7 +183,7 @@ public class Parser {
             return new GroupingNode(expr);
         }
         if (match(TokenKind.OPEN_BRACKET)) {
-            return parseVector();
+            return parseMatrix();
         }
         // this is really not good and not safe, and it's a dumb check. but it works until i figure something better out
         // debug to see if we are parsing identifier i
@@ -212,17 +212,63 @@ public class Parser {
 
     // need support for ndVector ? or separate parser for each
     // really this should work fine, because we can get nested arrays
-    private Expression parseVector() {
-        ArrayList<Expression> elements = new ArrayList<>();
-        if (!check(TokenKind.CLOSE_BRACKET)) {  // if it's empty array
+//    private Expression parseVector() {
+//        ArrayList<Expression> elements = new ArrayList<>();
+//        if (!check(TokenKind.CLOSE_BRACKET)) {  // if it's empty array
+//            do {
+//                Expression element = parseExpression();
+//                elements.add(element);
+//            } while (match(TokenKind.COMMA)); // comma separate elements of the 1D array
+//        }
+//        consume(TokenKind.CLOSE_BRACKET); // consume the closing ]
+//        Expression[] arrayElementsArray = elements.toArray(new Expression[0]);
+//        return new Vector(arrayElementsArray, currentDataType);
+//    }
+
+    private Expression parseMatrix() {
+        List<List<Expression>> rows = new ArrayList<>();
+        if (!check(TokenKind.CLOSE_BRACKET)) {  // if it's empty matrix
             do {
-                Expression element = parseExpression();
-                elements.add(element);
-            } while (match(TokenKind.COMMA)); // comma separate elements of the 1D array
+                List<Expression> row = new ArrayList<>();
+                if (match(TokenKind.OPEN_BRACKET)) { // each row starts with an opening bracket
+                    if (!check(TokenKind.CLOSE_BRACKET)) { // if it's not an empty row
+                        do {
+                            Expression element = parseExpression();
+                            row.add(element);
+                        } while (match(TokenKind.COMMA)); // comma separate elements of the row
+                    }
+                    consume(TokenKind.CLOSE_BRACKET); // consume the closing bracket of the row
+                    rows.add(row);
+                } else {
+                    throw new ErrorHandler(
+                            "parsing",
+                            peek().getLine(),
+                            "Unexpected token: " + peek().getLexeme(),
+                            "Expected '[' to start a new row in the matrix."
+                    );
+                }
+            } while (match(TokenKind.COMMA)); // comma separate rows of the matrix
         }
-        consume(TokenKind.CLOSE_BRACKET); // consume the closing ]
-        Expression[] arrayElementsArray = elements.toArray(new Expression[0]);
-        return new Vector(arrayElementsArray, currentDataType);
+        consume(TokenKind.CLOSE_BRACKET); // consume the closing ] of the matrix
+        // convert List<List<Expression>> to Expression[][]
+        int numRows = rows.size();
+        int numCols = numRows > 0 ? rows.get(0).size() : 0;
+        Expression[][] matrixElements = new Expression[numRows][numCols];
+        for (int i = 0; i < numRows; i++) {
+            List<Expression> row = rows.get(i);
+            if (row.size() != numCols) {
+                throw new ErrorHandler(
+                        "parsing",
+                        peek().getLine(),
+                        "Inconsistent row sizes in matrix.",
+                        "All rows in a matrix must have the same number of elements."
+                );
+            }
+            for (int j = 0; j < numCols; j++) {
+                matrixElements[i][j] = row.get(j);
+            }
+        }
+        return new Matrix(matrixElements, currentDataType);
     }
 
     // this method handles variable declarations, i will add more error checks at some stage
@@ -240,7 +286,6 @@ public class Parser {
                 TokenKind.MATRIX_TYPE, TokenKind.MATRIX,
                 TokenKind.SYMBOL_TYPE, TokenKind.SYMBOL,
                 TokenKind.STRING_TYPE, TokenKind.STRING,
-                TokenKind.VECTOR_TYPE, TokenKind.VECTOR,
                 TokenKind.VOID_TYPE, TokenKind.VOID,
                 TokenKind.ARRAY_TYPE, TokenKind.ARRAY
         );
@@ -257,13 +302,13 @@ public class Parser {
         System.out.println("Current token at parseDeclaration: " + peek());
         Token typeToken = advance(); // consume the type token
         System.out.println("Type token: " + typeToken.getLexeme());
-        if (typeToken.getKind() == TokenKind.VECTOR_TYPE) { // this will be something else for all types requiring this step
+        if (typeToken.getKind() == TokenKind.MATRIX_TYPE) { // this will be something else for all types requiring this step
             if (!match(TokenKind.LESS)) {
                 throw new ErrorHandler(
                         "parsing",
                         peek().getLine(),
                         "Unexpected token: " + peek().getLexeme(),
-                        "Expected '<' after 'vector' type declaration."
+                        "Expected '<' after 'Matrix' type declaration."
                 );
                 //throw new RuntimeException(peek() + " Expected '<' after 'vector' type declaration.");
             }
@@ -272,18 +317,18 @@ public class Parser {
                         "parsing",
                         peek().getLine(),
                         "Unexpected token: " + peek().getLexeme(),
-                        "Expected a type keyword (int, float, bool, matrix, symbol) inside vector declaration."
+                        "Expected a type keyword (int, float, bool, matrix, symbol) inside matrix declaration."
                 );
                 //throw new RuntimeException(peek() + " Expected type keyword inside vector declaration.");
             }
             Token innerTypeToken = advance(); // consume the inner type token
-            System.out.println("Inner type token for vector: " + innerTypeToken.getLexeme());
+            System.out.println("Inner type token for matrix: " + innerTypeToken.getLexeme());
             if (!match(TokenKind.GREATER)) {
                 throw new ErrorHandler(
                         "parsing",
                         peek().getLine(),
                         "Unexpected token: " + peek().getLexeme(),
-                        "Expected '>' after inner type in vector declaration."
+                        "Expected '>' after inner type in matrix declaration."
                 );
                 //throw new RuntimeException(peek() + " Expected '>' after inner type in vector declaration.");
             }
@@ -525,17 +570,15 @@ public class Parser {
             TokenKind.MATRIX_TYPE,
             TokenKind.SYMBOL_TYPE,
             TokenKind.STRING_TYPE,
-            TokenKind.VOID_TYPE,
-            TokenKind.VECTOR_TYPE
+            TokenKind.VOID_TYPE
     );
 
     private static final Set<TokenKind> LinearAlgebraOperators = Set.of(
-            TokenKind.VECTOR,
             TokenKind.MATRIX
     );
 
     // probably we need some more operators here later on
-    // also for the linear algebra either we handle it through Add etc, or we make new nodes
+    // also for the linear algebra either we handle it through Add etc., or we make new nodes
     private BinaryNode inferBinaryNodeFromOperator(TokenKind operator, Expression lhs, Expression rhs) {
         System.out.println("inferBinaryNodeFromOperator called with operator: " + operator);
         System.out.println("lhs type: " + lhs.getType(environment) + ", rhs type: " + rhs.getType(environment));

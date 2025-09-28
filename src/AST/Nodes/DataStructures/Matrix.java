@@ -1,8 +1,10 @@
 package AST.Nodes.DataStructures;
 
+import AST.Nodes.DataTypes.Constant;
 import AST.Nodes.Expression;
 import Interpreter.Runtime.Environment;
 import Interpreter.Tokenizer.TokenKind;
+import Util.ErrorHandler;
 
 import java.util.Iterator;
 
@@ -159,6 +161,56 @@ public class Matrix extends Expression implements VectorLike {
             position++;
         }
         return new Matrix(evaluatedElements, expectedType);
+    }
+
+    private boolean dimensionsMatch(Matrix other) {
+        return this.numRows == other.numRows && this.numCols == other.numCols;
+    }
+
+    public static Expression add(Expression left, Expression right) {
+        // check legal types -> Matrix or Constant (more will come with the algebra)
+        Matrix leftMat = left instanceof Matrix ? (Matrix) left : null;
+        Matrix rightMat = right instanceof Matrix ? (Matrix) right : null;
+        Constant leftConst = left instanceof Constant ? (Constant) left : null;
+        Constant rightConst = right instanceof Constant ? (Constant) right : null;
+        // check if the types are legal on either side
+        if (leftMat == null && leftConst == null) {
+            throw new RuntimeException("Left operand must be a Matrix or Constant for addition, got: " + left.getClass().getSimpleName());
+        } else if (rightMat == null && rightConst == null) {
+            throw new RuntimeException("Right operand must be a Matrix or Constant for addition, got: " + right.getClass().getSimpleName());
+        }
+        if (leftMat != null) {
+            int rows = leftMat.rows();
+            TokenKind type = leftMat.getType();
+        } else if (rightMat != null) {
+            int cols = rightMat.cols();
+            TokenKind type = rightMat.getType();
+        } else {  // both scalars
+            return Constant.add(leftConst, rightConst);
+        }
+        // this only applies if both are matrices, because a constant can ALWAYS be added to the matrix
+        if ((leftMat != null && rightMat !=null) && !(((Matrix) left).dimensionsMatch((Matrix) right))) {
+            throw new RuntimeException("Matrix dimension mismatch for addition: left is " +
+                    leftMat.rows() + "x" + leftMat.cols() + ", right is " +
+                    rightMat.rows() + "x" + rightMat.cols());
+        }
+        int rows = leftMat.rows();
+        int cols = leftMat.cols();
+        Expression[][] resultElements = new Expression[rows][cols];
+        for (int i = 0; i < rows; i++) {  // need to resolve the type of the elements every time
+            for (int j = 0; j < cols; j++) {
+//                Constant leftElem = leftMat != null ? (Constant) leftMat.get(i, j) : leftConst;
+//                Constant rightElem = rightMat != null ? (Constant) rightMat.get(i, j) : rightConst;
+//                // Assuming Expression has an add method
+//                resultElements[i][j] = Constant.add(
+//                        leftElem,
+//                        rightElem);
+                resultElements[i][j] = Matrix.add(
+                        leftMat != null ? leftMat.get(i, j) : leftConst,
+                        rightMat != null ? rightMat.get(i, j) : rightConst);
+            }
+        }
+        return new Matrix(resultElements, leftMat.getType());
     }
 
     @Override

@@ -1,6 +1,7 @@
 package AST.Nodes.BinaryOperations.Linalg;
 
 import AST.Nodes.DataStructures.Array;
+import AST.Nodes.DataStructures.Matrix;
 import AST.Nodes.DataStructures.Vector;
 import AST.Nodes.Expression;
 import AST.Nodes.StringNode;
@@ -18,11 +19,11 @@ public class LinalgAdd extends LinalgBinaryNode {
 
         if (leftVal instanceof StringNode || rightVal instanceof StringNode) {
             throw new UnsupportedOperationException("Cannot perform addition on String types in linear algebra operations.");
-        } else if (!(leftVal instanceof Vector || rightVal instanceof Vector)) {
+        } else if (!(leftVal instanceof Matrix || rightVal instanceof Matrix)) {
             throw new UnsupportedOperationException("At least one operand must be an Array for linear algebra addition.");
         }
 
-        return Vector.add(leftVal, rightVal);
+        return Matrix.add(leftVal, rightVal);
     }
 
     @Override
