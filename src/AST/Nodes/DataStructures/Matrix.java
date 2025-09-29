@@ -1,6 +1,8 @@
 package AST.Nodes.DataStructures;
 
 import AST.Nodes.DataTypes.Constant;
+import AST.Nodes.DataTypes.FloatConstant;
+import AST.Nodes.DataTypes.IntegerConstant;
 import AST.Nodes.Expression;
 import Interpreter.Runtime.Environment;
 import Interpreter.Tokenizer.TokenKind;
@@ -42,11 +44,6 @@ public class Matrix extends Expression implements MatrixLike {
 
     @Override
     public boolean isEmpty() {
-        return false;
-    }
-
-    @Override
-    public boolean contains(Expression element) {
         return false;
     }
 
@@ -141,6 +138,11 @@ public class Matrix extends Expression implements MatrixLike {
     }
 
     @Override
+    public TokenKind getType(Environment env) {
+        return type;
+    }
+
+    @Override
     public Expression evaluate(Environment env) {
         Expression[][] evaluatedElements = new Expression[numRows][numCols];
         TokenKind expectedType = type;
@@ -149,8 +151,11 @@ public class Matrix extends Expression implements MatrixLike {
             Expression evaluated = elem.evaluate(env);
             if (expectedType == null) {
                 expectedType = evaluated.getType(env);
-            } else if (evaluated.getType(env) != expectedType) {
-                throw new RuntimeException("Array type mismatch: expected "
+            } else if (evaluated.getType(env) == TokenKind.INTEGER && expectedType == TokenKind.FLOAT) {
+                evaluated = new FloatConstant(((Constant) evaluated).getDoubleValue(), false);
+            }
+            else if (evaluated.getType(env) != expectedType) {
+                throw new RuntimeException("Matrix type mismatch: expected "
                         + expectedType + ", got " + evaluated.getType(env)
                         + " in element " + evaluated + " at position " + position);
             }
@@ -184,6 +189,9 @@ public class Matrix extends Expression implements MatrixLike {
         Matrix rightMat = right instanceof Matrix ? (Matrix) right : null;
         Constant leftConst = left instanceof Constant ? (Constant) left : null;
         Constant rightConst = right instanceof Constant ? (Constant) right : null;
+        int rows = -1;
+        int cols = -1;
+        TokenKind type = TokenKind.VOID;
         // check if the types are legal on either side
         if (leftMat == null && leftConst == null) {
             throw new RuntimeException("Left operand must be a Matrix or Constant for addition, got: " + left.getClass().getSimpleName());
@@ -191,37 +199,32 @@ public class Matrix extends Expression implements MatrixLike {
             throw new RuntimeException("Right operand must be a Matrix or Constant for addition, got: " + right.getClass().getSimpleName());
         }
         if (leftMat != null) {
-            int rows = leftMat.rows();
-            TokenKind type = leftMat.getType();
+            rows = leftMat.rows();
+            cols = leftMat.cols();
+            type = leftMat.getType();
         } else if (rightMat != null) {
-            int cols = rightMat.cols();
-            TokenKind type = rightMat.getType();
+            cols = rightMat.cols();
+            rows = leftMat.rows();
+            type = rightMat.getType();
         } else {  // both scalars
             return Constant.add(leftConst, rightConst);
         }
+        System.out.println("Adding matrices of size " + rows + "x" + cols);
         // this only applies if both are matrices, because a constant can ALWAYS be added to the matrix
         if ((leftMat != null && rightMat !=null) && !(((Matrix) left).dimensionsMatch((Matrix) right))) {
             throw new RuntimeException("Matrix dimension mismatch for addition: left is " +
                     leftMat.rows() + "x" + leftMat.cols() + ", right is " +
                     rightMat.rows() + "x" + rightMat.cols());
         }
-        int rows = leftMat.rows();
-        int cols = leftMat.cols();
         Expression[][] resultElements = new Expression[rows][cols];
         for (int i = 0; i < rows; i++) {  // need to resolve the type of the elements every time
             for (int j = 0; j < cols; j++) {
-//                Constant leftElem = leftMat != null ? (Constant) leftMat.get(i, j) : leftConst;
-//                Constant rightElem = rightMat != null ? (Constant) rightMat.get(i, j) : rightConst;
-//                // Assuming Expression has an add method
-//                resultElements[i][j] = Constant.add(
-//                        leftElem,
-//                        rightElem);
                 resultElements[i][j] = Matrix.add(
                         leftMat != null ? leftMat.get(i, j) : leftConst,
                         rightMat != null ? rightMat.get(i, j) : rightConst);
             }
         }
-        return new Matrix(resultElements, leftMat.getType());
+        return new Matrix(resultElements, type);
     }
 
     @Override

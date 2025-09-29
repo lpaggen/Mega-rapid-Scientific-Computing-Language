@@ -5,9 +5,11 @@ import AST.Nodes.DataStructures.Matrix;
 import AST.Nodes.DataTypes.IntegerConstant;
 import AST.Nodes.Expression;
 import AST.Nodes.Functions.BuiltIns.BuiltInFunctionSymbol;
+import Interpreter.Runtime.Environment;
 import Interpreter.Tokenizer.TokenKind;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Shape extends BuiltInFunctionSymbol {
     public Shape() {
@@ -15,7 +17,7 @@ public class Shape extends BuiltInFunctionSymbol {
     }
 
     @Override
-    public Object call(Interpreter.Runtime.Environment env, java.util.List<Object> args) {
+    public Object call(Environment env, List<Object> args) {
         if (args.size() != 1) {
             throw new IllegalArgumentException("Shape function requires exactly one argument.");
         }
@@ -26,7 +28,7 @@ public class Shape extends BuiltInFunctionSymbol {
             shape.add(new IntegerConstant(mat.cols(), true));
             return new Array(shape, TokenKind.INTEGER);
         } else {
-            throw new IllegalArgumentException("Shape function requires a Vector or Matrix as an argument.");
+            throw new IllegalArgumentException("Shape function requires a Matrix as an argument.");
         }
     }
 }

@@ -11,6 +11,11 @@ public abstract class Expression extends ASTNode {
         throw new RuntimeException("getType not implemented for " + this.getClass().getSimpleName());
     }
 
+    // will eventually move a lot of the arithmetic to override this
+    public Expression add (Expression other, Environment env) {
+        throw new RuntimeException("Addition not implemented for " + this.getClass().getSimpleName());
+    }
+
     public double evaluateNumeric(Environment env) {
         // default implementation, can be overridden by subclasses
         Expression evaluated = evaluate(env);

@@ -13,4 +13,8 @@ public class IntegerConstant extends Constant {
     public TokenKind getType(Environment env) {
         return TokenKind.INTEGER;
     }
+
+    public int evaluateInteger() {
+        return (int) this.getDoubleValue();
+    }
 }

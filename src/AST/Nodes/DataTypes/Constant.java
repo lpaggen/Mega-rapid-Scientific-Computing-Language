@@ -41,11 +41,6 @@ public abstract class Constant extends Expression {
         return value.doubleValue() == other.getDoubleValue();
     }
 
-    @Override
-    public double evaluateNumeric(Environment env) {
-        return value.doubleValue();
-    }
-
     public double getDoubleValue() {
         return value.doubleValue();
     }

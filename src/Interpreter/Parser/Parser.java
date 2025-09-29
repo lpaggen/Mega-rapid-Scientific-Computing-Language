@@ -223,18 +223,19 @@ public class Parser {
 //        return new Vector(arrayElementsArray, currentDataType);
 //    }
 
+    // somehow we should still allow for vector notation, matrix is otherwise very annoying
+    // parser is also going to allow for vector notation, no need for double brackets everytime
+    // TODO will resolve this in a later build
     private Expression parseMatrix() {
         List<List<Expression>> rows = new ArrayList<>();
         if (!check(TokenKind.CLOSE_BRACKET)) {  // if it's empty matrix
             do {
                 List<Expression> row = new ArrayList<>();
-                if (match(TokenKind.OPEN_BRACKET)) { // each row starts with an opening bracket
-                    if (!check(TokenKind.CLOSE_BRACKET)) { // if it's not an empty row
-                        do {
-                            Expression element = parseExpression();
-                            row.add(element);
-                        } while (match(TokenKind.COMMA)); // comma separate elements of the row
-                    }
+                if (match(TokenKind.OPEN_BRACKET) && !check(TokenKind.CLOSE_BRACKET)) { // each row starts with an opening bracket
+                    do {
+                        Expression element = parseExpression();
+                        row.add(element);
+                    } while (match(TokenKind.COMMA)); // comma separate elements of the row
                     consume(TokenKind.CLOSE_BRACKET); // consume the closing bracket of the row
                     rows.add(row);
                 } else {

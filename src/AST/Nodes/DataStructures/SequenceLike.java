@@ -16,7 +16,6 @@ public interface SequenceLike extends Iterable<Expression> {
     void set(int index, Expression element);
     boolean isEmpty();
     String toString();
-    boolean contains(Expression element);
     boolean equals(Object o);
     int hashCode();
     TokenKind getType();
