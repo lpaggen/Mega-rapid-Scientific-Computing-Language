@@ -18,5 +18,6 @@ public class LinalgLibrary {
         LinalgSymbols.put("dot", new Dot());
         LinalgSymbols.put("shape", new Shape());
         LinalgSymbols.put("T", new Transpose());
+        LinalgSymbols.put("det", new Determinant());
     }
 }

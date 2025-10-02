@@ -55,8 +55,10 @@ public class UnaryNode extends Expression {
 
     private Expression evaluateMinus(Expression rightValue) {
         boolean raw = (rightValue instanceof Constant c && c.isRaw());
-        if (rightValue instanceof Constant c) {
+        if ((rightValue instanceof Constant c) && c.getType(new Environment()) == TokenKind.FLOAT) {
             return new FloatConstant(-c.evaluateNumeric(new Environment()), c.isRaw());
+        } else if ((rightValue instanceof Constant c) && c.getType(new Environment()) == TokenKind.INTEGER) {
+            return new IntegerConstant((int) -c.evaluateNumeric(new Environment()), c.isRaw());
         }
         if (rightValue instanceof UnaryNode unary && unary.operator.getKind() == TokenKind.MINUS) {
             return unary.rhs; // cancel double negation

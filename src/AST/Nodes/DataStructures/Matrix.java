@@ -386,7 +386,45 @@ public class Matrix extends Expression implements MatrixLike {
 //    }
 
     public static Expression sub(Expression left, Expression right) {
-        throw new UnsupportedOperationException("Matrix subtraction not implemented yet.");
+        Matrix leftMat = left instanceof Matrix ? (Matrix) left : null;
+        Matrix rightMat = right instanceof Matrix ? (Matrix) right : null;
+        Constant leftConst = left instanceof Constant ? (Constant) left : null;
+        Constant rightConst = right instanceof Constant ? (Constant) right : null;
+        int rows;
+        int cols;
+        TokenKind type;
+        // check if the types are legal on either side
+        if (leftMat == null && leftConst == null) {
+            throw new RuntimeException("Left operand must be a Matrix or Constant for subtraction, got: " + left.getClass().getSimpleName());
+        } else if (rightMat == null && rightConst == null) {
+            throw new RuntimeException("Right operand must be a Matrix or Constant for subtraction, got: " + right.getClass().getSimpleName());
+        }
+        if (leftMat != null) {
+            rows = leftMat.rows();
+            cols = leftMat.cols();
+            type = leftMat.getType();
+        } else if (rightMat != null) {
+            cols = rightMat.cols();
+            rows = leftMat.rows();
+            type = rightMat.getType();
+        } else {  // both scalars
+            return Constant.subtract(leftConst, rightConst);
+        }
+        // this only applies if both are matrices, because a constant can ALWAYS be multiplied to the matrix
+        if ((leftMat != null && rightMat !=null) && !(((Matrix) left).dimensionsMatch((Matrix) right))) {
+            throw new RuntimeException("Matrix dimension mismatch for subtraction: left is " +
+                    leftMat.rows() + "x" + leftMat.cols() + ", right is " +
+                    rightMat.rows() + "x" + rightMat.cols());
+        }
+        Expression[][] resultElements = new Expression[rows][cols];
+        for (int i = 0; i < rows; i++) {  // need to resolve the type of the elements every time
+            for (int j = 0; j < cols; j++) {
+                resultElements[i][j] = Matrix.sub(
+                        leftMat != null ? leftMat.get(i, j) : leftConst,
+                        rightMat != null ? rightMat.get(i, j) : rightConst);
+            }
+        }
+        return new Matrix(resultElements, type);
     }
 
     // !!! hadamard (element-wise) division, not matrix division, that will come later
@@ -516,6 +554,51 @@ public class Matrix extends Expression implements MatrixLike {
             }
         }
         return new Matrix(resultElements, type);
+    }
+
+    public Expression determinant() {
+        if (!isSquare()) {
+            throw new RuntimeException("Matrix must be square.");
+        }
+        int n = numRows;
+        // 1x1
+        if (n == 1) {
+            return elements[0][0];
+        }
+        // 2x2
+        if (n == 2) {
+            return Matrix.sub(
+                    Matrix.mul(elements[0][0], elements[1][1]),
+                    Matrix.mul(elements[0][1], elements[1][0])
+            );
+        }
+        Expression result = new IntegerConstant(0, false); // accumulate sum
+        for (int j = 0; j < n; j++) {
+            Expression scalar = elements[0][j];
+            // skip zero elements
+            if (scalar instanceof Constant zeroCheck && Math.abs(zeroCheck.getDoubleValue()) < 1e-10) {
+                continue;
+            }
+            // create submatrix excluding row 0 and column j
+            Expression[][] subElements = new Expression[n - 1][n - 1];
+            for (int r = 1; r < n; r++) {
+                int subColIndex = 0;
+                for (int c = 0; c < n; c++) {
+                    if (c == j) continue;
+                    subElements[r - 1][subColIndex++] = elements[r][c];
+                }
+            }
+            Matrix subMatrix = new Matrix(subElements, type);
+            Expression subDet = subMatrix.determinant();  // recursive call
+            Expression term = Matrix.mul(scalar, subDet);
+            // alternate signs
+            if (j % 2 == 0) {
+                result = Matrix.add(result, term);
+            } else {
+                result = Matrix.sub(result, term);
+            }
+        }
+        return result;
     }
 
     @Override

@@ -148,8 +148,6 @@ public class Parser {
             // with match() we skip the token and advance the position
             Token operator = previous();
             Expression rhs = parseUnary();
-            System.out.println("class of rhs: " + rhs.getClass());
-            System.out.println("Parsing unary operator: " + operator.getLexeme() + " with rhs: " + rhs);
             return new UnaryNode(operator, rhs);
         }
         System.out.println("current token at parseUnary: " + peek());
