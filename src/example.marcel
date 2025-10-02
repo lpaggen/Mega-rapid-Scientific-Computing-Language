@@ -2,8 +2,9 @@ load stdlib;
 load linalg;
 
 mat<int> x = [[5, 2 * 2, 8], [1, 0, 3 + 2]];
-mat<float> y = [[3, 4, 5], [6, [[7, 6, 7, 8]], 8]];
+mat<int> y = [[3, 4, 5], [6, 7, 8]];
 
 int z = 10;
 
 print(y + x);
+print(y * x);

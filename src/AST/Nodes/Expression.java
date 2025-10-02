@@ -4,7 +4,7 @@ import AST.Nodes.DataTypes.Constant;
 import Interpreter.Runtime.Environment;
 import Interpreter.Tokenizer.TokenKind;
 
-public abstract class Expression extends ASTNode {
+public abstract class Expression extends ASTNode implements Cloneable {
     // this is getting the variable from the lookup table (which we call env)
     public abstract Expression evaluate(Environment env);
     public TokenKind getType(Environment env) {
@@ -26,4 +26,13 @@ public abstract class Expression extends ASTNode {
         }
     }
     public abstract String toString();
+
+    @Override
+    public Expression clone() {
+        try {
+            return (Expression) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
 }
