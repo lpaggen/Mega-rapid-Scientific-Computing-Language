@@ -22,6 +22,7 @@ public class UnaryNode extends Expression {
     public Expression evaluate(Environment env) {
         Expression rightValue = rhs.evaluate(env);
         return switch (operator.getKind()) {
+            case PLUS -> rightValue; // unary plus does nothing
             case MINUS -> evaluateMinus(rightValue);
             case NOT_EQUAL -> new BooleanNode(!isTruthy(rightValue));
             default -> throw new RuntimeException("Unsupported unary operator: " + operator.getKind());

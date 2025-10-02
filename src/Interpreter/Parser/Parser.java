@@ -144,7 +144,7 @@ public class Parser {
     }
 
     private Expression parseUnary() {
-        if (match(TokenKind.NOT, TokenKind.MINUS)) { // handle both ! and negation
+        if (match(TokenKind.NOT, TokenKind.MINUS, TokenKind.PLUS)) { // handle both ! and negation
             // with match() we skip the token and advance the position
             Token operator = previous();
             Expression rhs = parseUnary();
