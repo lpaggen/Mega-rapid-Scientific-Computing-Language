@@ -4,8 +4,8 @@ import Interpreter.Runtime.Environment;
 import Interpreter.Tokenizer.TokenKind;
 
 public class IntegerConstant extends Constant {
-    public IntegerConstant(int value, boolean isRaw) {
-        super(value, isRaw);
+    public IntegerConstant(int value) {
+        super(value);
         TokenKind type = TokenKind.INTEGER;
     }
 

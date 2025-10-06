@@ -4,8 +4,8 @@ import Interpreter.Runtime.Environment;
 import Interpreter.Tokenizer.TokenKind;
 
 public class FloatConstant extends Constant {
-    public FloatConstant(double value, boolean isRaw) {
-        super(value, isRaw);
+    public FloatConstant(double value) {
+        super(value);
         TokenKind type = TokenKind.FLOAT;
     }
 

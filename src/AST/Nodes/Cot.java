@@ -19,7 +19,7 @@ public class Cot extends Expression {
             if (value == 0) {
                 throw new ArithmeticException("Cotangent is undefined for 0");
             }
-            return new FloatConstant(1.0 / Math.tan(value), c.isRaw());
+            return new FloatConstant(1.0 / Math.tan(value));
         }
         return new Cot(argValue);
     }

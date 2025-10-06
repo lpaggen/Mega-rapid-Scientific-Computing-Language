@@ -22,7 +22,7 @@ public class Exp extends Expression {
         Expression evaluatedArg = arg.evaluate(env);
         if (evaluatedArg instanceof Constant c) {
             double argValue = c.evaluateNumeric(env);
-            return new FloatConstant(Math.exp(argValue), c.isRaw());
+            return new FloatConstant(Math.exp(argValue));
         }
         return new Exp(evaluatedArg);
     }

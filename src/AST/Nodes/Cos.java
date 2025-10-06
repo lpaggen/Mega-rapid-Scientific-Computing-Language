@@ -15,7 +15,7 @@ public class Cos extends Expression {
     public Expression evaluate(Environment env) {
         Expression argValue = this.arg.evaluate(env);
         if (argValue instanceof Constant c) {
-            return new FloatConstant(Math.cos(c.getDoubleValue()), c.isRaw());
+            return new FloatConstant(Math.cos(c.getDoubleValue()));
         }
         return new Cos(argValue);
     }

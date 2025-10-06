@@ -27,6 +27,6 @@ public class BooleanNode extends Expression {
     }
 
     public Constant toNumeric() { // this is gonna move or change, i don't know why it's there to begin with
-        return new IntegerConstant(value ? 1 : 0, false);
+        return new IntegerConstant(value ? 1 : 0);
     }
 }

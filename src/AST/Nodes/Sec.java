@@ -16,7 +16,7 @@ public class Sec extends Expression {
     public Expression evaluate(Environment env) {
         Expression argValue = arg.evaluate(env);
         if (argValue instanceof Constant c) {
-            return new FloatConstant(1 / Math.cos(c.getDoubleValue()), c.isRaw());
+            return new FloatConstant(1 / Math.cos(c.getDoubleValue()));
         }
         return new Sec(argValue);
     }

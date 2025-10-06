@@ -15,7 +15,7 @@ public class Tan extends Expression {
     public Expression evaluate(Environment env) {
         Expression argValue = arg.evaluate(env);
         if (argValue instanceof Constant c) {
-            return new FloatConstant(Math.tan(c.getDoubleValue()), c.isRaw());
+            return new FloatConstant(Math.tan(c.getDoubleValue()));
         }
         return new Tan(argValue);
     }

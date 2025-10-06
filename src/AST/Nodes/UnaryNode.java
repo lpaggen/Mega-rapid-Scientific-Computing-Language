@@ -55,16 +55,15 @@ public class UnaryNode extends Expression {
     }
 
     private Expression evaluateMinus(Expression rightValue) {
-        boolean raw = (rightValue instanceof Constant c && c.isRaw());
         if ((rightValue instanceof Constant c) && c.getType(new Environment()) == TokenKind.FLOAT) {
-            return new FloatConstant(-c.evaluateNumeric(new Environment()), c.isRaw());
+            return new FloatConstant(-c.evaluateNumeric(new Environment()));
         } else if ((rightValue instanceof Constant c) && c.getType(new Environment()) == TokenKind.INTEGER) {
-            return new IntegerConstant((int) -c.evaluateNumeric(new Environment()), c.isRaw());
+            return new IntegerConstant((int) -c.evaluateNumeric(new Environment()));
         }
         if (rightValue instanceof UnaryNode unary && unary.operator.getKind() == TokenKind.MINUS) {
             return unary.rhs; // cancel double negation
         }
-        return new Mul(new IntegerConstant(-1, raw), rightValue);
+        return new Mul(new IntegerConstant(-1), rightValue);
     }
 
     public Token getOperator() {

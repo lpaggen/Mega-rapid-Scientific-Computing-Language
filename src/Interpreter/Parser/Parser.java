@@ -166,12 +166,12 @@ public class Parser {
         if (match(TokenKind.INTEGER)) {
             System.out.println("Parsing integer literal: " + previous().getLiteral());
             boolean isRawType = match(TokenKind.RAW); // check if the next token is a RAW type indicator
-            return new IntegerConstant(Integer.parseInt(previous().getLexeme()), isRawType); // this will return a Constant node with the numeric value
+            return new IntegerConstant(Integer.parseInt(previous().getLexeme())); // this will return a Constant node with the numeric value
         }
         if (match(TokenKind.FLOAT)) {
             System.out.println("Parsing float literal: " + Float.parseFloat(previous().getLexeme()));
             boolean isRawType = match(TokenKind.RAW); // check if the next token is a RAW type indicator
-            return new FloatConstant(Float.parseFloat(previous().getLexeme()), isRawType); // this will return a Constant node with the numeric value
+            return new FloatConstant(Float.parseFloat(previous().getLexeme())); // this will return a Constant node with the numeric value
         }
         if (match(TokenKind.OPEN_PAREN)) {
             Expression expr = parseExpression();

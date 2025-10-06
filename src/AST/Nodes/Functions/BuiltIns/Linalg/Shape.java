@@ -24,8 +24,8 @@ public class Shape extends BuiltInFunctionSymbol {
         Object arg = args.getFirst();
         if (arg instanceof Matrix mat) {
             ArrayList<Expression> shape = new ArrayList<>();
-            shape.add(new IntegerConstant(mat.rows(), true));
-            shape.add(new IntegerConstant(mat.cols(), true));
+            shape.add(new IntegerConstant(mat.rows()));
+            shape.add(new IntegerConstant(mat.cols()));
             return new Array(shape, TokenKind.INTEGER);
         } else {
             throw new IllegalArgumentException("Shape function requires a Matrix as an argument.");

@@ -67,7 +67,6 @@
 package AST.Nodes.Functions.BuiltIns.StandardLib;
 
 import AST.Nodes.Conditional.BooleanNode;
-import AST.Nodes.DataTypes.Constant;
 import AST.Nodes.DataTypes.FloatConstant;
 import AST.Nodes.DataTypes.IntegerConstant;
 import AST.Nodes.Functions.BuiltIns.BuiltInFunctionSymbol;
@@ -93,10 +92,10 @@ public class Cast extends BuiltInFunctionSymbol {
         String targetType = args.get(1).toString().toLowerCase();
 
         return switch (targetType) {
-            case "int" -> new IntegerConstant(Integer.parseInt(value.toString()), false);
-            case "float" -> new FloatConstant(Float.parseFloat(value.toString()), false);
-            case "int$" -> new IntegerConstant(Integer.parseInt(value.toString()), true);
-            case "float$" -> new FloatConstant(Float.parseFloat(value.toString()), true);
+            case "int" -> new IntegerConstant(Integer.parseInt(value.toString()));
+            case "float" -> new FloatConstant(Float.parseFloat(value.toString()));
+            case "int$" -> new IntegerConstant(Integer.parseInt(value.toString()));
+            case "float$" -> new FloatConstant(Float.parseFloat(value.toString()));
             case "bool" -> new BooleanNode(Boolean.parseBoolean(value.toString()));
             case "str" -> new StringNode(value.toString());  // there's some exceptions here we should handle later
             default -> throw new IllegalArgumentException("Unsupported cast type: " + targetType + "." +

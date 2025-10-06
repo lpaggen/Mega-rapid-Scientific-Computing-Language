@@ -204,7 +204,7 @@ public class Matrix extends Expression implements MatrixLike {
             if (expectedType == null) {
                 expectedType = evaluated.getType(env);
             } else if (evaluated.getType(env) == TokenKind.INTEGER && expectedType == TokenKind.FLOAT) {
-                evaluated = new FloatConstant(((Constant) evaluated).getDoubleValue(), false);
+                evaluated = new FloatConstant(((Constant) evaluated).getDoubleValue());
             }
             else if (evaluated.getType(env) != expectedType) {
                 throw new RuntimeException("Matrix type mismatch: expected "
@@ -249,7 +249,7 @@ public class Matrix extends Expression implements MatrixLike {
         }
         for (int i = 0; i < numRows; i++) {  // number of rows, start at 1 to skip first row
             for (int j = i + 1; j < numCols; j++) {
-                newMatrix.elements[i][j] = new IntegerConstant(0, false); // assuming integer zero, could be float zero too
+                newMatrix.elements[i][j] = new IntegerConstant(0); // assuming integer zero, could be float zero too
             }
         }
         return newMatrix;
@@ -262,7 +262,7 @@ public class Matrix extends Expression implements MatrixLike {
         }
         for (int i = 1; i < numRows; i++) {  // number of rows
             for (int j = 0; j < i; j++) {    // up to the diagonal
-                newMatrix.elements[i][j] = new IntegerConstant(0, false); // assuming integer zero, could be float zero too
+                newMatrix.elements[i][j] = new IntegerConstant(0); // assuming integer zero, could be float zero too
             }
         }
         return newMatrix;
@@ -272,12 +272,11 @@ public class Matrix extends Expression implements MatrixLike {
         if (!isSquare()) {
             throw new RuntimeException("Matrix must be square to compute trace.");
         }
-        Expression sum = new IntegerConstant(0, false); // assuming integer zero, could be float zero too
+        Expression sum = new IntegerConstant(0); // assuming integer zero, could be float zero too
         for (int i = 0; i < numRows; i++) {
             sum = Matrix.add(sum, elements[i][i]);
         }
         throw new UnsupportedOperationException("Matrix trace not implemented yet.");
-//        return new Matrix(new Expression[][]{{sum}}, sum.getType());
     }
 
     public Matrix Identity(int size) {
@@ -285,9 +284,9 @@ public class Matrix extends Expression implements MatrixLike {
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 if (i == j) {
-                    identityElements[i][j] = new IntegerConstant(1, false); // assuming integer one, could be float one too
+                    identityElements[i][j] = new IntegerConstant(1); // assuming integer one, could be float one too
                 } else {
-                    identityElements[i][j] = new IntegerConstant(0, false);
+                    identityElements[i][j] = new IntegerConstant(0);
                 }
             }
         }
@@ -572,7 +571,7 @@ public class Matrix extends Expression implements MatrixLike {
                     Matrix.mul(elements[0][1], elements[1][0])
             );
         }
-        Expression result = new IntegerConstant(0, false); // accumulate sum
+        Expression result = new IntegerConstant(0); // accumulate sum
         for (int j = 0; j < n; j++) {
             Expression scalar = elements[0][j];
             // skip zero elements
