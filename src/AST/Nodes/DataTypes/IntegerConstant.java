@@ -6,7 +6,6 @@ import Interpreter.Tokenizer.TokenKind;
 public class IntegerConstant extends Constant {
     public IntegerConstant(int value) {
         super(value);
-        TokenKind type = TokenKind.INTEGER;
     }
 
     @Override

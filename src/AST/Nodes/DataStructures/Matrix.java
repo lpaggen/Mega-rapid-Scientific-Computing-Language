@@ -1,6 +1,7 @@
 package AST.Nodes.DataStructures;
 
 import AST.Nodes.BinaryOperations.Linalg.LinalgMul;
+import AST.Nodes.Conditional.BooleanNode;
 import AST.Nodes.DataTypes.Constant;
 import AST.Nodes.DataTypes.FloatConstant;
 import AST.Nodes.DataTypes.IntegerConstant;
@@ -317,6 +318,136 @@ public class Matrix extends Expression implements MatrixLike {
         }
         return new LinalgMul(L, U);  // should be super handy because we can getLeft or getRight
     }
+
+    private boolean matrixEqualsScalar(Constant scalar) {
+        for (int i = 0; i < numRows; i++) {
+            for (int j = 0; j < numCols; j++) {
+                if (!this.elements[i][j].equals(scalar)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    // need to make this recursive for matrices of matrices, will do later
+    private boolean matrixGreaterThanScalar(Constant scalar) {
+        for (int i = 0; i < numRows; i++) {
+            for (int j = 0; j < numCols; j++) {
+                if (this.elements[i][j] instanceof Constant current && scalar instanceof Constant s) {
+                    if (current.getDoubleValue() <= s.getDoubleValue()) {
+                        return false;
+                    }
+                } else {
+                    throw new RuntimeException("Cannot compare non-constant elements in matrix.");
+                }
+            }
+        }
+        return true;
+    }
+
+    public boolean equalsReturnBoolean(Object obj) {
+        if (this == obj) return true;
+        // allow element-wise comparison with constants
+        if (obj instanceof Constant other) {
+            return matrixEqualsScalar(other);
+        }
+        Matrix other = obj instanceof Matrix ? (Matrix) obj : null;
+        if (this.numRows != other.numRows || this.numCols != other.numCols) return false;
+        for (int i = 0; i < numRows; i++) {
+            for (int j = 0; j < numCols; j++) {
+                if (!this.elements[i][j].equals(other.elements[i][j])) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public boolean greaterThanReturnBoolean(Expression other) {
+        if (other instanceof Constant scalar) {
+            return matrixGreaterThanScalar(scalar);
+        }
+        // compare matrix to matrix
+        Matrix otherMat = other instanceof Matrix ? (Matrix) other : null;
+        if (this.numRows != otherMat.numRows) {
+            throw new RuntimeException("Matrix row dimension mismatch for comparison: left is " +
+                    this.numRows + "x" + this.numCols + ", right is " +
+                    otherMat.numRows + "x" + otherMat.numCols);
+        }
+        for (int i = 0; i < numRows; i++) {
+            for (int j = 0; j < numCols; j++) {
+                if (this.elements[i][j] instanceof Constant current && otherMat.elements[i][j] instanceof Constant o) {
+                    if (current.getDoubleValue() <= o.getDoubleValue()) {
+                        return false;
+                    }
+                } else {
+                    throw new RuntimeException("Cannot compare non-constant elements in matrix.");
+                }
+            }
+        }
+        return true;
+    }
+
+    // by default, the matrix operation will return a matrix of booleans
+    public Matrix equals(Expression other) {
+        Expression[][] out = new Expression[numRows][numCols];
+        if (other instanceof Constant scalar) {
+            for (int i = 0; i < numRows; i++) {
+                for (int j = 0; j < numCols; j++) {
+                    if (!this.elements[i][j].equals(scalar)) {
+                        out[i][j] = new BooleanNode(false);
+                    } else {
+                        out[i][j] = new BooleanNode(true);
+                    }
+                }
+            }
+        }
+        // compare matrix to matrix
+        Matrix otherMat = other instanceof Matrix ? (Matrix) other : null;
+        if (this.numRows != otherMat.numRows || this.numCols != otherMat.numCols) {
+            throw new RuntimeException("Matrix dimension mismatch for comparison: left is " +
+                    this.numRows + "x" + this.numCols + ", right is " +
+                    otherMat.numRows + "x" + otherMat.numCols);
+        }
+        for (int i = 0; i < numRows; i++) {
+            for (int j = 0; j < numCols; j++) {
+                if (!this.elements[i][j].equals(otherMat.elements[i][j])) {
+                    out[i][j] = new BooleanNode(false);
+                } else {
+                    out[i][j] = new BooleanNode(true);
+                }
+            }
+        }
+        Matrix finalMatrix = new Matrix(out, TokenKind.BOOLEAN);
+        return finalMatrix;
+    }
+
+//    public Matrix equals(Expression other) {
+//        if (other instanceof Constant scalar) {
+//            Expression[][] boolElements = new Expression[numRows][numCols];
+//            for (int i = 0; i < numRows; i++) {
+//                for (int j = 0; j < numCols; j++) {
+//                    boolElements[i][j] = this.elements[i][j].equals(scalar) ? new IntegerConstant(1) : new IntegerConstant(0);
+//                }
+//            }
+//            return new Matrix(boolElements, TokenKind.INTEGER);
+//        }
+//        // compare matrix to matrix
+//        Matrix otherMat = other instanceof Matrix ? (Matrix) other : null;
+//        if (this.numRows != otherMat.numRows || this.numCols != otherMat.numCols) {
+//            throw new RuntimeException("Matrix dimension mismatch for comparison: left is " +
+//                    this.numRows + "x" + this.numCols + ", right is " +
+//                    otherMat.numRows + "x" + otherMat.numCols);
+//        }
+//        Expression[][] boolElements = new Expression[numRows][numCols];
+//        for (int i = 0; i < numRows; i++) {
+//            for (int j = 0; j < numCols; j++) {
+//                boolElements[i][j] = this.elements[i][j].equals(otherMat.elements[i][j]) ? new IntegerConstant(1) : new IntegerConstant(0);
+//            }
+//        }
+//        return new Matrix(boolElements, TokenKind.INTEGER);
+//    }
 
 //    public LinalgMul PLUDecomposition() {
 //        if (!isSquare()) {

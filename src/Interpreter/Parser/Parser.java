@@ -134,10 +134,6 @@ public class Parser {
             System.out.println("current token at parseFactor: " + peek());
             Token operator = previous();
             Expression rhs = parseUnary();
-//            if (LinearAlgebraOperators.contains(expression.getType(environment)) || LinearAlgebraOperators.contains(rhs.getType(environment))) {
-//                expression = new LinalgMul(expression, rhs);
-//                continue;
-//            }
             expression = inferBinaryNodeFromOperator(operator.getKind(), expression, rhs);
         }
         return expression;

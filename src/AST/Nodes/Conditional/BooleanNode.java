@@ -4,6 +4,7 @@ import AST.Nodes.DataTypes.Constant;
 import AST.Nodes.DataTypes.IntegerConstant;
 import AST.Nodes.Expression;
 import Interpreter.Runtime.Environment;
+import Interpreter.Tokenizer.TokenKind;
 
 public class BooleanNode extends Expression {
     private final boolean value;
@@ -24,6 +25,11 @@ public class BooleanNode extends Expression {
     @Override
     public String toString() {
         return value ? "true" : "false";
+    }
+
+    @Override
+    public TokenKind getType(Environment env) {
+        return TokenKind.BOOLEAN;
     }
 
     public Constant toNumeric() { // this is gonna move or change, i don't know why it's there to begin with

@@ -1,5 +1,6 @@
 package AST.Nodes.Conditional;
 
+import AST.Nodes.DataStructures.Matrix;
 import AST.Nodes.DataTypes.Constant;
 import AST.Nodes.Expression;
 import Interpreter.Runtime.Environment;
@@ -34,6 +35,20 @@ public class ComparisonNode extends LogicalBinaryNode {
                 default -> throw new RuntimeException("Unsupported operator: " + operator);
             };
         }
+        // support for matrix comparison
+        boolean isMatrixComparison = leftValue instanceof Matrix || rightValue instanceof Matrix;
+        if (leftValue instanceof Matrix l && rightValue instanceof Matrix r) {
+            return switch (operator) {
+                case EQUAL -> l.equals(r);
+                // case NOT_EQUAL -> l.notEquals(r);
+                // case GREATER -> new BooleanNode(l.greaterThan(r));
+                default -> throw new RuntimeException("Unsupported operator for matrices: " + operator);
+            };
+        } else if (leftValue instanceof Matrix) {
+
+        }
+
+
         return new ComparisonNode(lhs, operator, rhs);
     }
 
