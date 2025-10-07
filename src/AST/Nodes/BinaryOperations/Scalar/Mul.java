@@ -2,6 +2,7 @@ package AST.Nodes.BinaryOperations.Scalar;
 
 import AST.Nodes.DataTypes.Constant;
 import AST.Nodes.Expression;
+import AST.Nodes.StringNode;
 import Interpreter.Runtime.Environment;
 import Interpreter.Tokenizer.TokenKind;
 
@@ -18,6 +19,8 @@ public class Mul extends ArithmeticBinaryNode {
         // this is all handled for floats, int in Constant
         if (leftVal instanceof Constant l && rightVal instanceof Constant r) {
             return Constant.multiply(l, r);
+        } else if (leftVal instanceof StringNode || rightVal instanceof StringNode) {
+            throw new RuntimeException("Cannot multiply strings");
         }
         return new Mul(leftVal, rightVal);
     }

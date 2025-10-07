@@ -3,6 +3,7 @@ package Util;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,10 +13,9 @@ public class WarningLogger {
     private final HashMap<Integer, String> severityLevels = new HashMap<>();
     private static final String LOG_FILE_PATH = "warnings.log";
     public WarningLogger() {
-        // Initialize severity levels
-        severityLevels.put(1, "LOW");
-        severityLevels.put(2, "MEDIUM");
-        severityLevels.put(3, "HIGH");
+        severityLevels.put(1, "LOW ");
+        severityLevels.put(2, "MEDIUM ");
+        severityLevels.put(3, "HIGH ");
     }
 
     public void addWarning(Integer severity, String warning, Integer line) {
@@ -39,7 +39,7 @@ public class WarningLogger {
 
     // this method writes to a log file
     public void logWarningsToFile() {
-        clearWarningsFile();
+        // clearWarningsFile();
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(LOG_FILE_PATH))) {
             for (String warning : warnings) {
                 writer.write(warning);
@@ -52,14 +52,8 @@ public class WarningLogger {
 
     // the idea is to be able to use this in the non-REPL mode, so we clear the log file before writing to it
     public void clearWarningsFile() {
-        try {
-            File file = new File(LOG_FILE_PATH);
-            if (file.exists()) {
-                if (!file.delete()) {
-                    System.err.println("Failed to delete the log file.");
-                }
-            }
-        } catch (Exception e) {
+        try (FileWriter fw = new FileWriter(LOG_FILE_PATH, false)) {
+        } catch (IOException e) {
             System.err.println("Error clearing the log file: " + e.getMessage());
         }
     }

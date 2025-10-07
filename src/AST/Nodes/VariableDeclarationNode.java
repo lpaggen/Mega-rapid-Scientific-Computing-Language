@@ -4,6 +4,7 @@ import AST.Nodes.Conditional.BooleanNode;
 import AST.Nodes.DataStructures.Matrix;
 import AST.Nodes.DataTypes.Constant;
 import AST.Nodes.DataTypes.FloatConstant;
+import AST.Nodes.DataTypes.IntegerConstant;
 import Util.ErrorHandler;
 import Interpreter.Tokenizer.Token;
 import Interpreter.Runtime.Environment;
@@ -32,6 +33,13 @@ public class VariableDeclarationNode extends Statement {
         Expression value = (initializer != null) ? initializer.evaluate(env) : null;
 
         switch (type.getKind()) {
+            case MATH:
+                if (value instanceof StringNode) {
+                    throw new ErrorHandler("execution", variable.getLine(), "Type mismatch: expected math, got string", "Please ensure the initializer is a math expression.");
+                    //throw new RuntimeException("Type mismatch: expected math, got string at line " + variable.getLine());
+                }
+                value = new VariableNode(variable.getLexeme());
+                break;
             case FLOAT:
                 if (value instanceof Constant v && v.getValue() instanceof Integer) {
                     // convert integer to float if needed -- but throw warning somehow...
@@ -50,7 +58,7 @@ public class VariableDeclarationNode extends Statement {
                 break;
             case STRING:
                 if (!(value instanceof StringNode)) {
-                    throw new ErrorHandler("execution", variable.getLine(), "Type mismatch: expected string, got " + (value != null ? value.getClass().getSimpleName() : "null"), "Please ensure the initializer is a string.");
+                    throw new ErrorHandler("execution", variable.getLine(), "Type mismatch: expected string, got " + (value != null ? value.getClass().getSimpleName() : "null"), " Please ensure the initializer is a string.");
                     //throw new RuntimeException("Type mismatch: expected string, got " + (value != null ? value.getClass().getSimpleName() : "null") + " at line " + variable.getLine());
                 }
                 break;
@@ -72,47 +80,6 @@ public class VariableDeclarationNode extends Statement {
                 break;
         }
         env.declareSymbol(variable.getLexeme(), new VariableSymbol(variable.getLexeme(), type.getKind(), value));
-    }
-
-//    // we can assume this would only be called for arrays and maps etc
-//    private boolean isStructureContentValid(Environment env, TokenKind type) {
-//        if (initializer instanceof Array arrayNode) {
-//            Expression[] elements = arrayNode.getElements();
-//            for (Expression element : elements) {
-//                TokenKind elementType = element.getType(env);
-//                System.out.println("Element type: " + elementType + ", Expected type: " + type);
-//                if (elementType != type) {
-//                    return false; // Found an invalid element
-//                }
-//            }
-//            return true; // All elements are valid
-//        }
-//        return false; // Not a structure we can validate
-//    }
-
-    private BooleanNode convertTruthy(Object value) {
-        switch (value) {
-            case null -> {
-                return new BooleanNode(false);
-            }
-            case Boolean b -> {
-                return new BooleanNode(b);
-            }
-            case Constant i -> {
-                if (i.getDoubleValue() == 0.0) {
-                    return new BooleanNode(false);
-                } else if (i.getDoubleValue() == 1.0) {
-                    return new BooleanNode(true);
-                }
-            }
-            case String s -> {
-                return new BooleanNode(!s.isEmpty());
-            }
-            default -> {
-                throw new UnsupportedOperationException("Cannot convert type " + value.getClass().getSimpleName() + " to boolean.");
-            }
-        }
-        return new BooleanNode(false);
     }
 
     // will work on this in a later build, it's not necessary yet

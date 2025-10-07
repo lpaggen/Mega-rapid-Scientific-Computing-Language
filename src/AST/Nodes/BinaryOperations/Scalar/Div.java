@@ -2,6 +2,7 @@ package AST.Nodes.BinaryOperations.Scalar;
 
 import AST.Nodes.DataTypes.Constant;
 import AST.Nodes.Expression;
+import AST.Nodes.StringNode;
 import Interpreter.Runtime.Environment;
 import Interpreter.Tokenizer.TokenKind;
 
@@ -19,6 +20,8 @@ public class Div extends ArithmeticBinaryNode {
         // Handle numeric operations
         if (numVal instanceof Constant n && denomVal instanceof Constant d) {
             return Constant.divide(n, d);
+        } else if (numVal instanceof StringNode || denomVal instanceof StringNode) {
+            throw new RuntimeException("Cannot divide strings.");
         }
         // If we reach here, it's an unsupported type combination
         return new Div(numVal, denomVal);

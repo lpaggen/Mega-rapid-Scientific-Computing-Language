@@ -2,8 +2,11 @@ package AST.Nodes.BinaryOperations.Scalar;
 
 import AST.Nodes.DataTypes.Constant;
 import AST.Nodes.Expression;
+import AST.Nodes.StringNode;
+import AST.Nodes.VariableNode;
 import Interpreter.Runtime.Environment;
 import Interpreter.Tokenizer.TokenKind;
+import Util.AlgebraEngine;
 
 public class Add extends ArithmeticBinaryNode {
     public Add(Expression lhs, Expression rhs) {
@@ -17,6 +20,14 @@ public class Add extends ArithmeticBinaryNode {
 
         if (leftVal instanceof Constant l && rightVal instanceof Constant r) {
             return Constant.add(l, r);
+        } else if (leftVal instanceof StringNode l && rightVal instanceof StringNode r) {
+            return new StringNode(l.getValue() + r.getValue());
+        } else if (leftVal instanceof StringNode l && rightVal instanceof Constant r) {
+            return new StringNode(l.getValue() + r.getValue().toString());
+        } else if (leftVal instanceof Constant l && rightVal instanceof StringNode r) {
+            return new StringNode(l.getValue().toString() + r.getValue());
+        } else if (leftVal instanceof VariableNode || rightVal instanceof VariableNode) {
+            return AlgebraEngine.simplify(new Add(leftVal, rightVal));
         }
         return new Add(leftVal, rightVal);
     }

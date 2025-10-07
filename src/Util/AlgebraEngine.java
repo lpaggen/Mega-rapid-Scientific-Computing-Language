@@ -9,9 +9,10 @@ import AST.Nodes.DataTypes.Constant;
 import AST.Nodes.DataTypes.FloatConstant;
 import AST.Nodes.DataTypes.IntegerConstant;
 
-public class AlgebraUtils {
+public class AlgebraEngine {
     public static Expression simplify(Expression expression) {
         Boolean isRaw = false;
+        System.out.println("Attempting to simplify: " + expression.toString() + " of type " + expression.getClass().getSimpleName());
         switch (expression.getClass().getSimpleName()) {
             case "Mul":
                 Mul multiply = (Mul) expression;
@@ -67,8 +68,11 @@ public class AlgebraUtils {
 
             case "Add":
                 Add add = (Add) expression;
-                Expression leftAdd = simplify(add.getLeft());
-                Expression rightAdd = simplify(add.getRight());
+//                Expression leftAdd = simplify(add.getLeft());
+//                Expression rightAdd = simplify(add.getRight());
+                Expression leftAdd = add.getLeft();
+                Expression rightAdd = add.getRight();
+                // System.out.println("Adding: " + leftAdd.toString() + " and " + rightAdd.toString());
 
                 // if either side is a constant, we can simplify
                 if (leftAdd instanceof Constant lConst && lConst.getDoubleValue() == 0.0) {
@@ -78,7 +82,7 @@ public class AlgebraUtils {
                     return leftAdd; // x + 0 = x
                 }
 
-                // handle the case where both sides are the same variable
+                // handle the case where both sides are the same variable -- this needs to be generalized with hashmap later
                 if (leftAdd instanceof VariableNode lVar && rightAdd instanceof VariableNode rVar && lVar.getName().equals(rVar.getName())) {
                     return new Mul(new IntegerConstant(2), lVar); // x + x = 2x
                 }

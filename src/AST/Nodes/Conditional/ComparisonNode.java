@@ -35,9 +35,6 @@ public class ComparisonNode extends LogicalBinaryNode {
                 default -> throw new RuntimeException("Unsupported operator: " + operator);
             };
         }
-        // support for matrix comparison
-        // making all these static would be cleaner
-        // this block allows to not check any conditions outside of ternary operations
         Matrix leftMatrix = leftValue instanceof Matrix ? (Matrix) leftValue : null;
         Matrix rightMatrix = rightValue instanceof Matrix ? (Matrix) rightValue : null;
         Constant leftConst = leftValue instanceof Constant ? (Constant) leftValue : null;
@@ -45,8 +42,7 @@ public class ComparisonNode extends LogicalBinaryNode {
         Expression l = leftMatrix != null ? leftMatrix : leftConst;
         Expression r = rightMatrix != null ? rightMatrix : rightConst;
         return switch (operator) {
-//            case EQUAL -> l.equals(r);
-//            case NOT_EQUAL -> l.notEquals(r);
+            case NOT_EQUAL -> Matrix.notEqual(l, r);
             case EQUAL -> Matrix.equal(l, r);
             case GREATER -> Matrix.greater(l, r);
             case LESS -> Matrix.less(l, r);

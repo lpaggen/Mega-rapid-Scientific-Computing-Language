@@ -46,6 +46,7 @@ public class Parser {
 
     public void interpretCode() {
         WarningLogger warningHandler = new WarningLogger();
+        warningHandler.clearWarningsFile();
         while (!isAtEnd()) {
             Statement statement = parseStatement();
             if (statement == null) {
@@ -55,7 +56,7 @@ public class Parser {
             }
             statement.execute(environment);
         }
-        warningHandler.printWarnings();
+        // warningHandler.printWarnings();
     }
 
     // everything should really start from the Statement, since we have to declare variables, functions, etc.
@@ -277,7 +278,7 @@ public class Parser {
                 TokenKind.FLOAT_TYPE, TokenKind.FLOAT,
                 TokenKind.BOOLEAN_TYPE, TokenKind.BOOLEAN,
                 TokenKind.MATRIX_TYPE, TokenKind.MATRIX,
-                TokenKind.SYMBOL_TYPE, TokenKind.SYMBOL,
+                TokenKind.MATH_TYPE, TokenKind.MATH,
                 TokenKind.STRING_TYPE, TokenKind.STRING,
                 TokenKind.VOID_TYPE, TokenKind.VOID,
                 TokenKind.ARRAY_TYPE, TokenKind.ARRAY
@@ -310,7 +311,7 @@ public class Parser {
                         "parsing",
                         peek().getLine(),
                         "Unexpected token: " + peek().getLexeme(),
-                        "Expected a type keyword (int, float, bool, matrix, symbol) inside matrix declaration."
+                        "Expected a type keyword (sym, int, float, bool, matrix, symbol) inside matrix declaration."
                 );
                 //throw new RuntimeException(peek() + " Expected type keyword inside vector declaration.");
             }
@@ -344,6 +345,9 @@ public class Parser {
         consume(TokenKind.SEMICOLON);
         TokenKind dataType = mapDeclarationToDatatype.get(typeToken.getKind());
         currentDataType = dataType; // set the current data type being processed
+//        if (dataType == TokenKind.MATH) {
+//            return new VariableDeclarationNode(new Token(dataType, typeToken.getLexeme(), null, typeToken.getLine()), name, new StringNode(name.getLexeme()));
+//        }
         return new VariableDeclarationNode(new Token(dataType, typeToken.getLexeme(), null, typeToken.getLine()), name, initializer);
     }
 
@@ -561,7 +565,7 @@ public class Parser {
             TokenKind.FLOAT_TYPE,
             TokenKind.BOOLEAN_TYPE,
             TokenKind.MATRIX_TYPE,
-            TokenKind.SYMBOL_TYPE,
+            TokenKind.MATH_TYPE,
             TokenKind.STRING_TYPE,
             TokenKind.VOID_TYPE
     );

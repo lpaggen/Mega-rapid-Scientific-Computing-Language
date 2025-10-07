@@ -126,8 +126,6 @@ public class Tokenizer {
         }
     }
 
-    // in future build -> want to remove built in functions from this map, can just store them in env at runtime
-    // this means we're not hardcoding them, so no token for PRINT etc, it would make it all simpler
     private final Map<String, TokenKind> keywords = new HashMap<>() {{
         put("sin", TokenKind.SIN);
         put("cos", TokenKind.COS);
@@ -151,7 +149,7 @@ public class Tokenizer {
         put("int", TokenKind.INTEGER_TYPE);
         put("float", TokenKind.FLOAT_TYPE);
         put("mat", TokenKind.MATRIX_TYPE);
-        put("expr", TokenKind.MATH_TYPE);
+        put("sym", TokenKind.MATH_TYPE);
         put("break", TokenKind.BREAK);
         put("continue", TokenKind.CONTINUE);
         put("wrt", TokenKind.WRT);
