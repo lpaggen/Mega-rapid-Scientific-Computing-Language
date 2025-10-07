@@ -206,8 +206,9 @@ public class Matrix extends Expression implements MatrixLike {
                 expectedType = evaluated.getType(env);
             } else if (evaluated.getType(env) == TokenKind.INTEGER && expectedType == TokenKind.FLOAT) {
                 evaluated = new FloatConstant(((Constant) evaluated).getDoubleValue());
-            }
-            else if (evaluated.getType(env) != expectedType) {
+            } else if (((evaluated.getType(env) == TokenKind.INTEGER) || (evaluated.getType(env) == TokenKind.FLOAT)) && expectedType == TokenKind.BOOLEAN) {
+                evaluated = BooleanNode.fromNumeric((Constant) evaluated);
+            } else if (evaluated.getType(env) != expectedType) {
                 throw new RuntimeException("Matrix type mismatch: expected "
                         + expectedType + ", got " + evaluated.getType(env)
                         + " in element " + evaluated + " at position " + position);

@@ -41,7 +41,6 @@ public class UnaryNode extends Expression {
         throw new RuntimeException("Cannot apply '!' to non-boolean value.");
     }
 
-    // doesn't seem quite right. will fix
     public double evaluateNumeric() {
         Environment env = new Environment();
         Expression rightValue = rhs.evaluate(env);

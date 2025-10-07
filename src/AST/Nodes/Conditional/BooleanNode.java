@@ -32,7 +32,11 @@ public class BooleanNode extends Expression {
         return TokenKind.BOOLEAN;
     }
 
-    public Constant toNumeric() { // this is gonna move or change, i don't know why it's there to begin with
+    public static BooleanNode fromNumeric(Constant num) {
+        return new BooleanNode(num.getDoubleValue() != 0);
+    }
+
+    public Constant toNumeric() {
         return new IntegerConstant(value ? 1 : 0);
     }
 }
