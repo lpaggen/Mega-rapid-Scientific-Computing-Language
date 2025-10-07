@@ -2,6 +2,7 @@ package AST.Nodes.BinaryOperations.Linalg;
 
 import AST.Nodes.DataStructures.Matrix;
 import AST.Nodes.Expression;
+import AST.Nodes.StringNode;
 import Interpreter.Runtime.Environment;
 
 public class LinalgMul extends LinalgBinaryNode {
@@ -14,10 +15,13 @@ public class LinalgMul extends LinalgBinaryNode {
         Expression leftVal = lhs.evaluate(env);
         Expression rightVal = rhs.evaluate(env);
 
-        if (leftVal instanceof Matrix l && rightVal instanceof Matrix r) {
-            return Matrix.mul(l, r);
+        if (leftVal instanceof StringNode || rightVal instanceof StringNode) {
+            throw new UnsupportedOperationException("Cannot perform multiplication on String types in linear algebra operations.");
+        } else if (!(leftVal instanceof Matrix || rightVal instanceof Matrix)) {
+            throw new UnsupportedOperationException("At least one operand must be an Array for linear algebra multiplication.");
         }
-        return new LinalgAdd(leftVal, rightVal);
+
+        return Matrix.mul(leftVal, rightVal);
     }
 
     @Override

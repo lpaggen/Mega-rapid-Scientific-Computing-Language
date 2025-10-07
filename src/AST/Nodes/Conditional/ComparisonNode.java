@@ -45,10 +45,13 @@ public class ComparisonNode extends LogicalBinaryNode {
         Expression l = leftMatrix != null ? leftMatrix : leftConst;
         Expression r = rightMatrix != null ? rightMatrix : rightConst;
         return switch (operator) {
-            // case EQUAL -> l.equals(r);
-            // case NOT_EQUAL -> l.notEquals(r);
-            //case EQUAL -> Matrix.equal(l, r);
+//            case EQUAL -> l.equals(r);
+//            case NOT_EQUAL -> l.notEquals(r);
+            case EQUAL -> Matrix.equal(l, r);
             case GREATER -> Matrix.greater(l, r);
+            case LESS -> Matrix.less(l, r);
+            case GREATER_EQUAL -> Matrix.greaterEqual(l, r);
+            case LESS_EQUAL -> Matrix.lessEqual(l, r);
             default -> throw new RuntimeException("Unsupported operator for matrices: " + operator);
         };
     }
