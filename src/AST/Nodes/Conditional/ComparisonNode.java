@@ -36,20 +36,21 @@ public class ComparisonNode extends LogicalBinaryNode {
             };
         }
         // support for matrix comparison
-        boolean isMatrixComparison = leftValue instanceof Matrix || rightValue instanceof Matrix;
-        if (leftValue instanceof Matrix l && rightValue instanceof Matrix r) {
-            return switch (operator) {
-                case EQUAL -> l.equals(r);
-                // case NOT_EQUAL -> l.notEquals(r);
-                // case GREATER -> new BooleanNode(l.greaterThan(r));
-                default -> throw new RuntimeException("Unsupported operator for matrices: " + operator);
-            };
-        } else if (leftValue instanceof Matrix) {
-
-        }
-
-
-        return new ComparisonNode(lhs, operator, rhs);
+        // making all these static would be cleaner
+        // this block allows to not check any conditions outside of ternary operations
+        Matrix leftMatrix = leftValue instanceof Matrix ? (Matrix) leftValue : null;
+        Matrix rightMatrix = rightValue instanceof Matrix ? (Matrix) rightValue : null;
+        Constant leftConst = leftValue instanceof Constant ? (Constant) leftValue : null;
+        Constant rightConst = rightValue instanceof Constant ? (Constant) rightValue : null;
+        Expression l = leftMatrix != null ? leftMatrix : leftConst;
+        Expression r = rightMatrix != null ? rightMatrix : rightConst;
+        return switch (operator) {
+            // case EQUAL -> l.equals(r);
+            // case NOT_EQUAL -> l.notEquals(r);
+            //case EQUAL -> Matrix.equal(l, r);
+            case GREATER -> Matrix.greater(l, r);
+            default -> throw new RuntimeException("Unsupported operator for matrices: " + operator);
+        };
     }
 
     @Override

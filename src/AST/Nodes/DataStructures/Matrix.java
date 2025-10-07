@@ -319,93 +319,48 @@ public class Matrix extends Expression implements MatrixLike {
         return new LinalgMul(L, U);  // should be super handy because we can getLeft or getRight
     }
 
-    private boolean matrixEqualsScalar(Constant scalar) {
+    private Matrix matrixEqualsScalar(Constant scalar) {
+        Expression[][] out = new Expression[numRows][numCols];
         for (int i = 0; i < numRows; i++) {
             for (int j = 0; j < numCols; j++) {
                 if (!this.elements[i][j].equals(scalar)) {
-                    return false;
+                    out[i][j] = new BooleanNode(false);
+                } else {
+                    out[i][j] = new BooleanNode(true);
                 }
             }
         }
-        return true;
+        return new Matrix(out, TokenKind.BOOLEAN);
     }
 
     // need to make this recursive for matrices of matrices, will do later
-    private boolean matrixGreaterThanScalar(Constant scalar) {
+    private Matrix matrixGreaterThanScalar(Constant scalar) {
+        Expression[][] out = new Expression[numRows][numCols];
         for (int i = 0; i < numRows; i++) {
             for (int j = 0; j < numCols; j++) {
                 if (this.elements[i][j] instanceof Constant current && scalar instanceof Constant s) {
-                    if (current.getDoubleValue() <= s.getDoubleValue()) {
-                        return false;
+                    if (current.getDoubleValue() > s.getDoubleValue()) {
+                        out[i][j] = new BooleanNode(true);
+                    } else {
+                        out[i][j] = new BooleanNode(false);
                     }
                 } else {
                     throw new RuntimeException("Cannot compare non-constant elements in matrix.");
                 }
             }
         }
-        return true;
+        return new Matrix(out, TokenKind.BOOLEAN);
     }
 
-    public boolean equalsReturnBoolean(Object obj) {
-        if (this == obj) return true;
-        // allow element-wise comparison with constants
-        if (obj instanceof Constant other) {
-            return matrixEqualsScalar(other);
-        }
-        Matrix other = obj instanceof Matrix ? (Matrix) obj : null;
-        if (this.numRows != other.numRows || this.numCols != other.numCols) return false;
-        for (int i = 0; i < numRows; i++) {
-            for (int j = 0; j < numCols; j++) {
-                if (!this.elements[i][j].equals(other.elements[i][j])) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    public boolean greaterThanReturnBoolean(Expression other) {
-        if (other instanceof Constant scalar) {
-            return matrixGreaterThanScalar(scalar);
-        }
-        // compare matrix to matrix
-        Matrix otherMat = other instanceof Matrix ? (Matrix) other : null;
-        if (this.numRows != otherMat.numRows) {
-            throw new RuntimeException("Matrix row dimension mismatch for comparison: left is " +
-                    this.numRows + "x" + this.numCols + ", right is " +
-                    otherMat.numRows + "x" + otherMat.numCols);
-        }
-        for (int i = 0; i < numRows; i++) {
-            for (int j = 0; j < numCols; j++) {
-                if (this.elements[i][j] instanceof Constant current && otherMat.elements[i][j] instanceof Constant o) {
-                    if (current.getDoubleValue() <= o.getDoubleValue()) {
-                        return false;
-                    }
-                } else {
-                    throw new RuntimeException("Cannot compare non-constant elements in matrix.");
-                }
-            }
-        }
-        return true;
-    }
-
-    // by default, the matrix operation will return a matrix of booleans
+//     by default, the matrix operation will return a matrix of booleans
     public Matrix equals(Expression other) {
         Expression[][] out = new Expression[numRows][numCols];
         if (other instanceof Constant scalar) {
-            for (int i = 0; i < numRows; i++) {
-                for (int j = 0; j < numCols; j++) {
-                    if (!this.elements[i][j].equals(scalar)) {
-                        out[i][j] = new BooleanNode(false);
-                    } else {
-                        out[i][j] = new BooleanNode(true);
-                    }
-                }
-            }
+            return matrixEqualsScalar(scalar);
         }
         // compare matrix to matrix
         Matrix otherMat = other instanceof Matrix ? (Matrix) other : null;
-        if (this.numRows != otherMat.numRows || this.numCols != otherMat.numCols) {
+        if (!matrixDimensionsMatch(otherMat)) {
             throw new RuntimeException("Matrix dimension mismatch for comparison: left is " +
                     this.numRows + "x" + this.numCols + ", right is " +
                     otherMat.numRows + "x" + otherMat.numCols);
@@ -419,34 +374,146 @@ public class Matrix extends Expression implements MatrixLike {
                 }
             }
         }
-        Matrix finalMatrix = new Matrix(out, TokenKind.BOOLEAN);
-        return finalMatrix;
+        return new Matrix(out, TokenKind.BOOLEAN);
     }
 
-//    public Matrix equals(Expression other) {
+    // handle through static method, with recursion for block matrices
+    public static Matrix greater(Expression left, Expression right) {
+        Matrix leftMat = left instanceof Matrix ? (Matrix) left : null;
+        Matrix rightMat = right instanceof Matrix ? (Matrix) right : null;
+        Constant leftConst = left instanceof Constant ? (Constant) left : null;
+        Constant rightConst = right instanceof Constant ? (Constant) right : null;
+        int rows;
+        int cols;
+        // check if the types are legal on either side
+        if (leftMat == null && leftConst == null) {
+            throw new RuntimeException("Left operand must be a Matrix or Constant for comparison, got: " + left.getClass().getSimpleName());
+        } else if (rightMat == null && rightConst == null) {
+            throw new RuntimeException("Right operand must be a Matrix or Constant for comparison, got: " + right.getClass().getSimpleName());
+        }
+        Expression result;
+        if (leftMat != null) {
+            rows = leftMat.rows();
+            cols = leftMat.cols();
+        } else if (rightMat != null) {
+            cols = rightMat.cols();
+            rows = rightMat.rows();
+        } else {  // both scalars -- don't know if this would ever be needed, but in case keep it
+            System.out.println("Comparing two constants: " + leftConst + " and " + rightConst);
+            result = new BooleanNode(leftConst.getDoubleValue() > rightConst.getDoubleValue());
+            Expression[][] singleElement = new Expression[1][1];
+            singleElement[0][0] = result;
+            return new Matrix(singleElement, TokenKind.BOOLEAN);
+        }
+        Expression[][] out = new Expression[rows][cols];
+        if (rightConst != null) {  // matrix on left, constant on right
+            return leftMat.matrixGreaterThanScalar(rightConst);
+        } else if (leftConst != null) {
+            return rightMat.matrixGreaterThanScalar(leftConst);
+        }
+        for (int i = 0; i < leftMat.numRows; i++) {
+            for (int j = 0; j < leftMat.numCols; j++) {
+                if (leftMat.elements[i][j] instanceof Constant leftC && rightMat.elements[i][j] instanceof Constant rightC) {
+                    out[i][j] = new BooleanNode(leftC.getDoubleValue() > rightC.getDoubleValue());
+                } else if (leftMat.elements[i][j] instanceof Matrix leftBlock && rightMat.elements[i][j] instanceof Matrix rightBlock) {
+                    out[i][j] = Matrix.greater(leftBlock, rightBlock);
+                } else {
+                    throw new RuntimeException("idk man, sorry.");
+                }
+            }
+        }
+        return new Matrix(out, TokenKind.BOOLEAN);
+    }
+
+//    public Matrix greater(Expression other) {
+//        Expression[][] out = new Expression[numRows][numCols];
 //        if (other instanceof Constant scalar) {
-//            Expression[][] boolElements = new Expression[numRows][numCols];
-//            for (int i = 0; i < numRows; i++) {
-//                for (int j = 0; j < numCols; j++) {
-//                    boolElements[i][j] = this.elements[i][j].equals(scalar) ? new IntegerConstant(1) : new IntegerConstant(0);
-//                }
-//            }
-//            return new Matrix(boolElements, TokenKind.INTEGER);
+//            return matrixEqualsScalar(scalar);
 //        }
 //        // compare matrix to matrix
 //        Matrix otherMat = other instanceof Matrix ? (Matrix) other : null;
-//        if (this.numRows != otherMat.numRows || this.numCols != otherMat.numCols) {
+//        if (!matrixDimensionsMatch(otherMat)) {
 //            throw new RuntimeException("Matrix dimension mismatch for comparison: left is " +
 //                    this.numRows + "x" + this.numCols + ", right is " +
 //                    otherMat.numRows + "x" + otherMat.numCols);
 //        }
-//        Expression[][] boolElements = new Expression[numRows][numCols];
 //        for (int i = 0; i < numRows; i++) {
 //            for (int j = 0; j < numCols; j++) {
-//                boolElements[i][j] = this.elements[i][j].equals(otherMat.elements[i][j]) ? new IntegerConstant(1) : new IntegerConstant(0);
+//                if (this.elements[i][j] instanceof Constant leftConst && otherMat.elements[i][j] instanceof Constant rightConst) {
+//                    if (leftConst.getDoubleValue() > rightConst.getDoubleValue()) {
+//                        out[i][j] = new BooleanNode(true);
+//                    } else {
+//                        out[i][j] = new BooleanNode(false);
+//                    }
+//                } else {
+//                    throw new RuntimeException("Cannot compare non-constant elements in matrix.");
+//                }
+//                if (!(this.elements[i][j] > (otherMat.elements[i][j]))) {
+//                    out[i][j] = new BooleanNode(false);
+//                } else {
+//                    out[i][j] = new BooleanNode(true);
+//                }
 //            }
 //        }
-//        return new Matrix(boolElements, TokenKind.INTEGER);
+//        return new Matrix(out, TokenKind.BOOLEAN);
+//    }
+
+//    public static Matrix compare(Expression left, Expression right, TokenKind operator) {
+//        Matrix leftMat = left instanceof Matrix ? (Matrix) left : null;
+//        Matrix rightMat = right instanceof Matrix ? (Matrix) right : null;
+//        Constant leftConst = left instanceof Constant ? (Constant) left : null;
+//        Constant rightConst = right instanceof Constant ? (Constant) right : null;
+//        int rows;
+//        int cols;
+//        // check if the types are legal on either side
+//        if (leftMat == null && leftConst == null) {
+//            throw new RuntimeException("Left operand must be a Matrix or Constant for comparison, got: " + left.getClass().getSimpleName());
+//        } else if (rightMat == null && rightConst == null) {
+//            throw new RuntimeException("Right operand must be a Matrix or Constant for comparison, got: " + right.getClass().getSimpleName());
+//        }
+//        if (leftMat != null) {
+//            rows = leftMat.rows();
+//            cols = leftMat.cols();
+//        } else if (rightMat != null) {
+//            cols = rightMat.cols();
+//            rows = rightMat.rows();
+//        } else {  // both scalars -- don't know if this would ever be needed, but in case keep it
+//            System.out.println("Comparing two constants: " + leftConst + " and " + rightConst);
+//            Expression result;
+//            switch (operator) {
+//                case EQUAL -> result = new BooleanNode(leftConst.getValue().equals(rightConst.getValue()));
+//                case NOT_EQUAL -> result = new BooleanNode(!leftConst.getValue().equals(rightConst.getValue()));
+//                case LESS -> result = new BooleanNode(leftConst.getDoubleValue() < rightConst.getDoubleValue());
+//                case LESS_EQUAL -> result = new BooleanNode(leftConst.getDoubleValue() <= rightConst.getDoubleValue());
+//                case GREATER -> result = new BooleanNode(leftConst.getDoubleValue() > rightConst.getDoubleValue());
+//                case GREATER_EQUAL -> result = new BooleanNode(leftConst.getDoubleValue() >= rightConst.getDoubleValue());
+//                default -> throw new RuntimeException("Unsupported operator for Constant logical comparison: " + operator);
+//            }
+//            Expression[][] singleElement = new Expression[1][1];
+//            singleElement[0][0] = result;
+//            return new Matrix(singleElement, TokenKind.BOOLEAN);
+//        }
+//        Expression[][] out = new Expression[rows][cols];
+//        if (other instanceof Constant scalar) {
+//            return matrixEqualsScalar(scalar);
+//        }
+//        // compare matrix to matrix
+//        Matrix otherMat = other instanceof Matrix ? (Matrix) other : null;
+//        if (!matrixDimensionsMatch(otherMat)) {
+//            throw new RuntimeException("Matrix dimension mismatch for comparison: left is " +
+//                    this.numRows + "x" + this.numCols + ", right is " +
+//                    otherMat.numRows + "x" + otherMat.numCols);
+//        }
+//        for (int i = 0; i < numRows; i++) {
+//            for (int j = 0; j < numCols; j++) {
+//                if (!this.elements[i][j].equals(otherMat.elements[i][j])) {
+//                    out[i][j] = new BooleanNode(false);
+//                } else {
+//                    out[i][j] = new BooleanNode(true);
+//                }
+//            }
+//        }
+//        return new Matrix(out, TokenKind.BOOLEAN);
 //    }
 
 //    public LinalgMul PLUDecomposition() {
@@ -514,6 +581,10 @@ public class Matrix extends Expression implements MatrixLike {
 //        }
 //        return new LinalgMul(L, U);  // should be super handy because we can getLeft or getRight
 //    }
+
+    private boolean matrixDimensionsMatch(Matrix other) {
+        return this.numRows == other.numRows && this.numCols == other.numCols;
+    }
 
     public static Expression sub(Expression left, Expression right) {
         Matrix leftMat = left instanceof Matrix ? (Matrix) left : null;
