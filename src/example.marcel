@@ -1,10 +1,14 @@
 load stdlib;
 # load linalg;
 
-int x = 5;
+int x = 6;
 
-if (x < 10) {
+if (x > 10) {
     print("IF WORKS");
+} else if (x < 3) {
+    print("ELSE IF WORKS");
+} else {
+    print("ELSE WORKS");
 }
 
 print(x + 55);

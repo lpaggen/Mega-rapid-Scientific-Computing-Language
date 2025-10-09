@@ -474,17 +474,17 @@ public class Parser {
             advance();
         }
         consume(TokenKind.CLOSE_BRACE); // consume '}'
-        Statement elseBranch = null;
         if (match(TokenKind.ELSE)) {
-            if (match(TokenKind.IF)) { // else if branch
-                elseBranch = parseConditionalBranch(); // recursive call to handle else if
+            if (check(TokenKind.IF)) { // else if branch
+                System.out.println("Parsing else if branch...");
+                elseStatements.add(parseConditionalBranch()); // recursive call to handle else if
             } else { // else branch
                 consume(TokenKind.OPEN_BRACE); // consume '{'
                 // java.util.List<Statement> elseStatements = new ArrayList<>();
-                while (!check(TokenKind.CLOSE_BRACE) && !isAtEnd()) {
+                while (!check(TokenKind.CLOSE_BRACE)) {
                     elseStatements.add(parseStatement());
+                    advance();
                 }
-                // elseBranch =
                 consume(TokenKind.CLOSE_BRACE); // consume '}'
             }
         }
