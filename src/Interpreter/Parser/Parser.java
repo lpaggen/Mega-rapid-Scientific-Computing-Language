@@ -72,6 +72,9 @@ public class Parser {
         } else if (isFunctionDeclarationStart()) {
             System.out.println("Parsing function declaration...");
             return parseFunctionDeclaration();
+        } else if (isConditionalBranch()) {
+            System.out.println("Parsing conditional branch...");
+            return parseConditionalBranch();
         } else if (Objects.requireNonNull(peek().getKind()) == TokenKind.INCLUDE) {
             System.out.println("Parsing module import statement: " + peek());
             advance(); // consume the INCLUDE token
@@ -458,6 +461,36 @@ public class Parser {
         return new FunctionCallNode(functionNameToken.getLexeme(), arguments);
     }
 
+    private IfNode parseConditionalBranch() {  // here we parse all the else if, etc. build the node
+        consume(TokenKind.IF); // consume the IF token
+        consume(TokenKind.OPEN_PAREN); // consume '('
+        Expression condition = parseExpression(); // parse the condition expression
+        consume(TokenKind.CLOSE_PAREN); // consume ')'
+        consume(TokenKind.OPEN_BRACE); // consume '{'
+        java.util.List<Statement> thenBranch = new ArrayList<>();
+        java.util.List<Statement> elseStatements = new ArrayList<>();
+        while (!check(TokenKind.CLOSE_BRACE)) {
+            thenBranch.add(parseStatement());
+            advance();
+        }
+        consume(TokenKind.CLOSE_BRACE); // consume '}'
+        Statement elseBranch = null;
+        if (match(TokenKind.ELSE)) {
+            if (match(TokenKind.IF)) { // else if branch
+                elseBranch = parseConditionalBranch(); // recursive call to handle else if
+            } else { // else branch
+                consume(TokenKind.OPEN_BRACE); // consume '{'
+                // java.util.List<Statement> elseStatements = new ArrayList<>();
+                while (!check(TokenKind.CLOSE_BRACE) && !isAtEnd()) {
+                    elseStatements.add(parseStatement());
+                }
+                // elseBranch =
+                consume(TokenKind.CLOSE_BRACE); // consume '}'
+            }
+        }
+        return new IfNode(condition, thenBranch, elseStatements);
+    }
+
     private boolean match(TokenKind... expectedKinds) {
         for (TokenKind expectedKind : expectedKinds) {
             if (check(expectedKind)) {
@@ -557,6 +590,10 @@ public class Parser {
 
     private boolean isModuleImport() {
         return check(TokenKind.INCLUDE); // we can add more keywords for imports later
+    }
+
+    private boolean isConditionalBranch() {
+        return check(TokenKind.IF);  //, TokenKind.ELSE_IF, TokenKind.ELSE);
     }
 
     // in future add support for all types

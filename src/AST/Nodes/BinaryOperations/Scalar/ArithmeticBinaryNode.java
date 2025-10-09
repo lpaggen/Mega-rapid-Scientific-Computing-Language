@@ -30,6 +30,9 @@ public abstract class ArithmeticBinaryNode extends BinaryNode {
             (leftType == TokenKind.FLOAT && rightType == TokenKind.INTEGER)) {
             return TokenKind.FLOAT;
         }
+        if (leftType == TokenKind.MATH || rightType == TokenKind.MATH) {
+            return TokenKind.MATH;
+        }
         throw new RuntimeException("Type error in arithmetic operation: " + leftType + " and " + rightType);
     }
 

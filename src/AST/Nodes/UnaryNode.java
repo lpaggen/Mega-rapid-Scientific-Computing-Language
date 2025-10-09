@@ -53,6 +53,15 @@ public class UnaryNode extends Expression {
         throw new RuntimeException("Cannot evaluate numeric value for unary operation: " + operator.getKind());
     }
 
+    @Override
+    public TokenKind getType(Environment env) {
+        return switch (operator.getKind()) {
+            case PLUS, MINUS -> rhs.getType(env);
+            case NOT_EQUAL -> TokenKind.BOOLEAN;
+            default -> throw new RuntimeException("Unsupported unary operator: " + operator.getKind());
+        };
+    }
+
     private Expression evaluateMinus(Expression rightValue) {
         if ((rightValue instanceof Constant c) && c.getType(new Environment()) == TokenKind.FLOAT) {
             return new FloatConstant(-c.evaluateNumeric(new Environment()));

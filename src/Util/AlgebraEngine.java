@@ -66,13 +66,12 @@ public class AlgebraEngine {
 
                 return new Mul(leftMul, rightMul);
 
+                // it must be the case that something can or cannot be further simplified
+            // we need a flag or other recursion trick for the compiler to understand this
             case "Add":
                 Add add = (Add) expression;
-//                Expression leftAdd = simplify(add.getLeft());
-//                Expression rightAdd = simplify(add.getRight());
-                Expression leftAdd = add.getLeft();
-                Expression rightAdd = add.getRight();
-                // System.out.println("Adding: " + leftAdd.toString() + " and " + rightAdd.toString());
+                Expression leftAdd = simplify(add.getLeft());
+                Expression rightAdd = simplify(add.getRight());
 
                 // if either side is a constant, we can simplify
                 if (leftAdd instanceof Constant lConst && lConst.getDoubleValue() == 0.0) {
@@ -239,7 +238,6 @@ public class AlgebraEngine {
                     throw new UnsupportedOperationException("Logarithm with base 1 is undefined for values other than 1");
                 }
 
-
                 return new Log(arg, base);
 
             case "Tan":
@@ -248,6 +246,16 @@ public class AlgebraEngine {
             case "Sec":
                 Sec sec = (Sec) expression;
                 return new Sec(simplify(sec.getArg()));
+
+                // this is all incorrect, it returns expression too early. something else must be done
+            // one possible solution would be to allow multiple children nodes somehow in the AST for algebraic nodes
+            case "VariableNode":
+                return expression;
+            case "IntegerConstant":
+                return expression;
+            case "FloatConstant":
+                return expression;
+
             default:
                 throw new UnsupportedOperationException("not supported yet: " + expression.getClass().getSimpleName());
         }

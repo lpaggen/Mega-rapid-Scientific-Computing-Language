@@ -4,14 +4,16 @@ import AST.Nodes.Expression;
 import AST.Nodes.Statement;
 import Interpreter.Runtime.Environment;
 
+import java.util.List;
+
 // as of now I don't know if i need other nodes for elif etc, probably not
 // but then this will need to be adapted somehow
 public class IfNode extends Statement {
     private final Expression condition; // this is the LogicalBinaryNode that evaluates the condition
-    private final Statement thenBranch; // this is the statement that executes if the condition is true
-    private final Statement elseBranch; // this is the statement that executes if the condition is false
+    private final List<Statement> thenBranch; // this is the statement that executes if the condition is true
+    private final List<Statement> elseBranch; // this is the statement that executes if the condition is false
 
-public IfNode(Expression condition, Statement thenBranch, Statement elseBranch) {
+public IfNode(Expression condition, List<Statement> thenBranch, List<Statement> elseBranch) {
         this.condition = condition;
         this.thenBranch = thenBranch;
         this.elseBranch = elseBranch;
@@ -20,9 +22,13 @@ public IfNode(Expression condition, Statement thenBranch, Statement elseBranch) 
     @Override
     public void execute(Environment env) {
         if (condition.evaluate(env) instanceof BooleanNode bool && bool.getValue()) {
-            thenBranch.execute(env);
+            for (Statement stmt : thenBranch) {
+                stmt.execute(env);
+            }
         } else if (elseBranch != null) {
-            elseBranch.execute(env);
+            for (Statement stmt : elseBranch) {
+                stmt.execute(env);
+            }
         }
     }
 }
