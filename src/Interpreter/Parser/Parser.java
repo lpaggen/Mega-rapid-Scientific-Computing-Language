@@ -65,42 +65,31 @@ public class Parser {
         if (isDeclarationStart()) {
             System.out.println("Parsing variable declaration...");
             return parseDeclaration();
-        } else if (isFunctionCall()) { // this is where we can return the ExpressionStatementNode wrapper
-            System.out.println("Parsing function call...");
-            Expression functionCall = parseFunctionCall();
-            return new ExpressionStatementNode(functionCall);
-        } else if (isFunctionDeclarationStart()) {
+        }
+        else if (isFunctionDeclarationStart()) {
             System.out.println("Parsing function declaration...");
             return parseFunctionDeclaration();
-        } else if (isConditionalBranch()) {
+        }
+        else if (isConditionalBranch()) {
             System.out.println("Parsing conditional branch...");
             return parseConditionalBranch();
-        } else if (Objects.requireNonNull(peek().getKind()) == TokenKind.INCLUDE) {
+        }
+        else if (check(TokenKind.INCLUDE)) {
             System.out.println("Parsing module import statement: " + peek());
-            advance(); // consume the INCLUDE token
-            if (!check(TokenKind.IDENTIFIER)) {
-                throw new ErrorHandler(
-                        "parsing",
-                        peek().getLine(),
-                        "Unexpected token: " + peek().getLexeme(),
-                        "Expected a module name after 'include' keyword."
-                );
-            }
-            Token moduleName = consume(TokenKind.IDENTIFIER); // consume the module name
-            consume(TokenKind.SEMICOLON); // consume the semicolon
-            return new ImportNode(moduleName.getLexeme(), null); // no alias for now
-        } else if (peek().getKind() == TokenKind.IDENTIFIER && lookAhead(1).getKind() == TokenKind.EQUAL) {
+            advance(); // consume INCLUDE
+            Token moduleName = consume(TokenKind.IDENTIFIER);
+            consume(TokenKind.SEMICOLON);
+            return new ImportNode(moduleName.getLexeme(), null);
+        }
+        else if (peek().getKind() == TokenKind.IDENTIFIER && lookAhead(1).getKind() == TokenKind.EQUAL) {
             System.out.println("Parsing variable reassignment...");
             return parseVariableReassignment();
-        } else if (peek().getKind() == TokenKind.IDENTIFIER) { // handle both i++ and i--
-            Expression expr = parseExpression();
-            return new ExpressionStatementNode(expr);
-        } else if (peek().getKind() == TokenKind.SEMICOLON) { // handle empty statements
-            System.out.println("Empty statement detected at line " + peek().getLine() + ", skipping...");
-            advance(); // just consume the semicolon and return null
-            return null; // return null for empty statements
         }
-        return null;
+        else {
+            Expression expr = parseExpression(); // will handle identifiers, function calls, parenthesis, etc.
+            consume(TokenKind.SEMICOLON); // ensure semicolon is consumed
+            return new ExpressionStatementNode(expr);
+        }
     }
 
     private Expression parseExpression() {
@@ -499,37 +488,37 @@ public class Parser {
     // something is either wrong in this logic,
     // or it's in the fact that the parser doesn't handle statements which don't start with a type
     // so it crashes at "reassigning new value to existing variable"
-    private IfNode parseConditionalBranch() {  // here we parse all the else if, etc. build the node
-        consume(TokenKind.IF); // consume the IF token
-        consume(TokenKind.OPEN_PAREN); // consume '('
-        Expression condition = parseExpression(); // parse the condition expression
-        consume(TokenKind.CLOSE_PAREN); // consume ')'
-        consume(TokenKind.OPEN_BRACE); // consume '{'
-        java.util.List<Statement> thenBranch = new ArrayList<>();
-        java.util.List<Statement> elseStatements = new ArrayList<>();
-        while (!check(TokenKind.CLOSE_BRACE)) {
-            thenBranch.add(parseStatement());
-            // advance();
-            // consume(TokenKind.CLOSE_BRACE); // consume the semicolon after each statement
+    private IfNode parseConditionalBranch() {
+        if (!check(TokenKind.IF)) {
+            throw new ErrorHandler("parsing", peek().getLine(), "Expected IF", "");
         }
-        consume(TokenKind.CLOSE_BRACE); // consume '}'
+        advance(); // consume IF (works for both if and else if)
+        consume(TokenKind.OPEN_PAREN);
+        Expression condition = parseExpression();
+        consume(TokenKind.CLOSE_PAREN);
+        consume(TokenKind.OPEN_BRACE);
+        List<Statement> thenBranch = new ArrayList<>();
+        while (!check(TokenKind.CLOSE_BRACE)) {
+            Statement stmt = parseStatement();
+            if (stmt != null) thenBranch.add(stmt);
+        }
+        consume(TokenKind.CLOSE_BRACE);
+        List<Statement> elseBranch = null;
         if (match(TokenKind.ELSE)) {
-            if (check(TokenKind.IF)) { // else if branch
-                elseStatements.add(parseConditionalBranch()); // recursive call to handle else if
-                // advance();
-                // consume(TokenKind.SEMICOLON); // consume the semicolon after the else if statement
-            } else { // else branch
-                consume(TokenKind.OPEN_BRACE); // consume '{'
-                // java.util.List<Statement> elseStatements = new ArrayList<>();
+            if (check(TokenKind.IF)) { // don't consume yet
+                elseBranch = new ArrayList<>();
+                elseBranch.add(parseConditionalBranch()); // recursive call will consume IF token itself
+            } else { // else
+                consume(TokenKind.OPEN_BRACE);
+                elseBranch = new ArrayList<>();
                 while (!check(TokenKind.CLOSE_BRACE)) {
-                    elseStatements.add(parseStatement());
-                    // advance();
-                    // consume(TokenKind.SEMICOLON); // consume the semicolon after each statement
+                    Statement stmt = parseStatement();
+                    if (stmt != null) elseBranch.add(stmt);
                 }
-                consume(TokenKind.CLOSE_BRACE); // consume '}'
+                consume(TokenKind.CLOSE_BRACE);
             }
         }
-        return new IfNode(condition, thenBranch, elseStatements);
+        return new IfNode(condition, thenBranch, elseBranch);
     }
 
     private boolean match(TokenKind... expectedKinds) {
