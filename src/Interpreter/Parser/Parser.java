@@ -89,9 +89,16 @@ public class Parser {
             Token moduleName = consume(TokenKind.IDENTIFIER); // consume the module name
             consume(TokenKind.SEMICOLON); // consume the semicolon
             return new ImportNode(moduleName.getLexeme(), null); // no alias for now
+        } else if (peek().getKind() == TokenKind.IDENTIFIER && lookAhead(1).getKind() == TokenKind.EQUAL) {
+            System.out.println("Parsing variable reassignment...");
+            return parseVariableReassignment();
         } else if (peek().getKind() == TokenKind.IDENTIFIER) { // handle both i++ and i--
             Expression expr = parseExpression();
             return new ExpressionStatementNode(expr);
+        } else if (peek().getKind() == TokenKind.SEMICOLON) { // handle empty statements
+            System.out.println("Empty statement detected at line " + peek().getLine() + ", skipping...");
+            advance(); // just consume the semicolon and return null
+            return null; // return null for empty statements
         }
         return null;
     }
@@ -182,7 +189,6 @@ public class Parser {
             return parseMatrix();
         }
         // this is really not good and not safe, and it's a dumb check. but it works until i figure something better out
-        // debug to see if we are parsing identifier i
         if (match(TokenKind.IDENTIFIER)) {
             Token name = previous();
             if (match(TokenKind.OPEN_PAREN)) {  // function call detected
@@ -191,6 +197,10 @@ public class Parser {
                 return new FunctionCallNode(name.getLexeme(), args);
             }
             System.out.println("Parsing variable: " + name.getLexeme());
+            // this is most likely not correct logic -- the bug is somewhere else
+//            if (environment.isDeclared(name.getLexeme()) && check(TokenKind.EQUAL)) { // variable reassignment detected
+//                // return parseVariableReassignment(); // this will handle the reassignment logic
+//            }
             // just check for increment here
             if (match(TokenKind.INCREMENT, TokenKind.DECREMENT)) {
                 Token operator = previous();
@@ -461,6 +471,34 @@ public class Parser {
         return new FunctionCallNode(functionNameToken.getLexeme(), arguments);
     }
 
+    private Statement parseVariableReassignment() {
+        System.out.println("before parsing variable reassignment, current token: " + peek());
+        String varName = peek().getLexeme();
+        consume(TokenKind.IDENTIFIER); // consume the variable name
+        if (!match(TokenKind.EQUAL)) {
+            throw new ErrorHandler(
+                    "parsing",
+                    peek().getLine(),
+                    "Unexpected token: " + peek().getLexeme(),
+                    "Expected '=' for variable reassignment."
+            );
+        }
+        if (match(TokenKind.EQUAL)) {
+            throw new ErrorHandler(
+                    "parsing",
+                    peek().getLine(),
+                    "Unexpected token: " + peek().getLexeme(),
+                    "Cannot use == when assigning value to variable."
+            );
+        }
+        Expression newValue = parseExpression();
+        consume(TokenKind.SEMICOLON); // consume the semicolon
+        return new VariableReassignmentNode(varName, newValue);
+    }
+
+    // something is either wrong in this logic,
+    // or it's in the fact that the parser doesn't handle statements which don't start with a type
+    // so it crashes at "reassigning new value to existing variable"
     private IfNode parseConditionalBranch() {  // here we parse all the else if, etc. build the node
         consume(TokenKind.IF); // consume the IF token
         consume(TokenKind.OPEN_PAREN); // consume '('
@@ -471,19 +509,22 @@ public class Parser {
         java.util.List<Statement> elseStatements = new ArrayList<>();
         while (!check(TokenKind.CLOSE_BRACE)) {
             thenBranch.add(parseStatement());
-            advance();
+            // advance();
+            // consume(TokenKind.CLOSE_BRACE); // consume the semicolon after each statement
         }
         consume(TokenKind.CLOSE_BRACE); // consume '}'
         if (match(TokenKind.ELSE)) {
             if (check(TokenKind.IF)) { // else if branch
-                System.out.println("Parsing else if branch...");
                 elseStatements.add(parseConditionalBranch()); // recursive call to handle else if
+                // advance();
+                // consume(TokenKind.SEMICOLON); // consume the semicolon after the else if statement
             } else { // else branch
                 consume(TokenKind.OPEN_BRACE); // consume '{'
                 // java.util.List<Statement> elseStatements = new ArrayList<>();
                 while (!check(TokenKind.CLOSE_BRACE)) {
                     elseStatements.add(parseStatement());
-                    advance();
+                    // advance();
+                    // consume(TokenKind.SEMICOLON); // consume the semicolon after each statement
                 }
                 consume(TokenKind.CLOSE_BRACE); // consume '}'
             }
@@ -559,6 +600,13 @@ public class Parser {
 
     private Token previous() {
         return tokens.get(tokenPos - 1);
+    }
+
+    private Token lookAhead(int n) {
+        if (tokenPos + n < tokens.size()) {
+            return tokens.get(tokenPos + n);
+        }
+        return tokens.getLast(); // return EOF token if out of bounds
     }
 
     private boolean isAtEnd() {
