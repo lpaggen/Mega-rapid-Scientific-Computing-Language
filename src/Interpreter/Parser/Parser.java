@@ -87,6 +87,9 @@ public class Parser {
             System.out.println("Parsing variable reassignment...");
             return parseVariableReassignment();
         }
+        else if (peek().getKind() == TokenKind.WHILE) {
+            return parseWhileLoop();
+        }
         else {
             Expression expr = parseExpression(); // will handle identifiers, function calls, parenthesis, etc.
             consume(TokenKind.SEMICOLON); // ensure semicolon is consumed
@@ -521,6 +524,21 @@ public class Parser {
             }
         }
         return new IfNode(condition, thenBranch, elseBranch);
+    }
+
+    private WhileNode parseWhileLoop() {
+        consume(TokenKind.WHILE); // consume WHILE
+        consume(TokenKind.OPEN_PAREN);
+        Expression condition = parseExpression();
+        consume(TokenKind.CLOSE_PAREN);
+        consume(TokenKind.OPEN_BRACE);
+        List<Statement> body = new ArrayList<>();
+        while (!check(TokenKind.CLOSE_BRACE)) {
+            Statement stmt = parseStatement();
+            if (stmt != null) body.add(stmt);
+        }
+        consume(TokenKind.CLOSE_BRACE);
+        return new WhileNode(condition, body);
     }
 
     private boolean match(TokenKind... expectedKinds) {
