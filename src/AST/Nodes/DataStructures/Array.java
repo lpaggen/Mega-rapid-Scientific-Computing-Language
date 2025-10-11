@@ -1,7 +1,7 @@
 package AST.Nodes.DataStructures;
 
 import AST.Nodes.DataTypes.Constant;
-import AST.Nodes.Expression;
+import AST.Nodes.Expressions.Expression;
 import Interpreter.Runtime.Environment;
 import Interpreter.Tokenizer.TokenKind;
 

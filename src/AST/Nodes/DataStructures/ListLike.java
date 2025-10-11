@@ -1,11 +1,9 @@
 package AST.Nodes.DataStructures;
 
-import AST.Nodes.Expression;
+import AST.Nodes.Expressions.Expression;
 import Interpreter.Tokenizer.TokenKind;
 
-import java.util.AbstractSequentialList;
 import java.util.ArrayList;
-import java.util.LinkedList;
 
 
 public interface ListLike extends SequenceLike {

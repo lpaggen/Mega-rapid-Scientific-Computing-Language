@@ -1,12 +1,7 @@
 package AST.Nodes.DataStructures;
 
-import AST.Nodes.Expression;
+import AST.Nodes.Expressions.Expression;
 import Interpreter.Tokenizer.TokenKind;
-
-import java.util.AbstractMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Consumer;
 
 // this just needs to have the basic methods that both Array and Vector need, nothing more
 // this class is the superclass for Array and Vector, it defines the common methods

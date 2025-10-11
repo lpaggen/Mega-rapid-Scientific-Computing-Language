@@ -1,7 +1,7 @@
 package Interpreter.Parser;
 
-import AST.Nodes.Functions.BuiltIns.BuiltInFunctionSymbol;
-import AST.Nodes.Statement;
+import AST.Nodes.Expressions.Functions.BuiltIns.BuiltInFunctionSymbol;
+import AST.Nodes.Statements.Statement;
 import Interpreter.Tokenizer.TokenKind;
 import Interpreter.Runtime.Environment;
 

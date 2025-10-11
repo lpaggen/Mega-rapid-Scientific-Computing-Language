@@ -2,7 +2,7 @@ package AST.Nodes.Conditional;
 
 import AST.Nodes.DataTypes.Constant;
 import AST.Nodes.DataTypes.IntegerConstant;
-import AST.Nodes.Expression;
+import AST.Nodes.Expressions.Expression;
 import Interpreter.Runtime.Environment;
 import Interpreter.Tokenizer.TokenKind;
 

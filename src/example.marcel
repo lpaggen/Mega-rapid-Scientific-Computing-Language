@@ -1,19 +1,7 @@
 load stdlib;
 
-int x = 4;
-
-if (x > 10) {
-    print("IF WORKS");
-} else if (x < 6) {
-    print("ELSE IF WORKS");
-} else if (x == 5) {
-    print("ELSE IF 2 WORKS");
-} else {
-    x = 5;
+int x = 5;
+while (x > 0) {
+    print(x);
+    x = x - 1;
 }
-
-x = 6;
-int y = 7;
-print("value of x -> " + x);
-
-print("value of y -> " + y);

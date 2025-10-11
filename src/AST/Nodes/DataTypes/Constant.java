@@ -1,6 +1,6 @@
 package AST.Nodes.DataTypes;
 
-import AST.Nodes.Expression;
+import AST.Nodes.Expressions.Expression;
 import Interpreter.Runtime.Environment;
 
 public abstract class Constant extends Expression {

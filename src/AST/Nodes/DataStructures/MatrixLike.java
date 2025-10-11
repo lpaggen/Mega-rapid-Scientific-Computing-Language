@@ -1,6 +1,6 @@
 package AST.Nodes.DataStructures;
 
-import AST.Nodes.Expression;
+import AST.Nodes.Expressions.Expression;
 
 // can call this iterable, collection, doesn't matter too much for now
 // will add more methods as needed, this is just a start for the demo project

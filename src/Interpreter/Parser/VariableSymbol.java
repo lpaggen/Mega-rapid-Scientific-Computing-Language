@@ -1,6 +1,6 @@
 package Interpreter.Parser;
 
-import AST.Nodes.Expression;
+import AST.Nodes.Expressions.Expression;
 import Interpreter.Tokenizer.TokenKind;
 
 // this will eventually replace the Token in the Environment, as it also will allow for functions to be stored in the env
