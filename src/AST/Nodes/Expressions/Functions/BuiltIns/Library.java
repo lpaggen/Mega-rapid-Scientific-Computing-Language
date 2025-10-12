@@ -6,5 +6,6 @@ public enum Library {
     LINALG,
     STATS,
     MATHS,
-    RANDOM
+    RANDOM,
+    GRAPHS
 }

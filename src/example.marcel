@@ -1,10 +1,14 @@
 load stdlib;
 
 int x = 5;
-while (x > 0) {
-    print(x);
-    x = x - 1;
-}
 
-print(x);
-print("Liftoff!");
+graph<d, w> G =
+{
+    node A = 4;
+    node B = 4;
+    node C;
+    edge A -> B = 4;
+    edge A -> C;
+    edge B -> C = 2;
+    edge C -> B = 3;
+};

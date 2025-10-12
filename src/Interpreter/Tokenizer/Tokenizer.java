@@ -156,12 +156,15 @@ public class Tokenizer {
         put("null", TokenKind.NULL);
         put("bool", TokenKind.BOOLEAN_TYPE);
         put("str", TokenKind.STRING_TYPE);
-        put("->", TokenKind.ARROW); // this is used for function definitions, like in Python
+        put("->", TokenKind.ARROW); // both for functions and for edges in graphs
         put("void", TokenKind.VOID_TYPE);
         put("load", TokenKind.INCLUDE);
         put("read", TokenKind.READ);
         put("write", TokenKind.WRITE);
         put("arr", TokenKind.ARRAY_TYPE);
+        put("graph", TokenKind.GRAPH_TYPE);
+        put("node", TokenKind.NODE_TYPE);
+        put("edge", TokenKind.EDGE_TYPE);
     }};
 
     private boolean isDigit(char c) {

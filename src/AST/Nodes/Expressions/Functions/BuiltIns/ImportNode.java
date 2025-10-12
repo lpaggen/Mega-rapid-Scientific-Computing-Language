@@ -1,5 +1,6 @@
 package AST.Nodes.Expressions.Functions.BuiltIns;
 
+import AST.Nodes.Expressions.Functions.BuiltIns.Graphs.GraphsLibrary;
 import AST.Nodes.Expressions.Functions.BuiltIns.Linalg.LinalgLibrary;
 import AST.Nodes.Expressions.Functions.BuiltIns.StandardLib.StandardLibrary;
 import AST.Nodes.Statements.Statement;
@@ -47,6 +48,7 @@ public class ImportNode extends Statement {
         return switch (moduleName.toLowerCase()) {
             case "stdlib" -> StandardLibrary.builtInSymbols;
             case "linalg" -> LinalgLibrary.LinalgSymbols;
+            case "graphs" -> GraphsLibrary.GraphsSymbols;
             default -> throw new IllegalArgumentException("Module '" + moduleName + "' not found in standard library.");
         };
     }
