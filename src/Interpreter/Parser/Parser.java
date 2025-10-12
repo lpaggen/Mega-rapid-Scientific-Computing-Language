@@ -395,6 +395,7 @@ public class Parser {
 //        if (dataType == TokenKind.MATH) {
 //            return new VariableDeclarationNode(new Token(dataType, typeToken.getLexeme(), null, typeToken.getLine()), name, new StringNode(name.getLexeme()));
 //        }
+        System.out.println("Finished parsing variable declaration: " + name.getLexeme() + " of type " + dataType + (initializer != null ? " with initializer." : " without initializer."));
         return new VariableDeclarationNode(new Token(dataType, typeToken.getLexeme(), null, typeToken.getLine()), name, initializer);
     }
 
@@ -630,16 +631,16 @@ public class Parser {
         // depending on the graph type, we may set the weight to null or 1
         if (match(TokenKind.SEMICOLON)) {
             Expression weight = this.isWeightedGraph ? new IntegerConstant(1) : null; // unweighted graph
-            Node node = new Node(weight);
+            Node node = new Node(weight, nodeName);
             nodeMap.put(nodeName, node);
-            return new Node(node);
+            return new Node(node, nodeName);
         }
         else if (match(TokenKind.EQUAL)) {
             Expression weight = parseExpression();
             consume(TokenKind.SEMICOLON);
-            Node node = new Node(weight);
+            Node node = new Node(weight, nodeName);
             nodeMap.put(nodeName, node);
-            return new Node(node);
+            return new Node(node, nodeName);
         }
         throw new ErrorHandler(
                 "parsing",

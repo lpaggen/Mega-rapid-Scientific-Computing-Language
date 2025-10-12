@@ -182,11 +182,20 @@ public class Graph extends Expression {
 
     @Override
     public Expression evaluate(Environment env) {
-        return null;
+        // Evaluate nodes and edges if they have expressions
+        for (Node node : nodes) {
+            node.evaluate(env);
+        }
+        for (Edge edge : edges) {
+            edge.evaluate(env);
+        }
+        return this;
     }
 
     @Override
     public String toString() {
-        return "Graph(nodes: " + nodes.size() + ", edges: " + edges.size() + ", directed: " + directed + ", weighted: " + weighted + ")";
+        return "Graph(nodes: " + nodes.size() + ", edges: " + edges.size() + ", directed: " + directed + ", weighted: " + weighted + ")" +
+                "\nNodes: " + nodes +
+                "\nEdges: " + edges;
     }
 }

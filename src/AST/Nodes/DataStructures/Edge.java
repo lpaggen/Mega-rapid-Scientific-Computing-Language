@@ -53,12 +53,13 @@ public class Edge extends Expression {
 
     @Override
     public Expression evaluate(Environment env) {
-        return null;
+        weight = (weight != null) ? weight.evaluate(env) : null;
+        return this;
     }
 
     @Override
     public String toString() {
-        return "Edge(from: " + from.toString() + ", to: " + to.toString() + (weight != null ? ", weight: " + weight.toString() : "") + ")";
+        return "Edge(from: " + from + ", to: " + to + (weight != null ? ", weight: " + weight : "") + ")";
     }
 
     private void throwError(String message) {

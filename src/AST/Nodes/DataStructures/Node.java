@@ -9,8 +9,15 @@ public class Node extends Expression {
     private Expression value;
     private List<Edge> edges;
     private List<Node> neighbors;
-    public Node(Expression value) {
+    private final String id;
+
+    public Node(Expression value, String id) {
         this.value = value;
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public Expression getValue() {
@@ -50,7 +57,7 @@ public class Node extends Expression {
     }
 
     public int getDegree() {
-        return edges.size();
+        return (this.edges != null) ? this.edges.size() : 0;
     }
 
     public boolean isAdjacent(Node node) {
@@ -83,11 +90,13 @@ public class Node extends Expression {
 
     @Override
     public Expression evaluate(Environment env) {
-        return null;
+        value = value.evaluate(env);
+        return this;
     }
 
     @Override
     public String toString() {
-        return null;
+        String valStr = (value != null) ? value.toString() : "null";
+        return String.format("Node(%s, value=%s)", id, valStr);
     }
 }

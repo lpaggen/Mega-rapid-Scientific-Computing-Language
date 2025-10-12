@@ -80,6 +80,9 @@ public class VariableDeclarationNode extends Statement {
                     //throw new RuntimeException("Type mismatch: expected vector, got " + (value != null ? value.getClass().getSimpleName() : "null") + " at line " + variable.getLine());
                 }
                 break;
+            case GRAPH:
+                // Graph type checking can be added here if needed
+                break;
         }
         env.declareSymbol(variable.getLexeme(), new VariableSymbol(variable.getLexeme(), type.getKind(), value));
     }
