@@ -564,15 +564,13 @@ public class Parser {
         System.out.println("Parsing graph declaration...");
 
         HashMap<String, Node> nodeMap = new HashMap<>();  // use this to keep track of nodes by name
-
-        List<Node> nodes = new ArrayList<>();
         List<Edge> edges = new ArrayList<>();
 
         System.out.println("Current token at parseGraph: " + peek());
 
         do {
             if (match(TokenKind.NODE_TYPE)) {
-                nodes.add(parseNodeDeclaration(nodeMap));
+                parseNodeDeclaration(nodeMap);
             } else if (match(TokenKind.EDGE_TYPE)) {
                 edges.add(parseEdgeDeclaration(nodeMap));
             } else {
@@ -585,8 +583,8 @@ public class Parser {
             }
         } while (!check(TokenKind.CLOSE_BRACE) && !isAtEnd());
         consume(TokenKind.CLOSE_BRACE);
-        System.out.println("Finished parsing graph with name. Nodes: " + nodes.size() + ", Edges: " + edges.size());
-        return new Graph(nodes, edges, isDirectedGraph, isWeightedGraph);
+        System.out.println("Finished parsing graph with name. Nodes: " + nodeMap.size() + ", Edges: " + edges.size());
+        return new Graph(nodeMap, edges, isDirectedGraph, isWeightedGraph);
     }
 
     private Edge parseEdgeDeclaration(HashMap<String, Node> nodeMap) {
@@ -631,7 +629,7 @@ public class Parser {
         );
     }
 
-    private Node parseNodeDeclaration(HashMap<String, Node> nodeMap) {
+    private void parseNodeDeclaration(HashMap<String, Node> nodeMap) {
         System.out.println("current token at parseNodeDeclaration: " + peek());
         String nodeName = peek().getLexeme();
         if (nodeMap.containsKey(nodeName)) {
@@ -650,21 +648,21 @@ public class Parser {
             Expression weight = this.isWeightedGraph ? new IntegerConstant(1) : null; // unweighted graph
             Node node = new Node(weight, nodeName);
             nodeMap.put(nodeName, node);
-            return new Node(node, nodeName);
+            // return new Node(node, nodeName);
         }
         else if (match(TokenKind.EQUAL)) {
             Expression weight = parseExpression();
             consume(TokenKind.SEMICOLON);
             Node node = new Node(weight, nodeName);
             nodeMap.put(nodeName, node);
-            return new Node(node, nodeName);
+            // return new Node(node, nodeName);
         }
-        throw new ErrorHandler(
-                "parsing",
-                peek().getLine(),
-                "Unexpected token in node declaration: " + peek(),
-                "Expected ';' or '=' followed by weight expression."
-        );
+//        throw new ErrorHandler(
+//                "parsing",
+//                peek().getLine(),
+//                "Unexpected token in node declaration: " + peek(),
+//                "Expected ';' or '=' followed by weight expression."
+//        );
     }
 
     // something is either wrong in this logic,

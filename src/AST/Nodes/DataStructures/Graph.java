@@ -3,35 +3,54 @@ package AST.Nodes.DataStructures;
 import AST.Nodes.Expressions.Expression;
 import Interpreter.Runtime.Environment;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
 public class Graph extends Expression {
-    private List<Node> nodes;
+    private HashMap<String, Node> nodes;
     private List<Edge> edges;
     private boolean directed;
     private boolean weighted;
-    public Graph(List<Node> nodes, List<Edge> edges, boolean directed, boolean weighted) {
+    public Graph(HashMap<String, Node> nodes, List<Edge> edges, boolean directed, boolean weighted) {
         this.nodes = nodes;
         this.edges = edges;
         this.directed = directed;
         this.weighted = weighted;
     }
 
+    // expose as a list of nodes
     public List<Node> getNodes() {
-        return nodes;
+        return new ArrayList<>(nodes.values());
     }
 
     public List<Edge> getEdges() {
         return edges;
     }
 
+    public Set<String> getNodeIDs() {
+        return nodes.keySet();
+    }
+
+    public Node getNodeByID(String nodeID) {
+        try {
+            if (!nodes.containsKey(nodeID)) {
+                throw new IllegalArgumentException("Graph has no node with ID '" + nodeID + "'.");
+            }
+        } catch (IllegalArgumentException e) {
+            System.err.println(e.getMessage());
+            return null;
+        }
+        return nodes.get(nodeID);
+    }
+
     public boolean isDirected() {
         return directed;
     }
 
-    public void addNode(Node node) {
-        this.nodes.add(node);
+    public void addNode(String NodeID, Node node) {
+        this.nodes.put(NodeID, node);
     }
 
     public void addEdge(Edge edge) {
@@ -54,8 +73,8 @@ public class Graph extends Expression {
         return edges.size();
     }
 
-    public boolean containsNode(Node node) {
-        return nodes.contains(node);
+    public boolean containsNode(String nodeID) {
+        return nodes.containsKey(nodeID);
     }
 
     public boolean containsEdge(Edge edge) {
@@ -184,7 +203,7 @@ public class Graph extends Expression {
     @Override
     public Expression evaluate(Environment env) {
         // Evaluate nodes and edges if they have expressions
-        for (Node node : nodes) {
+        for (Node node : nodes.values()) {
             node.evaluate(env);
         }
         for (Edge edge : edges) {

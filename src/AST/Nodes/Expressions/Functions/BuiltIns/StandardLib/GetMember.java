@@ -1,5 +1,6 @@
 package AST.Nodes.Expressions.Functions.BuiltIns.StandardLib;
 
+import AST.Nodes.Conditional.BooleanNode;
 import AST.Nodes.DataStructures.*;
 import AST.Nodes.Expressions.Expression;
 import AST.Nodes.Expressions.Functions.BuiltIns.BuiltInFunctionSymbol;
@@ -29,12 +30,13 @@ public class GetMember extends BuiltInFunctionSymbol {
             return switch (member) {
                 case "nodes" -> g.getNodes();
                 case "edges" -> g.getEdges();
-                case "isDirected" -> g.isDirected();
+                case "isDirected" -> new BooleanNode(g.isDirected());
                 case "isWeighted" -> g.isWeighted();
                 case "size" -> g.getNodes().size();
+                default -> g.getNodeByID(member);
                 // default -> g.getNodes().stream().map(Node::getId).toList().contains(member) ? g.getNodes().stream().filter(n -> n.getId().equals(member)).findFirst().orElse(null) :
                            // g.getEdges().stream().filter(e -> e.getFrom().equals(member) || e.getTo().equals(member)).findFirst().orElse(null);
-                default -> throw new IllegalArgumentException("Graph has no member '" + member + "'");
+//                default -> throw new IllegalArgumentException("Graph has no member '" + member + "'");
             };
         }
 

@@ -13,6 +13,4 @@ graph<d, w> G =
     edge C -> B = 3;
 };
 
-# x = x + G.A.value;
-
-print(G.A);
+print(G.isDirected);
