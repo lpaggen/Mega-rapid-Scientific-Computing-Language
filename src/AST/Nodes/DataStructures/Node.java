@@ -17,6 +17,12 @@ public class Node extends Expression {
         this.id = id;
     }
 
+    // maybe this can be useful for unweighted graphs
+    // eval would need to change
+    public Node(String id) {
+        this.id = id;
+    }
+
     public String getId() {
         return id;
     }
@@ -106,7 +112,9 @@ public class Node extends Expression {
 
     @Override
     public Expression evaluate(Environment env) {
-        value = value.evaluate(env);
+        if (value != null) {
+            value = value.evaluate(env);
+        }
         return this;
     }
 

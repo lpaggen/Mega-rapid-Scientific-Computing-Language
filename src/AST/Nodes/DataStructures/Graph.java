@@ -11,10 +11,10 @@ import java.util.Set;
 
 public class Graph extends Expression {
     private HashMap<String, Node> nodes;
-    private List<Edge> edges;
+    private HashMap<String, Edge> edges;
     private boolean directed;
     private boolean weighted;
-    public Graph(HashMap<String, Node> nodes, List<Edge> edges, boolean directed, boolean weighted) {
+    public Graph(HashMap<String, Node> nodes, HashMap<String, Edge> edges, boolean directed, boolean weighted) {
         this.nodes = nodes;
         this.edges = edges;
         this.directed = directed;
@@ -32,7 +32,7 @@ public class Graph extends Expression {
     }
 
     public List<Edge> getEdges() {
-        return edges;
+        return new ArrayList<>(edges.values());
     }
 
     public Set<String> getNodeIDs() {
@@ -45,8 +45,7 @@ public class Graph extends Expression {
                 throw new IllegalArgumentException("Graph has no node with ID '" + nodeID + "'.");
             }
         } catch (IllegalArgumentException e) {
-            System.err.println(e.getMessage());
-            return null;
+            throw new IllegalArgumentException(e.getMessage());
         }
         return nodes.get(nodeID);
     }
@@ -59,16 +58,16 @@ public class Graph extends Expression {
         this.nodes.put(NodeID, node);
     }
 
-    public void addEdge(Edge edge) {
-        this.edges.add(edge);
+    public void addEdge(String edgeReference, Edge edge) {
+        this.edges.put(edgeReference, edge);
     }
 
-    public void removeNode(Node node) {
-        this.nodes.remove(node);
+    public void removeNode(String nodeID) {
+        this.nodes.remove(nodeID);
     }
 
-    public void removeEdge(Edge edge) {
-        this.edges.remove(edge);
+    public void removeEdge(String edgeID) {
+        this.edges.remove(edgeID);
     }
 
     public int getNodeCount() {
@@ -83,8 +82,8 @@ public class Graph extends Expression {
         return nodes.containsKey(nodeID);
     }
 
-    public boolean containsEdge(Edge edge) {
-        return edges.contains(edge);
+    public boolean containsEdge(String edgeID) {
+        return edges.containsKey(edgeID);
     }
 
     public void clear() {
@@ -212,7 +211,7 @@ public class Graph extends Expression {
         for (Node node : nodes.values()) {
             node.evaluate(env);
         }
-        for (Edge edge : edges) {
+        for (Edge edge : edges.values()) {
             edge.evaluate(env);
         }
         return this;

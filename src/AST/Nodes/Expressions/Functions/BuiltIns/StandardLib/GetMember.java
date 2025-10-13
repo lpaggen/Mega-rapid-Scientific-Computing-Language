@@ -66,6 +66,10 @@ public class GetMember extends BuiltInFunctionSymbol {
             };
         }
 
+        if (obj == null) {
+            throw new IllegalArgumentException("Cannot access member '" + member + "' on null object");
+        }
+
         throw new IllegalArgumentException("Cannot access member '" + member + "' on type " + obj.getClass().getSimpleName());
     }
 }

@@ -361,7 +361,7 @@ public class Parser {
                         "parsing",
                         peek().getLine(),
                         "Unexpected token: " + peek().getLexeme(),
-                        "Expected a graph attribute (d, directed, undirected) inside graph declaration."
+                        "Expected a graph attribute (d, ud) inside graph declaration."
                 );
             }
             boolean isDirectedGraph = GraphAttributes.get(advance().getLexeme()); // consume the inner type token
@@ -477,6 +477,7 @@ public class Parser {
             "undirected", false,
             "weighted", true,
             "unweighted", false,
+            "ud", false,
             "d", true,
             "u", false,
             "w", true,
@@ -557,17 +558,14 @@ public class Parser {
 
     private Expression parseGraph(boolean isDirectedGraph, boolean isWeightedGraph) {
         System.out.println("Parsing graph declaration...");
-
         HashMap<String, Node> nodeMap = new HashMap<>();  // use this to keep track of nodes by name
-        List<Edge> edges = new ArrayList<>();
-
-        System.out.println("Current token at parseGraph: " + peek());
-
+        // List<Edge> edges = new ArrayList<>();
+        HashMap<String, Edge> edgeMap = new HashMap<>();  // keep track of edges by name
         do {
             if (match(TokenKind.NODE_TYPE)) {
                 parseNodeDeclaration(nodeMap);
             } else if (match(TokenKind.EDGE_TYPE)) {
-                edges.add(parseEdgeDeclaration(nodeMap));
+                parseEdgeDeclaration(nodeMap, edgeMap);
             } else {
                 throw new ErrorHandler(
                         "parsing",
@@ -578,11 +576,11 @@ public class Parser {
             }
         } while (!check(TokenKind.CLOSE_BRACE) && !isAtEnd());
         consume(TokenKind.CLOSE_BRACE);
-        System.out.println("Finished parsing graph with name. Nodes: " + nodeMap.size() + ", Edges: " + edges.size());
-        return new Graph(nodeMap, edges, isDirectedGraph, isWeightedGraph);
+        System.out.println("Finished parsing graph with name. Nodes: " + nodeMap.size() + ", Edges: " + edgeMap.values().size());
+        return new Graph(nodeMap, edgeMap, isDirectedGraph, isWeightedGraph);
     }
 
-    private Edge parseEdgeDeclaration(HashMap<String, Node> nodeMap) {
+    private void parseEdgeDeclaration(HashMap<String, Node> nodeMap, HashMap<String, Edge> edgeMap) {
         System.out.println("current token at parseEdgeDeclaration: " + peek());
         String from = peek().getLexeme();  // now we can actually pass it Node types
         Node fromNode = nodeMap.get(from);
@@ -598,7 +596,7 @@ public class Parser {
             throw new ErrorHandler(
                     "parsing",
                     peek().getLine(),
-                    "Expected '<->' for undirected edge.",
+                    "Expected '-' for undirected edge.",
                     "Undirected edges must use '-' to indicate no direction."
             );
         }
@@ -606,22 +604,35 @@ public class Parser {
         Node toNode = nodeMap.get(to);
         consume(TokenKind.IDENTIFIER); // consume the 'to' node name
         System.out.println("Edge from: " + from + " to: " + to);
+        edgeMap.put(from + (this.isDirectedGraph ? "->" : "-") + to, null); // just to keep track of edges by name
         // if the user does not specify a weight for the edge
         if (match(TokenKind.SEMICOLON)) {
             Expression weight = this.isWeightedGraph ? new IntegerConstant(1) : null; // unweighted graph
-            return new Edge(fromNode, toNode, weight, this.isDirectedGraph);
+            Edge edge = new Edge(fromNode, toNode, weight, this.isDirectedGraph);
+            edgeMap.put(from + (this.isDirectedGraph ? "->" : "-") + to, edge);
+        }
+        else if (match(TokenKind.EQUAL) && !this.isWeightedGraph) {
+            throw new ErrorHandler(
+                    "parsing",
+                    peek().getLine(),
+                    "Unexpected weight assignment in unweighted graph for edge: " + from + (this.isDirectedGraph ? "->" : "-") + to,
+                    "Cannot assign weights to edges in an unweighted graph."
+            );
         }
         else if (match(TokenKind.EQUAL)) {
             Expression weight = parseExpression();
             consume(TokenKind.SEMICOLON);
-            return new Edge(fromNode, toNode, weight, this.isDirectedGraph);
+            Edge edge = new Edge(fromNode, toNode, weight, this.isDirectedGraph);
+            edgeMap.put(from + (this.isDirectedGraph ? "->" : "-") + to, edge);
         }
-        throw new ErrorHandler(
-                "parsing",
-                peek().getLine(),
-                "Unexpected token in edge declaration: " + peek(),
-                "Expected ';' or '=' followed by weight expression."
-        );
+        else {
+            throw new ErrorHandler(
+                    "parsing",
+                    peek().getLine(),
+                    "Unexpected token in edge declaration: " + peek(),
+                    "Expected ';' or '=' followed by weight expression."
+            );
+        }
     }
 
     private void parseNodeDeclaration(HashMap<String, Node> nodeMap) {
@@ -645,19 +656,29 @@ public class Parser {
             nodeMap.put(nodeName, node);
             // return new Node(node, nodeName);
         }
-        else if (match(TokenKind.EQUAL)) {
+        else if (match(TokenKind.EQUAL) && !this.isWeightedGraph) {
+            throw new ErrorHandler(
+                    "parsing",
+                    peek().getLine(),
+                    "Unexpected weight assignment in unweighted graph for node: " + nodeName,
+                    "Cannot assign weights to nodes in an unweighted graph."
+            );
+        }
+        else if (match(TokenKind.EQUAL) && this.isWeightedGraph) {
             Expression weight = parseExpression();
             consume(TokenKind.SEMICOLON);
             Node node = new Node(weight, nodeName);
             nodeMap.put(nodeName, node);
             // return new Node(node, nodeName);
         }
-//        throw new ErrorHandler(
-//                "parsing",
-//                peek().getLine(),
-//                "Unexpected token in node declaration: " + peek(),
-//                "Expected ';' or '=' followed by weight expression."
-//        );
+        else {
+            throw new ErrorHandler(
+                    "parsing",
+                    peek().getLine(),
+                    "Unexpected token in node declaration: " + peek(),
+                    "Expected ';' or '=' followed by weight expression."
+            );
+        }
     }
 
     // something is either wrong in this logic,
