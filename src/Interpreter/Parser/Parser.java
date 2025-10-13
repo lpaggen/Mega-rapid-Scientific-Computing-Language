@@ -198,38 +198,23 @@ public class Parser {
         else if (match(TokenKind.IDENTIFIER)) {
             Token name = previous();
             System.out.println("current token after identifier match: " + peek());
-            if (match(TokenKind.DOT)) {
+            Expression expr = new VariableNode(name.getLexeme());
+            while (match(TokenKind.DOT)) {
                 System.out.println("Parsing member access for: " + name.getLexeme());
-                // we know there's member access, somehow we should know what the member is...
-                // we can do this by querying the env
-                String member = consume(TokenKind.IDENTIFIER).getLexeme();
-                TokenKind memberToken = environment.getType(name.getLexeme());
-                System.out.println("Member accessed: " + member + " of type " + memberToken);
-                Expression obj = ((VariableSymbol) environment.lookup(name.getLexeme())).getValue();
-                System.out.println("Object for member access: " + (obj != null ? obj.toString() : "null"));
-                return new FunctionCallNode("getMember", List.of(obj, new StringNode(member)));
-                // return new FunctionCallNode("GetMember", List.of(new VariableNode(name.getLexeme()), new ArrayList<Expression>(args))); // we pass the object and the member name as string
+                expr = parseMemberAccess(expr);
             }
             if (match(TokenKind.OPEN_PAREN)) {  // function call detected
                 java.util.List<Expression> args = parseFunctionArguments();
-//                if (match(TokenKind.DOT)) {
-//                    String member = consume(TokenKind.IDENTIFIER).getLexeme();
-//                    System.out.println(member);
-//                }
                 consume(TokenKind.CLOSE_PAREN);
                 return new FunctionCallNode(name.getLexeme(), args);
             }
             System.out.println("Parsing variable: " + name.getLexeme());
-            // this is most likely not correct logic -- the bug is somewhere else
-//            if (environment.isDeclared(name.getLexeme()) && check(TokenKind.EQUAL)) { // variable reassignment detected
-//                // return parseVariableReassignment(); // this will handle the reassignment logic
-//            }
             // just check for increment here
             if (match(TokenKind.INCREMENT, TokenKind.DECREMENT)) {
                 Token operator = previous();
                 return new IncrementNode(operator.getKind(), new VariableNode(name.getLexeme()));
             }
-            return new VariableNode(name.getLexeme()); // simple variable
+            return expr;
         }
         throw new ErrorHandler(
                 "parsing",
@@ -239,6 +224,16 @@ public class Parser {
         );
     }
 
+    // return the GetMember function under the hood for some attributes
+    private Expression parseMemberAccess(Expression base) {
+        String member = consume(TokenKind.IDENTIFIER).getLexeme();
+        Expression access = new FunctionCallNode("getMember", List.of(base, new StringNode(member)));
+        while (match(TokenKind.DOT)) {
+            String nextMember = consume(TokenKind.IDENTIFIER).getLexeme();
+            access = new FunctionCallNode("getMember", List.of(access, new StringNode(nextMember)));
+        }
+        return access;
+    }
 
     // somehow we should still allow for vector notation, matrix is otherwise very annoying
     // parser is also going to allow for vector notation, no need for double brackets everytime

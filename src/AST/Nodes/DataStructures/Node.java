@@ -2,6 +2,7 @@ package AST.Nodes.DataStructures;
 
 import AST.Nodes.Expressions.Expression;
 import Interpreter.Runtime.Environment;
+import Interpreter.Tokenizer.TokenKind;
 
 import java.util.List;
 
@@ -86,6 +87,21 @@ public class Node extends Expression {
 
     public void setValue(Expression value) {
         this.value = value; // value is final
+    }
+
+    // not so simple either
+    public void clearEdges() {
+        this.edges.clear();
+    }
+
+    // not so simple, need to also remove the adjacent edges from the graph
+    public void clearNeighbors() {
+        this.neighbors.clear();
+    }
+
+    public TokenKind getType() {
+        // return value.getType();
+        return TokenKind.NODE;
     }
 
     @Override
