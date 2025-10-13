@@ -95,5 +95,5 @@ public enum TokenKind {
     // PRINT,
     INCLUDE,
     READ,
-    WRITE, ELSE_IF,
+    WRITE, ELSE_IF, DOT,
 }

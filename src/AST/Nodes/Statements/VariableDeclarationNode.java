@@ -1,6 +1,7 @@
 package AST.Nodes.Statements;
 
 import AST.Nodes.Conditional.BooleanNode;
+import AST.Nodes.DataStructures.Graph;
 import AST.Nodes.DataStructures.Matrix;
 import AST.Nodes.DataTypes.Constant;
 import AST.Nodes.DataTypes.FloatConstant;
@@ -81,7 +82,14 @@ public class VariableDeclarationNode extends Statement {
                 }
                 break;
             case GRAPH:
-                // Graph type checking can be added here if needed
+                Graph g = (Graph) value;
+                if (g == null) {
+                    throw new ErrorHandler("execution", variable.getLine(), "Type mismatch: expected graph, got " + (value != null ? value.getClass().getSimpleName() : "null"), "Please ensure the initializer is a graph.");
+                    //throw new RuntimeException("Type mismatch: expected graph, got " + (value != null ? value.getClass().getSimpleName() : "null") + " at line " + variable.getLine());
+                }
+                if (g.isEmpty()) {
+                    warningLogger.addWarning(3, "Initialized graph is empty at line " + variable.getLine(), variable.getLine());
+                }
                 break;
         }
         env.declareSymbol(variable.getLexeme(), new VariableSymbol(variable.getLexeme(), type.getKind(), value));

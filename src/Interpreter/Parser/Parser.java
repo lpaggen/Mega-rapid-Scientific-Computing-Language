@@ -197,8 +197,25 @@ public class Parser {
         // this is really not good and not safe, and it's a dumb check. but it works until i figure something better out
         else if (match(TokenKind.IDENTIFIER)) {
             Token name = previous();
+            System.out.println("current token after identifier match: " + peek());
+            if (match(TokenKind.DOT)) {
+                System.out.println("Parsing member access for: " + name.getLexeme());
+                // we know there's member access, somehow we should know what the member is...
+                // we can do this by querying the env
+                String member = consume(TokenKind.IDENTIFIER).getLexeme();
+                TokenKind memberToken = environment.getType(name.getLexeme());
+                System.out.println("Member accessed: " + member + " of type " + memberToken);
+                Expression obj = ((VariableSymbol) environment.lookup(name.getLexeme())).getValue();
+                System.out.println("Object for member access: " + (obj != null ? obj.toString() : "null"));
+                return new FunctionCallNode("getMember", List.of(obj, new StringNode(member)));
+                // return new FunctionCallNode("GetMember", List.of(new VariableNode(name.getLexeme()), new ArrayList<Expression>(args))); // we pass the object and the member name as string
+            }
             if (match(TokenKind.OPEN_PAREN)) {  // function call detected
                 java.util.List<Expression> args = parseFunctionArguments();
+//                if (match(TokenKind.DOT)) {
+//                    String member = consume(TokenKind.IDENTIFIER).getLexeme();
+//                    System.out.println(member);
+//                }
                 consume(TokenKind.CLOSE_PAREN);
                 return new FunctionCallNode(name.getLexeme(), args);
             }

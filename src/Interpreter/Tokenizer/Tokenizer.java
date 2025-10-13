@@ -100,6 +100,8 @@ public class Tokenizer {
                 addToken(TokenKind.OPEN_BRACKET, "["); advance(); break;
             case ']':
                 addToken(TokenKind.CLOSE_BRACKET, "]"); advance(); break;
+            case '.':
+                addToken(TokenKind.DOT, "."); advance(); break;
             case '\n':
                 line++;
                 advance();
@@ -122,7 +124,7 @@ public class Tokenizer {
                 }
                 //throw new RuntimeException("Unexpected character: " + c + " at line " + line);
                 throw new ErrorHandler("tokenization", line, "Unexpected character: '" + c + "'",
-                        "Did you mean to use a different character? If you meant to use a variable, make sure it is declared.");
+                        "Did you mean to use a different character?.");
         }
     }
 

@@ -4,6 +4,7 @@ import AST.Nodes.Expressions.Expression;
 import Interpreter.Runtime.Environment;
 
 import java.util.List;
+import java.util.Set;
 
 public class Graph extends Expression {
     private List<Node> nodes;

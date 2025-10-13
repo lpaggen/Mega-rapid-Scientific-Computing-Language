@@ -5,12 +5,14 @@ int x = 5;
 graph<d, w> G =
 {
     node A = x;
-    node B = 4;
+    node B = 4 + x;
     node C;
-    edge A -> B = 4;
+    edge A -> B = 65543;
     edge A -> C;
     edge B -> C = 2;
     edge C -> B = 3;
 };
 
-print(G);
+# x = x + G.A.value;
+
+print(G.A);

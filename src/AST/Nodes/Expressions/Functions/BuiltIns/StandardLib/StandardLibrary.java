@@ -18,6 +18,7 @@ public class StandardLibrary {
         builtInSymbols.put("vars", new Vars());
         builtInSymbols.put("type", new Type());
         builtInSymbols.put("cast", new Cast()); // i had a cool int() etc version but it conflicts with reserved keywords like int, float, etc.
+        builtInSymbols.put("getMember", new GetMember());
     }
 
     public static boolean isBuiltInFunction(String name) {
