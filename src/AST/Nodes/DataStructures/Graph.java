@@ -2,6 +2,7 @@ package AST.Nodes.DataStructures;
 
 import AST.Nodes.Expressions.Expression;
 import Interpreter.Runtime.Environment;
+import Interpreter.Tokenizer.TokenKind;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,6 +19,11 @@ public class Graph extends Expression {
         this.edges = edges;
         this.directed = directed;
         this.weighted = weighted;
+    }
+
+    @Override
+    public TokenKind getType(Environment env) {
+        return TokenKind.GRAPH;
     }
 
     // expose as a list of nodes

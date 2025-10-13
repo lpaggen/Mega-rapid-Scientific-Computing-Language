@@ -99,9 +99,9 @@ public class Node extends Expression {
         this.neighbors.clear();
     }
 
-    public TokenKind getType() {
-        // return value.getType();
-        return TokenKind.NODE;
+    @Override
+    public TokenKind getType(Environment env) {
+        return value.getType(env);
     }
 
     @Override

@@ -13,6 +13,6 @@ graph<d, w> G =
     edge C -> B = 3;
 };
 
-# x = 10 + G.A;
+x = 10 + G.A.value;
 
-print(G.A.value);
+print(x);
