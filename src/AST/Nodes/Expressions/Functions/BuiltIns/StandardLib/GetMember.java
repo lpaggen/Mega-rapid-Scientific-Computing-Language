@@ -33,7 +33,7 @@ public class GetMember extends BuiltInFunctionSymbol {
                 case "isDirected" -> new BooleanNode(g.isDirected());
                 case "isWeighted" -> g.isWeighted();
                 case "size" -> g.getNodes().size();
-                default -> g.getNodeByID(member);
+                default -> g.getNodeOrEdgeByID(member);
                 // default -> g.getNodes().stream().map(Node::getId).toList().contains(member) ? g.getNodes().stream().filter(n -> n.getId().equals(member)).findFirst().orElse(null) :
                            // g.getEdges().stream().filter(e -> e.getFrom().equals(member) || e.getTo().equals(member)).findFirst().orElse(null);
 //                default -> throw new IllegalArgumentException("Graph has no member '" + member + "'");

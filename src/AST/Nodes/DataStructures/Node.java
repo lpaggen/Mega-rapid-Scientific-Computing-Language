@@ -1,26 +1,31 @@
 package AST.Nodes.DataStructures;
 
+import AST.Nodes.DataTypes.IntegerConstant;
 import AST.Nodes.Expressions.Expression;
 import Interpreter.Runtime.Environment;
 import Interpreter.Tokenizer.TokenKind;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class Node extends Expression {
     private Expression value;
-    private List<Edge> edges;
-    private List<Node> neighbors;
+    private HashMap<String, Edge> edges;
+    private HashMap<String, Node> neighbors;
     private final String id;
 
     public Node(Expression value, String id) {
         this.value = value;
         this.id = id;
+        this.edges = new HashMap<>();
+        this.neighbors = new HashMap<>();
     }
 
-    // maybe this can be useful for unweighted graphs
-    // eval would need to change
     public Node(String id) {
         this.id = id;
+        this.edges = new HashMap<>();
+        this.neighbors = new HashMap<>();
     }
 
     public String getId() {
@@ -28,51 +33,62 @@ public class Node extends Expression {
     }
 
     public Expression getValue() {
-        return value;
+        if (value != null) {
+            return value;
+        }
+        throw new IllegalStateException("Nodes of unweighted graph have no value.");
     }
 
-    public List<Edge> getEdges() {
+    public HashMap<String, Edge> getEdges() {
         return edges;
     }
 
-    public List<Node> getNeighbors() {
+    public List<Edge> listEdges() {
+        return new ArrayList<>(edges.values());
+    }
+
+    public HashMap<String, Node> getNeighbors() {
         return neighbors;
     }
 
-    public void setEdges(List<Edge> edges) {
+    public List<Node> listNeighbors() {
+        return new ArrayList<>(neighbors.values());
+    }
+
+    public void setEdges(HashMap<String, Edge> edges) {
         this.edges = edges;
     }
 
-    public void setNeighbors(List<Node> neighbors) {
+    public void setNeighbors(HashMap<String, Node> neighbors) {
         this.neighbors = neighbors;
     }
 
-    public void addEdge(Edge edge) {
-        this.edges.add(edge);
+    public void addEdge(String edgeID, Edge edge) {
+        this.edges.put(edgeID, edge);
     }
 
-    public void addNeighbor(Node neighbor) {
-        this.neighbors.add(neighbor);
+    public void addNeighbor(String neighborID, Node neighbor) {
+        this.neighbors.put(neighborID, neighbor);
     }
 
-    public void removeEdge(Edge edge) {
-        this.edges.remove(edge);
+    public void removeEdge(String edgeID) {
+        this.edges.remove(edgeID);
     }
 
-    public void removeNeighbor(Node neighbor) {
-        this.neighbors.remove(neighbor);
+    public void removeNeighbor(String neighborID) {
+        this.neighbors.remove(neighborID);
     }
 
-    public int getDegree() {
-        return (this.edges != null) ? this.edges.size() : 0;
+    public IntegerConstant getDegree() {
+        return new IntegerConstant((this.edges != null) ? this.edges.size() : 0);
     }
 
-    public boolean isAdjacent(Node node) {
-        return neighbors.contains(node);
+    public boolean isAdjacent(String nodeID) {
+        return neighbors.containsKey(nodeID);
     }
 
-    public boolean hasEdge(Edge edge) {
-        return edges.contains(edge);
+    public boolean hasEdge(String edgeID) {
+        return edges.containsKey(edgeID);
     }
 
     public boolean hasValue() {
@@ -87,8 +103,8 @@ public class Node extends Expression {
         return edges.size() == 1;
     }
 
-    public boolean isConnected(Node node) {
-        return isAdjacent(node);
+    public boolean isConnected(String nodeID) {
+        return isAdjacent(nodeID);
     }
 
     public void setValue(Expression value) {

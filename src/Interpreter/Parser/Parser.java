@@ -604,12 +604,18 @@ public class Parser {
         Node toNode = nodeMap.get(to);
         consume(TokenKind.IDENTIFIER); // consume the 'to' node name
         System.out.println("Edge from: " + from + " to: " + to);
-        edgeMap.put(from + (this.isDirectedGraph ? "->" : "-") + to, null); // just to keep track of edges by name
+        edgeMap.put(from + to, null); // just to keep track of edges by name
         // if the user does not specify a weight for the edge
         if (match(TokenKind.SEMICOLON)) {
             Expression weight = this.isWeightedGraph ? new IntegerConstant(1) : null; // unweighted graph
             Edge edge = new Edge(fromNode, toNode, weight, this.isDirectedGraph);
-            edgeMap.put(from + (this.isDirectedGraph ? "->" : "-") + to, edge);
+            String edgeName = from + to;
+            fromNode.addEdge(edgeName, edge);  // always add to fromNode, since it casts the edge direction internally
+            if (!this.isDirectedGraph) {
+                // for undirected graphs, add edge to both nodes
+                toNode.addEdge(edgeName, edge);
+            }
+            edgeMap.put(edgeName, edge);
         }
         else if (match(TokenKind.EQUAL) && !this.isWeightedGraph) {
             throw new ErrorHandler(
@@ -623,7 +629,13 @@ public class Parser {
             Expression weight = parseExpression();
             consume(TokenKind.SEMICOLON);
             Edge edge = new Edge(fromNode, toNode, weight, this.isDirectedGraph);
-            edgeMap.put(from + (this.isDirectedGraph ? "->" : "-") + to, edge);
+            String edgeName = from + to;
+            fromNode.addEdge(edgeName, edge);
+            if (!this.isDirectedGraph) {
+                // for undirected graphs, add edge to both nodes
+                toNode.addEdge(edgeName, edge);
+            }
+            edgeMap.put(edgeName, edge);
         }
         else {
             throw new ErrorHandler(

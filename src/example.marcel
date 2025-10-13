@@ -13,4 +13,4 @@ graph<ud, uw> G =
     edge C - B;
 };
 
-print(G);
+print(G.A.degree);

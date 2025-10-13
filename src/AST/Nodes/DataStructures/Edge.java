@@ -28,6 +28,9 @@ public class Edge extends Expression {
     }
 
     public Expression getWeight() {
+        if (weight == null) {
+            throw new IllegalStateException("Edges of unweighted graph have no weight.");
+        }
         return weight;
     }
 
@@ -54,6 +57,8 @@ public class Edge extends Expression {
     @Override
     public Expression evaluate(Environment env) {
         weight = (weight != null) ? weight.evaluate(env) : null;
+//        from.evaluate(env);
+//        to.evaluate(env);
         return this;
     }
 

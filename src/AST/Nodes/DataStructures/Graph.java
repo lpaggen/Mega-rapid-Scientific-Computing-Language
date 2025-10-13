@@ -39,15 +39,18 @@ public class Graph extends Expression {
         return nodes.keySet();
     }
 
-    public Node getNodeByID(String nodeID) {
-        try {
-            if (!nodes.containsKey(nodeID)) {
-                throw new IllegalArgumentException("Graph has no node with ID '" + nodeID + "'.");
-            }
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException(e.getMessage());
+    public Set<String> getEdgeIDs() {
+        return edges.keySet();
+    }
+
+    public Expression getNodeOrEdgeByID(String id) {
+        if (nodes.containsKey(id)) {
+            return nodes.get(id);
+        } else if (edges.containsKey(id)) {
+            return edges.get(id);
+        } else {
+            throw new IllegalArgumentException("Graph has no node or edge with ID '" + id + "'.");
         }
-        return nodes.get(nodeID);
     }
 
     public boolean isDirected() {
