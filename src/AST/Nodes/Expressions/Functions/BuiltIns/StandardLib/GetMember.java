@@ -34,18 +34,15 @@ public class GetMember extends BuiltInFunctionSymbol {
                 case "isWeighted" -> g.isWeighted();
                 case "size" -> g.getNodes().size();
                 default -> g.getNodeOrEdgeByID(member);
-                // default -> g.getNodes().stream().map(Node::getId).toList().contains(member) ? g.getNodes().stream().filter(n -> n.getId().equals(member)).findFirst().orElse(null) :
-                           // g.getEdges().stream().filter(e -> e.getFrom().equals(member) || e.getTo().equals(member)).findFirst().orElse(null);
-//                default -> throw new IllegalArgumentException("Graph has no member '" + member + "'");
             };
         }
 
         if (obj instanceof Node n) {
             return switch (member) {
                 case "id" -> n.getId();
-                case "value" -> n.getValue();
+                case "weight" -> n.getValue();
                 case "degree" -> n.getDegree();
-                case "neighbors" -> n.getNeighbors();
+                case "neighbors" -> n.getNeighborsAsArray();
                 default -> throw new IllegalArgumentException("Node has no member '" + member + "'");
             };
         }

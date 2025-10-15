@@ -30,7 +30,7 @@ public class FunctionCallNode extends Expression {
         List<Object> evaluatedArgs = new ArrayList<>();
         for (Expression arg : arguments) {
             System.out.println("class of arg: " + arg.getClass().getSimpleName());
-            evaluatedArgs.add(arg.evaluate(env)); // <-- This is crucial!
+            evaluatedArgs.add(arg.evaluate(env));  // <-- This is crucial!
         }
         return (Expression) function.call(env, evaluatedArgs);
     }

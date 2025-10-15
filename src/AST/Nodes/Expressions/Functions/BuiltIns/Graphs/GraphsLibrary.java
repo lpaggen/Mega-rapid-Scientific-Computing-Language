@@ -10,7 +10,7 @@ public class GraphsLibrary {
 
     static {
         GraphsSymbols.put("isBipartite", new isBipartite());
-//        GraphsSymbols.put("get", new Get());
+        GraphsSymbols.put("getAdj", new getAdjacency());
 //        GraphsSymbols.put("matchAll", new MatchAll());
 //        GraphsSymbols.put("indexOf", new IndexOf());
 //        GraphsSymbols.put("dot", new Dot());

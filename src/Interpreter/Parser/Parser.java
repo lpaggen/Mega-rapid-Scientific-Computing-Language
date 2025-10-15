@@ -177,12 +177,6 @@ public class Parser {
             System.out.println("Parsing float literal: " + Float.parseFloat(previous().getLexeme()));
             return new FloatConstant(Float.parseFloat(previous().getLexeme())); // this will return a Constant node with the numeric value
         }
-//        else if (match(TokenKind.NODE)) {
-//            System.out.println("Parsing node declaration..."); // node declaration
-//        }
-//        else if (match(TokenKind.EDGE)) {
-//            System.out.println("Parsing edge declaration..."); // edge declaration
-//        }
         else if (match(TokenKind.OPEN_PAREN)) {
             Expression expr = parseExpression();
             consume(TokenKind.CLOSE_PAREN);
@@ -472,6 +466,7 @@ public class Parser {
         );
     }
 
+    // less than ideal, but it is fine for the demo
     private Map<String, Boolean> GraphAttributes = Map.of(
             "directed", true,
             "undirected", false,
@@ -605,6 +600,8 @@ public class Parser {
         consume(TokenKind.IDENTIFIER); // consume the 'to' node name
         System.out.println("Edge from: " + from + " to: " + to);
         edgeMap.put(from + to, null); // just to keep track of edges by name
+        fromNode.addNeighbor(to, toNode); // add neighbor relationship
+        toNode.addNeighbor(from, fromNode); // add neighbor relationship (undirected graph)
         // if the user does not specify a weight for the edge
         if (match(TokenKind.SEMICOLON)) {
             Expression weight = this.isWeightedGraph ? new IntegerConstant(1) : null; // unweighted graph
@@ -617,7 +614,7 @@ public class Parser {
             }
             edgeMap.put(edgeName, edge);
         }
-        else if (match(TokenKind.EQUAL) && !this.isWeightedGraph) {
+        else if (peek().getKind() == TokenKind.EQUAL && !this.isWeightedGraph) {
             throw new ErrorHandler(
                     "parsing",
                     peek().getLine(),
@@ -625,7 +622,9 @@ public class Parser {
                     "Cannot assign weights to edges in an unweighted graph."
             );
         }
-        else if (match(TokenKind.EQUAL)) {
+        else if (peek().getKind() == TokenKind.EQUAL && this.isWeightedGraph) {
+            System.out.println("Parsing edge weight expression...");
+            consume(TokenKind.EQUAL);
             Expression weight = parseExpression();
             consume(TokenKind.SEMICOLON);
             Edge edge = new Edge(fromNode, toNode, weight, this.isDirectedGraph);

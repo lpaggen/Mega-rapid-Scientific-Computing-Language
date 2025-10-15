@@ -1,5 +1,6 @@
 package AST.Nodes.DataStructures;
 
+import AST.Nodes.DataTypes.IntegerConstant;
 import AST.Nodes.Expressions.Expression;
 import Interpreter.Runtime.Environment;
 import Interpreter.Tokenizer.TokenKind;
@@ -35,6 +36,14 @@ public class Graph extends Expression {
         return new ArrayList<>(edges.values());
     }
 
+    public HashMap<String, Node> getNodeMap() {
+        return nodes;
+    }
+
+    public HashMap<String, Edge> getEdgeMap() {
+        return edges;
+    }
+
     public Set<String> getNodeIDs() {
         return nodes.keySet();
     }
@@ -43,13 +52,16 @@ public class Graph extends Expression {
         return edges.keySet();
     }
 
+    // this is for use in the GetMember built-in function
     public Expression getNodeOrEdgeByID(String id) {
         if (nodes.containsKey(id)) {
             return nodes.get(id);
         } else if (edges.containsKey(id)) {
             return edges.get(id);
         } else {
-            throw new IllegalArgumentException("Graph has no node or edge with ID '" + id + "'.");
+            throw new IllegalArgumentException("Graph has no node or edge with ID '" + id + "'. " +
+                                                "Make sure the direction is correct when looking" +
+                                                " for edges in directed graphs.");
         }
     }
 
@@ -143,6 +155,28 @@ public class Graph extends Expression {
     public boolean isEulerian() {
         // Placeholder for Eulerian path/circuit check logic
         return false;
+    }
+
+    public Matrix getAdjacencyMatrix() {
+        int n = nodes.size();
+        Expression[][] matrix = new Expression[n][n];
+        List<String> nodeIDs = new ArrayList<>(nodes.keySet());
+        Expression zero = new IntegerConstant(0);
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                matrix[i][j] = zero;
+            }
+        }
+        for (Edge edge : edges.values()) {
+            int fromIndex = nodeIDs.indexOf(edge.getFrom().getId());
+            int toIndex = nodeIDs.indexOf(edge.getTo().getId());
+            Expression weight = edge.getWeight() != null ? edge.getWeight() : new IntegerConstant(1);
+            matrix[fromIndex][toIndex] = weight;
+            if (!directed) {
+                matrix[toIndex][fromIndex] = weight;
+            }
+        }
+        return new Matrix(matrix, TokenKind.MATH);
     }
 
     public boolean isHamiltonian() {

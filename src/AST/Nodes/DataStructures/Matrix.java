@@ -1039,7 +1039,7 @@ public class Matrix extends Expression implements MatrixLike {
             }
             sb.append("]");
             if (i < numRows - 1) {
-                sb.append(", ");
+                sb.append(", \n");
             }
         }
         sb.append("]");

@@ -1,16 +1,22 @@
 load stdlib;
+load graphs;
+load linalg;
 
 int x = 5;
 
-graph<ud, uw> G =
+graph<ud, w> G =
 {
     node A;
     node B;
     node C;
-    edge A - B;
-    edge A - C;
-    edge B - C;
-    edge C - B;
+    edge A - B = 6;
+    edge A - C = 7;
+    edge B - C = 4;
+    edge C - B = 2;
 };
 
-print(G.A.degree);
+mat<int> a = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];
+
+mat<sym> b = getAdj(G);
+
+print(b);

@@ -14,18 +14,22 @@ public class Node extends Expression {
     private HashMap<String, Edge> edges;
     private HashMap<String, Node> neighbors;
     private final String id;
+    private Graph parentGraph;
 
     public Node(Expression value, String id) {
         this.value = value;
         this.id = id;
         this.edges = new HashMap<>();
         this.neighbors = new HashMap<>();
+        this.parentGraph = null;
     }
 
     public Node(String id) {
         this.id = id;
         this.edges = new HashMap<>();
         this.neighbors = new HashMap<>();
+        this.value = null;
+        this.parentGraph = null;
     }
 
     public String getId() {
@@ -36,7 +40,15 @@ public class Node extends Expression {
         if (value != null) {
             return value;
         }
-        throw new IllegalStateException("Nodes of unweighted graph have no value.");
+        throw new IllegalStateException("Nodes of unweighted graph have no value. Did you try to use node.weight on an unweighted graph?");
+    }
+
+    public Graph getParentGraph() {
+        return parentGraph;
+    }
+
+    public void setParentGraph(Graph parentGraph) {
+        this.parentGraph = parentGraph;
     }
 
     public HashMap<String, Edge> getEdges() {
@@ -49,6 +61,10 @@ public class Node extends Expression {
 
     public HashMap<String, Node> getNeighbors() {
         return neighbors;
+    }
+
+    public Array getNeighborsAsArray() {
+        return new Array(new ArrayList<>(neighbors.values()), TokenKind.NODE);
     }
 
     public List<Node> listNeighbors() {
