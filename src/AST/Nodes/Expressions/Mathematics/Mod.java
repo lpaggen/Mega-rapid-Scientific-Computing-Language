@@ -1,6 +1,6 @@
 package AST.Nodes.Expressions.Mathematics;
 
-import AST.Nodes.Expressions.BinaryOperations.Scalar.ArithmeticBinaryNode;
+import AST.Nodes.Expressions.BinaryOperations.Arithmetic.ArithmeticBinaryNode;
 import AST.Nodes.DataTypes.Constant;
 import AST.Nodes.DataTypes.IntegerConstant;
 import AST.Nodes.Expressions.Expression;

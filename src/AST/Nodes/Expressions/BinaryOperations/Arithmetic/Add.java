@@ -1,4 +1,4 @@
-package AST.Nodes.Expressions.BinaryOperations.Scalar;
+package AST.Nodes.Expressions.BinaryOperations.Arithmetic;
 
 import AST.Nodes.DataStructures.Edge;
 import AST.Nodes.DataStructures.Graph;

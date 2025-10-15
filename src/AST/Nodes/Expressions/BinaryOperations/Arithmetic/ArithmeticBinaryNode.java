@@ -1,4 +1,4 @@
-package AST.Nodes.Expressions.BinaryOperations.Scalar;
+package AST.Nodes.Expressions.BinaryOperations.Arithmetic;
 
 import AST.Nodes.Expressions.BinaryOperations.BinaryNode;
 import AST.Nodes.Expressions.Expression;

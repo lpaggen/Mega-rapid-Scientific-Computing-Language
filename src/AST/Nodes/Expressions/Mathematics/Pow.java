@@ -1,7 +1,7 @@
 package AST.Nodes.Expressions.Mathematics;
 
-import AST.Nodes.Expressions.BinaryOperations.Scalar.ArithmeticBinaryNode;
-import AST.Nodes.Expressions.BinaryOperations.Scalar.Div;
+import AST.Nodes.Expressions.BinaryOperations.Arithmetic.ArithmeticBinaryNode;
+import AST.Nodes.Expressions.BinaryOperations.Arithmetic.Div;
 import AST.Nodes.DataTypes.Constant;
 import AST.Nodes.DataTypes.FloatConstant;
 import AST.Nodes.DataTypes.IntegerConstant;

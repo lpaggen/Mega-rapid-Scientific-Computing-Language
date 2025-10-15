@@ -4,15 +4,11 @@ import AST.Nodes.DataStructures.Edge;
 import AST.Nodes.DataStructures.Graph;
 import AST.Nodes.DataStructures.Node;
 import AST.Nodes.Expressions.*;
-import AST.Nodes.Expressions.BinaryOperations.Linalg.LinalgAdd;
-import AST.Nodes.Expressions.BinaryOperations.Linalg.LinalgDiv;
-import AST.Nodes.Expressions.BinaryOperations.Linalg.LinalgMul;
-import AST.Nodes.Expressions.BinaryOperations.Linalg.LinalgSub;
-import AST.Nodes.Expressions.BinaryOperations.Scalar.Add;
+import AST.Nodes.Expressions.BinaryOperations.Arithmetic.Add;
 import AST.Nodes.Expressions.BinaryOperations.BinaryNode;
-import AST.Nodes.Expressions.BinaryOperations.Scalar.Div;
-import AST.Nodes.Expressions.BinaryOperations.Scalar.Mul;
-import AST.Nodes.Expressions.BinaryOperations.Scalar.Sub;
+import AST.Nodes.Expressions.BinaryOperations.Arithmetic.Div;
+import AST.Nodes.Expressions.BinaryOperations.Arithmetic.Mul;
+import AST.Nodes.Expressions.BinaryOperations.Arithmetic.Sub;
 import AST.Nodes.DataStructures.Matrix;
 import AST.Nodes.DataTypes.FloatConstant;
 import AST.Nodes.DataTypes.IntegerConstant;
@@ -874,23 +870,6 @@ public class Parser {
     private BinaryNode inferBinaryNodeFromOperator(TokenKind operator, Expression lhs, Expression rhs) {
         System.out.println("inferBinaryNodeFromOperator called with operator: " + operator);
         System.out.println("lhs type: " + lhs.getType(environment) + ", rhs type: " + rhs.getType(environment));
-        if (LinearAlgebraOperators.contains(lhs.getType(environment)) || LinearAlgebraOperators.contains(rhs.getType(environment))) {
-            System.out.println("Creating Linalg binary node for operator: " + operator);
-            switch (operator) {
-                case PLUS -> {
-                    return new LinalgAdd(lhs, rhs);
-                }
-                case MUL -> {
-                    return new LinalgMul(lhs, rhs);
-                }
-                case DIV -> {
-                    return new LinalgDiv(lhs, rhs);
-                }
-                case MINUS -> {
-                    return new LinalgSub(lhs, rhs);
-                }
-            }
-        }
         switch (operator) {
             case PLUS -> {
                 return new Add(lhs, rhs);

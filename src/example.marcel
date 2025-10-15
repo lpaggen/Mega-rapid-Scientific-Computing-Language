@@ -2,7 +2,8 @@ load stdlib;
 load graphs;
 load linalg;
 
-# mat<float> a = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];
+mat<float> a = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];
+mat<float> b = [[9, 8, 7], [6, 5, 4], [3, 2, 1]];
 
 graph<w, d, float> G = {
     node A = 9.0;
@@ -24,4 +25,4 @@ graph<w, d, float> H = {
 
 graph<w, d, float> N = G + H.X;
 
-print(N);
+print(a * b);

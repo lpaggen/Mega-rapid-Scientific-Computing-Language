@@ -1,9 +1,9 @@
 package Algebra;
 
-import AST.Nodes.Expressions.BinaryOperations.Scalar.Add;
-import AST.Nodes.Expressions.BinaryOperations.Scalar.Div;
-import AST.Nodes.Expressions.BinaryOperations.Scalar.Mul;
-import AST.Nodes.Expressions.BinaryOperations.Scalar.Sub;
+import AST.Nodes.Expressions.BinaryOperations.Arithmetic.Add;
+import AST.Nodes.Expressions.BinaryOperations.Arithmetic.Div;
+import AST.Nodes.Expressions.BinaryOperations.Arithmetic.Mul;
+import AST.Nodes.Expressions.BinaryOperations.Arithmetic.Sub;
 import AST.Nodes.DataTypes.Constant;
 import AST.Nodes.Expressions.Expression;
 import AST.Nodes.Expressions.Mathematics.Exp;

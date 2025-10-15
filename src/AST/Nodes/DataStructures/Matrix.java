@@ -1,10 +1,10 @@
 package AST.Nodes.DataStructures;
 
-import AST.Nodes.Expressions.BinaryOperations.Linalg.LinalgMul;
 import AST.Nodes.Conditional.BooleanNode;
 import AST.Nodes.DataTypes.Constant;
 import AST.Nodes.DataTypes.FloatConstant;
 import AST.Nodes.DataTypes.IntegerConstant;
+import AST.Nodes.Expressions.BinaryOperations.Arithmetic.Mul;
 import AST.Nodes.Expressions.Expression;
 import Interpreter.Runtime.Environment;
 import Interpreter.Tokenizer.TokenKind;
@@ -302,7 +302,7 @@ public class Matrix extends Expression implements MatrixLike {
 
     // maybe return a BinaryNode
     // it makes more sense, the node then holds the two matrices and can evaluate them
-    public LinalgMul DoolittleLUDecomposition() {
+    public Mul DoolittleLUDecomposition() {
         // i don't want to allow pseudo-inverse or anything like that, it's all bullshit
         if (!isSquare()) {
             throw new RuntimeException("Matrix must be square for LU decomposition.");
@@ -322,7 +322,7 @@ public class Matrix extends Expression implements MatrixLike {
                 }
             }
         }
-        return new LinalgMul(L, U);  // should be super handy because we can getLeft or getRight
+        return new Mul(L, U);  // should be super handy because we can getLeft or getRight
     }
 
     private Matrix matrixEqualsScalar(Constant scalar) {
