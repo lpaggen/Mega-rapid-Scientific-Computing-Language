@@ -22,6 +22,6 @@ graph<w, d, float> H = {
     edge Z -> X = 6.0;
 };
 
-graph<w, d, float> N = G + H;
+graph<w, d, float> N = G + H.X;
 
 print(N);

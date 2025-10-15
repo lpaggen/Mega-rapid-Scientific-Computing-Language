@@ -112,20 +112,21 @@ public class Graph extends Expression {
 
     // you can add edges, graphs, nodes to a graph, nothing else
     public static Graph add(Expression left, Expression right) {
-        left = left instanceof Graph g ? g : null;
-        right = right instanceof Graph g ? g : null;
-        if (left != null && right != null) {
-            return ((Graph) left).addGraphToGraph((Graph) right);
-        } else if (left != null && right instanceof Node n) {
-            return ((Graph) left).addNodeToGraph(n);
-        } else if (left != null && right instanceof Edge e) {
-            return ((Graph) left).addEdgeToGraph(e);
-        } else if (right != null && left instanceof Node n) {
-            return ((Graph) right).addNodeToGraph(n);
-        } else if (right != null && left instanceof Edge e) {
-            return ((Graph) right).addEdgeToGraph(e);
+        if (left == null || right == null) {
+            throw new IllegalArgumentException("Cannot add null to a graph.");
+        } else if (left instanceof Graph g && right instanceof Node n) {
+            return (g).addNodeToGraph(n);
+        } else if (left instanceof Graph g && right instanceof Edge e) {
+            return (g).addEdgeToGraph(e);
+        } else if (right instanceof Graph g && left instanceof Node n) {
+            return (g).addNodeToGraph(n);
+        } else if (right instanceof Graph g && left instanceof Edge e) {
+            return (g).addEdgeToGraph(e);
+        } else if (left instanceof Graph g && right instanceof Graph h) {
+            return (g).addGraphToGraph(h);
+        } else {
+            throw new IllegalArgumentException("Can only add nodes, edges, or graphs to a graph. Got: " + left + " and " + right);
         }
-        return null;
     }
 
     private Graph addGraphToGraph(Graph graph) {
@@ -139,12 +140,33 @@ public class Graph extends Expression {
     }
 
     private Graph addNodeToGraph(Node node) {
-        this.nodes.put(node.getId(), node);
+        Node nodeToAdd = node;
+        if (this.containsNode(node.getId())) {
+            throw new IllegalArgumentException("Graph already contains a node with ID '" + node.getId() + "'. Node IDs must be unique within a graph.");
+        }
+        if (this.isWeighted() && node.getValue() == null) {
+            nodeToAdd = new Node(new IntegerConstant(1), node.getId());  // init with default weight of 1
+        }
+        this.nodes.put(nodeToAdd.getId(), nodeToAdd);
         return this;
     }
 
     private Graph addEdgeToGraph(Edge edge) {
-        this.edges.put(edge.getID(), edge);
+        Edge edgeToAdd = edge;
+        if (this.containsEdge(edge.getID())) {
+            throw new IllegalArgumentException("Graph already contains an edge with ID '" + edge.getID() + "'. Edge IDs must be unique within a graph.");
+        }
+        if (!this.containsNode(edge.getFrom().getId()) || !this.containsNode(edge.getTo().getId())) {
+            throw new IllegalArgumentException("Both nodes of the edge must be present in the graph before adding the edge. Missing node(s) in edge: " + edge);
+        }
+        if (this.isDirected() && !edge.isDirected()) {
+            edgeToAdd = new Edge(edge.getFrom(), edge.getTo(), edge.getWeight(), true); // make edge directed
+            Edge edgeToAdd2 = new Edge(edge.getTo(), edge.getFrom(), edge.getWeight(), true); // add reverse edge for directed graph
+            this.edges.put(edgeToAdd2.getID(), edgeToAdd2);
+        } else if (!this.isDirected() && edge.isDirected()) {
+            throw new IllegalArgumentException("Cannot add a directed edge to an undirected graph. Edge: " + edge);
+        }
+        this.edges.put(edgeToAdd.getID(), edgeToAdd);
         return this;
     }
 
