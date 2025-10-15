@@ -86,12 +86,14 @@ public class Graph extends Expression {
         this.edges.put(edgeReference, edge);
     }
 
-    public void removeNode(String nodeID) {
+    public Graph removeNode(String nodeID) {
         this.nodes.remove(nodeID);
+        return this;
     }
 
-    public void removeEdge(String edgeID) {
+    public Graph removeEdge(String edgeID) {
         this.edges.remove(edgeID);
+        return this;
     }
 
     public int getNodeCount() {
@@ -126,6 +128,30 @@ public class Graph extends Expression {
             return (g).addGraphToGraph(h);
         } else {
             throw new IllegalArgumentException("Can only add nodes, edges, or graphs to a graph. Got: " + left + " and " + right);
+        }
+    }
+
+    public static Graph sub(Expression left, Expression right) {
+        if (left == null || right == null) {
+            throw new IllegalArgumentException("Cannot subtract null from a graph.");
+        }
+        else if (left instanceof Graph && right instanceof Graph) {  // what do we do ...
+            throw new IllegalArgumentException("Subtracting one graph from another is ambiguous. Please specify edges/nodes to remove.");
+        }
+        else if (left instanceof Graph g && right instanceof Edge e) {
+            return g.removeEdge(e.getID());
+        }
+        else if (left instanceof Graph g && right instanceof Node n) {
+            return g.removeNode(n.getId());
+        }
+        else if (right instanceof Graph g && left instanceof Edge e) {
+            return g.removeEdge(e.getID());
+        }
+        else if (right instanceof Graph g && left instanceof Node n) {
+            return g.removeNode(n.getId());
+        }
+        else {
+            throw new IllegalArgumentException("Can only subtract nodes or edges from a graph. Got: " + left + " and " + right);
         }
     }
 

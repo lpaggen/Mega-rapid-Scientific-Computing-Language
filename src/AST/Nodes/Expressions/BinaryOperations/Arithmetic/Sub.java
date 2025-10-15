@@ -37,13 +37,25 @@ public class Sub extends ArithmeticBinaryNode {
             throw new UnsupportedOperationException("The subtraction operator (-) is not supported for string types.");
         }
         else if (leftVal instanceof Graph || rightVal instanceof Graph) {
-            throw new UnsupportedOperationException("The subtraction operator (-) is not supported for graphs.");
+            return Graph.sub(leftVal, rightVal);
         }
         else if (leftVal instanceof Node || rightVal instanceof Node) {
             throw new UnsupportedOperationException("The subtraction operator (-) is not supported for nodes.");
         }
         else if (leftVal instanceof Edge || rightVal instanceof Edge) {
             throw new UnsupportedOperationException("The subtraction operator (-) is not supported for edges.");
+        }
+        else if (leftVal instanceof Graph l && rightVal instanceof Node r) {
+            return Graph.sub(l, r);
+        }
+        else if (leftVal instanceof Node l && rightVal instanceof Graph r) {
+            throw new UnsupportedOperationException("Cannot subtract graph from node");
+        }
+        else if (leftVal instanceof Graph l && rightVal instanceof Edge r) {
+            return Graph.sub(l, r);
+        }
+        else if (leftVal instanceof Edge l && rightVal instanceof Graph r) {
+            throw new UnsupportedOperationException("Cannot subtract edge from node");
         }
         return new Sub(leftVal, rightVal);
     }

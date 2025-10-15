@@ -15,14 +15,13 @@ graph<w, d, float> G = {
 };
 
 graph<w, d, float> H = {
-    node X = 6.0;
-    node Y = 5.0;
-    node Z = 4.0;
-    edge X -> Y = 4.0;
-    edge Y -> Z = 5.0;
-    edge Z -> X = 6.0;
+    node D = 6.0;
+    node E = 5.0;
+    node F = 4.0;
+    edge D -> E = 4.0;
+    edge E -> F = 5.0;
+    edge F -> D = 6.0;
 };
 
-graph<w, d, float> N = G + H.X;
+print(G - G.A);
 
-print(a * b);
