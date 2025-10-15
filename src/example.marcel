@@ -4,19 +4,17 @@ load linalg;
 
 int x = 5;
 
-graph<ud, w> G =
+graph<ud, w, int> G =
 {
     node A;
     node B;
     node C;
     edge A - B = 6;
-    edge A - C = 7;
+    edge A - C = x;
     edge B - C = 4;
     edge C - B = 2;
 };
 
-mat<int> a = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];
-
 mat<sym> b = getAdj(G);
 
-print(b);
+print(x/6);

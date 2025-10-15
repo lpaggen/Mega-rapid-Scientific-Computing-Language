@@ -1048,6 +1048,7 @@ public class Matrix extends Expression implements MatrixLike {
 
     @Override
     public Matrix clone() {
+        Matrix expressions = (Matrix) super.clone();
         Expression[][] clonedElements = new Expression[numRows][numCols];
         for (int i = 0; i < numRows; i++) {
             for (int j = 0; j < numCols; j++) {

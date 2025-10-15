@@ -283,19 +283,6 @@ public class Parser {
     private VariableDeclarationNode parseDeclaration() {
         // this surely can't be optimal, but it will work until i figure something better out
         // the idea is to just fetch the type from the declaration
-        Map<TokenKind, TokenKind> mapDeclarationToDatatype = Map.ofEntries(
-                Map.entry(TokenKind.INTEGER_TYPE, TokenKind.INTEGER),
-                Map.entry(TokenKind.FLOAT_TYPE, TokenKind.FLOAT),
-                Map.entry(TokenKind.BOOLEAN_TYPE, TokenKind.BOOLEAN),
-                Map.entry(TokenKind.MATRIX_TYPE, TokenKind.MATRIX),
-                Map.entry(TokenKind.MATH_TYPE, TokenKind.MATH),
-                Map.entry(TokenKind.STRING_TYPE, TokenKind.STRING),
-                Map.entry(TokenKind.VOID_TYPE, TokenKind.VOID),
-                Map.entry(TokenKind.ARRAY_TYPE, TokenKind.ARRAY),
-                Map.entry(TokenKind.GRAPH_TYPE, TokenKind.GRAPH),
-                Map.entry(TokenKind.NODE_TYPE, TokenKind.NODE),
-                Map.entry(TokenKind.EDGE_TYPE, TokenKind.EDGE)
-        );
         if (!typeKeywords.contains(peek().getKind())) {
             throw new ErrorHandler(
                     "parsing",
@@ -369,6 +356,8 @@ public class Parser {
                 );
             }
             boolean isWeightedGraph = GraphAttributes.get(advance().getLexeme()); // consume the inner type token
+            consume(TokenKind.COMMA);
+            currentDataType = advance().getKind();
             if (!match(TokenKind.GREATER)) {
                 throw new ErrorHandler(
                         "parsing",
@@ -626,6 +615,14 @@ public class Parser {
             System.out.println("Parsing edge weight expression...");
             consume(TokenKind.EQUAL);
             Expression weight = parseExpression();
+            if (weight.getType(environment) != mapDeclarationToDatatype.get(currentDataType)) {
+                throw new ErrorHandler(
+                        "parsing",
+                        peek().getLine(),
+                        "Type mismatch in edge weight expression.",
+                        "Edge weight type does not match graph's specified data type. Graph data type: " + currentDataType + ", Edge weight type: " + weight.getType(environment)
+                );
+            }
             consume(TokenKind.SEMICOLON);
             Edge edge = new Edge(fromNode, toNode, weight, this.isDirectedGraph);
             String edgeName = from + to;
@@ -874,6 +871,20 @@ public class Parser {
             TokenKind.GRAPH_TYPE,
             TokenKind.NODE_TYPE,
             TokenKind.EDGE_TYPE
+    );
+
+    private static final Map<TokenKind, TokenKind> mapDeclarationToDatatype = Map.ofEntries(
+            Map.entry(TokenKind.INTEGER_TYPE, TokenKind.INTEGER),
+            Map.entry(TokenKind.FLOAT_TYPE, TokenKind.FLOAT),
+            Map.entry(TokenKind.BOOLEAN_TYPE, TokenKind.BOOLEAN),
+            Map.entry(TokenKind.MATRIX_TYPE, TokenKind.MATRIX),
+            Map.entry(TokenKind.MATH_TYPE, TokenKind.MATH),
+            Map.entry(TokenKind.STRING_TYPE, TokenKind.STRING),
+            Map.entry(TokenKind.VOID_TYPE, TokenKind.VOID),
+            Map.entry(TokenKind.ARRAY_TYPE, TokenKind.ARRAY),
+            Map.entry(TokenKind.GRAPH_TYPE, TokenKind.GRAPH),
+            Map.entry(TokenKind.NODE_TYPE, TokenKind.NODE),
+            Map.entry(TokenKind.EDGE_TYPE, TokenKind.EDGE)
     );
 
     private static final Set<TokenKind> LinearAlgebraOperators = Set.of(
