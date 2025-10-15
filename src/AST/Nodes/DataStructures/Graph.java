@@ -110,6 +110,44 @@ public class Graph extends Expression {
         return edges.containsKey(edgeID);
     }
 
+    // you can add edges, graphs, nodes to a graph, nothing else
+    public static Graph add(Expression left, Expression right) {
+        left = left instanceof Graph g ? g : null;
+        right = right instanceof Graph g ? g : null;
+        if (left != null && right != null) {
+            return ((Graph) left).addGraphToGraph((Graph) right);
+        } else if (left != null && right instanceof Node n) {
+            return ((Graph) left).addNodeToGraph(n);
+        } else if (left != null && right instanceof Edge e) {
+            return ((Graph) left).addEdgeToGraph(e);
+        } else if (right != null && left instanceof Node n) {
+            return ((Graph) right).addNodeToGraph(n);
+        } else if (right != null && left instanceof Edge e) {
+            return ((Graph) right).addEdgeToGraph(e);
+        }
+        return null;
+    }
+
+    private Graph addGraphToGraph(Graph graph) {
+        for (Node node : graph.getNodes()) {
+            this.addNodeToGraph(node);
+        }
+        for (Edge edge : graph.getEdges()) {
+            this.addEdgeToGraph(edge);
+        }
+        return this;
+    }
+
+    private Graph addNodeToGraph(Node node) {
+        this.nodes.put(node.getId(), node);
+        return this;
+    }
+
+    private Graph addEdgeToGraph(Edge edge) {
+        this.edges.put(edge.getID(), edge);
+        return this;
+    }
+
     public void clear() {
         this.nodes.clear();
         this.edges.clear();

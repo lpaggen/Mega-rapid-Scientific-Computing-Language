@@ -65,6 +65,14 @@ public class Edge extends Expression {
         return TokenKind.EDGE;
     }
 
+    public boolean isWeighted() {
+        return weight != null;
+    }
+
+    public String getID() {
+        return from.getId() +  to.getId();
+    }
+
     public TokenKind getWeightType(Environment env) {
         if (weight == null) {
             throw new IllegalStateException("Edges of unweighted graph have no weight type.");

@@ -1,17 +1,18 @@
-package AST.Nodes.Expressions.BinaryOperations.Scalar;
+package AST.Nodes.Expressions.BinaryOperations;
 
 import AST.Nodes.DataStructures.Graph;
 import AST.Nodes.DataStructures.Matrix;
 import AST.Nodes.DataTypes.Constant;
+import AST.Nodes.Expressions.BinaryOperations.Scalar.Add;
 import AST.Nodes.Expressions.Expression;
 import AST.Nodes.Expressions.StringNode;
 import AST.Nodes.Expressions.VariableNode;
+import Algebra.AlgebraEngine;
 import Interpreter.Runtime.Environment;
 import Interpreter.Tokenizer.TokenKind;
-import Algebra.AlgebraEngine;
 
-public class Add extends ArithmeticBinaryNode {
-    public Add(Expression lhs, Expression rhs) {
+public class rAddNode extends BinaryNode {
+    public rAddNode(Expression lhs, Expression rhs) {
         super(lhs, rhs);
     }
 
@@ -50,5 +51,4 @@ public class Add extends ArithmeticBinaryNode {
     public TokenKind getType(Environment env) {
         return super.getType(env);
     }
-
 }

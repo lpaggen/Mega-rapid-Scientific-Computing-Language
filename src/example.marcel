@@ -2,7 +2,7 @@ load stdlib;
 load graphs;
 load linalg;
 
-mat<float> a = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];
+# mat<float> a = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];
 
 graph<w, d, float> G = {
     node A = 9.0;
@@ -13,11 +13,15 @@ graph<w, d, float> G = {
     edge C -> A = 3.0;
 };
 
-print("Matrix a:");
-print(a);
+graph<w, d, float> H = {
+    node X = 6.0;
+    node Y = 5.0;
+    node Z = 4.0;
+    edge X -> Y = 4.0;
+    edge Y -> Z = 5.0;
+    edge Z -> X = 6.0;
+};
 
+graph<w, d, float> N = G + H;
 
-edge AB = G.AB;
-
-print("Edge AB weight:");
-print(AB.weight);
+print(N);
