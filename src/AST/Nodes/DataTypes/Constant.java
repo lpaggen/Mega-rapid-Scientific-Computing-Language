@@ -76,23 +76,19 @@ public abstract class Constant extends Expression {
         }
     }
 
-    public static Constant divide (Constant left, Constant right) {
+    public static Constant divide(Constant left, Constant right) {
         Number leftValue = left.getValue();
         Number rightValue = right.getValue();
 
-        boolean isFloatingPoint = (leftValue instanceof Float || leftValue instanceof Double
-                || rightValue instanceof Float || rightValue instanceof Double);
+        if (rightValue.doubleValue() == 0.0)
+            throw new ArithmeticException("Division by zero");
 
-        if (isFloatingPoint) {
-            if (rightValue.doubleValue() == 0.0) {
-                throw new ArithmeticException("Division by zero");
-            }
-            return new FloatConstant(leftValue.doubleValue() / rightValue.doubleValue());
+        double result = leftValue.doubleValue() / rightValue.doubleValue();
+
+        if (result == Math.floor(result)) {
+            return new IntegerConstant((int) result);
         } else {
-            if (rightValue.intValue() == 0) {
-                throw new ArithmeticException("Division by zero");
-            }
-            return new IntegerConstant(leftValue.intValue() / rightValue.intValue());
+            return new FloatConstant(result);
         }
     }
 

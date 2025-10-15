@@ -2,19 +2,126 @@ load stdlib;
 load graphs;
 load linalg;
 
-int x = 5;
+mat<int> a = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];
 
-graph<ud, w, int> G =
+graph<ud, w, int> smallGraph =
 {
     node A;
     node B;
     node C;
-    edge A - B = 6;
-    edge A - C = x;
-    edge B - C = 4;
-    edge C - B = 2;
+    edge A - B = 1;
+    edge B - C = 2;
+    edge C - A = 3;
+};
+
+graph<ud, w, int> G =
+{
+    # Create 50 nodes
+    node N1;
+    node N2;
+    node N3;
+    node N4;
+    node N5;
+    node N6;
+    node N7;
+    node N8;
+    node N9;
+    node N10;
+    node N11;
+    node N12;
+    node N13;
+    node N14;
+    node N15;
+    node N16;
+    node N17;
+    node N18;
+    node N19;
+    node N20;
+    node N21;
+    node N22;
+    node N23;
+    node N24;
+    node N25;
+    node N26;
+    node N27;
+    node N28;
+    node N29;
+    node N30;
+    node N31;
+    node N32;
+    node N33;
+    node N34;
+    node N35;
+    node N36;
+    node N37;
+    node N38;
+    node N39;
+    node N40;
+    node N41;
+    node N42;
+    node N43;
+    node N44;
+    node N45;
+    node N46;
+    node N47;
+    node N48;
+    node N49;
+    node N50;
+
+    # Random weighted edges (for example, connect each node to the next 3 nodes)
+    edge N1 - N2 = 5;
+    edge N1 - N3 = 8;
+    edge N1 - N4 = 2;
+    edge N2 - N3 = 7;
+    edge N2 - N4 = 1;
+    edge N2 - N5 = 4;
+    edge N3 - N4 = 6;
+    edge N3 - N5 = 3;
+    edge N3 - N6 = 9;
+    edge N4 - N5 = 2;
+    edge N4 - N6 = 5;
+    edge N4 - N7 = 8;
+    edge N5 - N6 = 4;
+    edge N5 - N7 = 7;
+    edge N5 - N8 = 1;
+    edge N6 - N7 = 3;
+    edge N6 - N8 = 6;
+    edge N6 - N9 = 2;
+    edge N7 - N8 = 5;
+    edge N7 - N9 = 4;
+    edge N7 - N10 = 9;
+    edge N8 - N9 = 1;
+    edge N8 - N10 = 3;
+    edge N8 - N11 = 7;
+    edge N9 - N10 = 6;
+    edge N9 - N11 = 2;
+    edge N9 - N12 = 5;
+    edge N10 - N11 = 4;
+    edge N10 - N12 = 8;
+    edge N10 - N13 = 1;
+    edge N11 - N12 = 3;
+    edge N11 - N13 = 7;
+    edge N11 - N14 = 8;
+    edge N12 - N13 = 5;
+    edge N12 - N14 = 4;
+    edge N12 - N15 = 9;
+    edge N13 - N14 = 1;
+    edge N13 - N15 = 6;
+    edge N13 - N16 = 3;
+    edge N14 - N15 = 2;
+    edge N14 - N16 = 5;
+    edge N14 - N17 = 8;
+    edge N15 - N16 = 4;
+    edge N15 - N17 = 7;
+    edge N15 - N18 = 1;
+    edge N16 - N17 = 3;
+    edge N16 - N18 = 6;
+    edge N16 - N19 = 2;
+    edge N17 - N18 = 5;
+    edge N17 - N19 = 4;
+    edge N17 - N20 = a;
 };
 
 mat<sym> b = getAdj(G);
 
-print(x/6);
+print(b); # Should print 8

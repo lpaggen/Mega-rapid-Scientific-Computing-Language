@@ -561,7 +561,7 @@ public class Parser {
         } while (!check(TokenKind.CLOSE_BRACE) && !isAtEnd());
         consume(TokenKind.CLOSE_BRACE);
         System.out.println("Finished parsing graph with name. Nodes: " + nodeMap.size() + ", Edges: " + edgeMap.values().size());
-        return new Graph(nodeMap, edgeMap, isDirectedGraph, isWeightedGraph);
+        return new Graph(nodeMap, edgeMap, isDirectedGraph, isWeightedGraph, mapDeclarationToDatatype.get(currentDataType));
     }
 
     private void parseEdgeDeclaration(HashMap<String, Node> nodeMap, HashMap<String, Edge> edgeMap) {
@@ -615,14 +615,6 @@ public class Parser {
             System.out.println("Parsing edge weight expression...");
             consume(TokenKind.EQUAL);
             Expression weight = parseExpression();
-            if (weight.getType(environment) != mapDeclarationToDatatype.get(currentDataType)) {
-                throw new ErrorHandler(
-                        "parsing",
-                        peek().getLine(),
-                        "Type mismatch in edge weight expression.",
-                        "Edge weight type does not match graph's specified data type. Graph data type: " + currentDataType + ", Edge weight type: " + weight.getType(environment)
-                );
-            }
             consume(TokenKind.SEMICOLON);
             Edge edge = new Edge(fromNode, toNode, weight, this.isDirectedGraph);
             String edgeName = from + to;

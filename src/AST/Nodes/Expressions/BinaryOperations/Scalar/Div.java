@@ -17,15 +17,18 @@ public class Div extends ArithmeticBinaryNode {
         Expression numVal = lhs.evaluate(env);
         Expression denomVal = rhs.evaluate(env);
 
-        // Handle numeric operations
         if (numVal instanceof Constant n && denomVal instanceof Constant d) {
-            return Constant.divide(n, d);
-        } else if (numVal instanceof StringNode || denomVal instanceof StringNode) {
-            throw new RuntimeException("Cannot divide strings.");
+            return Constant.divide(n, d);  // guaranteed numeric Constant
         }
-        // If we reach here, it's an unsupported type combination
-        return new Div(numVal, denomVal);
+
+        throw new RuntimeException(
+                "Division operands must be numeric constants. Got: "
+                        + numVal.getClass().getSimpleName() + " / "
+                        + denomVal.getClass().getSimpleName()
+        );
     }
+
+
 
     @Override
     public TokenKind getType(Environment env) {

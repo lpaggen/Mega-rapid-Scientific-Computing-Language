@@ -2,6 +2,7 @@ package AST.Nodes.DataStructures;
 
 import AST.Nodes.Expressions.Expression;
 import Interpreter.Runtime.Environment;
+import Interpreter.Tokenizer.TokenKind;
 import Util.ErrorHandler;
 
 public class Edge extends Expression {
@@ -57,9 +58,18 @@ public class Edge extends Expression {
     @Override
     public Expression evaluate(Environment env) {
         weight = (weight != null) ? weight.evaluate(env) : null;
-//        from.evaluate(env);
-//        to.evaluate(env);
         return this;
+    }
+
+    public TokenKind getType(Environment env) {
+        return TokenKind.EDGE;
+    }
+
+    public TokenKind getWeightType(Environment env) {
+        if (weight == null) {
+            throw new IllegalStateException("Edges of unweighted graph have no weight type.");
+        }
+        return weight.getType(env);
     }
 
     @Override
