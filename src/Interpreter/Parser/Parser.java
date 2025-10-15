@@ -543,7 +543,6 @@ public class Parser {
     private Expression parseGraph(boolean isDirectedGraph, boolean isWeightedGraph) {
         System.out.println("Parsing graph declaration...");
         HashMap<String, Node> nodeMap = new HashMap<>();  // use this to keep track of nodes by name
-        // List<Edge> edges = new ArrayList<>();
         HashMap<String, Edge> edgeMap = new HashMap<>();  // keep track of edges by name
         do {
             if (match(TokenKind.NODE_TYPE)) {
@@ -593,25 +592,24 @@ public class Parser {
         toNode.addNeighbor(from, fromNode); // add neighbor relationship (undirected graph)
         // if the user does not specify a weight for the edge
         if (match(TokenKind.SEMICOLON)) {
-            Expression weight = this.isWeightedGraph ? new IntegerConstant(1) : null; // unweighted graph
+            Expression weight = this.isWeightedGraph ? new IntegerConstant(1) : null;
             Edge edge = new Edge(fromNode, toNode, weight, this.isDirectedGraph);
             String edgeName = from + to;
-            fromNode.addEdge(edgeName, edge);  // always add to fromNode, since it casts the edge direction internally
+            fromNode.addEdge(edgeName, edge);
             if (!this.isDirectedGraph) {
-                // for undirected graphs, add edge to both nodes
                 toNode.addEdge(edgeName, edge);
             }
             edgeMap.put(edgeName, edge);
         }
-        else if (peek().getKind() == TokenKind.EQUAL && !this.isWeightedGraph) {
-            throw new ErrorHandler(
-                    "parsing",
-                    peek().getLine(),
-                    "Unexpected weight assignment in unweighted graph for edge: " + from + (this.isDirectedGraph ? "->" : "-") + to,
-                    "Cannot assign weights to edges in an unweighted graph."
-            );
-        }
-        else if (peek().getKind() == TokenKind.EQUAL && this.isWeightedGraph) {
+        else if (peek().getKind() == TokenKind.EQUAL) {
+            if (!this.isWeightedGraph) {
+                throw new ErrorHandler(
+                        "parsing",
+                        peek().getLine(),
+                        "Unexpected weight assignment in unweighted graph for edge: " + from + (this.isDirectedGraph ? "->" : "-") + to,
+                        "Cannot assign weights to edges in an unweighted graph."
+                );
+            }
             System.out.println("Parsing edge weight expression...");
             consume(TokenKind.EQUAL);
             Expression weight = parseExpression();
@@ -620,7 +618,6 @@ public class Parser {
             String edgeName = from + to;
             fromNode.addEdge(edgeName, edge);
             if (!this.isDirectedGraph) {
-                // for undirected graphs, add edge to both nodes
                 toNode.addEdge(edgeName, edge);
             }
             edgeMap.put(edgeName, edge);
@@ -638,38 +635,27 @@ public class Parser {
     private void parseNodeDeclaration(HashMap<String, Node> nodeMap) {
         System.out.println("current token at parseNodeDeclaration: " + peek());
         String nodeName = peek().getLexeme();
-        if (nodeMap.containsKey(nodeName)) {
-            throw new ErrorHandler(
-                    "parsing",
-                    peek().getLine(),
-                    "Duplicate node name: " + nodeName,
-                    "Each node in a graph must have a unique name."
-            );
-        }
-        consume(TokenKind.IDENTIFIER); // consume the node name
+        consume(TokenKind.IDENTIFIER);  // consume the node name
         System.out.println("Node name: " + nodeName);
-        // if the user does not specify a weight for the node
-        // depending on the graph type, we may set the weight to null or 1
         if (match(TokenKind.SEMICOLON)) {
-            Expression weight = this.isWeightedGraph ? new IntegerConstant(1) : null; // unweighted graph
+            Expression weight = this.isWeightedGraph ? new IntegerConstant(1) : null;
             Node node = new Node(weight, nodeName);
             nodeMap.put(nodeName, node);
-            // return new Node(node, nodeName);
         }
-        else if (match(TokenKind.EQUAL) && !this.isWeightedGraph) {
-            throw new ErrorHandler(
-                    "parsing",
-                    peek().getLine(),
-                    "Unexpected weight assignment in unweighted graph for node: " + nodeName,
-                    "Cannot assign weights to nodes in an unweighted graph."
-            );
-        }
-        else if (match(TokenKind.EQUAL) && this.isWeightedGraph) {
+        else if (peek().getKind() == TokenKind.EQUAL) {
+            if (!this.isWeightedGraph) {
+                throw new ErrorHandler(
+                        "parsing",
+                        peek().getLine(),
+                        "Unexpected weight assignment in unweighted graph for node: " + nodeName,
+                        "Cannot assign weights to nodes in an unweighted graph."
+                );
+            }
+            consume(TokenKind.EQUAL);
             Expression weight = parseExpression();
             consume(TokenKind.SEMICOLON);
             Node node = new Node(weight, nodeName);
             nodeMap.put(nodeName, node);
-            // return new Node(node, nodeName);
         }
         else {
             throw new ErrorHandler(
