@@ -9,7 +9,7 @@ graph<w, d, num> G = {
     node A = 9.0;
     node B = 8.0;
     node C = 7.0;
-    edge A -> B = 1.0747432222;
+    edge A -> B = 1.76;
     edge B -> C = 2.0;
     edge C -> A = 3.0;
 };
@@ -23,4 +23,4 @@ graph<w, d, num> H = {
     edge F -> D = 6.0;
 };
 
-print( getAdj(G) * getAdj(H) );
+print(getAdj(G) * getAdj(H));
