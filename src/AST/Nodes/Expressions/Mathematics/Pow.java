@@ -1,10 +1,8 @@
 package AST.Nodes.Expressions.Mathematics;
 
+import AST.Nodes.DataTypes.Scalar;
 import AST.Nodes.Expressions.BinaryOperations.Arithmetic.ArithmeticBinaryNode;
 import AST.Nodes.Expressions.BinaryOperations.Arithmetic.Div;
-import AST.Nodes.DataTypes.Constant;
-import AST.Nodes.DataTypes.FloatConstant;
-import AST.Nodes.DataTypes.IntegerConstant;
 import AST.Nodes.Expressions.Expression;
 import AST.Nodes.Expressions.UnaryNode;
 import Interpreter.Runtime.Environment;
@@ -21,7 +19,7 @@ public class Pow extends ArithmeticBinaryNode {
     public Expression evaluate(Environment env) {
         Expression baseExpr = lhs.evaluate(env);
         Expression expExpr = rhs.evaluate(env);
-        if (baseExpr instanceof Constant b && expExpr instanceof Constant e) {
+        if (baseExpr instanceof Scalar b && expExpr instanceof Scalar e) {
             double base = b.getDoubleValue();
             double exp = e.getDoubleValue();
             if (base < 0 && exp % 1 != 0) {
@@ -32,28 +30,28 @@ public class Pow extends ArithmeticBinaryNode {
             if (base == 0 && exp < 0) {
                 throw new ArithmeticException("Cannot raise zero to a negative power: 0^" + exp);
             }
-            if (base == 0) return new IntegerConstant(0);
-            if (base == 1) return new IntegerConstant(1);
-            if (exp == 0) return new IntegerConstant(1);
-            if (exp == 1) return new FloatConstant(base);
-            if (base == -1.0) return new IntegerConstant(exp % 2 == 0 ? 1 : -1);
-            return new FloatConstant(Math.pow(base, exp));
+            if (base == 0) return new Scalar(0);
+            if (base == 1) return new Scalar(1);
+            if (exp == 0) return new Scalar(1);
+            if (exp == 1) return new Scalar(base);
+            if (base == -1.0) return new Scalar(exp % 2 == 0 ? 1 : -1);
+            return new Scalar(Math.pow(base, exp));
         }
         if (expExpr instanceof UnaryNode u && u.getOperator().getKind() == TokenKind.MINUS) {
             // handle negative exponent symbolically
             return new Div(
-                    new IntegerConstant(1),
+                    new Scalar(1),
                     new Pow(baseExpr, u.getArg()) // remove the unary minus
             );
         }
-        if (baseExpr instanceof Constant b) return new Pow(b, expExpr);
-        if (expExpr instanceof Constant e && e.getDoubleValue() < 0) {
+        if (baseExpr instanceof Scalar b) return new Pow(b, expExpr);
+        if (expExpr instanceof Scalar e && e.getDoubleValue() < 0) {
             return new Div(
-                new IntegerConstant(1),
-                new Pow(baseExpr, new FloatConstant(-e.getDoubleValue()))
+                new Scalar(1),
+                new Pow(baseExpr, new Scalar(-e.getDoubleValue()))
             );
         }
-        if (expExpr instanceof Constant e) return new Pow(baseExpr, e);
+        if (expExpr instanceof Scalar e) return new Pow(baseExpr, e);
         return new Pow(baseExpr, expExpr);
     }
 

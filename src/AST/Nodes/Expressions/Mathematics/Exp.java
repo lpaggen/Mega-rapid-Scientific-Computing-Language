@@ -1,7 +1,6 @@
 package AST.Nodes.Expressions.Mathematics;
 
-import AST.Nodes.DataTypes.Constant;
-import AST.Nodes.DataTypes.FloatConstant;
+import AST.Nodes.DataTypes.Scalar;
 import AST.Nodes.Expressions.Expression;
 import Interpreter.Runtime.Environment;
 
@@ -21,9 +20,9 @@ public class Exp extends Expression {
     // so this is how we make the distinction between numeric or not, numeric are now wrapped in Constant
     public Expression evaluate(Environment env) {
         Expression evaluatedArg = arg.evaluate(env);
-        if (evaluatedArg instanceof Constant c) {
+        if (evaluatedArg instanceof Scalar c) {
             double argValue = c.evaluateNumeric(env);
-            return new FloatConstant(Math.exp(argValue));
+            return new Scalar(Math.exp(argValue));
         }
         return new Exp(evaluatedArg);
     }

@@ -2,8 +2,8 @@ package AST.Nodes.Expressions.Functions.BuiltIns.StandardLib;
 
 import AST.Nodes.DataStructures.Graph;
 import AST.Nodes.DataStructures.Matrix;
-import AST.Nodes.DataTypes.Constant;
 import AST.Nodes.DataStructures.Array;
+import AST.Nodes.DataTypes.Scalar;
 import AST.Nodes.Expressions.Expression;
 import AST.Nodes.Expressions.Functions.BuiltIns.BuiltInFunctionSymbol;
 import Interpreter.Runtime.Environment;
@@ -25,10 +25,10 @@ public class Get extends BuiltInFunctionSymbol {
             throw new IllegalArgumentException("get function requires exactly one argument: the index.");
         } else if (!getValidTypes().contains(args.getFirst().getClass().getSimpleName())) {
             throw new IllegalArgumentException("get function requires an Array as the first argument.");
-        } else if (!(args.get(1) instanceof Constant c && c.getValue() instanceof Integer index)) {
+        } else if (!(args.get(1) instanceof Scalar c && c.getValue() instanceof Integer index)) {
             throw new IllegalArgumentException("get function requires an integer index as the second argument.");
         }
-        int index = (Integer) ((Constant) args.get(1)).getValue();
+        int index = (Integer) ((Scalar) args.get(1)).getValue();
         if (index < 0) {
             throw new IndexOutOfBoundsException("Index " + index + " is out of bounds. Index must be non-negative.");
         }

@@ -1,8 +1,9 @@
 package AST.Nodes.DataStructures;
 
-import AST.Nodes.DataTypes.Constant;
+import AST.Nodes.DataTypes.Scalar;
 import AST.Nodes.Expressions.Expression;
 import Interpreter.Runtime.Environment;
+import Interpreter.Tokenizer.Token;
 import Interpreter.Tokenizer.TokenKind;
 
 import java.util.ArrayList;
@@ -16,8 +17,7 @@ public class Array extends Expression implements ListLike {
     private final ArrayList<Expression> elements;
     private final TokenKind type; // The type of elements in the array
     private static final Set<TokenKind> supportedTypes = Set.of(
-            TokenKind.INTEGER,
-            TokenKind.FLOAT,
+            TokenKind.SCALAR,
             TokenKind.BOOLEAN,
             TokenKind.STRING
     );
@@ -228,8 +228,8 @@ public class Array extends Expression implements ListLike {
     // a lot of this is boilerplate, will clean it up eventually in later build
     public static Array add(Expression left, Expression right) {
         ArrayList<Expression> result = new ArrayList<>();
-        Constant leftScalar = left instanceof Constant ? (Constant) left : null;
-        Constant rightScalar = right instanceof Constant ? (Constant) right : null;
+        Scalar leftScalar = left instanceof Scalar ? (Scalar) left : null;
+        Scalar rightScalar = right instanceof Scalar ? (Scalar) right : null;
 
         Array leftArray = left instanceof Array ? (Array) left : null;
         Array rightArray = right instanceof Array ? (Array) right : null;
@@ -245,19 +245,19 @@ public class Array extends Expression implements ListLike {
             type = rightArray.getType();
         } else {
             // both are scalars, we can just add them -- atm hardcoded to INTEGER, will figure out a fix at some point
-            result.add(Constant.add(leftScalar, rightScalar));
-            TokenKind returnType = (leftScalar.getType(null) == TokenKind.FLOAT || rightScalar.getType(null) == TokenKind.FLOAT) ? TokenKind.FLOAT : TokenKind.INTEGER;
+            result.add(Scalar.add(leftScalar, rightScalar));
+            TokenKind returnType = TokenKind.SCALAR;
             return new Array(result, returnType);
         }
 
-        if (type != TokenKind.INTEGER && type != TokenKind.FLOAT) {
-            throw new RuntimeException("Operands must be INTEGER or FLOAT");
+        if (type != TokenKind.SCALAR) {
+            throw new RuntimeException("Operands must be SCALAR");
         }
 
         for (int i = 0; i < length; i++) {
-            Constant leftElement = leftArray != null ? (Constant) leftArray.get(i) : leftScalar;
-            Constant rightElement = rightArray != null ? (Constant) rightArray.get(i) : rightScalar;
-            result.add(Constant.add(leftElement, rightElement));
+            Scalar leftElement = leftArray != null ? (Scalar) leftArray.get(i) : leftScalar;
+            Scalar rightElement = rightArray != null ? (Scalar) rightArray.get(i) : rightScalar;
+            result.add(Scalar.add(leftElement, rightElement));
         }
 
         return new Array(result, type);
@@ -265,8 +265,8 @@ public class Array extends Expression implements ListLike {
 
     public static Array mul(Expression left, Expression right) {
         ArrayList<Expression> result = new ArrayList<>();
-        Constant leftScalar = left instanceof Constant ? (Constant) left : null;
-        Constant rightScalar = right instanceof Constant ? (Constant) right : null;
+        Scalar leftScalar = left instanceof Scalar ? (Scalar) left : null;
+        Scalar rightScalar = right instanceof Scalar ? (Scalar) right : null;
 
         Array leftArray = left instanceof Array ? (Array) left : null;
         Array rightArray = right instanceof Array ? (Array) right : null;
@@ -282,19 +282,19 @@ public class Array extends Expression implements ListLike {
             type = rightArray.getType();
         } else {
             // both are scalars, we can just add them -- atm hardcoded to INTEGER, will figure out a fix at some point
-            result.add(Constant.multiply(leftScalar, rightScalar));
-            TokenKind returnType = (leftScalar.getType(null) == TokenKind.FLOAT || rightScalar.getType(null) == TokenKind.FLOAT) ? TokenKind.FLOAT : TokenKind.INTEGER;
+            result.add(Scalar.multiply(leftScalar, rightScalar));
+            TokenKind returnType = TokenKind.SCALAR;
             return new Array(result, returnType);
         }
 
-        if (type != TokenKind.INTEGER && type != TokenKind.FLOAT) {
-            throw new RuntimeException("Operands must be INTEGER or FLOAT");
+        if (type != TokenKind.SCALAR) {
+            throw new RuntimeException("Operands must be SCALAR");
         }
 
         for (int i = 0; i < length; i++) {
-            Constant leftElement = leftArray != null ? (Constant) leftArray.get(i) : leftScalar;
-            Constant rightElement = rightArray != null ? (Constant) rightArray.get(i) : rightScalar;
-            result.add(Constant.multiply(leftElement, rightElement)); // this could all be streamlined quite easily, maybe later
+            Scalar leftElement = leftArray != null ? (Scalar) leftArray.get(i) : leftScalar;
+            Scalar rightElement = rightArray != null ? (Scalar) rightArray.get(i) : rightScalar;
+            result.add(Scalar.multiply(leftElement, rightElement)); // this could all be streamlined quite easily, maybe later
         }
 
         return new Array(result, type);
@@ -302,8 +302,8 @@ public class Array extends Expression implements ListLike {
 
     public static Array div(Expression left, Expression right) {
         ArrayList<Expression> result = new ArrayList<>();
-        Constant leftScalar = left instanceof Constant ? (Constant) left : null;
-        Constant rightScalar = right instanceof Constant ? (Constant) right : null;
+        Scalar leftScalar = left instanceof Scalar ? (Scalar) left : null;
+        Scalar rightScalar = right instanceof Scalar ? (Scalar) right : null;
 
         Array leftArray = left instanceof Array ? (Array) left : null;
         Array rightArray = right instanceof Array ? (Array) right : null;
@@ -319,19 +319,19 @@ public class Array extends Expression implements ListLike {
             type = rightArray.getType();
         } else {
             // both are scalars, we can just add them -- atm hardcoded to INTEGER, will figure out a fix at some point
-            result.add(Constant.divide(leftScalar, rightScalar));
-            TokenKind returnType = (leftScalar.getType(null) == TokenKind.FLOAT || rightScalar.getType(null) == TokenKind.FLOAT) ? TokenKind.FLOAT : TokenKind.INTEGER;
+            result.add(Scalar.divide(leftScalar, rightScalar));
+            TokenKind returnType = TokenKind.SCALAR;
             return new Array(result, returnType);
         }
 
-        if (type != TokenKind.INTEGER && type != TokenKind.FLOAT) {
-            throw new RuntimeException("Operands must be INTEGER or FLOAT");
+        if (type != TokenKind.SCALAR) {
+            throw new RuntimeException("Operands must be SCALAR");
         }
 
         for (int i = 0; i < length; i++) {
-            Constant leftElement = leftArray != null ? (Constant) leftArray.get(i) : leftScalar;
-            Constant rightElement = rightArray != null ? (Constant) rightArray.get(i) : rightScalar;
-            result.add(Constant.divide(leftElement, rightElement)); // this could all be streamlined quite easily, maybe later
+            Scalar leftElement = leftArray != null ? (Scalar) leftArray.get(i) : leftScalar;
+            Scalar rightElement = rightArray != null ? (Scalar) rightArray.get(i) : rightScalar;
+            result.add(Scalar.divide(leftElement, rightElement)); // this could all be streamlined quite easily, maybe later
         }
 
         return new Array(result, type);
@@ -339,8 +339,8 @@ public class Array extends Expression implements ListLike {
 
     public static Array sub(Expression left, Expression right) {
         ArrayList<Expression> result = new ArrayList<>();
-        Constant leftScalar = left instanceof Constant ? (Constant) left : null;
-        Constant rightScalar = right instanceof Constant ? (Constant) right : null;
+        Scalar leftScalar = left instanceof Scalar ? (Scalar) left : null;
+        Scalar rightScalar = right instanceof Scalar ? (Scalar) right : null;
 
         Array leftArray = left instanceof Array ? (Array) left : null;
         Array rightArray = right instanceof Array ? (Array) right : null;
@@ -356,19 +356,19 @@ public class Array extends Expression implements ListLike {
             type = rightArray.getType();
         } else {
             // both are scalars, we can just add them -- atm hardcoded to INTEGER, will figure out a fix at some point
-            result.add(Constant.subtract(leftScalar, rightScalar));
-            TokenKind returnType = (leftScalar.getType(null) == TokenKind.FLOAT || rightScalar.getType(null) == TokenKind.FLOAT) ? TokenKind.FLOAT : TokenKind.INTEGER;
+            result.add(Scalar.subtract(leftScalar, rightScalar));
+            TokenKind returnType = TokenKind.SCALAR;
             return new Array(result, returnType);
         }
 
-        if (type != TokenKind.INTEGER && type != TokenKind.FLOAT) {
-            throw new RuntimeException("Operands must be INTEGER or FLOAT");
+        if (type != TokenKind.SCALAR) {
+            throw new RuntimeException("Operands must be SCALAR");
         }
 
         for (int i = 0; i < length; i++) {
-            Constant leftElement = leftArray != null ? (Constant) leftArray.get(i) : leftScalar;
-            Constant rightElement = rightArray != null ? (Constant) rightArray.get(i) : rightScalar;
-            result.add(Constant.subtract(leftElement, rightElement)); // this could all be streamlined quite easily, maybe later
+            Scalar leftElement = leftArray != null ? (Scalar) leftArray.get(i) : leftScalar;
+            Scalar rightElement = rightArray != null ? (Scalar) rightArray.get(i) : rightScalar;
+            result.add(Scalar.subtract(leftElement, rightElement)); // this could all be streamlined quite easily, maybe later
         }
 
         return new Array(result, type);

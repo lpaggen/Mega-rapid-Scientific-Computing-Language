@@ -1,10 +1,8 @@
 package AST.Nodes.Expressions;
 
+import AST.Nodes.DataTypes.Scalar;
 import AST.Nodes.Expressions.BinaryOperations.Arithmetic.Mul;
 import AST.Nodes.Conditional.BooleanNode;
-import AST.Nodes.DataTypes.Constant;
-import AST.Nodes.DataTypes.FloatConstant;
-import AST.Nodes.DataTypes.IntegerConstant;
 import Interpreter.Tokenizer.Token;
 import Interpreter.Tokenizer.TokenKind;
 import Interpreter.Runtime.Environment;
@@ -44,7 +42,7 @@ public class UnaryNode extends Expression {
     public double evaluateNumeric() {
         Environment env = new Environment();
         Expression rightValue = rhs.evaluate(env);
-        if (rightValue instanceof Constant c) {
+        if (rightValue instanceof Scalar c) {
             return c.evaluateNumeric(env);
         }
         if (rightValue instanceof BooleanNode b) {
@@ -63,15 +61,16 @@ public class UnaryNode extends Expression {
     }
 
     private Expression evaluateMinus(Expression rightValue) {
-        if ((rightValue instanceof Constant c) && c.getType(new Environment()) == TokenKind.FLOAT) {
-            return new FloatConstant(-c.evaluateNumeric(new Environment()));
-        } else if ((rightValue instanceof Constant c) && c.getType(new Environment()) == TokenKind.INTEGER) {
-            return new IntegerConstant((int) -c.evaluateNumeric(new Environment()));
+        if ((rightValue instanceof Scalar c) && c.getType(new Environment()) == TokenKind.SCALAR) {
+            return new Scalar(-c.evaluateNumeric(new Environment()));
         }
+//        } else if ((rightValue instanceof Scalar c) && c.getType(new Environment()) == TokenKind.INTEGER) {
+//            return new Scalar((int) -c.evaluateNumeric(new Environment()));
+//        }
         if (rightValue instanceof UnaryNode unary && unary.operator.getKind() == TokenKind.MINUS) {
             return unary.rhs; // cancel double negation
         }
-        return new Mul(new IntegerConstant(-1), rightValue);
+        return new Mul(new Scalar(-1), rightValue);
     }
 
     public Token getOperator() {

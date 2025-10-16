@@ -4,7 +4,7 @@ import AST.Nodes.DataStructures.Edge;
 import AST.Nodes.DataStructures.Graph;
 import AST.Nodes.DataStructures.Matrix;
 import AST.Nodes.DataStructures.Node;
-import AST.Nodes.DataTypes.Constant;
+import AST.Nodes.DataTypes.Scalar;
 import AST.Nodes.Expressions.Expression;
 import AST.Nodes.Expressions.StringNode;
 import AST.Nodes.Expressions.VariableNode;
@@ -24,8 +24,8 @@ public class Mul extends ArithmeticBinaryNode {
         Expression rightVal = rhs.evaluate(env);
 
         // 1. Scalar Multiplication (Constant * Constant)
-        if (leftVal instanceof Constant l && rightVal instanceof Constant r) {
-            return Constant.multiply(l, r);
+        if (leftVal instanceof Scalar l && rightVal instanceof Scalar r) {
+            return Scalar.multiply(l, r);
         }
 
         // 2. Algebraic Simplification (should not evaluate if a VariableNode is present)

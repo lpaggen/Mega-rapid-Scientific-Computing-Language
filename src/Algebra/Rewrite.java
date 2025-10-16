@@ -1,10 +1,10 @@
 package Algebra;
 
+import AST.Nodes.DataTypes.Scalar;
 import AST.Nodes.Expressions.BinaryOperations.Arithmetic.Add;
 import AST.Nodes.Expressions.BinaryOperations.Arithmetic.Div;
 import AST.Nodes.Expressions.BinaryOperations.Arithmetic.Mul;
 import AST.Nodes.Expressions.BinaryOperations.Arithmetic.Sub;
-import AST.Nodes.DataTypes.Constant;
 import AST.Nodes.Expressions.Expression;
 import AST.Nodes.Expressions.Mathematics.Exp;
 import AST.Nodes.Expressions.Mathematics.Log;
@@ -19,7 +19,7 @@ public class Rewrite {
         if (expr instanceof UnaryNode unaryExpr) {
             Expression arg = rewrite(unaryExpr.getArg());
             return new UnaryNode(unaryExpr.getOperator(), arg);
-        } else if (expr instanceof Constant || expr instanceof VariableNode) {
+        } else if (expr instanceof Scalar || expr instanceof VariableNode) {
             return expr; // Constants and variables are not rewritten
         }
 

@@ -4,9 +4,8 @@ package Interpreter.Tokenizer;
 // so we can also (and should) define concepts like "derive", "newton", etc. for all optimization techniques we want to implement
 public enum TokenKind {
     EOF,
-    INTEGER,
     BOOLEAN,
-    FLOAT,
+    SCALAR,
     GRAPH,
     NODE,
     EDGE,
@@ -95,5 +94,5 @@ public enum TokenKind {
     // PRINT,
     INCLUDE,
     READ,
-    WRITE, ELSE_IF, DOT,
+    WRITE, ELSE_IF, DOT, SCALAR_TYPE,
 }

@@ -3,8 +3,7 @@ package AST.Nodes.Statements;
 import AST.Nodes.Conditional.BooleanNode;
 import AST.Nodes.DataStructures.Graph;
 import AST.Nodes.DataStructures.Matrix;
-import AST.Nodes.DataTypes.Constant;
-import AST.Nodes.DataTypes.FloatConstant;
+import AST.Nodes.DataTypes.Scalar;
 import AST.Nodes.Expressions.Expression;
 import AST.Nodes.Expressions.StringNode;
 import AST.Nodes.Expressions.VariableNode;
@@ -43,22 +42,22 @@ public class VariableDeclarationNode extends Statement {
                 }
                 value = new VariableNode(variable.getLexeme());
                 break;
-            case FLOAT:
-                if (value instanceof Constant v && v.getValue() instanceof Integer) {
-                    // convert integer to float if needed -- but throw warning somehow...
-                    value = new FloatConstant(v.getDoubleValue());
-                    warningLogger.addWarning(1, "Implicit conversion from integer to float at line " + variable.getLine(), variable.getLine());
-                } else if (!(value instanceof Constant v && v.getValue() instanceof Float)) {
-                    throw new ErrorHandler("execution", variable.getLine(), "Type mismatch: expected float, got " + (value != null ? value.getClass().getSimpleName() : "null"), "Please ensure the initializer is a float.");
+            case SCALAR:
+//                if (value instanceof Scalar v && v.getValue() instanceof Integer) {
+//                    // convert integer to float if needed -- but throw warning somehow...
+//                    value = new Scalar(v.getDoubleValue());
+//                    warningLogger.addWarning(1, "Implicit conversion from integer to float at line " + variable.getLine(), variable.getLine());
+                if (!(value instanceof Scalar v && v.getValue() != null)) {
+                    throw new ErrorHandler("execution", variable.getLine(), "Type mismatch: expected scalar, got " + (value != null ? value.getClass().getSimpleName() : "null"), "Please ensure the initializer is a float.");
                     //throw new RuntimeException("Type mismatch: expected float, got " + (value != null ? value.getClass().getSimpleName() : "null") + " at line " + variable.getLine());
                 }
                 break;
-            case INTEGER:
-                if (!(value instanceof Constant v && v.getValue() instanceof Integer)) {
-                    throw new ErrorHandler("execution", variable.getLine(), "Type mismatch: expected integer, got " + (value != null ? value.getClass().getSimpleName() : "null"), "Please ensure the initializer is an integer.");
-                    //throw new RuntimeException("Type mismatch: expected integer, got " + (value != null ? value.getClass().getSimpleName() : "null") + " at line " + variable.getLine());
-                }
-                break;
+//            case INTEGER:
+//                if (!(value instanceof Scalar v && v.getValue() instanceof Integer)) {
+//                    throw new ErrorHandler("execution", variable.getLine(), "Type mismatch: expected integer, got " + (value != null ? value.getClass().getSimpleName() : "null"), "Please ensure the initializer is an integer.");
+//                    //throw new RuntimeException("Type mismatch: expected integer, got " + (value != null ? value.getClass().getSimpleName() : "null") + " at line " + variable.getLine());
+//                }
+//                break;
             case STRING:
                 if (!(value instanceof StringNode)) {
                     throw new ErrorHandler("execution", variable.getLine(), "Type mismatch: expected string, got " + (value != null ? value.getClass().getSimpleName() : "null"), " Please ensure the initializer is a string.");

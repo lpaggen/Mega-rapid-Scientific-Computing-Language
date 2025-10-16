@@ -1,12 +1,10 @@
 package Algebra;
 
+import AST.Nodes.DataTypes.Scalar;
 import AST.Nodes.Expressions.BinaryOperations.Arithmetic.Add;
 import AST.Nodes.Expressions.BinaryOperations.Arithmetic.Div;
 import AST.Nodes.Expressions.BinaryOperations.Arithmetic.Mul;
 import AST.Nodes.Expressions.BinaryOperations.Arithmetic.Sub;
-import AST.Nodes.DataTypes.Constant;
-import AST.Nodes.DataTypes.FloatConstant;
-import AST.Nodes.DataTypes.IntegerConstant;
 import AST.Nodes.Expressions.Expression;
 import AST.Nodes.Expressions.Mathematics.Log;
 import AST.Nodes.Expressions.Mathematics.Pow;
@@ -24,37 +22,37 @@ public class AlgebraEngine {
                 Expression rightMul = simplify(multiply.getRight());
 
                 // if either side is a constant, we can simplify
-                if (leftMul instanceof Constant lConst && lConst.getDoubleValue() == 1.0) {
+                if (leftMul instanceof Scalar lConst && lConst.getDoubleValue() == 1.0) {
                     return rightMul; // 1 * x = x
                 }
-                if (rightMul instanceof Constant rConst && rConst.getDoubleValue() == 1.0) {
+                if (rightMul instanceof Scalar rConst && rConst.getDoubleValue() == 1.0) {
                     return leftMul; // x * 1 = x
                 }
 
-                if (leftMul instanceof Constant lConst && lConst.getDoubleValue() == 0.0) {
-                    return new IntegerConstant(0); // 0 * x = 0
+                if (leftMul instanceof Scalar lConst && lConst.getDoubleValue() == 0.0) {
+                    return new Scalar(0); // 0 * x = 0
                 }
-                if (rightMul instanceof Constant rConst && rConst.getDoubleValue() == 0.0) {
-                    return new IntegerConstant(0); // x * 0 = 0
+                if (rightMul instanceof Scalar rConst && rConst.getDoubleValue() == 0.0) {
+                    return new Scalar(0); // x * 0 = 0
                 }
 
-                if (leftMul instanceof Constant lConst && lConst.getDoubleValue() == -1.0) {
-                    return new Mul(new IntegerConstant(-1), rightMul); // -1 * x = -x
+                if (leftMul instanceof Scalar lConst && lConst.getDoubleValue() == -1.0) {
+                    return new Mul(new Scalar(-1), rightMul); // -1 * x = -x
                 }
-                if (rightMul instanceof Constant rConst && rConst.getDoubleValue() == -1.0) {
-                    return new Mul(leftMul, new IntegerConstant(-1)); // x * -1 = -x
+                if (rightMul instanceof Scalar rConst && rConst.getDoubleValue() == -1.0) {
+                    return new Mul(leftMul, new Scalar(-1)); // x * -1 = -x
                 }
 
                 // now we need to check situations for which we have say, x*x
                 if (leftMul instanceof VariableNode lVar && rightMul instanceof VariableNode rVar && lVar.getName().equals(rVar.getName())) {
-                    return new Pow(lVar, new IntegerConstant(2)); // x * x = x^2
+                    return new Pow(lVar, new Scalar(2)); // x * x = x^2
                 }
 
                 if (leftMul instanceof Pow lPow && rightMul instanceof VariableNode rVar && lPow.getBase().equals(rVar)) {
-                    return new Pow(lPow.getBase(), new Add(lPow.getExponent(), new IntegerConstant(1))); // x^n * x = x^(n+1)
+                    return new Pow(lPow.getBase(), new Add(lPow.getExponent(), new Scalar(1))); // x^n * x = x^(n+1)
                 }
                 if (leftMul instanceof VariableNode lVar && rightMul instanceof Pow rPow && rPow.getBase().equals(lVar)) {
-                    return new Pow(lVar, new Add(rPow.getExponent(), new IntegerConstant(1))); // x * x^n = x^(n+1)
+                    return new Pow(lVar, new Add(rPow.getExponent(), new Scalar(1))); // x * x^n = x^(n+1)
                 }
 
                 if (leftMul instanceof Pow lPow && rightMul instanceof Pow rPow && lPow.getBase().equals(rPow.getBase())) {
@@ -65,7 +63,7 @@ public class AlgebraEngine {
                 // really we might need more granular logic here, but for now we will just return the multiplication
                 // it's fine if we do it later, the logic is set up to handle it
                 if (leftMul.equals(rightMul)) {
-                    return new Pow(leftMul, new IntegerConstant(2)); // x * x = x^2 -- fallback case
+                    return new Pow(leftMul, new Scalar(2)); // x * x = x^2 -- fallback case
                 }
 
                 return new Mul(leftMul, rightMul);
@@ -78,36 +76,36 @@ public class AlgebraEngine {
                 Expression rightAdd = simplify(add.getRight());
 
                 // if either side is a constant, we can simplify
-                if (leftAdd instanceof Constant lConst && lConst.getDoubleValue() == 0.0) {
+                if (leftAdd instanceof Scalar lConst && lConst.getDoubleValue() == 0.0) {
                     return rightAdd; // 0 + x = x
                 }
-                if (rightAdd instanceof Constant rConst && rConst.getDoubleValue() == 0.0) {
+                if (rightAdd instanceof Scalar rConst && rConst.getDoubleValue() == 0.0) {
                     return leftAdd; // x + 0 = x
                 }
 
                 // handle the case where both sides are the same variable -- this needs to be generalized with hashmap later
                 if (leftAdd instanceof VariableNode lVar && rightAdd instanceof VariableNode rVar && lVar.getName().equals(rVar.getName())) {
-                    return new Mul(new IntegerConstant(2), lVar); // x + x = 2x
+                    return new Mul(new Scalar(2), lVar); // x + x = 2x
                 }
 
                 if (leftAdd.equals(rightAdd)) {
-                    return new Mul(new IntegerConstant(2), leftAdd); // cos(x) + cos(x) = 2cos(x) -- fallback case
+                    return new Mul(new Scalar(2), leftAdd); // cos(x) + cos(x) = 2cos(x) -- fallback case
                 }
 
                 // pythagoras identity
-                if (leftAdd instanceof Pow lPow && lPow.getBase() instanceof Tan lTan && rightAdd instanceof Constant rConst && rConst.getDoubleValue() == 1.0) {
-                    return new Pow(new Sec(lTan.getArg()), new IntegerConstant(2)); // tan2(x) + 1 = sec^2(x)
+                if (leftAdd instanceof Pow lPow && lPow.getBase() instanceof Tan lTan && rightAdd instanceof Scalar rConst && rConst.getDoubleValue() == 1.0) {
+                    return new Pow(new Sec(lTan.getArg()), new Scalar(2)); // tan2(x) + 1 = sec^2(x)
                 }
-                if (leftAdd instanceof Pow lPow && lPow.getBase() instanceof Cot lCot && rightAdd instanceof Constant rConst && rConst.getDoubleValue() == 1.0) {
-                    return new Pow(new Csc(lCot.getArg()), new IntegerConstant(2)); // cot2(x) + 1 = csc^2(x)
+                if (leftAdd instanceof Pow lPow && lPow.getBase() instanceof Cot lCot && rightAdd instanceof Scalar rConst && rConst.getDoubleValue() == 1.0) {
+                    return new Pow(new Csc(lCot.getArg()), new Scalar(2)); // cot2(x) + 1 = csc^2(x)
                 }
 
                 // cos2x + sin2x = 1
                 if (leftAdd instanceof Pow lPow && lPow.getBase() instanceof Cos lCos && rightAdd instanceof Pow rPow && rPow.getBase() instanceof Sin rSin && lCos.getArg().equals(rSin.getArg())) {
-                    return new IntegerConstant(1); // cos(x) + sin(x) = 1
+                    return new Scalar(1); // cos(x) + sin(x) = 1
                 }
                 if (leftAdd instanceof Pow lPow && lPow.getBase() instanceof Sin lSin && rightAdd instanceof Pow rPow && rPow.getBase() instanceof Cos rCos && lSin.getArg().equals(rCos.getArg())) {
-                    return new IntegerConstant(1); // sin(x) + cos(x) = 1
+                    return new Scalar(1); // sin(x) + cos(x) = 1
                 }
 
                 // there is like tons more to add, this is of course gonna take a little while...
@@ -121,28 +119,28 @@ public class AlgebraEngine {
                 Expression numerator = simplify(divide.getNum());
                 Expression denominator = simplify(divide.getDenom());
 
-                if (denominator instanceof Constant dConst && dConst.getDoubleValue() == 1.0) {
+                if (denominator instanceof Scalar dConst && dConst.getDoubleValue() == 1.0) {
                     return numerator; // x / 1 = x
                 }
 
-                if (denominator instanceof Constant dConst && dConst.getDoubleValue() == 0.0) {
-                    return new FloatConstant(Double.NaN); // x / 0 = NaN
+                if (denominator instanceof Scalar dConst && dConst.getDoubleValue() == 0.0) {
+                    return new Scalar(Double.NaN); // x / 0 = NaN
                 }
 
-                if (numerator instanceof Constant nConst && nConst.getDoubleValue() == 0.0) {
-                    return new IntegerConstant(0); // 0 / x = 0
+                if (numerator instanceof Scalar nConst && nConst.getDoubleValue() == 0.0) {
+                    return new Scalar(0); // 0 / x = 0
                 }
 
-                if (numerator instanceof Constant nConst && nConst.getDoubleValue() == 1.0 && denominator instanceof VariableNode dVar) {
-                    return new Pow(dVar, new IntegerConstant(-1)); // 1 / x = x^(-1)
+                if (numerator instanceof Scalar nConst && nConst.getDoubleValue() == 1.0 && denominator instanceof VariableNode dVar) {
+                    return new Pow(dVar, new Scalar(-1)); // 1 / x = x^(-1)
                 }
 
-                if (numerator instanceof VariableNode nVar && denominator instanceof Constant dConst && dConst.getDoubleValue() == -1.0) {
-                    return new Mul(new IntegerConstant(-1), nVar); // x / -1 = -x
+                if (numerator instanceof VariableNode nVar && denominator instanceof Scalar dConst && dConst.getDoubleValue() == -1.0) {
+                    return new Mul(new Scalar(-1), nVar); // x / -1 = -x
                 }
 
                 if (numerator instanceof VariableNode nVar && denominator instanceof VariableNode dVar && nVar.getName().equals(dVar.getName())) {
-                    return new IntegerConstant(1); // x / x = 1
+                    return new Scalar(1); // x / x = 1
                 }
 
                 // this is the case for everything with exponents, like x^4 / x^1 will work too!
@@ -151,11 +149,11 @@ public class AlgebraEngine {
                 }
 
                 if (numerator instanceof Pow nPow && denominator instanceof VariableNode dVar && nPow.getBase().equals(dVar)) {
-                    return new Pow(nPow.getBase(), new Sub(nPow.getExponent(), new IntegerConstant(1))); // x^n / x = x^(n-1)
+                    return new Pow(nPow.getBase(), new Sub(nPow.getExponent(), new Scalar(1))); // x^n / x = x^(n-1)
                 }
 
                 if (numerator instanceof VariableNode nVar && denominator instanceof Pow dPow && dPow.getBase().equals(nVar)) {
-                    return new Pow(nVar, new Sub(dPow.getExponent(), new IntegerConstant(1))); // x / x^n = x^(1-n)
+                    return new Pow(nVar, new Sub(dPow.getExponent(), new Scalar(1))); // x / x^n = x^(1-n)
                 }
 
                 // some special trigonometric identities!!
@@ -168,12 +166,12 @@ public class AlgebraEngine {
                 }
 
                 // simplify to sec
-                if (numerator instanceof Constant nConst && nConst.getDoubleValue() == 1.0 && denominator instanceof Cos dCos) {
+                if (numerator instanceof Scalar nConst && nConst.getDoubleValue() == 1.0 && denominator instanceof Cos dCos) {
                     return new Sec(dCos.getArg()); // 1 / cos(x) = sec(x)
                 }
 
                 // simplify to csc
-                if (numerator instanceof Constant nConst && nConst.getDoubleValue() == 1.0 && denominator instanceof Sin dSin) {
+                if (numerator instanceof Scalar nConst && nConst.getDoubleValue() == 1.0 && denominator instanceof Sin dSin) {
                     return new Csc(dSin.getArg()); // 1 / sin(x) = csc(x)
                 }
 
@@ -189,12 +187,12 @@ public class AlgebraEngine {
 
                 // tan / cot tan**2
                 if (numerator instanceof Tan nTan && denominator instanceof Cot dCot) {
-                    return new Pow(nTan.getArg(), new IntegerConstant(2)); // tan(x) / cot(x) = tan^2(x)
+                    return new Pow(nTan.getArg(), new Scalar(2)); // tan(x) / cot(x) = tan^2(x)
                 }
 
                 // cot / tan cot**2
                 if (numerator instanceof Cot nCot && denominator instanceof Tan dTan) {
-                    return new Pow(nCot.getArg(), new IntegerConstant(2)); // cot(x) / tan(x) = cot^2(x)
+                    return new Pow(nCot.getArg(), new Scalar(2)); // cot(x) / tan(x) = cot^2(x)
                 }
 
                 // tan / sec sin
@@ -209,17 +207,17 @@ public class AlgebraEngine {
 
                 // cot / sec cos**2/sin
                 if (numerator instanceof Cot nCot && denominator instanceof Sec dSec) {
-                    return new Div(new Pow(nCot.getArg(), new IntegerConstant(2)), new Sin(nCot.getArg())); // cot(x) / sec(x) = cos^2(x) / sin(x)
+                    return new Div(new Pow(nCot.getArg(), new Scalar(2)), new Sin(nCot.getArg())); // cot(x) / sec(x) = cos^2(x) / sin(x)
                 }
 
                 // tan / csc sin**2/cos
                 if (numerator instanceof Tan nTan && denominator instanceof Csc dCsc) {
-                    return new Div(new Pow(nTan.getArg(), new IntegerConstant(2)), new Cos(nTan.getArg())); // tan(x) / csc(x) = sin^2(x) / cos(x)
+                    return new Div(new Pow(nTan.getArg(), new Scalar(2)), new Cos(nTan.getArg())); // tan(x) / csc(x) = sin^2(x) / cos(x)
                 }
 
                 // this is the case for anything else, like cos(x) / cos(x), which could be '1'
                 if (numerator.equals(denominator)) {
-                    return new IntegerConstant(1); // cos(x) / cos(x) = 1 -- fallback case
+                    return new Scalar(1); // cos(x) / cos(x) = 1 -- fallback case
                 }
 
                 // sec / tan = 1/sin
@@ -238,7 +236,7 @@ public class AlgebraEngine {
                 Expression base = simplify(log.getBase());
 
                 // if the base is 1, we can simplify to 0
-                if (base instanceof Constant bConst && bConst.getDoubleValue() == 1.0 && arg instanceof Constant aConst && aConst.getDoubleValue() != 1.0) {
+                if (base instanceof Scalar bConst && bConst.getDoubleValue() == 1.0 && arg instanceof Scalar aConst && aConst.getDoubleValue() != 1.0) {
                     throw new UnsupportedOperationException("Logarithm with base 1 is undefined for values other than 1");
                 }
 
@@ -255,9 +253,9 @@ public class AlgebraEngine {
             // one possible solution would be to allow multiple children nodes somehow in the AST for algebraic nodes
             case "VariableNode":
                 return expression;
-            case "IntegerConstant":
+            case "Scalar":
                 return expression;
-            case "FloatConstant":
+            case "FloatScalar":
                 return expression;
 
             default:
@@ -279,15 +277,15 @@ public class AlgebraEngine {
             case "Cot":
                 Cot cot = (Cot) expression;
                 // transform cot(x) to 1/tan(x)
-                return new Div(new IntegerConstant(1), new Tan(cot.getArg()));
+                return new Div(new Scalar(1), new Tan(cot.getArg()));
             case "Csc":
                 Csc csc = (Csc) expression;
                 // transform csc(x) to 1/sin(x)
-                return new Div(new IntegerConstant(1), new Sin(csc.getArg()));
+                return new Div(new Scalar(1), new Sin(csc.getArg()));
             case "Sec":
                 Sec sec = (Sec) expression;
                 // transform sec(x) to 1/cos(x)
-                return new Div(new IntegerConstant(1), new Cos(sec.getArg()));
+                return new Div(new Scalar(1), new Cos(sec.getArg()));
             case "Cos":
                 Cos cos = (Cos) expression;
                 // transform cos(x) to 1/sec(x)

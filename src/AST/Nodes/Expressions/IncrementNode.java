@@ -1,7 +1,6 @@
 package AST.Nodes.Expressions;
 
-import AST.Nodes.DataTypes.Constant;
-import AST.Nodes.DataTypes.IntegerConstant;
+import AST.Nodes.DataTypes.Scalar;
 import Interpreter.Parser.VariableSymbol;
 import Interpreter.Runtime.Environment;
 import Interpreter.Tokenizer.TokenKind;
@@ -22,9 +21,9 @@ public class IncrementNode extends Expression {
     @Override
     public Expression evaluate(Environment env) {
         Expression argValue = arg.evaluate(env);
-        if (argValue instanceof Constant v && v.getValue() instanceof Integer) {
-            IntegerConstant newValue = new IntegerConstant((Integer) v.getValue() + (operator == TokenKind.INCREMENT ? 1 : -1));
-            env.updateVariable(arg.toString(), new VariableSymbol(arg.toString(), TokenKind.INTEGER, newValue));
+        if (argValue instanceof Scalar v && v.getValue() instanceof Integer) {
+            Scalar newValue = new Scalar((v.getValue().intValue() + (operator == TokenKind.INCREMENT ? 1 : -1)));
+            env.updateVariable(arg.toString(), new VariableSymbol(arg.toString(), TokenKind.SCALAR, newValue));
             // now we just want to return a new Constant with the new value
             return argValue;
         }

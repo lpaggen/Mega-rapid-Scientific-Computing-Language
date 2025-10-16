@@ -4,7 +4,7 @@ import AST.Nodes.DataStructures.Edge;
 import AST.Nodes.DataStructures.Graph;
 import AST.Nodes.DataStructures.Matrix;
 import AST.Nodes.DataStructures.Node;
-import AST.Nodes.DataTypes.Constant;
+import AST.Nodes.DataTypes.Scalar;
 import AST.Nodes.Expressions.Expression;
 import AST.Nodes.Expressions.StringNode;
 import AST.Nodes.Expressions.VariableNode;
@@ -23,8 +23,8 @@ public class Sub extends ArithmeticBinaryNode {
         Expression leftVal = lhs.evaluate(env);
         Expression rightVal = rhs.evaluate(env);
 
-        if (leftVal instanceof Constant l && rightVal instanceof Constant r) {
-            return Constant.subtract(l, r);
+        if (leftVal instanceof Scalar l && rightVal instanceof Scalar r) {
+            return Scalar.subtract(l, r);
         }
         else if (leftVal instanceof VariableNode || rightVal instanceof VariableNode) {
             return AlgebraEngine.simplify(new Sub(leftVal, rightVal));

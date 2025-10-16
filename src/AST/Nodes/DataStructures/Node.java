@@ -1,6 +1,6 @@
 package AST.Nodes.DataStructures;
 
-import AST.Nodes.DataTypes.IntegerConstant;
+import AST.Nodes.DataTypes.Scalar;
 import AST.Nodes.Expressions.Expression;
 import Interpreter.Runtime.Environment;
 import Interpreter.Tokenizer.TokenKind;
@@ -95,8 +95,8 @@ public class Node extends Expression {
         this.neighbors.remove(neighborID);
     }
 
-    public IntegerConstant getDegree() {
-        return new IntegerConstant((this.edges != null) ? this.edges.size() : 0);
+    public Scalar getDegree() {
+        return new Scalar((this.edges != null) ? this.edges.size() : 0);
     }
 
     public boolean isAdjacent(String nodeID) {

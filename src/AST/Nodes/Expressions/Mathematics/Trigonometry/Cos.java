@@ -1,7 +1,6 @@
 package AST.Nodes.Expressions.Mathematics.Trigonometry;
 
-import AST.Nodes.DataTypes.Constant;
-import AST.Nodes.DataTypes.FloatConstant;
+import AST.Nodes.DataTypes.Scalar;
 import AST.Nodes.Expressions.Expression;
 import Interpreter.Runtime.Environment;
 
@@ -15,8 +14,8 @@ public class Cos extends Expression {
     @Override
     public Expression evaluate(Environment env) {
         Expression argValue = this.arg.evaluate(env);
-        if (argValue instanceof Constant c) {
-            return new FloatConstant(Math.cos(c.getDoubleValue()));
+        if (argValue instanceof Scalar c) {
+            return new Scalar(Math.cos(c.getDoubleValue()));
         }
         return new Cos(argValue);
     }

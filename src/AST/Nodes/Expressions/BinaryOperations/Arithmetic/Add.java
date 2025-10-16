@@ -4,7 +4,7 @@ import AST.Nodes.DataStructures.Edge;
 import AST.Nodes.DataStructures.Graph;
 import AST.Nodes.DataStructures.Matrix;
 import AST.Nodes.DataStructures.Node;
-import AST.Nodes.DataTypes.Constant;
+import AST.Nodes.DataTypes.Scalar;
 import AST.Nodes.Expressions.Expression;
 import AST.Nodes.Expressions.StringNode;
 import AST.Nodes.Expressions.VariableNode;
@@ -24,13 +24,13 @@ public class Add extends ArithmeticBinaryNode {
         Expression leftVal = lhs.evaluate(env);
         Expression rightVal = rhs.evaluate(env);
 
-        if (leftVal instanceof Constant l && rightVal instanceof Constant r) {
-            return Constant.add(l, r);
+        if (leftVal instanceof Scalar l && rightVal instanceof Scalar r) {
+            return Scalar.add(l, r);
         } else if (leftVal instanceof StringNode l && rightVal instanceof StringNode r) {
             return new StringNode(l.getValue() + r.getValue());
-        } else if (leftVal instanceof StringNode l && rightVal instanceof Constant r) {
+        } else if (leftVal instanceof StringNode l && rightVal instanceof Scalar r) {
             return new StringNode(l.getValue() + r.getValue().toString());
-        } else if (leftVal instanceof Constant l && rightVal instanceof StringNode r) {
+        } else if (leftVal instanceof Scalar l && rightVal instanceof StringNode r) {
             return new StringNode(l.getValue().toString() + r.getValue());
         } else if (leftVal instanceof VariableNode || rightVal instanceof VariableNode) {  // this should not be taking VariableNode
             return AlgebraEngine.simplify(new Add(leftVal, rightVal));
@@ -54,9 +54,9 @@ public class Add extends ArithmeticBinaryNode {
             throw new UnsupportedOperationException("Cannot add a matrix to a graph.");
         } else if (leftVal instanceof Matrix && rightVal instanceof Graph h) {
             throw new UnsupportedOperationException("Cannot add a matrix to a graph.");
-        } else if (leftVal instanceof Edge && rightVal instanceof Constant) {
+        } else if (leftVal instanceof Edge && rightVal instanceof Scalar) {
             throw new UnsupportedOperationException("Cannot add a scalar to an edge.");
-        } else if (leftVal instanceof Constant && rightVal instanceof Edge) {
+        } else if (leftVal instanceof Scalar && rightVal instanceof Edge) {
             throw new UnsupportedOperationException("Cannot add a scalar to an edge.");
         } else if (leftVal instanceof Edge && rightVal instanceof StringNode) {
             throw new UnsupportedOperationException("Cannot add a string to an edge.");
@@ -70,9 +70,9 @@ public class Add extends ArithmeticBinaryNode {
             throw new UnsupportedOperationException("Cannot add a matrix to an edge.");
         } else if (leftVal instanceof Matrix && rightVal instanceof Edge) {
             throw new UnsupportedOperationException("Cannot add a matrix to an edge.");
-        } else if (leftVal instanceof Node && rightVal instanceof Constant) {
+        } else if (leftVal instanceof Node && rightVal instanceof Scalar) {
             throw new UnsupportedOperationException("Cannot add a scalar to a node.");
-        } else if (leftVal instanceof Constant && rightVal instanceof Node) {
+        } else if (leftVal instanceof Scalar && rightVal instanceof Node) {
             throw new UnsupportedOperationException("Cannot add a scalar to a node.");
         } else if (leftVal instanceof Node && rightVal instanceof StringNode) {
             throw new UnsupportedOperationException("Cannot add a string to a node.");
@@ -82,9 +82,9 @@ public class Add extends ArithmeticBinaryNode {
         //else if (leftVal instanceof Node l && rightVal instanceof Node r) {
         //return new Graph(l, r);  // create a graph with the two nodes
         //}
-        else if (leftVal instanceof Matrix && rightVal instanceof Constant) {
+        else if (leftVal instanceof Matrix && rightVal instanceof Scalar) {
             return Matrix.add(leftVal, rightVal);
-        } else if (leftVal instanceof Constant && rightVal instanceof Matrix) {
+        } else if (leftVal instanceof Scalar && rightVal instanceof Matrix) {
             return Matrix.add(leftVal, rightVal);
         } else if (leftVal instanceof Matrix && rightVal instanceof StringNode) {
             throw new UnsupportedOperationException("Cannot add a string to a matrix.");
@@ -94,9 +94,9 @@ public class Add extends ArithmeticBinaryNode {
             throw new UnsupportedOperationException("Cannot add a matrix to a node.");
         } else if (leftVal instanceof Matrix && rightVal instanceof Node) {
             throw new UnsupportedOperationException("Cannot add a matrix to a node.");
-        } else if (leftVal instanceof Graph && rightVal instanceof Constant) {
+        } else if (leftVal instanceof Graph && rightVal instanceof Scalar) {
             throw new UnsupportedOperationException("Cannot add a scalar to a graph.");
-        } else if (leftVal instanceof Constant && rightVal instanceof Graph) {
+        } else if (leftVal instanceof Scalar && rightVal instanceof Graph) {
             throw new UnsupportedOperationException("Cannot add a scalar to a graph.");
         }
         return new Add(leftVal, rightVal);

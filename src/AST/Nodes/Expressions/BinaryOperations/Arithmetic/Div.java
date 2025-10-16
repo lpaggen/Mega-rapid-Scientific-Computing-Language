@@ -4,7 +4,7 @@ import AST.Nodes.DataStructures.Edge;
 import AST.Nodes.DataStructures.Graph;
 import AST.Nodes.DataStructures.Matrix;
 import AST.Nodes.DataStructures.Node;
-import AST.Nodes.DataTypes.Constant;
+import AST.Nodes.DataTypes.Scalar;
 import AST.Nodes.Expressions.Expression;
 import AST.Nodes.Expressions.StringNode;
 import AST.Nodes.Expressions.VariableNode;
@@ -22,11 +22,11 @@ public class Div extends ArithmeticBinaryNode {
     public Expression evaluate(Environment env) {
         Expression leftVal = lhs.evaluate(env);
         Expression rightVal = rhs.evaluate(env);
-        if (leftVal instanceof Constant l && rightVal instanceof Constant r) {
+        if (leftVal instanceof Scalar l && rightVal instanceof Scalar r) {
             if (r.getDoubleValue() == 0.0) {
                 throw new ArithmeticException("Division by zero error.");
             }
-            return Constant.divide(l, r);
+            return Scalar.divide(l, r);
         }
         else if (leftVal instanceof VariableNode || rightVal instanceof VariableNode) {
             return AlgebraEngine.simplify(new Div(leftVal, rightVal));

@@ -1,8 +1,7 @@
 package AST.Nodes.Expressions;
 
 import AST.Nodes.ASTNode;
-import AST.Nodes.DataTypes.Constant;
-import AST.Nodes.DataTypes.IntegerConstant;
+import AST.Nodes.DataTypes.Scalar;
 import Interpreter.Runtime.Environment;
 import Interpreter.Tokenizer.TokenKind;
 
@@ -22,14 +21,10 @@ public abstract class Expression extends ASTNode implements Cloneable {
     public double evaluateNumeric(Environment env) {
         // default implementation, can be overridden by subclasses
         Expression evaluated = evaluate(env);
-        if ((evaluated instanceof Constant c) && (c.getType(env) == TokenKind.INTEGER)) {
-            IntegerConstant intConst = (IntegerConstant) evaluated;
-            return intConst.evaluateInteger();
-        } else if ((evaluated instanceof Constant c) && (c.getType(env) == TokenKind.FLOAT)) {
+        if (evaluated instanceof Scalar c) {
             return c.getDoubleValue();
-        } else {
-            throw new RuntimeException("Cannot evaluate non-numeric expression: " + evaluated);
         }
+        throw new RuntimeException("Cannot evaluate non-numeric expression: " + evaluated);
     }
 
     public abstract String toString();

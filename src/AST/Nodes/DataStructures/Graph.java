@@ -1,7 +1,6 @@
 package AST.Nodes.DataStructures;
 
-import AST.Nodes.DataTypes.FloatConstant;
-import AST.Nodes.DataTypes.IntegerConstant;
+import AST.Nodes.DataTypes.Scalar;
 import AST.Nodes.Expressions.Expression;
 import Interpreter.Runtime.Environment;
 import Interpreter.Tokenizer.TokenKind;
@@ -171,7 +170,7 @@ public class Graph extends Expression {
             throw new IllegalArgumentException("Graph already contains a node with ID '" + node.getId() + "'. Node IDs must be unique within a graph.");
         }
         if (this.isWeighted() && node.getValue() == null) {
-            nodeToAdd = new Node(new IntegerConstant(1), node.getId());  // init with default weight of 1
+            nodeToAdd = new Node(new Scalar(1), node.getId());  // init with default weight of 1
         }
         this.nodes.put(nodeToAdd.getId(), nodeToAdd);
         return this;
@@ -256,7 +255,7 @@ public class Graph extends Expression {
         int n = nodes.size();
         Expression[][] matrix = new Expression[n][n];
         List<String> nodeIDs = new ArrayList<>(nodes.keySet());
-        Expression zero = new IntegerConstant(0);
+        Expression zero = new Scalar(0);
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 matrix[i][j] = zero;
@@ -265,7 +264,7 @@ public class Graph extends Expression {
         for (Edge edge : edges.values()) {
             int fromIndex = nodeIDs.indexOf(edge.getFrom().getId());
             int toIndex = nodeIDs.indexOf(edge.getTo().getId());
-            Expression weight = edge.getWeight() != null ? edge.getWeight() : new IntegerConstant(1);
+            Expression weight = edge.getWeight() != null ? edge.getWeight() : new Scalar(1);
             matrix[fromIndex][toIndex] = weight;
             if (!directed) {
                 matrix[toIndex][fromIndex] = weight;
@@ -343,18 +342,18 @@ public class Graph extends Expression {
             node.evaluate(env);
             Expression weight = node.getValue();
             TokenKind nodeWeightType = weight.getType(env);
-            if (nodeWeightType == TokenKind.FLOAT && this.weightType == TokenKind.INTEGER) {
-                double val = ((FloatConstant) weight).getValue().doubleValue();
-                node.setValue(new IntegerConstant((int) val)); // truncates
-                 nodeWeightType = TokenKind.INTEGER;
-//                logger.addWarning(2, "Edge weight " + val + " truncated to " + (int) val + " to match graph weight type INTEGER.", -1);
-//                logger.logWarningsToFile();
-            }
-            else if (nodeWeightType == TokenKind.INTEGER && this.weightType == TokenKind.FLOAT) {
-                int val = ((IntegerConstant) weight).getValue().intValue();
-                node.setValue(new FloatConstant((double) val)); // convert to float
-                nodeWeightType = TokenKind.FLOAT;
-            }
+//            if (nodeWeightType == TokenKind.FLOAT && this.weightType == TokenKind.INTEGER) {
+//                double val = ((Scalar) weight).getValue().doubleValue();
+//                node.setValue(new Scalar((int) val)); // truncates
+//                 nodeWeightType = TokenKind.INTEGER;
+////                logger.addWarning(2, "Edge weight " + val + " truncated to " + (int) val + " to match graph weight type INTEGER.", -1);
+////                logger.logWarningsToFile();
+//            }
+//            else if (nodeWeightType == TokenKind.INTEGER && this.weightType == TokenKind.FLOAT) {
+//                int val = ((Scalar) weight).getValue().intValue();
+//                node.setValue(new Scalar((double) val)); // convert to float
+//                nodeWeightType = TokenKind.FLOAT;
+//            }
             if (nodeWeightType != this.weightType && this.weighted) {
                 throw new IllegalArgumentException("Node weight type " + nodeWeightType +
                         " does not match graph weight type " + this.weightType);
@@ -364,18 +363,18 @@ public class Graph extends Expression {
             edge.evaluate(env);
             Expression weight = edge.getWeight();
             TokenKind edgeWeightType = weight.getType(env);
-            if (edgeWeightType == TokenKind.FLOAT && this.weightType == TokenKind.INTEGER) {
-                double val = ((FloatConstant) weight).getValue().doubleValue();
-                edge.setWeight(new IntegerConstant((int) val)); // truncates
-                edgeWeightType = TokenKind.INTEGER;
-//                logger.addWarning(2, "Edge weight " + val + " truncated to " + (int) val + " to match graph weight type INTEGER.", -1);
-//                logger.logWarningsToFile();
-            }
-            else if (edgeWeightType == TokenKind.INTEGER && this.weightType == TokenKind.FLOAT) {
-                int val = ((IntegerConstant) weight).getValue().intValue();
-                edge.setWeight(new FloatConstant((double) val)); // convert to float
-                edgeWeightType = TokenKind.FLOAT;
-            }
+//            if (edgeWeightType == TokenKind.FLOAT && this.weightType == TokenKind.INTEGER) {
+//                double val = ((Scalar) weight).getValue().doubleValue();
+//                edge.setWeight(new Scalar((int) val)); // truncates
+//                edgeWeightType = TokenKind.INTEGER;
+////                logger.addWarning(2, "Edge weight " + val + " truncated to " + (int) val + " to match graph weight type INTEGER.", -1);
+////                logger.logWarningsToFile();
+//            }
+//            else if (edgeWeightType == TokenKind.INTEGER && this.weightType == TokenKind.FLOAT) {
+//                int val = ((Scalar) weight).getValue().intValue();
+//                edge.setWeight(new Scalar((double) val)); // convert to float
+//                edgeWeightType = TokenKind.FLOAT;
+//            }
             if (edgeWeightType != this.weightType && this.weighted) {
                 throw new IllegalArgumentException("Edge weight type " + edgeWeightType +
                         " does not match graph weight type " + this.weightType);

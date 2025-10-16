@@ -20,15 +20,8 @@ public abstract class ArithmeticBinaryNode extends BinaryNode {
     public TokenKind getType(Environment env) {
         TokenKind leftType = lhs.getType(env);
         TokenKind rightType = rhs.getType(env);
-        if (leftType == TokenKind.INTEGER && rightType == TokenKind.INTEGER) {
-            return TokenKind.INTEGER;
-        }
-        if (leftType == TokenKind.FLOAT && rightType == TokenKind.FLOAT) {
-            return TokenKind.FLOAT;
-        }
-        if ((leftType == TokenKind.INTEGER && rightType == TokenKind.FLOAT) ||
-            (leftType == TokenKind.FLOAT && rightType == TokenKind.INTEGER)) {
-            return TokenKind.FLOAT;
+        if (leftType == TokenKind.SCALAR && rightType == TokenKind.SCALAR) {
+            return TokenKind.SCALAR;
         }
         if (leftType == TokenKind.MATH || rightType == TokenKind.MATH) {
             return TokenKind.MATH;

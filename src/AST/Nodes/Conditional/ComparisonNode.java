@@ -1,8 +1,8 @@
 package AST.Nodes.Conditional;
 
+import AST.Nodes.DataTypes.Scalar;
 import AST.Nodes.Expressions.BinaryOperations.LogicalBinaryNode;
 import AST.Nodes.DataStructures.Matrix;
-import AST.Nodes.DataTypes.Constant;
 import AST.Nodes.Expressions.Expression;
 import Interpreter.Runtime.Environment;
 import Interpreter.Tokenizer.TokenKind;
@@ -25,7 +25,7 @@ public class ComparisonNode extends LogicalBinaryNode {
         Expression leftValue = lhs.evaluate(env);
         Expression rightValue = rhs.evaluate(env);
 
-        if (leftValue instanceof Constant l && rightValue instanceof Constant r) {
+        if (leftValue instanceof Scalar l && rightValue instanceof Scalar r) {
             return switch (operator) {
                 case EQUAL -> new BooleanNode(l.getValue().equals(r.getValue()));
                 case NOT_EQUAL -> new BooleanNode(!l.getValue().equals(r.getValue()));
@@ -38,8 +38,8 @@ public class ComparisonNode extends LogicalBinaryNode {
         }
         Matrix leftMatrix = leftValue instanceof Matrix ? (Matrix) leftValue : null;
         Matrix rightMatrix = rightValue instanceof Matrix ? (Matrix) rightValue : null;
-        Constant leftConst = leftValue instanceof Constant ? (Constant) leftValue : null;
-        Constant rightConst = rightValue instanceof Constant ? (Constant) rightValue : null;
+        Scalar leftConst = leftValue instanceof Scalar ? (Scalar) leftValue : null;
+        Scalar rightConst = rightValue instanceof Scalar ? (Scalar) rightValue : null;
         Expression l = leftMatrix != null ? leftMatrix : leftConst;
         Expression r = rightMatrix != null ? rightMatrix : rightConst;
         return switch (operator) {

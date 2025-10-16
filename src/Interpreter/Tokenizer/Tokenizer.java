@@ -148,8 +148,7 @@ public class Tokenizer {
         put("else", TokenKind.ELSE);
         put("while", TokenKind.WHILE);
         put("return", TokenKind.RETURN);
-        put("int", TokenKind.INTEGER_TYPE);
-        put("float", TokenKind.FLOAT_TYPE);
+        put("num", TokenKind.SCALAR_TYPE);
         put("mat", TokenKind.MATRIX_TYPE);
         put("sym", TokenKind.MATH_TYPE);
         put("break", TokenKind.BREAK);
@@ -194,9 +193,9 @@ public class Tokenizer {
         } else {
             literal = Integer.parseInt(numberStr);
         }
-        TokenKind kind = isDecimal ? TokenKind.FLOAT : TokenKind.INTEGER; // determine if it's a float or an integer
+//        TokenKind kind = isDecimal ? TokenKind.FLOAT : TokenKind.INTEGER; // determine if it's a float or an integer
 
-        tokens.add(new Token(kind, lexeme.toString(), literal, line));
+        tokens.add(new Token(TokenKind.SCALAR, lexeme.toString(), literal, line));
     }
 
     // this method does not add to the tokens list, it just returns the token

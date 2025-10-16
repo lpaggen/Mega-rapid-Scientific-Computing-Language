@@ -1,7 +1,6 @@
 package AST.Nodes.Conditional;
 
-import AST.Nodes.DataTypes.Constant;
-import AST.Nodes.DataTypes.IntegerConstant;
+import AST.Nodes.DataTypes.Scalar;
 import AST.Nodes.Expressions.Expression;
 import Interpreter.Runtime.Environment;
 import Interpreter.Tokenizer.TokenKind;
@@ -32,11 +31,11 @@ public class BooleanNode extends Expression {
         return TokenKind.BOOLEAN;
     }
 
-    public static BooleanNode fromNumeric(Constant num) {
+    public static BooleanNode fromNumeric(Scalar num) {
         return new BooleanNode(num.getDoubleValue() != 0);
     }
 
-    public Constant toNumeric() {
-        return new IntegerConstant(value ? 1 : 0);
+    public Scalar toNumeric() {
+        return new Scalar(value ? 1 : 0);
     }
 }

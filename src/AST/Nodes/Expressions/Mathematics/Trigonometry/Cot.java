@@ -1,7 +1,6 @@
 package AST.Nodes.Expressions.Mathematics.Trigonometry;
 
-import AST.Nodes.DataTypes.Constant;
-import AST.Nodes.DataTypes.FloatConstant;
+import AST.Nodes.DataTypes.Scalar;
 import AST.Nodes.Expressions.Expression;
 import Interpreter.Runtime.Environment;
 
@@ -15,12 +14,12 @@ public class Cot extends Expression {
     @Override
     public Expression evaluate(Environment env) {
         Expression argValue = arg.evaluate(env);
-        if (argValue instanceof Constant c) {
+        if (argValue instanceof Scalar c) {
             double value = c.getDoubleValue();
             if (value == 0) {
                 throw new ArithmeticException("Cotangent is undefined for 0");
             }
-            return new FloatConstant(1.0 / Math.tan(value));
+            return new Scalar(1.0 / Math.tan(value));
         }
         return new Cot(argValue);
     }

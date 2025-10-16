@@ -1,9 +1,7 @@
 package AST.Nodes.DataStructures;
 
 import AST.Nodes.Conditional.BooleanNode;
-import AST.Nodes.DataTypes.Constant;
-import AST.Nodes.DataTypes.FloatConstant;
-import AST.Nodes.DataTypes.IntegerConstant;
+import AST.Nodes.DataTypes.Scalar;
 import AST.Nodes.Expressions.BinaryOperations.Arithmetic.Mul;
 import AST.Nodes.Expressions.Expression;
 import Interpreter.Runtime.Environment;
@@ -207,10 +205,8 @@ public class Matrix extends Expression implements MatrixLike {
             Expression evaluated = elem.evaluate(env);
             if (expectedType == null) {
                 expectedType = evaluated.getType(env);
-            } else if (evaluated.getType(env) == TokenKind.INTEGER && expectedType == TokenKind.FLOAT) {
-                evaluated = new FloatConstant(((Constant) evaluated).getDoubleValue());
-            } else if (((evaluated.getType(env) == TokenKind.INTEGER) || (evaluated.getType(env) == TokenKind.FLOAT)) && expectedType == TokenKind.BOOLEAN) {
-                evaluated = BooleanNode.fromNumeric((Constant) evaluated);
+            } else if ((evaluated.getType(env) == TokenKind.SCALAR) && expectedType == TokenKind.BOOLEAN) {
+                evaluated = BooleanNode.fromNumeric((Scalar) evaluated);
                 warningLogger.addWarning(1, "Implicit conversion from numeric to boolean in matrix at position " + position, -1);
                 warningLogger.logWarningsToFile();
             } else if (evaluated.getType(env) != expectedType) {
@@ -256,7 +252,7 @@ public class Matrix extends Expression implements MatrixLike {
         }
         for (int i = 0; i < numRows; i++) {  // number of rows, start at 1 to skip first row
             for (int j = i + 1; j < numCols; j++) {
-                newMatrix.elements[i][j] = new IntegerConstant(0); // assuming integer zero, could be float zero too
+                newMatrix.elements[i][j] = new Scalar(0); // assuming integer zero, could be float zero too
             }
         }
         return newMatrix;
@@ -269,7 +265,7 @@ public class Matrix extends Expression implements MatrixLike {
         }
         for (int i = 1; i < numRows; i++) {  // number of rows
             for (int j = 0; j < i; j++) {    // up to the diagonal
-                newMatrix.elements[i][j] = new IntegerConstant(0); // assuming integer zero, could be float zero too
+                newMatrix.elements[i][j] = new Scalar(0); // assuming integer zero, could be float zero too
             }
         }
         return newMatrix;
@@ -279,7 +275,7 @@ public class Matrix extends Expression implements MatrixLike {
         if (!isSquare()) {
             throw new RuntimeException("Matrix must be square to compute trace.");
         }
-        Expression sum = new IntegerConstant(0); // assuming integer zero, could be float zero too
+        Expression sum = new Scalar(0); // assuming integer zero, could be float zero too
         for (int i = 0; i < numRows; i++) {
             sum = Matrix.add(sum, elements[i][i]);
         }
@@ -291,13 +287,13 @@ public class Matrix extends Expression implements MatrixLike {
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 if (i == j) {
-                    identityElements[i][j] = new IntegerConstant(1); // assuming integer one, could be float one too
+                    identityElements[i][j] = new Scalar(1); // assuming integer one, could be float one too
                 } else {
-                    identityElements[i][j] = new IntegerConstant(0);
+                    identityElements[i][j] = new Scalar(0);
                 }
             }
         }
-        return new Matrix(identityElements, TokenKind.INTEGER);
+        return new Matrix(identityElements, TokenKind.SCALAR);
     }
 
     // maybe return a BinaryNode
@@ -312,7 +308,7 @@ public class Matrix extends Expression implements MatrixLike {
         Matrix U = this.clone();  // just need shallow copy
         for (int i = 0; i < numCols; i++) {
             for (int j = i + 1; j < numRows; j++) {
-                if (U.elements[i][i] instanceof Constant zeroCheck && Math.abs(zeroCheck.getDoubleValue()) < 1e-10) {
+                if (U.elements[i][i] instanceof Scalar zeroCheck && Math.abs(zeroCheck.getDoubleValue()) < 1e-10) {
                     throw new RuntimeException("Matrix is singular, cannot perform LU decomposition.");
                 }
                 Expression factor = Matrix.div(U.elements[j][i], U.elements[i][i]);
@@ -325,7 +321,7 @@ public class Matrix extends Expression implements MatrixLike {
         return new Mul(L, U);  // should be super handy because we can getLeft or getRight
     }
 
-    private Matrix matrixEqualsScalar(Constant scalar) {
+    private Matrix matrixEqualsScalar(Scalar scalar) {
         Expression[][] out = new Expression[numRows][numCols];
         for (int i = 0; i < numRows; i++) {
             for (int j = 0; j < numCols; j++) {
@@ -340,11 +336,11 @@ public class Matrix extends Expression implements MatrixLike {
     }
 
     // need to make this recursive for matrices of matrices, will do later
-    private Matrix matrixGreaterThanScalar(Constant scalar) {
+    private Matrix matrixGreaterThanScalar(Scalar scalar) {
         Expression[][] out = new Expression[numRows][numCols];
         for (int i = 0; i < numRows; i++) {
             for (int j = 0; j < numCols; j++) {
-                if (this.elements[i][j] instanceof Constant current && scalar instanceof Constant s) {
+                if (this.elements[i][j] instanceof Scalar current && scalar instanceof Scalar s) {
                     if (current.getDoubleValue() > s.getDoubleValue()) {
                         out[i][j] = new BooleanNode(true);
                     } else {
@@ -358,11 +354,11 @@ public class Matrix extends Expression implements MatrixLike {
         return new Matrix(out, TokenKind.BOOLEAN);
     }
 
-    private Matrix matrixLessThanScalar(Constant scalar) {
+    private Matrix matrixLessThanScalar(Scalar scalar) {
         Expression[][] out = new Expression[numRows][numCols];
         for (int i = 0; i < numRows; i++) {
             for (int j = 0; j < numCols; j++) {
-                if (this.elements[i][j] instanceof Constant current && scalar instanceof Constant s) {
+                if (this.elements[i][j] instanceof Scalar current && scalar instanceof Scalar s) {
                     if (current.getDoubleValue() < s.getDoubleValue()) {
                         out[i][j] = new BooleanNode(true);
                     } else {
@@ -376,11 +372,11 @@ public class Matrix extends Expression implements MatrixLike {
         return new Matrix(out, TokenKind.BOOLEAN);
     }
 
-    private Matrix matrixLessEqualThanScalar(Constant scalar) {
+    private Matrix matrixLessEqualThanScalar(Scalar scalar) {
         Expression[][] out = new Expression[numRows][numCols];
         for (int i = 0; i < numRows; i++) {
             for (int j = 0; j < numCols; j++) {
-                if (this.elements[i][j] instanceof Constant current && scalar instanceof Constant s) {
+                if (this.elements[i][j] instanceof Scalar current && scalar instanceof Scalar s) {
                     if (current.getDoubleValue() <= s.getDoubleValue()) {
                         out[i][j] = new BooleanNode(true);
                     } else {
@@ -394,11 +390,11 @@ public class Matrix extends Expression implements MatrixLike {
         return new Matrix(out, TokenKind.BOOLEAN);
     }
 
-    private Matrix matrixGreaterEqualThanScalar(Constant scalar) {
+    private Matrix matrixGreaterEqualThanScalar(Scalar scalar) {
         Expression[][] out = new Expression[numRows][numCols];
         for (int i = 0; i < numRows; i++) {
             for (int j = 0; j < numCols; j++) {
-                if (this.elements[i][j] instanceof Constant current && scalar instanceof Constant s) {
+                if (this.elements[i][j] instanceof Scalar current && scalar instanceof Scalar s) {
                     if (current.getDoubleValue() >= s.getDoubleValue()) {
                         out[i][j] = new BooleanNode(true);
                     } else {
@@ -412,11 +408,11 @@ public class Matrix extends Expression implements MatrixLike {
         return new Matrix(out, TokenKind.BOOLEAN);
     }
 
-    private Matrix matrixNotEqualThanScalar(Constant scalar) {
+    private Matrix matrixNotEqualThanScalar(Scalar scalar) {
         Expression[][] out = new Expression[numRows][numCols];
         for (int i = 0; i < numRows; i++) {
             for (int j = 0; j < numCols; j++) {
-                if (this.elements[i][j] instanceof Constant current && scalar instanceof Constant s) {
+                if (this.elements[i][j] instanceof Scalar current && scalar instanceof Scalar s) {
                     if (current.getDoubleValue() != s.getDoubleValue()) {
                         out[i][j] = new BooleanNode(true);
                     } else {
@@ -433,7 +429,7 @@ public class Matrix extends Expression implements MatrixLike {
 ////     by default, the matrix operation will return a matrix of booleans
 //    public Matrix equals(Expression other) {
 //        Expression[][] out = new Expression[numRows][numCols];
-//        if (other instanceof Constant scalar) {
+//        if (other instanceof Scalar scalar) {
 //            return matrixEqualsScalar(scalar);
 //        }
 //        // compare matrix to matrix
@@ -459,15 +455,15 @@ public class Matrix extends Expression implements MatrixLike {
     public static Matrix greater(Expression left, Expression right) {
         Matrix leftMat = left instanceof Matrix ? (Matrix) left : null;
         Matrix rightMat = right instanceof Matrix ? (Matrix) right : null;
-        Constant leftConst = left instanceof Constant ? (Constant) left : null;
-        Constant rightConst = right instanceof Constant ? (Constant) right : null;
+        Scalar leftConst = left instanceof Scalar ? (Scalar) left : null;
+        Scalar rightConst = right instanceof Scalar ? (Scalar) right : null;
         int rows;
         int cols;
         // check if the types are legal on either side
         if (leftMat == null && leftConst == null) {
-            throw new RuntimeException("Left operand must be a Matrix or Constant for comparison, got: " + left.getClass().getSimpleName());
+            throw new RuntimeException("Left operand must be a Matrix or Scalar for comparison, got: " + left.getClass().getSimpleName());
         } else if (rightMat == null && rightConst == null) {
-            throw new RuntimeException("Right operand must be a Matrix or Constant for comparison, got: " + right.getClass().getSimpleName());
+            throw new RuntimeException("Right operand must be a Matrix or Scalar for comparison, got: " + right.getClass().getSimpleName());
         }
         Expression result;
         if (leftMat != null) {
@@ -491,7 +487,7 @@ public class Matrix extends Expression implements MatrixLike {
         }
         for (int i = 0; i < leftMat.numRows; i++) {
             for (int j = 0; j < leftMat.numCols; j++) {
-                if (leftMat.elements[i][j] instanceof Constant leftC && rightMat.elements[i][j] instanceof Constant rightC) {
+                if (leftMat.elements[i][j] instanceof Scalar leftC && rightMat.elements[i][j] instanceof Scalar rightC) {
                     out[i][j] = new BooleanNode(leftC.getDoubleValue() > rightC.getDoubleValue());
                 } else if (leftMat.elements[i][j] instanceof Matrix || rightMat.elements[i][j] instanceof Matrix) {
                     out[i][j] = Matrix.greater(leftMat.elements[i][j], rightMat.elements[i][j]);
@@ -506,15 +502,15 @@ public class Matrix extends Expression implements MatrixLike {
     public static Matrix less(Expression left, Expression right) {
         Matrix leftMat = left instanceof Matrix ? (Matrix) left : null;
         Matrix rightMat = right instanceof Matrix ? (Matrix) right : null;
-        Constant leftConst = left instanceof Constant ? (Constant) left : null;
-        Constant rightConst = right instanceof Constant ? (Constant) right : null;
+        Scalar leftConst = left instanceof Scalar ? (Scalar) left : null;
+        Scalar rightConst = right instanceof Scalar ? (Scalar) right : null;
         int rows;
         int cols;
         // check if the types are legal on either side
         if (leftMat == null && leftConst == null) {
-            throw new RuntimeException("Left operand must be a Matrix or Constant for comparison, got: " + left.getClass().getSimpleName());
+            throw new RuntimeException("Left operand must be a Matrix or Scalar for comparison, got: " + left.getClass().getSimpleName());
         } else if (rightMat == null && rightConst == null) {
-            throw new RuntimeException("Right operand must be a Matrix or Constant for comparison, got: " + right.getClass().getSimpleName());
+            throw new RuntimeException("Right operand must be a Matrix or Scalar for comparison, got: " + right.getClass().getSimpleName());
         }
         Expression result;
         if (leftMat != null) {
@@ -538,7 +534,7 @@ public class Matrix extends Expression implements MatrixLike {
         }
         for (int i = 0; i < leftMat.numRows; i++) {
             for (int j = 0; j < leftMat.numCols; j++) {
-                if (leftMat.elements[i][j] instanceof Constant leftC && rightMat.elements[i][j] instanceof Constant rightC) {
+                if (leftMat.elements[i][j] instanceof Scalar leftC && rightMat.elements[i][j] instanceof Scalar rightC) {
                     out[i][j] = new BooleanNode(leftC.getDoubleValue() < rightC.getDoubleValue());
                 } else if (leftMat.elements[i][j] instanceof Matrix || rightMat.elements[i][j] instanceof Matrix) {
                     out[i][j] = Matrix.less(leftMat.elements[i][j], rightMat.elements[i][j]);
@@ -553,15 +549,15 @@ public class Matrix extends Expression implements MatrixLike {
     public static Matrix lessEqual(Expression left, Expression right) {
         Matrix leftMat = left instanceof Matrix ? (Matrix) left : null;
         Matrix rightMat = right instanceof Matrix ? (Matrix) right : null;
-        Constant leftConst = left instanceof Constant ? (Constant) left : null;
-        Constant rightConst = right instanceof Constant ? (Constant) right : null;
+        Scalar leftConst = left instanceof Scalar ? (Scalar) left : null;
+        Scalar rightConst = right instanceof Scalar ? (Scalar) right : null;
         int rows;
         int cols;
         // check if the types are legal on either side
         if (leftMat == null && leftConst == null) {
-            throw new RuntimeException("Left operand must be a Matrix or Constant for comparison, got: " + left.getClass().getSimpleName());
+            throw new RuntimeException("Left operand must be a Matrix or Scalar for comparison, got: " + left.getClass().getSimpleName());
         } else if (rightMat == null && rightConst == null) {
-            throw new RuntimeException("Right operand must be a Matrix or Constant for comparison, got: " + right.getClass().getSimpleName());
+            throw new RuntimeException("Right operand must be a Matrix or Scalar for comparison, got: " + right.getClass().getSimpleName());
         }
         Expression result;
         if (leftMat != null) {
@@ -585,7 +581,7 @@ public class Matrix extends Expression implements MatrixLike {
         }
         for (int i = 0; i < leftMat.numRows; i++) {
             for (int j = 0; j < leftMat.numCols; j++) {
-                if (leftMat.elements[i][j] instanceof Constant leftC && rightMat.elements[i][j] instanceof Constant rightC) {
+                if (leftMat.elements[i][j] instanceof Scalar leftC && rightMat.elements[i][j] instanceof Scalar rightC) {
                     out[i][j] = new BooleanNode(leftC.getDoubleValue() <= rightC.getDoubleValue());
                 } else if (leftMat.elements[i][j] instanceof Matrix || rightMat.elements[i][j] instanceof Matrix) {
                     out[i][j] = Matrix.lessEqual(leftMat.elements[i][j], rightMat.elements[i][j]);
@@ -600,15 +596,15 @@ public class Matrix extends Expression implements MatrixLike {
     public static Matrix greaterEqual(Expression left, Expression right) {
         Matrix leftMat = left instanceof Matrix ? (Matrix) left : null;
         Matrix rightMat = right instanceof Matrix ? (Matrix) right : null;
-        Constant leftConst = left instanceof Constant ? (Constant) left : null;
-        Constant rightConst = right instanceof Constant ? (Constant) right : null;
+        Scalar leftConst = left instanceof Scalar ? (Scalar) left : null;
+        Scalar rightConst = right instanceof Scalar ? (Scalar) right : null;
         int rows;
         int cols;
         // check if the types are legal on either side
         if (leftMat == null && leftConst == null) {
-            throw new RuntimeException("Left operand must be a Matrix or Constant for comparison, got: " + left.getClass().getSimpleName());
+            throw new RuntimeException("Left operand must be a Matrix or Scalar for comparison, got: " + left.getClass().getSimpleName());
         } else if (rightMat == null && rightConst == null) {
-            throw new RuntimeException("Right operand must be a Matrix or Constant for comparison, got: " + right.getClass().getSimpleName());
+            throw new RuntimeException("Right operand must be a Matrix or Scalar for comparison, got: " + right.getClass().getSimpleName());
         }
         Expression result;
         if (leftMat != null) {
@@ -632,7 +628,7 @@ public class Matrix extends Expression implements MatrixLike {
         }
         for (int i = 0; i < leftMat.numRows; i++) {
             for (int j = 0; j < leftMat.numCols; j++) {
-                if (leftMat.elements[i][j] instanceof Constant leftC && rightMat.elements[i][j] instanceof Constant rightC) {
+                if (leftMat.elements[i][j] instanceof Scalar leftC && rightMat.elements[i][j] instanceof Scalar rightC) {
                     out[i][j] = new BooleanNode(leftC.getDoubleValue() >= rightC.getDoubleValue());
                 } else if (leftMat.elements[i][j] instanceof Matrix || rightMat.elements[i][j] instanceof Matrix) {
                     out[i][j] = Matrix.greaterEqual(leftMat.elements[i][j], rightMat.elements[i][j]);
@@ -648,15 +644,15 @@ public class Matrix extends Expression implements MatrixLike {
         System.out.println("Comparing two expressions for equality: " + left + " and " + right);
         Matrix leftMat = left instanceof Matrix ? (Matrix) left : null;
         Matrix rightMat = right instanceof Matrix ? (Matrix) right : null;
-        Constant leftConst = left instanceof Constant ? (Constant) left : null;
-        Constant rightConst = right instanceof Constant ? (Constant) right : null;
+        Scalar leftConst = left instanceof Scalar ? (Scalar) left : null;
+        Scalar rightConst = right instanceof Scalar ? (Scalar) right : null;
         int rows;
         int cols;
         // check if the types are legal on either side
         if (leftMat == null && leftConst == null) {
-            throw new RuntimeException("Left operand must be a Matrix or Constant for comparison, got: " + left.getClass().getSimpleName());
+            throw new RuntimeException("Left operand must be a Matrix or Scalar for comparison, got: " + left.getClass().getSimpleName());
         } else if (rightMat == null && rightConst == null) {
-            throw new RuntimeException("Right operand must be a Matrix or Constant for comparison, got: " + right.getClass().getSimpleName());
+            throw new RuntimeException("Right operand must be a Matrix or Scalar for comparison, got: " + right.getClass().getSimpleName());
         }
         Expression result;
         if (leftMat != null) {
@@ -680,7 +676,7 @@ public class Matrix extends Expression implements MatrixLike {
         }
         for (int i = 0; i < leftMat.numRows; i++) {
             for (int j = 0; j < leftMat.numCols; j++) {
-                if (leftMat.elements[i][j] instanceof Constant leftC && rightMat.elements[i][j] instanceof Constant rightC) {
+                if (leftMat.elements[i][j] instanceof Scalar leftC && rightMat.elements[i][j] instanceof Scalar rightC) {
                     out[i][j] = new BooleanNode(leftC.getDoubleValue() == rightC.getDoubleValue());
                 } else if (leftMat.elements[i][j] instanceof Matrix || rightMat.elements[i][j] instanceof Matrix) {
                     out[i][j] = Matrix.equal(leftMat.elements[i][j], rightMat.elements[i][j]);
@@ -695,15 +691,15 @@ public class Matrix extends Expression implements MatrixLike {
     public static Matrix notEqual(Expression left, Expression right) {
         Matrix leftMat = left instanceof Matrix ? (Matrix) left : null;
         Matrix rightMat = right instanceof Matrix ? (Matrix) right : null;
-        Constant leftConst = left instanceof Constant ? (Constant) left : null;
-        Constant rightConst = right instanceof Constant ? (Constant) right : null;
+        Scalar leftConst = left instanceof Scalar ? (Scalar) left : null;
+        Scalar rightConst = right instanceof Scalar ? (Scalar) right : null;
         int rows;
         int cols;
         // check if the types are legal on either side
         if (leftMat == null && leftConst == null) {
-            throw new RuntimeException("Left operand must be a Matrix or Constant for comparison, got: " + left.getClass().getSimpleName());
+            throw new RuntimeException("Left operand must be a Matrix or Scalar for comparison, got: " + left.getClass().getSimpleName());
         } else if (rightMat == null && rightConst == null) {
-            throw new RuntimeException("Right operand must be a Matrix or Constant for comparison, got: " + right.getClass().getSimpleName());
+            throw new RuntimeException("Right operand must be a Matrix or Scalar for comparison, got: " + right.getClass().getSimpleName());
         }
         Expression result;
         if (leftMat != null) {
@@ -727,7 +723,7 @@ public class Matrix extends Expression implements MatrixLike {
         }
         for (int i = 0; i < leftMat.numRows; i++) {
             for (int j = 0; j < leftMat.numCols; j++) {
-                if (leftMat.elements[i][j] instanceof Constant leftC && rightMat.elements[i][j] instanceof Constant rightC) {
+                if (leftMat.elements[i][j] instanceof Scalar leftC && rightMat.elements[i][j] instanceof Scalar rightC) {
                     out[i][j] = new BooleanNode(leftC.getDoubleValue() != rightC.getDoubleValue());
                 } else if (leftMat.elements[i][j] instanceof Matrix || rightMat.elements[i][j] instanceof Matrix) {
                     out[i][j] = Matrix.notEqual(leftMat.elements[i][j], rightMat.elements[i][j]);
@@ -752,8 +748,8 @@ public class Matrix extends Expression implements MatrixLike {
 //            int idxMax = 0;  // need to keep track of where the max is
 //            // find the max
 //            for (int j = i; j < numRows; j++) {  // remember to skip whatever is below pivot row
-//                Constant candidate = (Constant) U.elements[j][i];  // won't work if not constant, but should be fine for now
-//                Constant currentMax = (Constant) U.elements[idxMax][i];
+//                Scalar candidate = (Scalar) U.elements[j][i];  // won't work if not constant, but should be fine for now
+//                Scalar currentMax = (Scalar) U.elements[idxMax][i];
 //                if (j == i || (candidate != null && currentMax != null && Math.abs(candidate.getDoubleValue()) > Math.abs(currentMax.getDoubleValue()))) {
 //                    idxMax = j;
 //                }
@@ -763,14 +759,14 @@ public class Matrix extends Expression implements MatrixLike {
 //            U.setRow(i, 0, U.getRow(idxMax));  // replace first row with max row
 //            U.setRow(idxMax, 0, toSwap);       // replace max row with first row
 //            for (int j = i; j < numRows; j++) {  // eliminate lower columns
-//                double denom = ((Constant) U.elements[i][i]).getDoubleValue();
+//                double denom = ((Scalar) U.elements[i][i]).getDoubleValue();
 //                if (Math.abs(denom) < 1e-10) {
 //                    throw new RuntimeException("Matrix is singular, cannot perform LU decomposition.");
 //                }
 //                Expression factor = Matrix.div(U.elements[j][i], U.elements[i][i]);
 //                Matrix currentRow = U.getRow(j);
 //                // now subtract factor * pivot row from current row
-//                setRow(j, 0, currentRow * Matrix.sub(new IntegerConstant(1, false), factor) - U.getRow(i) * factor);
+//                setRow(j, 0, currentRow * Matrix.sub(new Scalar(1, false), factor) - U.getRow(i) * factor);
 //            }
 //        }
 //    }
@@ -784,7 +780,7 @@ public class Matrix extends Expression implements MatrixLike {
 //        for (int i = 0; i < numCols; i++) {
 //            int idxMax = 0;  // need to keep track of where the max is
 //            for (int j = i; j < numRows; j++) {  // remember to skip whatever is below pivot row
-//                idxMax = j == i || (U.elements[j][i] instanceof Constant currentMax && U.elements[idxMax][i] instanceof Constant previousMax
+//                idxMax = j == i || (U.elements[j][i] instanceof Scalar currentMax && U.elements[idxMax][i] instanceof Scalar previousMax
 //                        && Math.abs(currentMax.getDoubleValue()) > Math.abs(previousMax.getDoubleValue())) ? j : idxMax;
 //                // found the row to pivot, now swap to Rj (where j is the current column)
 //                MatrixLike toSwap = U.getRow(i);  //
@@ -792,7 +788,7 @@ public class Matrix extends Expression implements MatrixLike {
 //                U.setRow(idxMax, 0, toSwap);
 //            } // done finding pivot row, now eliminate below
 //            for (int j = i + 1; j < numRows; j++) {
-//                if (U.elements[i][i] instanceof Constant zeroCheck && Math.abs(zeroCheck.getDoubleValue()) < 1e-10) {
+//                if (U.elements[i][i] instanceof Scalar zeroCheck && Math.abs(zeroCheck.getDoubleValue()) < 1e-10) {
 //                    throw new RuntimeException("Matrix is singular, cannot perform LU decomposition.");
 //                }
 //                Expression factor = Matrix.div(U.elements[j][i], U.elements[i][i]);
@@ -812,16 +808,16 @@ public class Matrix extends Expression implements MatrixLike {
     public static Expression sub(Expression left, Expression right) {
         Matrix leftMat = left instanceof Matrix ? (Matrix) left : null;
         Matrix rightMat = right instanceof Matrix ? (Matrix) right : null;
-        Constant leftConst = left instanceof Constant ? (Constant) left : null;
-        Constant rightConst = right instanceof Constant ? (Constant) right : null;
+        Scalar leftConst = left instanceof Scalar ? (Scalar) left : null;
+        Scalar rightConst = right instanceof Scalar ? (Scalar) right : null;
         int rows;
         int cols;
         TokenKind type;
         // check if the types are legal on either side
         if (leftMat == null && leftConst == null) {
-            throw new RuntimeException("Left operand must be a Matrix or Constant for subtraction, got: " + left.getClass().getSimpleName());
+            throw new RuntimeException("Left operand must be a Matrix or Scalar for subtraction, got: " + left.getClass().getSimpleName());
         } else if (rightMat == null && rightConst == null) {
-            throw new RuntimeException("Right operand must be a Matrix or Constant for subtraction, got: " + right.getClass().getSimpleName());
+            throw new RuntimeException("Right operand must be a Matrix or Scalar for subtraction, got: " + right.getClass().getSimpleName());
         }
         if (leftMat != null) {
             rows = leftMat.rows();
@@ -832,7 +828,7 @@ public class Matrix extends Expression implements MatrixLike {
             rows = rightMat.rows();
             type = rightMat.getType();
         } else {  // both scalars
-            return Constant.subtract(leftConst, rightConst);
+            return Scalar.subtract(leftConst, rightConst);
         }
         // this only applies if both are matrices, because a constant can ALWAYS be multiplied to the matrix
         if ((leftMat != null && rightMat !=null) && !(((Matrix) left).dimensionsMatch((Matrix) right))) {
@@ -855,16 +851,16 @@ public class Matrix extends Expression implements MatrixLike {
     public static Expression div(Expression left, Expression right) {
         Matrix leftMat = left instanceof Matrix ? (Matrix) left : null;
         Matrix rightMat = right instanceof Matrix ? (Matrix) right : null;
-        Constant leftConst = left instanceof Constant ? (Constant) left : null;
-        Constant rightConst = right instanceof Constant ? (Constant) right : null;
+        Scalar leftConst = left instanceof Scalar ? (Scalar) left : null;
+        Scalar rightConst = right instanceof Scalar ? (Scalar) right : null;
         int rows;
         int cols;
         TokenKind type;
         // check if the types are legal on either side
         if (leftMat == null && leftConst == null) {
-            throw new RuntimeException("Left operand must be a Matrix or Constant for Hadamard division, got: " + left.getClass().getSimpleName());
+            throw new RuntimeException("Left operand must be a Matrix or Scalar for Hadamard division, got: " + left.getClass().getSimpleName());
         } else if (rightMat == null && rightConst == null) {
-            throw new RuntimeException("Right operand must be a Matrix or Constant for Hadamard division, got: " + right.getClass().getSimpleName());
+            throw new RuntimeException("Right operand must be a Matrix or Scalar for Hadamard division, got: " + right.getClass().getSimpleName());
         }
         if (leftMat != null) {
             rows = leftMat.rows();
@@ -875,7 +871,7 @@ public class Matrix extends Expression implements MatrixLike {
             rows = rightMat.rows();
             type = rightMat.getType();
         } else {  // both scalars
-            return Constant.divide(leftConst, rightConst);
+            return Scalar.divide(leftConst, rightConst);
         }
         // this only applies if both are matrices, because a constant can ALWAYS be multiplied to the matrix
         if ((leftMat != null && rightMat !=null) && !(((Matrix) left).dimensionsMatch((Matrix) right))) {
@@ -897,16 +893,16 @@ public class Matrix extends Expression implements MatrixLike {
     public static Expression mul(Expression left, Expression right) {
         Matrix leftMat = left instanceof Matrix ? (Matrix) left : null;
         Matrix rightMat = right instanceof Matrix ? (Matrix) right : null;
-        Constant leftConst = left instanceof Constant ? (Constant) left : null;
-        Constant rightConst = right instanceof Constant ? (Constant) right : null;
+        Scalar leftConst = left instanceof Scalar ? (Scalar) left : null;
+        Scalar rightConst = right instanceof Scalar ? (Scalar) right : null;
         int rows;
         int cols;
         TokenKind type;
         // check if the types are legal on either side
         if (leftMat == null && leftConst == null) {
-            throw new RuntimeException("Left operand must be a Matrix or Constant for Hadamard product, got: " + left.getClass().getSimpleName());
+            throw new RuntimeException("Left operand must be a Matrix or Scalar for Hadamard product, got: " + left.getClass().getSimpleName());
         } else if (rightMat == null && rightConst == null) {
-            throw new RuntimeException("Right operand must be a Matrix or Constant for Hadamard product, got: " + right.getClass().getSimpleName());
+            throw new RuntimeException("Right operand must be a Matrix or Scalar for Hadamard product, got: " + right.getClass().getSimpleName());
         }
         if (leftMat != null) {
             rows = leftMat.rows();
@@ -917,7 +913,7 @@ public class Matrix extends Expression implements MatrixLike {
             rows = rightMat.rows();
             type = rightMat.getType();
         } else {  // both scalars
-            return Constant.multiply(leftConst, rightConst);
+            return Scalar.multiply(leftConst, rightConst);
         }
         // this only applies if both are matrices, because a constant can ALWAYS be multiplied to the matrix
         if ((leftMat != null && rightMat !=null) && !(((Matrix) left).dimensionsMatch((Matrix) right))) {
@@ -937,19 +933,19 @@ public class Matrix extends Expression implements MatrixLike {
     }
 
     public static Expression add(Expression left, Expression right) {
-        // check legal types -> Matrix or Constant (more will come with the algebra)
+        // check legal types -> Matrix or Scalar (more will come with the algebra)
         Matrix leftMat = left instanceof Matrix ? (Matrix) left : null;
         Matrix rightMat = right instanceof Matrix ? (Matrix) right : null;
-        Constant leftConst = left instanceof Constant ? (Constant) left : null;
-        Constant rightConst = right instanceof Constant ? (Constant) right : null;
+        Scalar leftConst = left instanceof Scalar ? (Scalar) left : null;
+        Scalar rightConst = right instanceof Scalar ? (Scalar) right : null;
         int rows;
         int cols;
         TokenKind type;
         // check if the types are legal on either side
         if (leftMat == null && leftConst == null) {
-            throw new RuntimeException("Left operand must be a Matrix or Constant for addition, got: " + left.getClass().getSimpleName());
+            throw new RuntimeException("Left operand must be a Matrix or Scalar for addition, got: " + left.getClass().getSimpleName());
         } else if (rightMat == null && rightConst == null) {
-            throw new RuntimeException("Right operand must be a Matrix or Constant for addition, got: " + right.getClass().getSimpleName());
+            throw new RuntimeException("Right operand must be a Matrix or Scalar for addition, got: " + right.getClass().getSimpleName());
         }
         if (leftMat != null) {
             rows = leftMat.rows();
@@ -960,7 +956,7 @@ public class Matrix extends Expression implements MatrixLike {
             rows = rightMat.rows();
             type = rightMat.getType();
         } else {  // both scalars
-            return Constant.add(leftConst, rightConst);
+            return Scalar.add(leftConst, rightConst);
         }
         System.out.println("Adding matrices of size " + rows + "x" + cols);
         // this only applies if both are matrices, because a constant can ALWAYS be added to the matrix
@@ -996,11 +992,11 @@ public class Matrix extends Expression implements MatrixLike {
                     Matrix.mul(elements[0][1], elements[1][0])
             );
         }
-        Expression result = new IntegerConstant(0); // accumulate sum
+        Expression result = new Scalar(0); // accumulate sum
         for (int j = 0; j < n; j++) {
             Expression scalar = elements[0][j];
             // skip zero elements
-            if (scalar instanceof Constant zeroCheck && Math.abs(zeroCheck.getDoubleValue()) < 1e-10) {
+            if (scalar instanceof Scalar zeroCheck && Math.abs(zeroCheck.getDoubleValue()) < 1e-10) {
                 continue;
             }
             // create submatrix excluding row 0 and column j

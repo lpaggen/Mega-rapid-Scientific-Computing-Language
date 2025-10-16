@@ -10,7 +10,7 @@ import java.util.List;
 
 public class IndexOf extends BuiltInFunctionSymbol {
     public IndexOf() {
-        super("IndexOf", TokenKind.INTEGER);
+        super("IndexOf", TokenKind.SCALAR);
     }
 
     @Override

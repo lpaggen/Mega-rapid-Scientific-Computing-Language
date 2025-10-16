@@ -3,6 +3,7 @@ package Interpreter.Parser;
 import AST.Nodes.DataStructures.Edge;
 import AST.Nodes.DataStructures.Graph;
 import AST.Nodes.DataStructures.Node;
+import AST.Nodes.DataTypes.Scalar;
 import AST.Nodes.Expressions.*;
 import AST.Nodes.Expressions.BinaryOperations.Arithmetic.Add;
 import AST.Nodes.Expressions.BinaryOperations.BinaryNode;
@@ -10,8 +11,6 @@ import AST.Nodes.Expressions.BinaryOperations.Arithmetic.Div;
 import AST.Nodes.Expressions.BinaryOperations.Arithmetic.Mul;
 import AST.Nodes.Expressions.BinaryOperations.Arithmetic.Sub;
 import AST.Nodes.DataStructures.Matrix;
-import AST.Nodes.DataTypes.FloatConstant;
-import AST.Nodes.DataTypes.IntegerConstant;
 import AST.Nodes.Expressions.Functions.FunctionCallNode;
 import AST.Nodes.Expressions.Functions.FunctionDeclarationNode;
 import AST.Nodes.Expressions.Functions.BuiltIns.ImportNode;
@@ -165,14 +164,14 @@ public class Parser {
             System.out.println("Parsing string literal: " + previous().getLiteral());
             return new StringNode(previous().getLexeme()); // this will return a Constant node with the literal value
         }
-        else if (match(TokenKind.INTEGER)) {
-            System.out.println("Parsing integer literal: " + previous().getLiteral());
-            return new IntegerConstant(Integer.parseInt(previous().getLexeme())); // this will return a Constant node with the numeric value
+        else if (match(TokenKind.SCALAR)) {
+            System.out.println("Parsing scalar literal: " + previous().getLiteral());
+            return new Scalar((Number) previous().getLiteral()); // this will return a Constant node with the numeric value
         }
-        else if (match(TokenKind.FLOAT)) {
-            System.out.println("Parsing float literal: " + Float.parseFloat(previous().getLexeme()));
-            return new FloatConstant(Float.parseFloat(previous().getLexeme())); // this will return a Constant node with the numeric value
-        }
+//        else if (match(TokenKind.FLOAT)) {
+//            System.out.println("Parsing float literal: " + Float.parseFloat(previous().getLexeme()));
+//            return new Scalar(Float.parseFloat(previous().getLexeme())); // this will return a Constant node with the numeric value
+//        }
         else if (match(TokenKind.OPEN_PAREN)) {
             Expression expr = parseExpression();
             consume(TokenKind.CLOSE_PAREN);
@@ -307,7 +306,7 @@ public class Parser {
                         "parsing",
                         peek().getLine(),
                         "Unexpected token: " + peek().getLexeme(),
-                        "Expected a type keyword (sym, int, float, bool, matrix, symbol) inside matrix declaration."
+                        "Expected a type keyword (sym, num, bool, matrix, symbol) inside matrix declaration."
                 );
                 //throw new RuntimeException(peek() + " Expected type keyword inside vector declaration.");
             }
@@ -588,7 +587,7 @@ public class Parser {
         toNode.addNeighbor(from, fromNode); // add neighbor relationship (undirected graph)
         // if the user does not specify a weight for the edge
         if (match(TokenKind.SEMICOLON)) {
-            Expression weight = this.isWeightedGraph ? new IntegerConstant(1) : null;
+            Expression weight = this.isWeightedGraph ? new Scalar(1) : null;
             Edge edge = new Edge(fromNode, toNode, weight, this.isDirectedGraph);
             String edgeName = from + to;
             fromNode.addEdge(edgeName, edge);
@@ -634,7 +633,7 @@ public class Parser {
         consume(TokenKind.IDENTIFIER);  // consume the node name
         System.out.println("Node name: " + nodeName);
         if (match(TokenKind.SEMICOLON)) {
-            Expression weight = this.isWeightedGraph ? new IntegerConstant(1) : null;
+            Expression weight = this.isWeightedGraph ? new Scalar(1) : null;
             Node node = new Node(weight, nodeName);
             nodeMap.put(nodeName, node);
         }
@@ -835,8 +834,7 @@ public class Parser {
 
     // in future add support for all types
     private static final Set<TokenKind> typeKeywords = Set.of(
-            TokenKind.INTEGER_TYPE,
-            TokenKind.FLOAT_TYPE,
+            TokenKind.SCALAR_TYPE,
             TokenKind.BOOLEAN_TYPE,
             TokenKind.MATRIX_TYPE,
             TokenKind.MATH_TYPE,
@@ -848,8 +846,8 @@ public class Parser {
     );
 
     private static final Map<TokenKind, TokenKind> mapDeclarationToDatatype = Map.ofEntries(
-            Map.entry(TokenKind.INTEGER_TYPE, TokenKind.INTEGER),
-            Map.entry(TokenKind.FLOAT_TYPE, TokenKind.FLOAT),
+            Map.entry(TokenKind.SCALAR_TYPE, TokenKind.SCALAR),
+            // Map.entry(TokenKind.FLOAT_TYPE, TokenKind.FLOAT),
             Map.entry(TokenKind.BOOLEAN_TYPE, TokenKind.BOOLEAN),
             Map.entry(TokenKind.MATRIX_TYPE, TokenKind.MATRIX),
             Map.entry(TokenKind.MATH_TYPE, TokenKind.MATH),

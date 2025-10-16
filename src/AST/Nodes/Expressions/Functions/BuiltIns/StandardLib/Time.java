@@ -1,6 +1,6 @@
 package AST.Nodes.Expressions.Functions.BuiltIns.StandardLib;
 
-import AST.Nodes.DataTypes.IntegerConstant;
+import AST.Nodes.DataTypes.Scalar;
 import AST.Nodes.Expressions.Functions.BuiltIns.BuiltInFunctionSymbol;
 import Interpreter.Tokenizer.TokenKind;
 import Interpreter.Runtime.Environment;
@@ -27,10 +27,10 @@ public class Time extends BuiltInFunctionSymbol {
             String unit = args.getFirst().toString().toLowerCase();
             LocalTime now = java.time.LocalTime.now();
             return switch (unit) {
-                case "h" -> new IntegerConstant(now.getHour()); // we have to use our wrappers for everything now, good fun!
-                case "m" -> new IntegerConstant(now.getMinute());
-                case "s" -> new IntegerConstant(now.getSecond());
-                case "ms" -> new IntegerConstant((int) (System.nanoTime() / 1000000)); // convert to ms
+                case "h" -> new Scalar(now.getHour()); // we have to use our wrappers for everything now, good fun!
+                case "m" -> new Scalar(now.getMinute());
+                case "s" -> new Scalar(now.getSecond());
+                case "ms" -> new Scalar((int) (System.nanoTime() / 1000000)); // convert to ms
                 default -> throw new IllegalArgumentException("Invalid arguments for time function. Expected one of: " + String.join(", ", validArguments));
             };
         }
