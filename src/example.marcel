@@ -23,5 +23,6 @@ graph<w, d, float> H = {
     edge F -> D = 6.0;
 };
 
-print(G - G.A);
+mat<int> a = getAdj(G);
 
+print(b);
