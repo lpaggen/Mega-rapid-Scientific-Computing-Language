@@ -3,13 +3,13 @@ load graphs;
 load linalg;
 
 mat<num> a = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];
-mat<num> b = [[9, 8, 7.87], [6, 5, 4], [3, 2, 1]];
+mat<num> b = [[9, 8, 7], [6, 5, 4], [3, 2, 1]];
 
 graph<w, d, num> G = {
     node A = 9.0;
     node B = 8.0;
     node C = 7.0;
-    edge A -> B = 1.0;
+    edge A -> B = 1.0747432222;
     edge B -> C = 2.0;
     edge C -> A = 3.0;
 };
@@ -23,6 +23,4 @@ graph<w, d, num> H = {
     edge F -> D = 6.0;
 };
 
-mat<num> a = getAdj(G);
-
-print(b);
+print( getAdj(G) * getAdj(H) );

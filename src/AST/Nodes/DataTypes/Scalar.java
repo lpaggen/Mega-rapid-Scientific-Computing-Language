@@ -72,12 +72,17 @@ public class Scalar extends Expression {
         return TokenKind.SCALAR;
     }
 
-    // this is fine, not clean but it will work just fine
+    // this is just displaying as int when it's integer like, nothing really behaves as int however
     @Override
     public String toString() {
-        if (value instanceof Integer) {
-            return value.intValue() + "";
+        Number n = this.getValue();
+        String s;
+        if (n.doubleValue() % 1 == 0) {
+            // effectively an integer, drop the .0
+            s = String.valueOf(n.longValue());
+        } else {
+            s = n.toString();
         }
-        return value.doubleValue() + "";
+        return s;
     }
 }

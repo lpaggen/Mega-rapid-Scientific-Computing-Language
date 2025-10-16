@@ -205,6 +205,7 @@ public class Parser {
             }
             return expr;
         }
+        System.out.println("Unexpected token at parsePrimary: " + peek());
         throw new ErrorHandler(
                 "parsing",
                 peek().getLine(),
@@ -482,22 +483,21 @@ public class Parser {
 
     // arguments are the values passed to the function, while parameters are the variables defined in the function signature
     // so these may actually be Expression
-    private java.util.List<Expression> parseFunctionArguments() {
-        java.util.List<Expression> arguments = new ArrayList<>();
+    private List<Expression> parseFunctionArguments() {
+        List<Expression> arguments = new ArrayList<>();
         if (!check(TokenKind.CLOSE_PAREN)) {
-            System.out.println("token at parseFunctionArguments: " + peek());
-            if (isFunctionCall()) { // just check if it's a function call in the arg (recursive allowed)
-                arguments.add(parseFunctionCall()); // if the first argument is a function call, we parse it
-                return arguments; // we return immediately, since we can't have more than one function call as an argument
-            }
-            do {
-                Expression arg = parseExpression(); // STRING NODE for now
-                System.out.println("Parsing argument: " + (arg != null ? arg.toString() : "null"));
+            while (true) {
+                Expression arg = parseExpression();
                 arguments.add(arg);
-            } while (match(TokenKind.COMMA));
+                if (!match(TokenKind.COMMA))
+                    break;
+                if (check(TokenKind.CLOSE_PAREN))
+                    throw new IllegalArgumentException("Trailing comma in argument list.");
+            }
         }
         return arguments;
     }
+
 
     private Expression parseFunctionCall() {
         Token functionNameToken = consume(TokenKind.IDENTIFIER); // consume function name
