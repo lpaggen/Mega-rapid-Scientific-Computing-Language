@@ -3,12 +3,17 @@
 </p>
 
 
-Currently WIP. Maybe master's thesis or academic publication down the line, will think about it and evaluate if this is even possible with the time constraints i am facing
+# WORK IN PROGRESS
+MrSCL (Mega (rapid) Scientfic Computing Library) is a low-performance scientific computing library designed to provide bachelor students assistance with algebra, graph theory, linear algebra and numerical computations. It is an interpreted language, meaning it is quite slow, and doesn't compile its own code, instead opting for the portability of the JVM. MrSCL supports linear algebra through the matrix data structure, which itself supports element wise operations, dot products, transpose, inverse, nested matrices, etc. The language supports a unique graph data structure, which comes with its own built-in features, like getting the degree of a node, building directed, weighted graphs, etc. The key feature of this language is that it can do so using the unique math data type, which is meant to behave like algebra! MrSCL can therefore support matrices of the form: [[3, 6x, 7y], [4cos(x), ycos(y), log(x)]], although this is quite limited as of writing this. 
 
-atm it has: tokenizer, parser (wip), error handling (wip), AST (wip). Ideally i would implement support for functions and basic for loops, as well as conditional branching. no OOP in mind for the project. The big thing about this project would also be the support for symbolic algebra and mathematical optimization down the line, so linear programming etc could be implemented in due time. I am also considering implementing my own version of MapReduce in the language, to enhance the speed of those very expensive matrix multiplications. 
-
-the tokenizer runs in O(n) time (obviously). parser ~O(n) -- linear time assymptotically, in practice might not achieve that with the semantic analysis phase -- 2nd pass in addition to the tokenizer. semantic analysis should be O(n) something when done, so overall no (major) mistakes are being made when it comes to core interpreter logic.
-
-obviously i could use ANTLR and LLVM, but i'd rather just build this for learning, as opposed to it being an actually useful tool. perhaps it could be shown to university students if the algebra and optimization parts are ever made to work, however! that would be a cool learning tool. 
-
-The language is EXTREMELY SLOW, but it's meant as a fun project, I can't make it quicker without a compiler. Maybe this project will get a compiler eventually, I don't think so. 
+## Features
+- Matrix data structure with support for element wise operations, dot products, transpose, inverse, nested matrices, etc.
+- Graph data structure with support for directed, weighted graphs, degree of a node, etc.
+- Math data type that can handle algebraic expressions.
+- Basic numerical computations.
+- Interpreted language for ease of use and portability.
+- Simple syntax designed for beginners in scientific computing.
+- Extensive documentation and examples to help users get started.
+- Open-source
+- Cross-platform compatibility through JVM.
+- Support for basic statistical functions.
