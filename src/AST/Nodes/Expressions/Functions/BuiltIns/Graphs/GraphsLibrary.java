@@ -11,8 +11,8 @@ public class GraphsLibrary {
     static {
         GraphsSymbols.put("isBipartite", new isBipartite());
         GraphsSymbols.put("getAdj", new getAdjacency());
-//        GraphsSymbols.put("matchAll", new MatchAll());
-//        GraphsSymbols.put("indexOf", new IndexOf());
+        GraphsSymbols.put("union", new union());
+        GraphsSymbols.put("disjointUnion", new disjointUnion());
 //        GraphsSymbols.put("dot", new Dot());
 //        GraphsSymbols.put("shape", new Shape());
 //        GraphsSymbols.put("T", new Transpose());

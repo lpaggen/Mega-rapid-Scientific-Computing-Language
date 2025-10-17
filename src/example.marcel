@@ -6,21 +6,15 @@ mat<num> a = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];
 mat<num> b = [[9, 8, 7], [6, 5, 4], [3, 2, 1]];
 
 graph<w, d, num> G = {
-    node A = 9.0;
-    node B = 8.0;
-    node C = 7.0;
-    edge A -> B = 1.76;
-    edge B -> C = 2.0;
-    edge C -> A = 3.0;
+    node E = 3.0;
+    node D = 2.0;
+    edge E -> D = 1.0;
 };
 
 graph<w, d, num> H = {
     node D = 6.0;
     node E = 5.0;
-    node F = 4.0;
-    edge D -> E = 4.0;
-    edge E -> F = 5.0;
-    edge F -> D = 6.0;
+    edge E -> D = 4.0;
 };
 
-print(getAdj(G) * getAdj(H));
+print(union(G, H, false, "right", "right"));

@@ -112,19 +112,20 @@ public class Graph extends Expression {
     }
 
     // you can add edges, graphs, nodes to a graph, nothing else
+    // addition operator does not allow duplicates, see union for that
     public static Graph add(Expression left, Expression right) {
         if (left == null || right == null) {
             throw new IllegalArgumentException("Cannot add null to a graph.");
         } else if (left instanceof Graph g && right instanceof Node n) {
-            return (g).addNodeToGraph(n);
+            return (g).addNodeToGraph(n, false, false, "left");  // strategy doesn't matter here
         } else if (left instanceof Graph g && right instanceof Edge e) {
-            return (g).addEdgeToGraph(e);
+            return (g).addEdgeToGraph(e, false, false, "left");
         } else if (right instanceof Graph g && left instanceof Node n) {
-            return (g).addNodeToGraph(n);
+            return (g).addNodeToGraph(n, false, false, "left");
         } else if (right instanceof Graph g && left instanceof Edge e) {
-            return (g).addEdgeToGraph(e);
+            return (g).addEdgeToGraph(e, false, false, "left");
         } else if (left instanceof Graph g && right instanceof Graph h) {
-            return (g).addGraphToGraph(h);
+            return (g).addGraphToGraph(h, false, false, "left", "left");
         } else {
             throw new IllegalArgumentException("Can only add nodes, edges, or graphs to a graph. Got: " + left + " and " + right);
         }
@@ -154,32 +155,76 @@ public class Graph extends Expression {
         }
     }
 
-    private Graph addGraphToGraph(Graph graph) {
+    private Graph addGraphToGraph(Graph graph, boolean tolerateDuplicates, boolean disjointUnion, String nodeStrategy, String edgeStrategy) {
         for (Node node : graph.getNodes()) {
-            this.addNodeToGraph(node);
+            this.addNodeToGraph(node, tolerateDuplicates, disjointUnion, nodeStrategy);
         }
         for (Edge edge : graph.getEdges()) {
-            this.addEdgeToGraph(edge);
+            this.addEdgeToGraph(edge, tolerateDuplicates, disjointUnion, edgeStrategy);
         }
         return this;
     }
 
-    private Graph addNodeToGraph(Node node) {
+    private Graph addNodeToGraph(Node node, boolean tolerateDuplicates, boolean disjointUnion, String nodeStrategy) {
         Node nodeToAdd = node;
-        if (this.containsNode(node.getId())) {
-            throw new IllegalArgumentException("Graph already contains a node with ID '" + node.getId() + "'. Node IDs must be unique within a graph.");
+        if (this.containsNode(node.getId()) && !tolerateDuplicates) {
+            throw new IllegalArgumentException("Add operation is ambiguous for graph which already contains a node with ID '" + node.getId() + "'. Node IDs must be unique within a graph. \nPlease see union for merging graphs with duplicate node IDs.");
+        }
+        else if (this.containsNode(node.getId()) && tolerateDuplicates && disjointUnion) {
+            String newID = node.getId();
+            int counter = 1;
+            while (this.containsNode(newID)) {
+                newID = node.getId() + "_" + counter;
+                counter++;
+            }
+            nodeToAdd = new Node(node.getValue(), newID);
+            this.nodes.put(nodeToAdd.getId(), nodeToAdd);  // add renamed node in case disjoint union
         }
         if (this.isWeighted() && node.getValue() == null) {
             nodeToAdd = new Node(new Scalar(1), node.getId());  // init with default weight of 1
         }
+        else if (this.isWeighted() && node.getValue() != null) {
+            Number mergedWeight = getMergeStrategy(
+                    ((Scalar) this.nodes.get(node.getId()).getValue()).getValue(),
+                    ((Scalar) node.getValue()).getValue(),
+                    nodeStrategy);
+            nodeToAdd = new Node(new Scalar(mergedWeight), node.getId());
+        }
+        System.out.println("Adding node to graph: " + nodeToAdd.getId());
         this.nodes.put(nodeToAdd.getId(), nodeToAdd);
         return this;
     }
 
-    private Graph addEdgeToGraph(Edge edge) {
+    // will clean this in future build, this is impossible to read
+    private Graph addEdgeToGraph(Edge edge, boolean tolerateDuplicates, boolean disjointUnion, String edgeStrategy) {
         Edge edgeToAdd = edge;
-        if (this.containsEdge(edge.getID())) {
+        if (this.containsEdge(edge.getID()) && !tolerateDuplicates) {
             throw new IllegalArgumentException("Graph already contains an edge with ID '" + edge.getID() + "'. Edge IDs must be unique within a graph.");
+        }
+        else if (this.containsEdge(edge.getID()) && tolerateDuplicates && disjointUnion) {
+            String newFromID = edge.getFrom().getId();
+            String newToID = edge.getTo().getId();
+            int counter = 1;
+            while (this.containsEdge(newFromID + newToID)) {
+                newFromID = newFromID + "_" + counter;
+                newToID = newToID + "_" + counter;
+                counter++;
+            }
+            Node newFrom = new Node(edge.getFrom().getValue(), newFromID);
+            Node newTo = new Node(edge.getTo().getValue(), newToID);
+            edgeToAdd = new Edge(newFrom, newTo, edge.getWeight(), edge.isDirected());
+            System.out.println("Renaming edge from " + edge.getID() + " to " + edgeToAdd.getID() + " for disjoint union.");
+            this.edges.put(edgeToAdd.getID(), edgeToAdd);  // add renamed edge in case disjoint union
+        }
+        if (this.isWeighted() && edge.getWeight() == null) {
+            edgeToAdd = new Edge(edge.getFrom(), edge.getTo(), new Scalar(1), edge.isDirected());  // init with default weight of 1
+        }
+        else if (this.isWeighted() && edge.getWeight() != null && this.containsEdge(edge.getID())) {
+            Number mergedWeight = getMergeStrategy(
+                    ((Scalar) this.edges.get(edge.getID()).getWeight()).getValue(),
+                    ((Scalar) edge.getWeight()).getValue(),
+                    edgeStrategy);
+            edgeToAdd = new Edge(edge.getFrom(), edge.getTo(), new Scalar(mergedWeight), edge.isDirected());
         }
         if (!this.containsNode(edge.getFrom().getId()) || !this.containsNode(edge.getTo().getId())) {
             throw new IllegalArgumentException("Both nodes of the edge must be present in the graph before adding the edge. Missing node(s) in edge: " + edge);
@@ -193,6 +238,30 @@ public class Graph extends Expression {
         }
         this.edges.put(edgeToAdd.getID(), edgeToAdd);
         return this;
+    }
+
+    private Number getMergeStrategy(Number a, Number b, String how) {
+        switch (how) {
+            case "left" -> {
+                return a;
+            }
+            case "right" -> {
+                return b;
+            }
+            case "sum" -> {
+                return a.doubleValue() + b.doubleValue();
+            }
+            case "max" -> {
+                return Math.max(a.doubleValue(), b.doubleValue());
+            }
+            case "min" -> {
+                return Math.min(a.doubleValue(), b.doubleValue());
+            }
+            case "avg" -> {
+                return (a.doubleValue() + b.doubleValue()) / 2.0;
+            }
+            default -> throw new IllegalArgumentException("Unknown graph union merge strategy: " + how);
+        }
     }
 
     public void clear() {
@@ -311,6 +380,54 @@ public class Graph extends Expression {
         return 0;
     }
 
+    public int getMaxDegree() {
+        // Placeholder for max degree calculation logic
+        return 0;
+    }
+
+    public int getMinDegree() {
+        // Placeholder for min degree calculation logic
+        return 0;
+    }
+
+    public double getAverageDegree() {
+        // Placeholder for average degree calculation logic
+        return 0.0;
+    }
+
+    public double getDensity() {
+        // Placeholder for density calculation logic
+        return 0.0;
+    }
+
+    public int getDiameter() {
+        // Placeholder for diameter calculation logic
+        return 0;
+    }
+
+    public double getClusteringCoefficient() {
+        // Placeholder for clustering coefficient calculation logic
+        return 0.0;
+    }
+
+    public List<List<Node>> getAllPaths(Node start, Node end) {
+        // Placeholder for path retrieval logic
+        return null;
+    }
+
+    public List<Node> getShortestPath(Node start, Node end) {
+        // Placeholder for shortest path retrieval logic
+        return null;
+    }
+
+    // union tolerates the duplicates, merges the two graphs
+    // disjointUnion renames nodes/edges if there are duplicates
+    // strategy is to keep weights from left, right, or sum, etc
+    public Graph union(Graph other, boolean disjointUnion, String nodeStrategy, String edgeStrategy) {
+        Graph result = this.clone();
+        return result.addGraphToGraph(other, true, disjointUnion, nodeStrategy, edgeStrategy);
+    }
+
     public List<Graph> getConnectedComponents() {
         // Placeholder for connected component retrieval logic
         return null;
@@ -332,8 +449,17 @@ public class Graph extends Expression {
     }
 
     public Graph clone() {
-        // Placeholder for graph cloning logic
-        return null;
+        HashMap<String, Node> newNodes = new HashMap<>();
+        for (Node node : nodes.values()) {
+            newNodes.put(node.getId(), new Node(node.getValue(), node.getId()));
+        }
+        HashMap<String, Edge> newEdges = new HashMap<>();
+        for (Edge edge : edges.values()) {
+            Node newFrom = newNodes.get(edge.getFrom().getId());
+            Node newTo = newNodes.get(edge.getTo().getId());
+            newEdges.put(edge.getID(), new Edge(newFrom, newTo, edge.getWeight(), edge.isDirected()));
+        }
+        return new Graph(newNodes, newEdges, directed, weighted, weightType);
     }
 
     @Override
