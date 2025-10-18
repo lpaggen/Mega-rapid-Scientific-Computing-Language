@@ -1,12 +1,13 @@
 package AST.Nodes.Expressions.Functions.BuiltIns;
 
+import AST.Nodes.Expressions.StringNode;
 import Interpreter.Tokenizer.TokenKind;
 import Interpreter.Runtime.Environment;
 import Interpreter.Parser.FunctionSymbol;
 
 import java.util.List;
 
-public class BuiltInFunctionSymbol extends FunctionSymbol {
+public abstract class BuiltInFunctionSymbol extends FunctionSymbol {
     private final String name;
     private final TokenKind returnType;
 
@@ -24,6 +25,19 @@ public class BuiltInFunctionSymbol extends FunctionSymbol {
 
     public String getName() {
         return name;
+    }
+
+    public String toString() {
+        return name;
+    }
+
+    public StringNode getNameNode() {
+        throw new UnsupportedOperationException("getNameNode() not implemented for built-in function: " + name);
+    }
+
+    // inherited classes can (must) override this to provide specific help
+    public String help() {
+        return "No help available for built-in function: " + name;
     }
 
     public TokenKind getReturnType() {

@@ -20,14 +20,6 @@ public class FunctionSymbol extends Symbol {
         this.builtIn = null;
     }
 
-    // built ins
-    public FunctionSymbol(BuiltInFunctionSymbol builtIn) {
-        super(builtIn.getName(), builtIn.getReturnType());
-        this.parameters = List.of(); // or builtIn.getParameters()
-        this.body = null;
-        this.builtIn = builtIn;
-    }
-
     public boolean isBuiltIn() {
         return builtIn != null;
     }

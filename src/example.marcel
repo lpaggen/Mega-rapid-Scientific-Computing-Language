@@ -2,6 +2,8 @@ load stdlib;
 load graphs;
 load linalg;
 
+num x = 42;
+
 mat<num> a = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];
 mat<num> b = [[9, 8, 7], [6, 5, 4], [3, 2, 1]];
 
@@ -13,8 +15,12 @@ graph<w, d, num> G = {
 
 graph<w, d, num> H = {
     node D = 6.0;
-    node E = 5.0;
+    node E = 42;
     edge E -> D = 4.0;
 };
 
-print(union(G, H, false, "right", "right"));
+addNode(G, "F", 5.0);
+
+addEdge(G, "D", "F", 3.0);
+
+print(G);

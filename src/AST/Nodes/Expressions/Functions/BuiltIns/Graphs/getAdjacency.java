@@ -1,6 +1,7 @@
 package AST.Nodes.Expressions.Functions.BuiltIns.Graphs;
 
 import AST.Nodes.Expressions.Functions.BuiltIns.BuiltInFunctionSymbol;
+import AST.Nodes.Expressions.StringNode;
 import Interpreter.Runtime.Environment;
 import Interpreter.Tokenizer.TokenKind;
 
@@ -23,5 +24,20 @@ public class getAdjacency extends BuiltInFunctionSymbol {
         } else {
             throw new IllegalArgumentException("getAdj requires a Graph as its argument.");
         }
+    }
+
+    @Override
+    public TokenKind getReturnType() {
+        return TokenKind.MATRIX;
+    }
+
+    @Override
+    public String help() {
+        return """
+                getAdj(graph): Returns the adjacency matrix of the given graph.
+                      Parameters:
+                  graph - The graph for which to retrieve the adjacency matrix.
+                      Returns:
+                  A matrix representing the adjacency matrix of the graph.""";
     }
 }

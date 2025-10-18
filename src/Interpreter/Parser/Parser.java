@@ -365,6 +365,56 @@ public class Parser {
             this.isDirectedGraph = isDirectedGraph;  // this is a bad system, but it has to work for now
             this.isWeightedGraph = isWeightedGraph;
         }
+//        else if (typeToken.getKind() == TokenKind.EDGE_TYPE) {
+//            if (!match(TokenKind.LESS)) {
+//                throw new ErrorHandler(
+//                        "parsing",
+//                        peek().getLine(),
+//                        "Unexpected token: " + peek().getLexeme(),
+//                        "Expected '<' after 'edge' declaration."
+//                );
+//            }
+//            if (!GraphAttributes.containsKey(peek().getLexeme())) {
+//                throw new ErrorHandler(
+//                        "parsing",
+//                        peek().getLine(),
+//                        "Unexpected token: " + peek().getLexeme(),
+//                        "Expected a graph attribute (d, ud) inside edge declaration."
+//                );
+//            }
+//            this.isDirectedGraph = GraphAttributes.get(advance().getLexeme()); // consume the inner type token
+//            consume(TokenKind.COMMA);
+//            if (!GraphAttributes.containsKey(peek().getLexeme())) {
+//                throw new ErrorHandler(
+//                        "parsing",
+//                        peek().getLine(),
+//                        "Unexpected token: " + peek().getLexeme(),
+//                        "Expected a graph attribute (w, weighted, unweighted) inside edge declaration."
+//                );
+//            }
+//            this.isWeightedGraph = GraphAttributes.get(advance().getLexeme()); // consume the inner type token
+//            consume(TokenKind.COMMA);
+//            if (!typeKeywords.contains(peek().getKind())) {
+//                throw new ErrorHandler(
+//                        "parsing",
+//                        peek().getLine(),
+//                        "Unexpected token: " + peek().getLexeme(),
+//                        "Expected a type keyword (sym, num, bool, matrix, symbol) inside edge declaration."
+//                );
+//            }
+//            currentDataType = advance().getKind(); // consume the inner type token
+//            Token innerTypeToken = previous();
+//            System.out.println("Inner type token for edge: " + innerTypeToken.getLexeme());
+//            if (!match(TokenKind.GREATER)) {
+//                throw new ErrorHandler(
+//                        "parsing",
+//                        peek().getLine(),
+//                        "Unexpected token: " + peek().getLexeme(),
+//                        "Expected '>' after inner type in edge declaration."
+//                );
+//            }
+//            currentDataType = TokenKind.EDGE_TYPE; // set current data type to edge
+//        }
         System.out.println("Current token after type processing: " + peek());
         if (!match(TokenKind.IDENTIFIER)) {
             throw new ErrorHandler(
@@ -739,7 +789,7 @@ public class Parser {
         return false;
     }
 
-    private boolean check (Set<TokenKind> expectedKinds) {
+    private boolean check(Set<TokenKind> expectedKinds) {
         for (TokenKind expectedKind : expectedKinds) {
             if (check(expectedKind)) {
                 return true;

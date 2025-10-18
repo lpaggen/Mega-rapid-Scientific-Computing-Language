@@ -13,8 +13,8 @@ public class GraphsLibrary {
         GraphsSymbols.put("getAdj", new getAdjacency());
         GraphsSymbols.put("union", new union());
         GraphsSymbols.put("disjointUnion", new disjointUnion());
-//        GraphsSymbols.put("dot", new Dot());
-//        GraphsSymbols.put("shape", new Shape());
+        GraphsSymbols.put("addNode", new addNode());
+        GraphsSymbols.put("addEdge", new addEdge());
 //        GraphsSymbols.put("T", new Transpose());
 //        GraphsSymbols.put("det", new Determinant());
     }

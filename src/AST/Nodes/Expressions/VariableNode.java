@@ -1,6 +1,7 @@
 package AST.Nodes.Expressions;
 
 import AST.Nodes.Expressions.Expression;
+import Interpreter.Parser.FunctionSymbol;
 import Interpreter.Runtime.Environment;
 import Interpreter.Parser.Symbol;
 import Interpreter.Parser.VariableSymbol;
@@ -18,9 +19,10 @@ public class VariableNode extends Expression {
         Symbol symbol = env.lookup(name);
         if (symbol instanceof VariableSymbol vs) {
             return vs.getValue();
-        } else {
-            throw new RuntimeException("Variable " + name + " not found or not a variable");
+        } else if (symbol instanceof FunctionSymbol fs) {  // for help()
+            return new StringNode(fs.toString());
         }
+        throw new RuntimeException("Variable " + name + " not found or not a variable");
     }
 
     @Override
