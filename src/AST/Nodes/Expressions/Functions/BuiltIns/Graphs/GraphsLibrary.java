@@ -1,6 +1,5 @@
 package AST.Nodes.Expressions.Functions.BuiltIns.Graphs;
 
-import AST.Nodes.Expressions.Functions.BuiltIns.Linalg.*;
 import Interpreter.Parser.Symbol;
 
 import java.util.HashMap;
@@ -15,7 +14,7 @@ public class GraphsLibrary {
         GraphsSymbols.put("disjointUnion", new disjointUnion());
         GraphsSymbols.put("addNode", new addNode());
         GraphsSymbols.put("addEdge", new addEdge());
-//        GraphsSymbols.put("T", new Transpose());
-//        GraphsSymbols.put("det", new Determinant());
+        GraphsSymbols.put("removeNode", new removeNode());
+        GraphsSymbols.put("removeEdge", new removeEdge());
     }
 }

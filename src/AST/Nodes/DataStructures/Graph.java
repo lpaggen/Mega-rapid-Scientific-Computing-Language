@@ -6,10 +6,7 @@ import Interpreter.Runtime.Environment;
 import Interpreter.Tokenizer.TokenKind;
 import Util.WarningLogger;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Graph extends Expression {
     private HashMap<String, Node> nodes;
@@ -85,14 +82,28 @@ public class Graph extends Expression {
         this.edges.put(edgeReference, edge);
     }
 
+    // here we also somehow need to check the resulting edges
+    // if a node is removed, all edges connected to it must also be removed
     public Graph removeNode(String nodeID) {
         this.nodes.remove(nodeID);
         return this;
     }
 
     public Graph removeEdge(String edgeID) {
+        if (!edges.containsKey(edgeID)) {
+            throw new IllegalArgumentException("Graph has no edge with ID '" + edgeID + "'. Cannot remove edge.");
+        }
         this.edges.remove(edgeID);
         return this;
+    }
+
+    // should remove all edges incident to the node!
+    public void removeIncidentEdges(String nodeID) {
+        if (!nodes.containsKey(nodeID)) {
+            throw new IllegalArgumentException("Graph has no node with ID '" + nodeID + "'. Cannot remove incident edges.");
+        }
+        edges.values().removeIf(edge -> edge.getFrom().getId().equals(nodeID) || edge.getTo().getId().equals(nodeID));
+        nodes.remove(nodeID);
     }
 
     public int getNodeCount() {

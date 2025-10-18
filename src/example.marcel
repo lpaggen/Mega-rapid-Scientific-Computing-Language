@@ -19,8 +19,6 @@ graph<w, d, num> H = {
     edge E -> D = 4.0;
 };
 
-addNode(G, "F", 5.0);
-
-addEdge(G, "D", "F", 3.0);
+removeEdge(G, "E", "D");
 
 print(G);
