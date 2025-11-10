@@ -2,23 +2,30 @@ load stdlib;
 load graphs;
 load linalg;
 
-num x = 42;
+num x = 10;
 
-mat<num> a = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];
-mat<num> b = [[9, 8, 7], [6, 5, 4], [3, 2, 1]];
-
-graph<w, d, num> G = {
-    node E = 3.0;
-    node D = 2.0;
-    edge E -> D = 1.0;
+graph<d, w, num> G =
+{
+    node A = 5;
+    node B = 3;
+    node C = 8;
+    edge A -> B = 2;
+    edge B -> C = 4;
+    edge A -> C = 1;
+    node D = 50*x*63672;
+    edge C -> D = 10;
 };
 
-graph<w, d, num> H = {
-    node D = 6.0;
-    node E = 42;
-    edge E -> D = 4.0;
-};
-
-removeEdge(G, "E", "D");
-
+print("Graph G:");
 print(G);
+
+
+print();
+
+mat<num> M = [
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 9]
+];
+
+print(M * M);

@@ -9,6 +9,7 @@ import Interpreter.Tokenizer.TokenKind;
 import Util.WarningLogger;
 
 import java.util.Iterator;
+import java.util.function.BiFunction;
 
 public class Matrix extends Expression implements MatrixLike {
     private final Expression[][] elements;
@@ -231,12 +232,14 @@ public class Matrix extends Expression implements MatrixLike {
         throw new UnsupportedOperationException("Matrix inversion not implemented yet.");
     }
 
-    public Matrix identity(int size) {
-        throw new UnsupportedOperationException("Matrix identity not implemented yet.");
-    }
-
-    public Matrix zeros(int rows, int cols) {
-        throw new UnsupportedOperationException("Matrix zeros not implemented yet.");
+    public static Matrix zeros(int rows, int cols) {
+        Expression[][] zeroElements = new Expression[rows][cols];
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                zeroElements[i][j] = new Scalar(0); // assuming integer zero, could be float zero too
+            }
+        }
+        return new Matrix(zeroElements, TokenKind.SCALAR);
     }
 
     private boolean isSquare() {
@@ -282,7 +285,7 @@ public class Matrix extends Expression implements MatrixLike {
         throw new UnsupportedOperationException("Matrix trace not implemented yet.");
     }
 
-    public Matrix Identity(int size) {
+    public static Matrix identity(int size) {
         Expression[][] identityElements = new Expression[size][size];
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
@@ -304,7 +307,7 @@ public class Matrix extends Expression implements MatrixLike {
             throw new RuntimeException("Matrix must be square for LU decomposition.");
         }
         // initialize L and U
-        Matrix L = Identity(numRows);
+        Matrix L = identity(numRows);
         Matrix U = this.clone();  // just need shallow copy
         for (int i = 0; i < numCols; i++) {
             for (int j = i + 1; j < numRows; j++) {
@@ -425,31 +428,6 @@ public class Matrix extends Expression implements MatrixLike {
         }
         return new Matrix(out, TokenKind.BOOLEAN);
     }
-
-////     by default, the matrix operation will return a matrix of booleans
-//    public Matrix equals(Expression other) {
-//        Expression[][] out = new Expression[numRows][numCols];
-//        if (other instanceof Scalar scalar) {
-//            return matrixEqualsScalar(scalar);
-//        }
-//        // compare matrix to matrix
-//        Matrix otherMat = other instanceof Matrix ? (Matrix) other : null;
-//        if (!matrixDimensionsMatch(otherMat)) {
-//            throw new RuntimeException("Matrix dimension mismatch for comparison: left is " +
-//                    this.numRows + "x" + this.numCols + ", right is " +
-//                    otherMat.numRows + "x" + otherMat.numCols);
-//        }
-//        for (int i = 0; i < numRows; i++) {
-//            for (int j = 0; j < numCols; j++) {
-//                if (!this.elements[i][j].equals(otherMat.elements[i][j])) {
-//                    out[i][j] = new BooleanNode(false);
-//                } else {
-//                    out[i][j] = new BooleanNode(true);
-//                }
-//            }
-//        }
-//        return new Matrix(out, TokenKind.BOOLEAN);
-//    }
 
     // handle through static method, with recursion for block matrices
     public static Matrix greater(Expression left, Expression right) {
@@ -614,7 +592,6 @@ public class Matrix extends Expression implements MatrixLike {
             cols = rightMat.cols();
             rows = rightMat.rows();
         } else {  // both scalars -- don't know if this would ever be needed, but in case keep it
-            System.out.println("Comparing two constants: " + leftConst + " and " + rightConst);
             result = new BooleanNode(leftConst.getDoubleValue() >= rightConst.getDoubleValue());
             Expression[][] singleElement = new Expression[1][1];
             singleElement[0][0] = result;
@@ -641,7 +618,6 @@ public class Matrix extends Expression implements MatrixLike {
     }
 
     public static Matrix equal(Expression left, Expression right) {
-        System.out.println("Comparing two expressions for equality: " + left + " and " + right);
         Matrix leftMat = left instanceof Matrix ? (Matrix) left : null;
         Matrix rightMat = right instanceof Matrix ? (Matrix) right : null;
         Scalar leftConst = left instanceof Scalar ? (Scalar) left : null;
@@ -662,7 +638,6 @@ public class Matrix extends Expression implements MatrixLike {
             cols = rightMat.cols();
             rows = rightMat.rows();
         } else {  // both scalars -- don't know if this would ever be needed, but in case keep it
-            System.out.println("Comparing two constants: " + leftConst + " and " + rightConst);
             result = new BooleanNode(leftConst.getDoubleValue() == rightConst.getDoubleValue());
             Expression[][] singleElement = new Expression[1][1];
             singleElement[0][0] = result;
@@ -735,19 +710,19 @@ public class Matrix extends Expression implements MatrixLike {
         return new Matrix(out, TokenKind.BOOLEAN);
     }
 
-//    public LinalgMul PLUDecomposition() {
+//    public Mul PLUDecomposition() {
 //        if (!isSquare()) {
 //            throw new RuntimeException("Matrix must be square for LU decomposition.");
 //        }
-//        Matrix L = Identity(numRows);
+//        Matrix L = identity(numRows);
 //        Matrix U = this.clone();  // just need shallow copy
-//        Matrix P = Identity(numRows);  // permutation matrix
+//        Matrix P = identity(numRows);  // permutation matrix
 //        // first step is to pivot the rows
 //        // we do this by finding the max in each column and swapping rows
 //        for (int i = 0; i < numCols; i++) {
 //            int idxMax = 0;  // need to keep track of where the max is
 //            // find the max
-//            for (int j = i; j < numRows; j++) {  // remember to skip whatever is below pivot row
+//            for (int j = i + 1; j < numRows; j++) {  // remember to skip whatever is below pivot row
 //                Scalar candidate = (Scalar) U.elements[j][i];  // won't work if not constant, but should be fine for now
 //                Scalar currentMax = (Scalar) U.elements[idxMax][i];
 //                if (j == i || (candidate != null && currentMax != null && Math.abs(candidate.getDoubleValue()) > Math.abs(currentMax.getDoubleValue()))) {
@@ -769,171 +744,77 @@ public class Matrix extends Expression implements MatrixLike {
 //                setRow(j, 0, currentRow * Matrix.sub(new Scalar(1, false), factor) - U.getRow(i) * factor);
 //            }
 //        }
+//        return new Mul(new Mul(P, L), U);  // should be super handy because we can getLeft or getRight
 //    }
 
-//    public LinalgMul LUDecomposition() {
-//        if (!isSquare()) {
-//            throw new RuntimeException("Matrix must be square for LU decomposition.");
-//        }
-//        Matrix L = Identity(numRows);
-//        Matrix U = this.clone();  // just need shallow copy
-//        for (int i = 0; i < numCols; i++) {
-//            int idxMax = 0;  // need to keep track of where the max is
-//            for (int j = i; j < numRows; j++) {  // remember to skip whatever is below pivot row
-//                idxMax = j == i || (U.elements[j][i] instanceof Scalar currentMax && U.elements[idxMax][i] instanceof Scalar previousMax
-//                        && Math.abs(currentMax.getDoubleValue()) > Math.abs(previousMax.getDoubleValue())) ? j : idxMax;
-//                // found the row to pivot, now swap to Rj (where j is the current column)
-//                MatrixLike toSwap = U.getRow(i);  //
-//                U.setRow(i, 0, U.getRow(idxMax));
-//                U.setRow(idxMax, 0, toSwap);
-//            } // done finding pivot row, now eliminate below
-//            for (int j = i + 1; j < numRows; j++) {
-//                if (U.elements[i][i] instanceof Scalar zeroCheck && Math.abs(zeroCheck.getDoubleValue()) < 1e-10) {
-//                    throw new RuntimeException("Matrix is singular, cannot perform LU decomposition.");
-//                }
-//                Expression factor = Matrix.div(U.elements[j][i], U.elements[i][i]);
-//                L.elements[j][i] = factor;
-//                for (int k = i; k < numCols; k++) {
-//                    U.elements[j][k] = Matrix.sub(U.elements[j][k], Matrix.mul(factor, U.elements[i][k]));
-//                }
-//            }
-//        }
-//        return new LinalgMul(L, U);  // should be super handy because we can getLeft or getRight
-//    }
+    public Mul LUDecomposition() {
+        if (!isSquare()) {
+            throw new RuntimeException("Matrix must be square for LU decomposition.");
+        }
+        Matrix L = identity(numRows);
+        Matrix U = this.clone();  // just need shallow copy
+        for (int i = 0; i < numCols; i++) {
+            int idxMax = 0;  // need to keep track of where the max is
+            for (int j = i + 1; j < numRows; j++) {  // remember to skip whatever is below pivot row
+                idxMax = j == i || (U.elements[j][i] instanceof Scalar currentMax && U.elements[idxMax][i] instanceof Scalar previousMax
+                        && Math.abs(currentMax.getDoubleValue()) > Math.abs(previousMax.getDoubleValue())) ? j : idxMax;
+                // found the row to pivot, now swap to Rj (where j is the current column)
+                if (idxMax != i) {
+                    MatrixLike toSwap = U.getRow(i);
+                    U.setRow(i, 0, U.getRow(idxMax));
+                    U.setRow(idxMax, 0, toSwap);
+                    for (int k = 0; k < i; k++) {
+                        Expression temp = L.elements[i][k];
+                        L.elements[i][k] = L.elements[idxMax][k];
+                        L.elements[idxMax][k] = temp;
+                    }
+                }
+            } // done finding pivot row, now eliminate below
+            for (int j = i + 1; j < numRows; j++) {
+                if (U.elements[i][i] instanceof Scalar zeroCheck && Math.abs(zeroCheck.getDoubleValue()) < 1e-10) {
+                    throw new RuntimeException("Matrix is singular, cannot perform LU decomposition.");
+                }
+                Expression factor = Matrix.div(U.elements[j][i], U.elements[i][i]);
+                L.elements[j][i] = factor;
+                for (int k = i; k < numCols; k++) {
+                    U.elements[j][k] = Matrix.sub(U.elements[j][k], Matrix.mul(factor, U.elements[i][k]));
+                }
+            }
+        }
+        return new Mul(L, U);  // should be super handy because we can getLeft or getRight
+    }
 
     private boolean matrixDimensionsMatch(Matrix other) {
         return this.numRows == other.numRows && this.numCols == other.numCols;
     }
 
-    public static Expression sub(Expression left, Expression right) {
-        Matrix leftMat = left instanceof Matrix ? (Matrix) left : null;
-        Matrix rightMat = right instanceof Matrix ? (Matrix) right : null;
-        Scalar leftConst = left instanceof Scalar ? (Scalar) left : null;
-        Scalar rightConst = right instanceof Scalar ? (Scalar) right : null;
-        int rows;
-        int cols;
-        TokenKind type;
-        // check if the types are legal on either side
-        if (leftMat == null && leftConst == null) {
-            throw new RuntimeException("Left operand must be a Matrix or Scalar for subtraction, got: " + left.getClass().getSimpleName());
-        } else if (rightMat == null && rightConst == null) {
-            throw new RuntimeException("Right operand must be a Matrix or Scalar for subtraction, got: " + right.getClass().getSimpleName());
-        }
-        if (leftMat != null) {
-            rows = leftMat.rows();
-            cols = leftMat.cols();
-            type = leftMat.getType();
-        } else if (rightMat != null) {
-            cols = rightMat.cols();
-            rows = rightMat.rows();
-            type = rightMat.getType();
-        } else {  // both scalars
-            return Scalar.subtract(leftConst, rightConst);
-        }
-        // this only applies if both are matrices, because a constant can ALWAYS be multiplied to the matrix
-        if ((leftMat != null && rightMat !=null) && !(((Matrix) left).dimensionsMatch((Matrix) right))) {
-            throw new RuntimeException("Matrix dimension mismatch for subtraction: left is " +
-                    leftMat.rows() + "x" + leftMat.cols() + ", right is " +
-                    rightMat.rows() + "x" + rightMat.cols());
-        }
-        Expression[][] resultElements = new Expression[rows][cols];
-        for (int i = 0; i < rows; i++) {  // need to resolve the type of the elements every time
-            for (int j = 0; j < cols; j++) {
-                resultElements[i][j] = Matrix.sub(
-                        leftMat != null ? leftMat.get(i, j) : leftConst,
-                        rightMat != null ? rightMat.get(i, j) : rightConst);
-            }
-        }
-        return new Matrix(resultElements, type);
+    public static Expression add(Expression left, Expression right) {
+        return Matrix.ElementWiseOp(left, right,
+                (a, b) -> Scalar.add((Scalar) a, (Scalar) b),
+                "addition");
     }
 
-    // !!! hadamard (element-wise) division, not matrix division, that will come later
-    public static Expression div(Expression left, Expression right) {
-        Matrix leftMat = left instanceof Matrix ? (Matrix) left : null;
-        Matrix rightMat = right instanceof Matrix ? (Matrix) right : null;
-        Scalar leftConst = left instanceof Scalar ? (Scalar) left : null;
-        Scalar rightConst = right instanceof Scalar ? (Scalar) right : null;
-        int rows;
-        int cols;
-        TokenKind type;
-        // check if the types are legal on either side
-        if (leftMat == null && leftConst == null) {
-            throw new RuntimeException("Left operand must be a Matrix or Scalar for Hadamard division, got: " + left.getClass().getSimpleName());
-        } else if (rightMat == null && rightConst == null) {
-            throw new RuntimeException("Right operand must be a Matrix or Scalar for Hadamard division, got: " + right.getClass().getSimpleName());
-        }
-        if (leftMat != null) {
-            rows = leftMat.rows();
-            cols = leftMat.cols();
-            type = leftMat.getType();
-        } else if (rightMat != null) {
-            cols = rightMat.cols();
-            rows = rightMat.rows();
-            type = rightMat.getType();
-        } else {  // both scalars
-            return Scalar.divide(leftConst, rightConst);
-        }
-        // this only applies if both are matrices, because a constant can ALWAYS be multiplied to the matrix
-        if ((leftMat != null && rightMat !=null) && !(((Matrix) left).dimensionsMatch((Matrix) right))) {
-            throw new RuntimeException("Matrix dimension mismatch for Hadamard division: left is " +
-                    leftMat.rows() + "x" + leftMat.cols() + ", right is " +
-                    rightMat.rows() + "x" + rightMat.cols());
-        }
-        Expression[][] resultElements = new Expression[rows][cols];
-        for (int i = 0; i < rows; i++) {  // need to resolve the type of the elements every time
-            for (int j = 0; j < cols; j++) {
-                resultElements[i][j] = Matrix.div(
-                        leftMat != null ? leftMat.get(i, j) : leftConst,
-                        rightMat != null ? rightMat.get(i, j) : rightConst);
-            }
-        }
-        return new Matrix(resultElements, type);
+    public static Expression sub(Expression left, Expression right) {
+        return Matrix.ElementWiseOp(left, right,
+                (a, b) -> Scalar.subtract((Scalar) a, (Scalar) b),
+                "subtraction");
     }
 
     public static Expression mul(Expression left, Expression right) {
-        Matrix leftMat = left instanceof Matrix ? (Matrix) left : null;
-        Matrix rightMat = right instanceof Matrix ? (Matrix) right : null;
-        Scalar leftConst = left instanceof Scalar ? (Scalar) left : null;
-        Scalar rightConst = right instanceof Scalar ? (Scalar) right : null;
-        int rows;
-        int cols;
-        TokenKind type;
-        // check if the types are legal on either side
-        if (leftMat == null && leftConst == null) {
-            throw new RuntimeException("Left operand must be a Matrix or Scalar for Hadamard product, got: " + left.getClass().getSimpleName());
-        } else if (rightMat == null && rightConst == null) {
-            throw new RuntimeException("Right operand must be a Matrix or Scalar for Hadamard product, got: " + right.getClass().getSimpleName());
-        }
-        if (leftMat != null) {
-            rows = leftMat.rows();
-            cols = leftMat.cols();
-            type = leftMat.getType();
-        } else if (rightMat != null) {
-            cols = rightMat.cols();
-            rows = rightMat.rows();
-            type = rightMat.getType();
-        } else {  // both scalars
-            return Scalar.multiply(leftConst, rightConst);
-        }
-        // this only applies if both are matrices, because a constant can ALWAYS be multiplied to the matrix
-        if ((leftMat != null && rightMat !=null) && !(((Matrix) left).dimensionsMatch((Matrix) right))) {
-            throw new RuntimeException("Matrix dimension mismatch for Hadamard product: left is " +
-                    leftMat.rows() + "x" + leftMat.cols() + ", right is " +
-                    rightMat.rows() + "x" + rightMat.cols());
-        }
-        Expression[][] resultElements = new Expression[rows][cols];
-        for (int i = 0; i < rows; i++) {  // need to resolve the type of the elements every time
-            for (int j = 0; j < cols; j++) {
-                resultElements[i][j] = Matrix.mul(
-                        leftMat != null ? leftMat.get(i, j) : leftConst,
-                        rightMat != null ? rightMat.get(i, j) : rightConst);
-            }
-        }
-        return new Matrix(resultElements, type);
+        return Matrix.ElementWiseOp(left, right,
+                (a, b) -> Scalar.multiply((Scalar) a, (Scalar) b),
+                "multiplication");
     }
 
-    public static Expression add(Expression left, Expression right) {
-        // check legal types -> Matrix or Scalar (more will come with the algebra)
+    public static Expression div(Expression left, Expression right) {
+        return Matrix.ElementWiseOp(left, right,
+                (a, b) -> Scalar.divide((Scalar) a, (Scalar) b),
+                "Hadamard division");
+    }
+
+
+    // refactor and use Java lambdas to reduce code duplication for all the element-wise ops
+    private static Expression ElementWiseOp(Expression left, Expression right, BiFunction<Expression, Expression, Expression> operator, String opName) {
         Matrix leftMat = left instanceof Matrix ? (Matrix) left : null;
         Matrix rightMat = right instanceof Matrix ? (Matrix) right : null;
         Scalar leftConst = left instanceof Scalar ? (Scalar) left : null;
@@ -956,21 +837,21 @@ public class Matrix extends Expression implements MatrixLike {
             rows = rightMat.rows();
             type = rightMat.getType();
         } else {  // both scalars
-            return Scalar.add(leftConst, rightConst);
+            return operator.apply(leftConst, rightConst);
         }
-        System.out.println("Adding matrices of size " + rows + "x" + cols);
         // this only applies if both are matrices, because a constant can ALWAYS be added to the matrix
         if ((leftMat != null && rightMat !=null) && !(((Matrix) left).dimensionsMatch((Matrix) right))) {
-            throw new RuntimeException("Matrix dimension mismatch for addition: left is " +
+            throw new RuntimeException("Matrix dimension mismatch for " + opName + ": left is " +
                     leftMat.rows() + "x" + leftMat.cols() + ", right is " +
                     rightMat.rows() + "x" + rightMat.cols());
         }
         Expression[][] resultElements = new Expression[rows][cols];
         for (int i = 0; i < rows; i++) {  // need to resolve the type of the elements every time
             for (int j = 0; j < cols; j++) {
-                resultElements[i][j] = Matrix.add(
+                resultElements[i][j] = operator.apply(
                         leftMat != null ? leftMat.get(i, j) : leftConst,
-                        rightMat != null ? rightMat.get(i, j) : rightConst);
+                        rightMat != null ? rightMat.get(i, j) : rightConst
+                );
             }
         }
         return new Matrix(resultElements, type);
@@ -1044,7 +925,6 @@ public class Matrix extends Expression implements MatrixLike {
 
     @Override
     public Matrix clone() {
-        Matrix expressions = (Matrix) super.clone();
         Expression[][] clonedElements = new Expression[numRows][numCols];
         for (int i = 0; i < numRows; i++) {
             for (int j = 0; j < numCols; j++) {

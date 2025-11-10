@@ -19,5 +19,8 @@ public class LinalgLibrary {
         LinalgSymbols.put("shape", new Shape());
         LinalgSymbols.put("T", new Transpose());
         LinalgSymbols.put("det", new Determinant());
+        LinalgSymbols.put("eye", new Identity());
+        LinalgSymbols.put("identity", new Identity());
+        LinalgSymbols.put("zeros", new Zeros());
     }
 }
