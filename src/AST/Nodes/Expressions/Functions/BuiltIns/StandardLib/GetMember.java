@@ -56,6 +56,16 @@ public class GetMember extends BuiltInFunctionSymbol {
             };
         }
 
+        // this won't work -> we need to return a custom node, or array etc, not Java type
+//        if (obj instanceof Matrix mat) {
+//            return switch (member) {
+//                // case "rows" -> mat.getRows();
+//                // case "cols" -> mat.getCols();
+//                case "shape" -> mat.shape();
+//                default -> throw new IllegalArgumentException("Matrix has no member '" + member + "'");
+//            };
+//        }
+
         if (obj instanceof List<?> list) {
             return switch (member) {
                 case "size" -> list.size();

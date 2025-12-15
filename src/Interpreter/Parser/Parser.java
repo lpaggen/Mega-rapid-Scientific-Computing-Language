@@ -188,7 +188,7 @@ public class Parser {
             Token name = previous();
             System.out.println("current token after identifier match: " + peek());
             Expression expr = new VariableNode(name.getLexeme());
-            while (match(TokenKind.DOT)) {
+            while (match(TokenKind.DOT)) {  // member access detected
                 System.out.println("Parsing member access for: " + name.getLexeme());
                 expr = parseMemberAccess(expr);
             }
@@ -447,7 +447,7 @@ public class Parser {
                     "parsing",
                     peek().getLine(),
                     "Unexpected token: " + peek().getLexeme(),
-                    "Expected a function name after 'func' keyword."
+                    "Expected a function name after 'fn' keyword."
             );
             //throw new RuntimeException(peek() + " Expected function name after 'func' keyword.");
         }
@@ -490,6 +490,7 @@ public class Parser {
         // somehow the body has to be parsed before return
         consume(TokenKind.RETURN); // consume the closing brace, we will handle the body later
 
+        // TODO -> parse the function body somehow ...
         java.util.List<Statement> functionBody = null; // for now, we will just return null, since we don't have a body yet
         consume(TokenKind.CLOSE_BRACE); // consume the closing brace, we will handle the body later
 
@@ -517,9 +518,9 @@ public class Parser {
 
     // still have no idea how i will even apply these things, but it will happen at some point
     // for now all i can really do is just gather the params, but i can't do anything with them quite yet
-    private java.util.List<VariableSymbol> parseFunctionParameters() {
-        java.util.List<VariableSymbol> parameters = new ArrayList<>();
-        if (!check(TokenKind.CLOSE_PAREN)) {
+    private List<VariableSymbol> parseFunctionParameters() {
+        List<VariableSymbol> parameters = new ArrayList<>();
+        if (!check(TokenKind.CLOSE_PAREN)) {  // a function can be defined with no parameters
             System.out.println("Parsing function parameters...");
             do {
                 Token type = consume(typeKeywords); // parameter type
@@ -749,18 +750,21 @@ public class Parser {
     }
 
     private WhileNode parseWhileLoop() {
-        consume(TokenKind.WHILE); // consume WHILE
+        consume(TokenKind.WHILE);
         consume(TokenKind.OPEN_PAREN);
         Expression condition = parseExpression();
         consume(TokenKind.CLOSE_PAREN);
         consume(TokenKind.OPEN_BRACE);
+        environment.pushScope();
         List<Statement> body = new ArrayList<>();
         while (!check(TokenKind.CLOSE_BRACE)) {
             Statement stmt = parseStatement();
             if (stmt != null) body.add(stmt);
         }
+        environment.popScope();
         consume(TokenKind.CLOSE_BRACE);
         return new WhileNode(condition, body);
+
     }
 
     private boolean match(TokenKind... expectedKinds) {

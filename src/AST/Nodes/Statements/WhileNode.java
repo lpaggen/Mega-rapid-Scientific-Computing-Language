@@ -24,11 +24,13 @@ public class WhileNode extends Statement {
         if (condition.evaluate(env) instanceof BooleanNode bool) {
             boolean cond = bool.getValue();
             while (cond) {
+                env.pushScope();
                 for (Statement stmt : body) {
                     System.out.println("Executing statement in while loop:");
                     System.out.println(stmt);
                     stmt.execute(env);
                 }
+                env.popScope();
                 cond = ((BooleanNode) condition.evaluate(env)).getValue();
             }
         }

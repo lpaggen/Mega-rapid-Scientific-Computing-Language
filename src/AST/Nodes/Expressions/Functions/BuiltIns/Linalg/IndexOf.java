@@ -8,6 +8,9 @@ import Interpreter.Tokenizer.TokenKind;
 
 import java.util.List;
 
+
+// TODO -> make this work for nested structures, maybe not matrix, but on Array yes
+
 public class IndexOf extends BuiltInFunctionSymbol {
     public IndexOf() {
         super("IndexOf", TokenKind.SCALAR);

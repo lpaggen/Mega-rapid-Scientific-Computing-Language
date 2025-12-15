@@ -35,7 +35,7 @@ public class Environment {
     public void declareSymbol(String name, Symbol value) {
         Map<String, Symbol> currentScope = envStack.peek();
         if (currentScope.containsKey(name)) {
-            updateVariable(name, value);
+            throw new IllegalArgumentException("Variable already declared in this scope: " + name);
         }
         currentScope.put(name, value);
     }
@@ -55,7 +55,13 @@ public class Environment {
     }
 
     public boolean isDeclared(String name) {
-        return envStack.peek().containsKey(name);
+//        return envStack.peek().containsKey(name);
+        for (Map<String, Symbol> scope : envStack) {
+            if (scope.containsKey(name)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // here we just set a new value for the variable
@@ -84,8 +90,7 @@ public class Environment {
     }
 
     public void loadModule(Map<String, Symbol> moduleSymbols) {
-        // load a module into the current scope (this is going to be global always)
-        Map<String, Symbol> currentScope = envStack.peek();
+        Map<String, Symbol> currentScope = envStack.peek();  // lazy import
         for (Map.Entry<String, Symbol> entry : moduleSymbols.entrySet()) {
             String name = entry.getKey();
             Symbol symbol = entry.getValue();
@@ -95,11 +100,8 @@ public class Environment {
 
     // this isn't really what i want, but it works for now -- in the future clear() should remove everything from the env
     public void clear() {
-        // clear the current scope, but keep the global scope
-        if (envStack.size() > 1) {
+        while (envStack.size() > 1) {
             envStack.pop();
-        } else {
-            throw new IllegalStateException("Cannot clear global scope");
         }
     }
 }
