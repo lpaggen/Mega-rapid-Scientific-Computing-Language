@@ -2,12 +2,16 @@ load stdlib;
 load graphs;
 load linalg;
 
-num i = 0;
+mat<num> A = [
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 9]
+];
 
-while (i < 10) {
-    print("Iteration: " + i);
-    i = i + 1;
-    num a = 554;
-}
+graph<u, w, num> G = {
+    node A;
+    node B = T(A);
+    edge A - B;
+};
 
-print("Done!");
+print(G.B.weight + det(A));

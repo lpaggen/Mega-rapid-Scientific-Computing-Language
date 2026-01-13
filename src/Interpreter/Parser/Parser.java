@@ -488,13 +488,16 @@ public class Parser {
         }
 
         // somehow the body has to be parsed before return
+        // TODO -> parse function body ? or merely parse on the fly during interpretation?
+        // then we could have whatever we pass to the function become its own piece of code with own environment
+        
         consume(TokenKind.RETURN); // consume the closing brace, we will handle the body later
 
         // TODO -> parse the function body somehow ...
         java.util.List<Statement> functionBody = null; // for now, we will just return null, since we don't have a body yet
         consume(TokenKind.CLOSE_BRACE); // consume the closing brace, we will handle the body later
 
-        return new FunctionDeclarationNode( // does FunctionNode need its environment passed as well? unsure, yes and no
+        return new FunctionDeclarationNode( // does FunctionNode need its environment passed as well? most likely yes
                 functionName.getLexeme(),
                 returnType,
                 parameters,
@@ -503,7 +506,7 @@ public class Parser {
     }
 
     // less than ideal, but it is fine for the demo
-    private Map<String, Boolean> GraphAttributes = Map.of(
+    private final Map<String, Boolean> GraphAttributes = Map.of(
             "directed", true,
             "undirected", false,
             "weighted", true,
@@ -913,9 +916,9 @@ public class Parser {
             Map.entry(TokenKind.EDGE_TYPE, TokenKind.EDGE)
     );
 
-    private static final Set<TokenKind> LinearAlgebraOperators = Set.of(
-            TokenKind.MATRIX
-    );
+//    private static final Set<TokenKind> LinearAlgebraOperators = Set.of(
+//            TokenKind.MATRIX
+//    );
 
     // probably we need some more operators here later on
     // also for the linear algebra either we handle it through Add etc., or we make new nodes
