@@ -1,26 +1,25 @@
 package Interpreter.Parser;
 
-import AST.Nodes.DataStructures.Edge;
-import AST.Nodes.DataStructures.Graph;
-import AST.Nodes.DataStructures.Node;
-import AST.Nodes.DataTypes.Scalar;
+import AST.Nodes.DataStructures.*;
 import AST.Nodes.Expressions.*;
 import AST.Nodes.Expressions.BinaryOperations.Arithmetic.Add;
 import AST.Nodes.Expressions.BinaryOperations.BinaryNode;
 import AST.Nodes.Expressions.BinaryOperations.Arithmetic.Div;
 import AST.Nodes.Expressions.BinaryOperations.Arithmetic.Mul;
 import AST.Nodes.Expressions.BinaryOperations.Arithmetic.Sub;
-import AST.Nodes.DataStructures.Matrix;
 import AST.Nodes.Expressions.Functions.FunctionCallNode;
 import AST.Nodes.Expressions.Functions.FunctionDeclarationNode;
 import AST.Nodes.Expressions.Functions.BuiltIns.ImportNode;
 import AST.Nodes.Conditional.*;
 import AST.Nodes.Expressions.Mathematics.Mod;
 import AST.Nodes.Statements.*;
+import Types.GraphTypeNode;
+import Types.MatrixTypeNode;
+import Types.ScalarTypeNode;
+import Types.TypeNode;
 import Util.ErrorHandler;
 import Interpreter.Tokenizer.TokenKind;
 import Interpreter.Tokenizer.Token;
-import Interpreter.Runtime.Environment;
 import Util.WarningLogger;
 
 import java.util.*;
@@ -30,35 +29,30 @@ import java.util.*;
 // it does NOT check for semantic errors or type mismatches
 // that is the job of the interpreter or a separate semantic analyzer
 // the parser will throw runtime exceptions if it encounters unexpected tokens
-// the parser ONLY cares about SYNTAX AND GRAMMAR
+// TODO the parser ONLY cares about SYNTAX AND GRAMMAR -> yeah, why did I deviate from this again?
 // -> so "int x = 5.7;" is perfectly fine for the parser, but not for the interpreter
 public class Parser {
-    private final java.util.List<Token> tokens;
+    private final List<Token> tokens;
     private int tokenPos = 0;
-    public Environment environment = new Environment(); // remember this initializes a global scope BY DEFAULT
-    private TokenKind currentFunctionReturnType = null; // to keep track of the current function's return type during parsing
-    private TokenKind currentLoopType = null; // to keep track of the current loop type (for break/continue statements)
-    private TokenKind currentDataType = null; // to keep track of the current data type being processed
-    private boolean isDirectedGraph = false; // to keep track of whether the graph is directed or not
-    private boolean isWeightedGraph = false; // to keep track of whether the graph is weighted or not
-
-    public Parser(java.util.List<Token> tokens) {
+    public Parser(List<Token> tokens) {
         this.tokens = tokens;
     }
 
-    public void interpretCode() {
+    // AST is just an array of statements
+    public ArrayList<Statement> parseProgram() {  // this method builds the AST, and must therefore return it
         WarningLogger warningHandler = new WarningLogger();
         warningHandler.clearWarningsFile();
+        ArrayList<Statement> programBody = new ArrayList<>();
         while (!isAtEnd()) {
             Statement statement = parseStatement();
             if (statement == null) {
                 // if we reach here, it means we have an empty statement or an unrecognized token
                 advance(); // just consume the token and continue -- will have to fix this in a future build
-                continue;
+                // continue;
             }
-            statement.execute(environment);
         }
         // warningHandler.printWarnings();
+        return programBody;
     }
 
     // everything should really start from the Statement, since we have to declare variables, functions, etc.
@@ -168,10 +162,6 @@ public class Parser {
             System.out.println("Parsing scalar literal: " + previous().getLiteral());
             return new Scalar((Number) previous().getLiteral()); // this will return a Constant node with the numeric value
         }
-//        else if (match(TokenKind.FLOAT)) {
-//            System.out.println("Parsing float literal: " + Float.parseFloat(previous().getLexeme()));
-//            return new Scalar(Float.parseFloat(previous().getLexeme())); // this will return a Constant node with the numeric value
-//        }
         else if (match(TokenKind.OPEN_PAREN)) {
             Expression expr = parseExpression();
             consume(TokenKind.CLOSE_PAREN);
@@ -181,7 +171,7 @@ public class Parser {
             return parseMatrix();
         }
         else if (match(TokenKind.OPEN_BRACE)) {
-            return parseGraph(isDirectedGraph, isWeightedGraph);
+            return parseGraph();
         }
         // this is really not good and not safe, and it's a dumb check. but it works until i figure something better out
         else if (match(TokenKind.IDENTIFIER)) {
@@ -269,7 +259,37 @@ public class Parser {
                 matrixElements[i][j] = row.get(j);
             }
         }
-        return new Matrix(matrixElements, currentDataType);
+        return new Matrix(matrixElements, null);  // parser doesn't need to know the type yet
+    }
+
+    private TypeNode parseType() {
+        if (match(TokenKind.SCALAR_TYPE)) return new ScalarTypeNode();
+        if (match(TokenKind.MATRIX_TYPE)) return parseMatrixType();
+        if (match(TokenKind.GRAPH_TYPE))  return parseGraphType();
+        throw new RuntimeException("Expected a type");
+    }
+
+//    private TypeNode parseScalarType() {
+//        return new ScalarTypeNode();
+//    }
+
+    private TypeNode parseMatrixType() {  // have to advance tokens etc
+        consume(TokenKind.LESS);
+        TypeNode innerType = parseType();
+        consume(TokenKind.GREATER);
+        return new MatrixTypeNode(innerType, null, null);
+    }
+
+    private TypeNode parseGraphType() {
+        consume(TokenKind.LESS);
+        // we will just parse the attributes, but not do anything with them yet
+        Token directionToken = consume(TokenKind.IDENTIFIER); // directed or undirected
+        consume(TokenKind.COMMA);
+        Token weightToken = consume(TokenKind.IDENTIFIER); // weighted or unweighted
+        consume(TokenKind.COMMA);
+        TypeNode dataType = parseType(); // data type of the graph
+        consume(TokenKind.GREATER);
+        return new GraphTypeNode(); // placeholder, will have to build a GraphTypeNode later
     }
 
     // this method handles variable declarations, i will add more error checks at some stage
@@ -277,143 +297,93 @@ public class Parser {
     // atm we can declare with or without a value
     // !! type mismatch errors happen at another stage of the interpreter
     private VariableDeclarationNode parseDeclaration() {
-        // this surely can't be optimal, but it will work until i figure something better out
-        // the idea is to just fetch the type from the declaration
-        if (!typeKeywords.contains(peek().getKind())) {
-            throw new ErrorHandler(
-                    "parsing",
-                    peek().getLine(),
-                    "Unexpected token: " + peek().getLexeme(),
-                    "Expected a type keyword (int, float, bool, matrix, symbol, node, edge, graph)."
-            );
-            //throw new RuntimeException(peek() + " Expected type keyword.");
-        }
-        System.out.println("Parsing variable declaration: " + peek().getLexeme());
-        System.out.println("Current token at parseDeclaration: " + peek());
-        Token typeToken = advance(); // consume the type token
-        System.out.println("Type token: " + typeToken.getLexeme());
-        if (typeToken.getKind() == TokenKind.MATRIX_TYPE) { // this will be something else for all types requiring this step
-            if (!match(TokenKind.LESS)) {
-                throw new ErrorHandler(
-                        "parsing",
-                        peek().getLine(),
-                        "Unexpected token: " + peek().getLexeme(),
-                        "Expected '<' after 'Matrix' type declaration."
-                );
-                //throw new RuntimeException(peek() + " Expected '<' after 'vector' type declaration.");
-            }
-            if (!typeKeywords.contains(peek().getKind())) {
-                throw new ErrorHandler(
-                        "parsing",
-                        peek().getLine(),
-                        "Unexpected token: " + peek().getLexeme(),
-                        "Expected a type keyword (sym, num, bool, matrix, symbol) inside matrix declaration."
-                );
-                //throw new RuntimeException(peek() + " Expected type keyword inside vector declaration.");
-            }
-            Token innerTypeToken = advance(); // consume the inner type token
-            System.out.println("Inner type token for matrix: " + innerTypeToken.getLexeme());
-            if (!match(TokenKind.GREATER)) {
-                throw new ErrorHandler(
-                        "parsing",
-                        peek().getLine(),
-                        "Unexpected token: " + peek().getLexeme(),
-                        "Expected '>' after inner type in matrix declaration."
-                );
-                //throw new RuntimeException(peek() + " Expected '>' after inner type in vector declaration.");
-            }
-            currentDataType = mapDeclarationToDatatype.get(innerTypeToken.getKind());
-        }
-        else if (typeToken.getKind() == TokenKind.GRAPH_TYPE) {
-            if (!match(TokenKind.LESS)) {
-                throw new ErrorHandler(
-                        "parsing",
-                        peek().getLine(),
-                        "Unexpected token: " + peek().getLexeme(),
-                        "Expected '<' after 'Graph' type declaration."
-                );
-            }
-            if (!GraphAttributes.containsKey(peek().getLexeme())) {
-                throw new ErrorHandler(
-                        "parsing",
-                        peek().getLine(),
-                        "Unexpected token: " + peek().getLexeme(),
-                        "Expected a graph attribute (d, ud) inside graph declaration."
-                );
-            }
-            boolean isDirectedGraph = GraphAttributes.get(advance().getLexeme()); // consume the inner type token
-            advance(); // consume comma
-            if (!GraphAttributes.containsKey(peek().getLexeme())) {
-                throw new ErrorHandler(
-                        "parsing",
-                        peek().getLine(),
-                        "Unexpected token: " + peek().getLexeme(),
-                        "Expected a graph attribute (w, weighted, unweighted) inside graph declaration."
-                );
-            }
-            boolean isWeightedGraph = GraphAttributes.get(advance().getLexeme()); // consume the inner type token
-            consume(TokenKind.COMMA);
-            currentDataType = advance().getKind();
-            if (!match(TokenKind.GREATER)) {
-                throw new ErrorHandler(
-                        "parsing",
-                        peek().getLine(),
-                        "Unexpected token: " + peek().getLexeme(),
-                        "Expected '>' after inner type in graph declaration."
-                );
-            }
-            this.isDirectedGraph = isDirectedGraph;  // this is a bad system, but it has to work for now
-            this.isWeightedGraph = isWeightedGraph;
-        }
-//        else if (typeToken.getKind() == TokenKind.EDGE_TYPE) {
+        TypeNode type = parseType();
+
+//        // this surely can't be optimal, but it will work until i figure something better out
+//        // the idea is to just fetch the type from the declaration
+//        if (!typeKeywords.contains(peek().getKind())) {
+//            throw new ErrorHandler(
+//                    "parsing",
+//                    peek().getLine(),
+//                    "Unexpected token: " + peek().getLexeme(),
+//                    "Expected a type keyword (int, float, bool, matrix, symbol, node, edge, graph)."
+//            );
+//            //throw new RuntimeException(peek() + " Expected type keyword.");
+//        }
+//        System.out.println("Parsing variable declaration: " + peek().getLexeme());
+//        System.out.println("Current token at parseDeclaration: " + peek());
+//        Token typeToken = advance(); // consume the type token
+//        System.out.println("Type token: " + typeToken.getLexeme());
+//        if (typeToken.getKind() == TokenKind.MATRIX_TYPE) { // this will be something else for all types requiring this step
 //            if (!match(TokenKind.LESS)) {
 //                throw new ErrorHandler(
 //                        "parsing",
 //                        peek().getLine(),
 //                        "Unexpected token: " + peek().getLexeme(),
-//                        "Expected '<' after 'edge' declaration."
+//                        "Expected '<' after 'Matrix' type declaration."
 //                );
 //            }
-//            if (!GraphAttributes.containsKey(peek().getLexeme())) {
-//                throw new ErrorHandler(
-//                        "parsing",
-//                        peek().getLine(),
-//                        "Unexpected token: " + peek().getLexeme(),
-//                        "Expected a graph attribute (d, ud) inside edge declaration."
-//                );
-//            }
-//            this.isDirectedGraph = GraphAttributes.get(advance().getLexeme()); // consume the inner type token
-//            consume(TokenKind.COMMA);
-//            if (!GraphAttributes.containsKey(peek().getLexeme())) {
-//                throw new ErrorHandler(
-//                        "parsing",
-//                        peek().getLine(),
-//                        "Unexpected token: " + peek().getLexeme(),
-//                        "Expected a graph attribute (w, weighted, unweighted) inside edge declaration."
-//                );
-//            }
-//            this.isWeightedGraph = GraphAttributes.get(advance().getLexeme()); // consume the inner type token
-//            consume(TokenKind.COMMA);
 //            if (!typeKeywords.contains(peek().getKind())) {
 //                throw new ErrorHandler(
 //                        "parsing",
 //                        peek().getLine(),
 //                        "Unexpected token: " + peek().getLexeme(),
-//                        "Expected a type keyword (sym, num, bool, matrix, symbol) inside edge declaration."
+//                        "Expected a type keyword (sym, num, bool, matrix, symbol) inside matrix declaration."
 //                );
 //            }
-//            currentDataType = advance().getKind(); // consume the inner type token
-//            Token innerTypeToken = previous();
-//            System.out.println("Inner type token for edge: " + innerTypeToken.getLexeme());
+//            Token innerTypeToken = advance(); // consume the inner type token
+//            System.out.println("Inner type token for matrix: " + innerTypeToken.getLexeme());
 //            if (!match(TokenKind.GREATER)) {
 //                throw new ErrorHandler(
 //                        "parsing",
 //                        peek().getLine(),
 //                        "Unexpected token: " + peek().getLexeme(),
-//                        "Expected '>' after inner type in edge declaration."
+//                        "Expected '>' after inner type in matrix declaration."
+//                );
+//                //throw new RuntimeException(peek() + " Expected '>' after inner type in vector declaration.");
+//            }
+//        }
+//        else if (typeToken.getKind() == TokenKind.GRAPH_TYPE) {
+//            if (!match(TokenKind.LESS)) {
+//                throw new ErrorHandler(
+//                        "parsing",
+//                        peek().getLine(),
+//                        "Unexpected token: " + peek().getLexeme(),
+//                        "Expected '<' after 'Graph' type declaration."
 //                );
 //            }
-//            currentDataType = TokenKind.EDGE_TYPE; // set current data type to edge
+//            if (!GraphAttributes.containsKey(peek().getLexeme())) {
+//                throw new ErrorHandler(
+//                        "parsing",
+//                        peek().getLine(),
+//                        "Unexpected token: " + peek().getLexeme(),
+//                        "Expected a graph attribute (d, ud) inside graph declaration."
+//                );
+//            }
+//            // boolean isDirectedGraph = GraphAttributes.get(advance().getLexeme()); // consume the inner type token
+//            advance();  // consume the inner type token
+//            consume(TokenKind.COMMA); // consume comma
+//            if (!GraphAttributes.containsKey(peek().getLexeme())) {
+//                throw new ErrorHandler(
+//                        "parsing",
+//                        peek().getLine(),
+//                        "Unexpected token: " + peek().getLexeme(),
+//                        "Expected a graph attribute (w, weighted, unweighted) inside graph declaration."
+//                );
+//            }
+//            // boolean isWeightedGraph = GraphAttributes.get(advance().getLexeme()); // consume the inner type token
+//            advance();
+//            consume(TokenKind.COMMA);
+//            // currentDataType = advance().getKind();
+//            advance();; // consume the inner type token, but don't care what it is
+//            if (!match(TokenKind.GREATER)) {
+//                throw new ErrorHandler(
+//                        "parsing",
+//                        peek().getLine(),
+//                        "Unexpected token: " + peek().getLexeme(),
+//                        "Expected '>' after inner type in graph declaration."
+//                );
+//            }
 //        }
         System.out.println("Current token after type processing: " + peek());
         if (!match(TokenKind.IDENTIFIER)) {
@@ -423,7 +393,6 @@ public class Parser {
                     "Unexpected token: " + peek().getLexeme(),
                     "Expected a variable name after type declaration."
             );
-            //throw new RuntimeException(peek() + " Expected variable name after type.");
         }
         Token name = previous();
         Expression initializer = null;
@@ -432,10 +401,6 @@ public class Parser {
         }
         consume(TokenKind.SEMICOLON);
         TokenKind dataType = mapDeclarationToDatatype.get(typeToken.getKind());
-        currentDataType = dataType; // set the current data type being processed
-//        if (dataType == TokenKind.MATH) {
-//            return new VariableDeclarationNode(new Token(dataType, typeToken.getLexeme(), null, typeToken.getLine()), name, new StringNode(name.getLexeme()));
-//        }
         System.out.println("Finished parsing variable declaration: " + name.getLexeme() + " of type " + dataType + (initializer != null ? " with initializer." : " without initializer."));
         return new VariableDeclarationNode(new Token(dataType, typeToken.getLexeme(), null, typeToken.getLine()), name, initializer);
     }
@@ -589,10 +554,14 @@ public class Parser {
         return new VariableReassignmentNode(varName, newValue);
     }
 
-    private Expression parseGraph(boolean isDirectedGraph, boolean isWeightedGraph) {
+    private Expression parseGraph() {  // this has to look back to get the direction and weight info
         System.out.println("Parsing graph declaration...");
+        boolean isDirectedGraph = false;
+        boolean isWeightedGraph = false;
         HashMap<String, Node> nodeMap = new HashMap<>();  // use this to keep track of nodes by name
         HashMap<String, Edge> edgeMap = new HashMap<>();  // keep track of edges by name
+        // identify the graph attributes from the previous tokens
+
         do {
             if (match(TokenKind.NODE_TYPE)) {
                 parseNodeDeclaration(nodeMap);
@@ -609,7 +578,8 @@ public class Parser {
         } while (!check(TokenKind.CLOSE_BRACE) && !isAtEnd());
         consume(TokenKind.CLOSE_BRACE);
         System.out.println("Finished parsing graph with name. Nodes: " + nodeMap.size() + ", Edges: " + edgeMap.values().size());
-        return new Graph(nodeMap, edgeMap, isDirectedGraph, isWeightedGraph, mapDeclarationToDatatype.get(currentDataType));
+        // return new Graph(nodeMap, edgeMap, isDirectedGraph, isWeightedGraph, mapDeclarationToDatatype.get(currentDataType));
+        return new Graph(nodeMap, edgeMap, isDirectedGraph, isWeightedGraph, null);
     }
 
     private void parseEdgeDeclaration(HashMap<String, Node> nodeMap, HashMap<String, Edge> edgeMap) {
@@ -758,16 +728,15 @@ public class Parser {
         Expression condition = parseExpression();
         consume(TokenKind.CLOSE_PAREN);
         consume(TokenKind.OPEN_BRACE);
-        environment.pushScope();
+        // environment.pushScope();
         List<Statement> body = new ArrayList<>();
         while (!check(TokenKind.CLOSE_BRACE)) {
-            Statement stmt = parseStatement();
-            if (stmt != null) body.add(stmt);
+            Statement statement = parseStatement();
+            if (statement != null) body.add(statement);
         }
-        environment.popScope();
+        // environment.popScope();
         consume(TokenKind.CLOSE_BRACE);
         return new WhileNode(condition, body);
-
     }
 
     private boolean match(TokenKind... expectedKinds) {
