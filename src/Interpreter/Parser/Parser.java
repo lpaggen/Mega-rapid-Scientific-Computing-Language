@@ -160,7 +160,7 @@ public class Parser {
         }
         else if (match(TokenKind.SCALAR)) {
             System.out.println("Parsing scalar literal: " + previous().getLiteral());
-            return new Scalar((Number) previous().getLiteral()); // this will return a Constant node with the numeric value
+            return new ScalarTypeNode(); // this will return a Constant node with the numeric value
         }
         else if (match(TokenKind.OPEN_PAREN)) {
             Expression expr = parseExpression();
@@ -243,7 +243,7 @@ public class Parser {
         consume(TokenKind.CLOSE_BRACKET); // consume the closing ] of the matrix
         // convert List<List<Expression>> to Expression[][]
         int numRows = rows.size();
-        int numCols = numRows > 0 ? rows.get(0).size() : 0;
+        int numCols = numRows > 0 ? rows.getFirst().size() : 0;
         Expression[][] matrixElements = new Expression[numRows][numCols];
         for (int i = 0; i < numRows; i++) {
             List<Expression> row = rows.get(i);
@@ -470,7 +470,7 @@ public class Parser {
         );
     }
 
-    // less than ideal, but it is fine for the demo
+    // less than ideal, but it is fine for the demo TODO change this nonsense
     private final Map<String, Boolean> GraphAttributes = Map.of(
             "directed", true,
             "undirected", false,

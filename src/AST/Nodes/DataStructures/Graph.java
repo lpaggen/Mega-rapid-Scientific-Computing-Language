@@ -2,6 +2,7 @@ package AST.Nodes.DataStructures;
 
 import AST.Nodes.Expressions.Expression;
 import Interpreter.Runtime.Environment;
+import Interpreter.Runtime.RuntimeMatrix;
 import Interpreter.Tokenizer.TokenKind;
 import Util.WarningLogger;
 
@@ -330,7 +331,7 @@ public class Graph extends Expression {
         return false;
     }
 
-    public Matrix getAdjacencyMatrix() {
+    public RuntimeMatrix getAdjacencyMatrix() {
         int n = nodes.size();
         Expression[][] matrix = new Expression[n][n];
         List<String> nodeIDs = new ArrayList<>(nodes.keySet());

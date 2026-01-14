@@ -1,6 +1,7 @@
 package AST.Nodes.DataStructures;
 
 import AST.Nodes.Expressions.Expression;
+import AST.Nodes.Literals.ScalarLiteralNode;
 import Interpreter.Runtime.Environment;
 import Interpreter.Tokenizer.TokenKind;
 
@@ -94,8 +95,8 @@ public class Node extends Expression {
         this.neighbors.remove(neighborID);
     }
 
-    public Scalar getDegree() {
-        return new Scalar((this.edges != null) ? this.edges.size() : 0);
+    public ScalarLiteralNode getDegree() {
+        return new ScalarLiteralNode((this.edges != null) ? this.edges.size() : 0);
     }
 
     public boolean isAdjacent(String nodeID) {
@@ -136,18 +137,18 @@ public class Node extends Expression {
         this.neighbors.clear();
     }
 
-    @Override
-    public TokenKind getType(Environment env) {
-        return value.getType(env);
-    }
+//    @Override
+//    public TokenKind getType(Environment env) {
+//        return value.getType(env);
+//    }
 
-    @Override
-    public Expression evaluate(Environment env) {
-        if (value != null) {
-            value = value.evaluate(env);
-        }
-        return this;
-    }
+//    @Override
+//    public Expression evaluate(Environment env) {
+//        if (value != null) {
+//            value = value.evaluate(env);
+//        }
+//        return this;
+//    }
 
     @Override
     public String toString() {
