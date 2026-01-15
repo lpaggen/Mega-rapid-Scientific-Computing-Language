@@ -166,6 +166,7 @@ public class Tokenizer {
         put("graph", TokenKind.GRAPH_TYPE);
         put("node", TokenKind.NODE_TYPE);
         put("edge", TokenKind.EDGE_TYPE);
+        put("@", TokenKind.AT);
     }};
 
     private boolean isDigit(char c) {

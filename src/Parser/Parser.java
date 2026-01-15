@@ -1,20 +1,15 @@
 package Parser;
 
-import AST.Nodes.Expressions.*;
-import AST.Nodes.Expressions.BinaryOperations.BinaryNode;
-import AST.Nodes.Expressions.Functions.FunctionCallNode;
-import AST.Nodes.Expressions.Functions.FunctionDeclarationNode;
-import AST.Nodes.Expressions.Functions.BuiltIns.ImportNode;
-import AST.Nodes.Literals.Abstract.BraceBlockNode;
-import AST.Nodes.Literals.Abstract.BracketLiteralNode;
-import AST.Nodes.Literals.BooleanLiteralNode;
-import AST.Nodes.Literals.ScalarLiteralNode;
-import AST.Nodes.Literals.StringLiteralNode;
-import AST.Nodes.Statements.*;
-import Types.GraphTypeNode;
-import Types.MatrixTypeNode;
-import Types.ScalarTypeNode;
-import Types.TypeNode;
+import AST.Expressions.*;
+import AST.Expressions.BinaryOperations.BinaryNode;
+import AST.Expressions.Functions.FunctionCallNode;
+import AST.Expressions.Functions.FunctionDeclarationNode;
+import AST.Expressions.Functions.BuiltIns.ImportNode;
+import AST.Literals.*;
+import AST.Literals.Abstract.BraceBlockNode;
+import AST.Literals.Abstract.BracketLiteralNode;
+import AST.Statements.*;
+import Types.*;
 import Util.ErrorHandler;
 import Lexer.TokenKind;
 import Lexer.Token;
@@ -227,10 +222,10 @@ public class Parser {
     // return the GetMember function under the hood for some attributes
     private Expression parseMemberAccess(Expression base) {
         String member = consume(TokenKind.IDENTIFIER).getLexeme();
-        Expression access = new FunctionCallNode("getMember", List.of(base, new StringNode(member)));
+        Expression access = new FunctionCallNode("getMember", List.of(base, new StringLiteralNode(member)));
         while (match(TokenKind.DOT)) {
             String nextMember = consume(TokenKind.IDENTIFIER).getLexeme();
-            access = new FunctionCallNode("getMember", List.of(access, new StringNode(nextMember)));
+            access = new FunctionCallNode("getMember", List.of(access, new StringLiteralNode(nextMember)));
         }
         return access;
     }
@@ -263,15 +258,21 @@ public class Parser {
 //    }
 
     private TypeNode parseType() {
-        if (match(TokenKind.SCALAR_TYPE)) return new ScalarTypeNode();
-        if (match(TokenKind.MATRIX_TYPE)) return parseMatrixType();
-        if (match(TokenKind.GRAPH_TYPE))  return parseGraphType();
-        throw new RuntimeException("Expected a type");
+        TokenKind type = peek().getKind();
+        return switch (type) {
+            case SCALAR_TYPE -> { advance(); yield new ScalarTypeNode(); }
+            case MATRIX_TYPE -> { advance(); yield parseMatrixType(); }
+            case GRAPH_TYPE -> { advance(); yield parseGraphType(); }
+            default -> throw new RuntimeException("Expected a type, got " + type);
+        };
     }
 
     private TypeNode parseMatrixType() {  // have to advance tokens etc
         consume(TokenKind.LESS);
         TypeNode innerType = parseType();
+        if (match(TokenKind.COMMA)) {
+            throw new RuntimeException("no, don't do it...");
+        }
         consume(TokenKind.GREATER);
         return new MatrixTypeNode(innerType, null, null);
     }
@@ -295,12 +296,29 @@ public class Parser {
     private VariableDeclarationNode parseDeclaration() {
         TypeNode type = parseType();          // mat<num>
         Token name = consume(TokenKind.IDENTIFIER);
-        consume(TokenKind.EQUAL);
+        Expression initializer = null;  // can be anything
 
-        Expression initializer = parseExpression();  // can be anything
+        if (match(TokenKind.EQUAL)) {  // allow for null init if no = provided
+            if (type instanceof GraphTypeNode) {
+                initializer = parseGraphLiteral();
+            } else if (type instanceof MatrixTypeNode) {
+                initializer = parseMatrixLiteral();
+            } else {
+                initializer = parseExpression();
+            }
+        }
 
         consume(TokenKind.SEMICOLON);
         return new VariableDeclarationNode(type, name.getLexeme(), initializer);
+    }
+
+    private MatrixLiteralNode parseMatrixLiteral() {
+        System.out.println(peek());
+        return null;
+    }
+
+    private GraphLiteralNode parseGraphLiteral() {
+        return null;
     }
 
     private FunctionDeclarationNode parseFunctionDeclaration() { // we should build the logic to allow users to define a function

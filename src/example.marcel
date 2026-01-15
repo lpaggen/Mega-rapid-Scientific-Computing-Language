@@ -2,7 +2,7 @@ load stdlib;
 load graphs;
 load linalg;
 
-mat<num> A = [
+mat<num, 3 @ 3> A = [
     [1, 2, 3],
     [4, 5, 6],
     [7, 8, 9]

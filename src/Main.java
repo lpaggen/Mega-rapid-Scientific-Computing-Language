@@ -26,7 +26,7 @@ public class Main {
 
         // this is where the parser would go
         Parser parser = new Parser(tokens);
-        parser.interpretCode();
+        parser.parseProgram();
 
         int endTime = (int) System.currentTimeMillis();
         System.out.println("Execution time: " + (endTime - startTime) + " ms");

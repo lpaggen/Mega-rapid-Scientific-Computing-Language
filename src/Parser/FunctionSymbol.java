@@ -1,7 +1,7 @@
 package Parser;
 
-import AST.Nodes.Expressions.Functions.BuiltIns.BuiltInFunctionSymbol;
-import AST.Nodes.Statements.Statement;
+import AST.Expressions.Functions.BuiltIns.BuiltInFunctionSymbol;
+import AST.Statements.Statement;
 import Lexer.TokenKind;
 import Runtime.Environment;
 

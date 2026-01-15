@@ -1,0 +1,103 @@
+package AST.Statements;
+
+import AST.Expressions.Expression;
+import Types.TypeNode;
+
+public class VariableDeclarationNode extends Statement {
+    private final TypeNode type;
+    private final String name;
+    private final Expression initializer;
+//    private final WarningLogger warningLogger = new WarningLogger();
+
+    public VariableDeclarationNode(TypeNode type, String name, Expression initializer) {
+        this.type = type;
+        this.name = name;
+        this.initializer = initializer;
+    }
+
+    public TypeNode getDeclaredType() {
+        return type;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Expression getInitializer() {
+        return initializer;
+    }
+}
+
+//TODO transfer this to runtime
+//
+//    @Override
+//    public void execute(Environment env) {
+//        // we might want to check if we have a function call
+//        Expression value = (initializer != null) ? initializer.evaluate(env) : null;
+//
+//        switch (type.getKind()) {
+//            case MATH:
+//                if (value instanceof StringNode) {
+//                    throw new ErrorHandler("execution", variable.getLine(), "Type mismatch: expected math, got string", "Please ensure the initializer is a math expression.");
+//                    //throw new RuntimeException("Type mismatch: expected math, got string at line " + variable.getLine());
+//                }
+//                value = new VariableNode(variable.getLexeme());
+//                break;
+//            case SCALAR:
+////                if (value instanceof Scalar v && v.getValue() instanceof Integer) {
+////                    // convert integer to float if needed -- but throw warning somehow...
+////                    value = new Scalar(v.getDoubleValue());
+////                    warningLogger.addWarning(1, "Implicit conversion from integer to float at line " + variable.getLine(), variable.getLine());
+//                if (!(value instanceof Scalar v && v.getValue() != null)) {
+//                    throw new ErrorHandler("execution", variable.getLine(), "Type mismatch: expected scalar, got " + (value != null ? value.getClass().getSimpleName() : "null"), "Please ensure the initializer is a float.");
+//                    //throw new RuntimeException("Type mismatch: expected float, got " + (value != null ? value.getClass().getSimpleName() : "null") + " at line " + variable.getLine());
+//                }
+//                break;
+////            case INTEGER:
+////                if (!(value instanceof Scalar v && v.getValue() instanceof Integer)) {
+////                    throw new ErrorHandler("execution", variable.getLine(), "Type mismatch: expected integer, got " + (value != null ? value.getClass().getSimpleName() : "null"), "Please ensure the initializer is an integer.");
+////                    //throw new RuntimeException("Type mismatch: expected integer, got " + (value != null ? value.getClass().getSimpleName() : "null") + " at line " + variable.getLine());
+////                }
+////                break;
+//            case STRING:
+//                if (!(value instanceof StringNode)) {
+//                    throw new ErrorHandler("execution", variable.getLine(), "Type mismatch: expected string, got " + (value != null ? value.getClass().getSimpleName() : "null"), " Please ensure the initializer is a string.");
+//                    //throw new RuntimeException("Type mismatch: expected string, got " + (value != null ? value.getClass().getSimpleName() : "null") + " at line " + variable.getLine());
+//                }
+//                break;
+//            case BOOLEAN:
+//                if (!(value instanceof BooleanNode)) {
+//                    throw new ErrorHandler("execution", variable.getLine(), "Type mismatch: expected boolean, got " + (value != null ? value.getClass().getSimpleName() : "null"), "Please ensure the initializer is a boolean.");
+//                    //throw new RuntimeException("Type mismatch: expected boolean, got " + (value != null ? value.getClass().getSimpleName() : "null") + " at line " + variable.getLine());
+//                }
+//                break;
+//            case MATRIX:
+//                Matrix v = (Matrix) value;
+//                if (v.isEmpty()) {
+//                    warningLogger.addWarning(2, "Initialized matrix is empty at line " + variable.getLine(), variable.getLine());
+//                }
+//                if (v == null) {
+//                    throw new ErrorHandler("execution", variable.getLine(), "Type mismatch: expected matrix, got " + (value != null ? value.getClass().getSimpleName() : "null"), "Please ensure the initializer is a matrix.");
+//                    //throw new RuntimeException("Type mismatch: expected vector, got " + (value != null ? value.getClass().getSimpleName() : "null") + " at line " + variable.getLine());
+//                }
+//                break;
+//            case GRAPH:
+//                Graph g = (Graph) value;
+//                if (g == null) {
+//                    throw new ErrorHandler("execution", variable.getLine(), "Type mismatch: expected graph, got " + (value != null ? value.getClass().getSimpleName() : "null"), "Please ensure the initializer is a graph.");
+//                    //throw new RuntimeException("Type mismatch: expected graph, got " + (value != null ? value.getClass().getSimpleName() : "null") + " at line " + variable.getLine());
+//                }
+//                if (g.isEmpty()) {
+//                    warningLogger.addWarning(3, "Initialized graph is empty at line " + variable.getLine(), variable.getLine());
+//                }
+//                break;
+//        }
+//        env.declareSymbol(variable.getLexeme(), new VariableSymbol(variable.getLexeme(), type.getKind(), value));
+//    }
+//
+//    // will work on this in a later build, it's not necessary yet
+//    // we just need to log them all in a separate file if the debugger is active
+//    public void printWarnings() {
+//        warningLogger.printWarnings();
+//    }
+//}
