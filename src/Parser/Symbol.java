@@ -1,6 +1,6 @@
-package Interpreter.Parser;
+package Parser;
 
-import Interpreter.Tokenizer.TokenKind;
+import Lexer.TokenKind;
 
 // the Symbol interface can represent both variables and functions in the environment
 public abstract class Symbol {

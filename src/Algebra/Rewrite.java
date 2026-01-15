@@ -1,6 +1,5 @@
 package Algebra;
 
-import AST.Nodes.DataTypes.Scalar;
 import AST.Nodes.Expressions.BinaryOperations.Arithmetic.Add;
 import AST.Nodes.Expressions.BinaryOperations.Arithmetic.Div;
 import AST.Nodes.Expressions.BinaryOperations.Arithmetic.Mul;

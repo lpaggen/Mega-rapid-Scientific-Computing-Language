@@ -1,9 +1,8 @@
 package AST.Nodes.DataStructures;
 
 import AST.Nodes.Expressions.Expression;
-import Interpreter.Runtime.Environment;
-import Interpreter.Tokenizer.Token;
-import Interpreter.Tokenizer.TokenKind;
+import Runtime.Environment;
+import Lexer.TokenKind;
 
 import java.util.ArrayList;
 import java.util.Iterator;

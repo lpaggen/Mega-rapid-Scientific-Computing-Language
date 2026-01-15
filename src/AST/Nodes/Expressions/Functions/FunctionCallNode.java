@@ -1,9 +1,9 @@
 package AST.Nodes.Expressions.Functions;
 
 import AST.Nodes.Expressions.Expression;
-import Interpreter.Runtime.Environment;
-import Interpreter.Parser.FunctionSymbol;
-import Interpreter.Tokenizer.TokenKind;
+import Runtime.Environment;
+import Parser.FunctionSymbol;
+import Lexer.TokenKind;
 
 import java.util.ArrayList;
 import java.util.List;

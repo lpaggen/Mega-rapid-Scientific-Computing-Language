@@ -1,9 +1,9 @@
 package AST.Nodes.Statements;
 
 import AST.Nodes.Expressions.Expression;
-import Interpreter.Parser.VariableSymbol;
-import Interpreter.Runtime.Environment;
-import Interpreter.Tokenizer.TokenKind;
+import Parser.VariableSymbol;
+import Runtime.Environment;
+import Lexer.TokenKind;
 
 // i can't be sure if this should be the final implementation or not
 // but it WILL solve the null statement issue in the conditional branching

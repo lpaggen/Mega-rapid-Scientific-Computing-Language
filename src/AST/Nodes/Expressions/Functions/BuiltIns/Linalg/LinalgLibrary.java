@@ -1,7 +1,7 @@
 package AST.Nodes.Expressions.Functions.BuiltIns.Linalg;
 
 import AST.Nodes.Expressions.Functions.BuiltIns.StandardLib.*;
-import Interpreter.Parser.Symbol;
+import Parser.Symbol;
 
 import java.util.HashMap;
 

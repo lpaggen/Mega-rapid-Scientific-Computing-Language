@@ -4,8 +4,8 @@ import AST.Nodes.Conditional.BooleanNode;
 import AST.Nodes.DataStructures.Array;
 import AST.Nodes.Expressions.Expression;
 import AST.Nodes.Expressions.Functions.BuiltIns.BuiltInFunctionSymbol;
-import Interpreter.Runtime.Environment;
-import Interpreter.Tokenizer.TokenKind;
+import Runtime.Environment;
+import Lexer.TokenKind;
 
 public class MatchAny extends BuiltInFunctionSymbol {
     public MatchAny() {

@@ -1,7 +1,7 @@
 package AST.Nodes.Statements;
 
 import AST.Nodes.Expressions.Expression;
-import Interpreter.Runtime.Environment;
+import Runtime.Environment;
 
 // this class is a wrapper for functions that can be called without returning a value
 // so we can work around the fact that functions extend Expression this way

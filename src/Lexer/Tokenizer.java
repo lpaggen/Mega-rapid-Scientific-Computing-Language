@@ -1,4 +1,4 @@
-package Interpreter.Tokenizer;
+package Lexer;
 
 import Util.ErrorHandler;
 
@@ -197,32 +197,6 @@ public class Tokenizer {
 
         tokens.add(new Token(TokenKind.SCALAR, lexeme.toString(), literal, line));
     }
-
-    // this method does not add to the tokens list, it just returns the token
-//    private Token tokenizeNumberReturnDouble() {
-//        StringBuilder lexeme = new StringBuilder();
-//        boolean isDecimal = false;
-//        while (isDigit(peek()) || peek() == '.') {
-//            if (peek() == '.') {
-//                if (isDecimal) {
-//                    throw new RuntimeException("Multiple decimal points in number.\nDid you mean to use a comma instead?");
-//                }
-//                isDecimal = true;
-//            }
-//            lexeme.append(advance());
-//        }
-//
-//        String numberStr = lexeme.toString();
-//        Object literal;
-//        if (isDecimal) {
-//            literal = Double.parseDouble(numberStr);
-//        } else {
-//            literal = Integer.parseInt(numberStr);
-//        }
-//        TokenKind kind = isDecimal ? TokenKind.FLOAT : TokenKind.INTEGER;
-//
-//        return new Token(kind, numberStr, literal, line);
-//    }
 
     private void tokenizeKeyword() {
         StringBuilder lexeme = new StringBuilder();

@@ -1,9 +1,8 @@
 package AST.Nodes.Expressions.Functions.BuiltIns.Graphs;
 
 import AST.Nodes.Expressions.Functions.BuiltIns.BuiltInFunctionSymbol;
-import AST.Nodes.Expressions.StringNode;
-import Interpreter.Runtime.Environment;
-import Interpreter.Tokenizer.TokenKind;
+import Runtime.Environment;
+import Lexer.TokenKind;
 
 import java.util.List;
 

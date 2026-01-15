@@ -1,7 +1,7 @@
 package AST.Nodes.Expressions.Functions.BuiltIns.Linalg;
 
 import AST.Nodes.Expressions.Functions.BuiltIns.BuiltInFunctionSymbol;
-import Interpreter.Runtime.Environment;
+import Runtime.Environment;
 
 import java.util.List;
 

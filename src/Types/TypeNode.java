@@ -9,10 +9,6 @@ public abstract class TypeNode extends ASTNode {  // this doesn't need to be Exp
         this.name = name;
     }
 
-    public String getName() {
-        return name;
-    }
-
     @Override
     public String toString() {
         return name;

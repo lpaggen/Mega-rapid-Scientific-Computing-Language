@@ -8,7 +8,7 @@ public class removeNode extends BuiltInFunctionSymbol {
     }
 
     @Override
-    public Object call(Interpreter.Runtime.Environment env, java.util.List<Object> args) {
+    public Object call(Runtime.Environment env, java.util.List<Object> args) {
         if (args.size() != 2) {
             throw new IllegalArgumentException("removeNode(graph, [str] nodeID) requires exactly 2 arguments.");
         }

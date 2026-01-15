@@ -4,8 +4,8 @@
 //import AST.Nodes.DataTypes.Constant;
 //import AST.Nodes.Expressions.Functions.BuiltIns.BuiltInFunctionSymbol;
 //import AST.Nodes.Expressions.StringNode;
-//import Interpreter.Runtime.Environment;
-//import Interpreter.Tokenizer.TokenKind;
+//import Runtime.Environment;
+//import Lexer.TokenKind;
 //
 //import java.util.Array;
 //
@@ -67,11 +67,10 @@
 package AST.Nodes.Expressions.Functions.BuiltIns.StandardLib;
 
 import AST.Nodes.Conditional.BooleanNode;
-import AST.Nodes.DataTypes.Scalar;
 import AST.Nodes.Expressions.Functions.BuiltIns.BuiltInFunctionSymbol;
 import AST.Nodes.Expressions.StringNode;
-import Interpreter.Runtime.Environment;
-import Interpreter.Tokenizer.TokenKind;
+import Runtime.Environment;
+import Lexer.TokenKind;
 
 import java.util.List;
 

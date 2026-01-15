@@ -1,10 +1,10 @@
 package AST.Nodes.Expressions.Functions;
 
 import AST.Nodes.Statements.Statement;
-import Interpreter.Tokenizer.TokenKind;
-import Interpreter.Runtime.Environment;
-import Interpreter.Parser.FunctionSymbol;
-import Interpreter.Parser.VariableSymbol;
+import Lexer.TokenKind;
+import Runtime.Environment;
+import Parser.FunctionSymbol;
+import Parser.VariableSymbol;
 
 import java.util.List;
 

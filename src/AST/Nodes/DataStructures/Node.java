@@ -2,8 +2,7 @@ package AST.Nodes.DataStructures;
 
 import AST.Nodes.Expressions.Expression;
 import AST.Nodes.Literals.ScalarLiteralNode;
-import Interpreter.Runtime.Environment;
-import Interpreter.Tokenizer.TokenKind;
+import Lexer.TokenKind;
 
 import java.util.ArrayList;
 import java.util.HashMap;

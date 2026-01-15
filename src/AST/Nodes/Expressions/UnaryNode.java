@@ -1,11 +1,10 @@
 package AST.Nodes.Expressions;
 
-import AST.Nodes.DataTypes.Scalar;
 import AST.Nodes.Expressions.BinaryOperations.Arithmetic.Mul;
 import AST.Nodes.Conditional.BooleanNode;
-import Interpreter.Tokenizer.Token;
-import Interpreter.Tokenizer.TokenKind;
-import Interpreter.Runtime.Environment;
+import Lexer.Token;
+import Lexer.TokenKind;
+import Runtime.Environment;
 
 public class UnaryNode extends Expression {
     private final Token operator;

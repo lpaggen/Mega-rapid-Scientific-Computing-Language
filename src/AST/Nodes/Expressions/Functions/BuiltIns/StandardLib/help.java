@@ -2,8 +2,8 @@ package AST.Nodes.Expressions.Functions.BuiltIns.StandardLib;
 
 import AST.Nodes.Expressions.Functions.BuiltIns.BuiltInFunctionSymbol;
 import AST.Nodes.Expressions.StringNode;
-import Interpreter.Parser.Symbol;
-import Interpreter.Tokenizer.TokenKind;
+import Parser.Symbol;
+import Lexer.TokenKind;
 
 public class help extends BuiltInFunctionSymbol {
     public help() {
@@ -11,7 +11,7 @@ public class help extends BuiltInFunctionSymbol {
     }
 
     @Override
-    public Object call(Interpreter.Runtime.Environment env, java.util.List<Object> args) {
+    public Object call(Runtime.Environment env, java.util.List<Object> args) {
         if (args.size() != 1) {
             throw new IllegalArgumentException("help(functionName) requires 1 argument.");
         }

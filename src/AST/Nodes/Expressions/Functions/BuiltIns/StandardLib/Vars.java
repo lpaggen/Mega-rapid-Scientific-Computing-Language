@@ -1,11 +1,10 @@
 package AST.Nodes.Expressions.Functions.BuiltIns.StandardLib;
 
 import AST.Nodes.Expressions.Functions.BuiltIns.BuiltInFunctionSymbol;
-import AST.Nodes.Expressions.Functions.BuiltIns.StandardLib.PrintFunction;
-import Interpreter.Tokenizer.TokenKind;
-import Interpreter.Runtime.Environment;
-import Interpreter.Parser.Symbol;
-import Interpreter.Parser.VariableSymbol;
+import Lexer.TokenKind;
+import Runtime.Environment;
+import Parser.Symbol;
+import Parser.VariableSymbol;
 
 import java.util.List;
 import java.util.Map;

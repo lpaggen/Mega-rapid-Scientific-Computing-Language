@@ -1,9 +1,9 @@
 package AST.Nodes.DataStructures;
 
 import AST.Nodes.Expressions.Expression;
-import Interpreter.Runtime.Environment;
-import Interpreter.Runtime.RuntimeMatrix;
-import Interpreter.Tokenizer.TokenKind;
+import Runtime.Environment;
+import Runtime.RuntimeMatrix;
+import Lexer.TokenKind;
 import Util.WarningLogger;
 
 import java.util.*;

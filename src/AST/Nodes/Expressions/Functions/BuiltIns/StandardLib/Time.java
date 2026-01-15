@@ -2,8 +2,8 @@ package AST.Nodes.Expressions.Functions.BuiltIns.StandardLib;
 
 import AST.Nodes.DataTypes.Scalar;
 import AST.Nodes.Expressions.Functions.BuiltIns.BuiltInFunctionSymbol;
-import Interpreter.Tokenizer.TokenKind;
-import Interpreter.Runtime.Environment;
+import Lexer.TokenKind;
+import Runtime.Environment;
 
 import java.time.LocalTime;
 import java.util.List;

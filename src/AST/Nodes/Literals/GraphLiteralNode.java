@@ -4,7 +4,7 @@ import AST.Nodes.Expressions.Expression;
 
 import java.util.HashMap;
 
-public class GraphLiteralNode extends Expression {
+public final class GraphLiteralNode extends Expression {
     private final HashMap<String, Expression> nodes;
     private final HashMap<String, HashMap<String, Expression>> edges;  // in this sense, edges are {A -> {B, weight}}
 

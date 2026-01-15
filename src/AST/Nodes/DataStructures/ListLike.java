@@ -1,7 +1,7 @@
 package AST.Nodes.DataStructures;
 
 import AST.Nodes.Expressions.Expression;
-import Interpreter.Tokenizer.TokenKind;
+import Lexer.TokenKind;
 
 import java.util.ArrayList;
 

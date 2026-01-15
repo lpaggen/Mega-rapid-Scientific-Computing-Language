@@ -4,8 +4,8 @@ import AST.Nodes.Expressions.Functions.BuiltIns.Graphs.GraphsLibrary;
 import AST.Nodes.Expressions.Functions.BuiltIns.Linalg.LinalgLibrary;
 import AST.Nodes.Expressions.Functions.BuiltIns.StandardLib.StandardLibrary;
 import AST.Nodes.Statements.Statement;
-import Interpreter.Runtime.Environment;
-import Interpreter.Parser.Symbol;
+import Runtime.Environment;
+import Parser.Symbol;
 
 import java.util.HashMap;
 import java.util.Map;

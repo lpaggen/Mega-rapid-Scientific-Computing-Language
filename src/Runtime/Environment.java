@@ -1,7 +1,7 @@
-package Interpreter.Runtime;
+package Runtime;
 
-import Interpreter.Parser.Symbol;
-import Interpreter.Tokenizer.TokenKind;
+import Parser.Symbol;
+import Lexer.TokenKind;
 
 import java.util.ArrayDeque;
 import java.util.Deque;

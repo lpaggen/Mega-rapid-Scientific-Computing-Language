@@ -1,10 +1,8 @@
 package AST.Nodes.Expressions.Functions.BuiltIns.Linalg;
 
-import AST.Nodes.DataStructures.Matrix;
-import AST.Nodes.DataTypes.Scalar;
 import AST.Nodes.Expressions.Functions.BuiltIns.BuiltInFunctionSymbol;
-import Interpreter.Runtime.Environment;
-import Interpreter.Tokenizer.TokenKind;
+import Runtime.Environment;
+import Lexer.TokenKind;
 
 import java.util.List;
 

@@ -1,7 +1,7 @@
-package Interpreter.Parser;
+package Parser;
 
 import AST.Nodes.Expressions.Expression;
-import Interpreter.Tokenizer.TokenKind;
+import Lexer.TokenKind;
 
 // this will eventually replace the Token in the Environment, as it also will allow for functions to be stored in the env
 // also, functions do have names, and return types, so this should work. they don't however have values, so no constructor

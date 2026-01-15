@@ -1,14 +1,16 @@
 package AST.Nodes.Expressions.BinaryOperations;
 
 import AST.Nodes.Expressions.Expression;
-import Interpreter.Runtime.Environment;
+import Lexer.TokenKind;
 
-public abstract class BinaryNode extends Expression {
-    protected final Expression lhs;
-    protected final Expression rhs;
+public final class BinaryNode extends Expression {
+    final Expression lhs;
+    final TokenKind operator;
+    final Expression rhs;
 
-    public BinaryNode(Expression lhs, Expression rhs) {
+    public BinaryNode(Expression lhs, TokenKind operator, Expression rhs) {
         this.lhs = lhs;
+        this.operator = operator;
         this.rhs = rhs;
     }
 
@@ -16,13 +18,20 @@ public abstract class BinaryNode extends Expression {
         return lhs;
     }
 
+    public TokenKind getOperator() {
+        return operator;
+    }
+
     public Expression getRight() {
         return rhs;
     }
 
     @Override
-    public abstract Expression evaluate(Environment env);
-
-    @Override
-    public abstract String toString();
+    public String toString() {
+        return "BinaryNode{" +
+                "lhs=" + lhs +
+                ", operator=" + operator +
+                ", rhs=" + rhs +
+                '}';
+    }
 }

@@ -2,7 +2,7 @@ package AST.Nodes.Statements;
 
 import AST.Nodes.Conditional.BooleanNode;
 import AST.Nodes.Expressions.Expression;
-import Interpreter.Runtime.Environment;
+import Runtime.Environment;
 
 import java.util.List;
 

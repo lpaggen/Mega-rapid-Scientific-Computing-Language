@@ -1,7 +1,6 @@
 package AST.Nodes.Expressions;
 
-import AST.Nodes.Expressions.Expression;
-import Interpreter.Runtime.Environment;
+import Runtime.Environment;
 
 public class PrimaryNode extends Expression {
     private final Expression value;

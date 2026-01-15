@@ -3,8 +3,7 @@ package AST.Nodes.Expressions.Functions.BuiltIns.Graphs;
 import AST.Nodes.DataStructures.Graph;
 import AST.Nodes.Expressions.Expression;
 import AST.Nodes.Expressions.Functions.BuiltIns.BuiltInFunctionSymbol;
-import Interpreter.Runtime.Environment;
-import com.sun.jdi.ObjectReference;
+import Runtime.Environment;
 
 import java.util.List;
 

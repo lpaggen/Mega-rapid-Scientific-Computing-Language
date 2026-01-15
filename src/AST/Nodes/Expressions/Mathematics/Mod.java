@@ -3,7 +3,7 @@ package AST.Nodes.Expressions.Mathematics;
 import AST.Nodes.DataTypes.Scalar;
 import AST.Nodes.Expressions.BinaryOperations.Arithmetic.ArithmeticBinaryNode;
 import AST.Nodes.Expressions.Expression;
-import Interpreter.Runtime.Environment;
+import Runtime.Environment;
 
 public class Mod extends ArithmeticBinaryNode {
     public Mod(Expression lhs, Expression rhs) {

@@ -1,8 +1,7 @@
 package AST.Nodes.Expressions.Mathematics.Trigonometry;
 
-import AST.Nodes.DataTypes.Scalar;
 import AST.Nodes.Expressions.Expression;
-import Interpreter.Runtime.Environment;
+import Runtime.Environment;
 
 public class Sin extends Expression {
     private final Expression arg;

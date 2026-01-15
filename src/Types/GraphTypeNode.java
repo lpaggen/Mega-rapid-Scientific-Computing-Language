@@ -2,24 +2,18 @@ package Types;
 
 
 public class GraphTypeNode extends TypeNode {
-    private final TypeNode nodeWeightType;
-    private final TypeNode edgeCapacityType;
+    private final TypeNode type;  // for now assume the type is the same for node weights and edge capacities
     private final boolean directed;
     private final boolean weighted;
-    public GraphTypeNode(TypeNode nodeWeightType, TypeNode edgeCapacityType, boolean directed, boolean weighted) {
+    public GraphTypeNode(TypeNode type, boolean directed, boolean weighted) {
         super("Graph");
-        this.nodeWeightType = nodeWeightType;
-        this.edgeCapacityType = edgeCapacityType;
+        this.type = type;
         this.directed = directed;
         this.weighted = weighted;
     }
 
-    public TypeNode getNodeWeightType() {
-        return nodeWeightType;
-    }
-
-    public TypeNode getEdgeCapacityType() {
-        return edgeCapacityType;
+    public TypeNode getType() {
+        return type;
     }
 
     public boolean isDirected() {
@@ -32,7 +26,7 @@ public class GraphTypeNode extends TypeNode {
 
     @Override
     public String toString() {
-        return "Graph<" + nodeWeightType.toString() + ", " + edgeCapacityType.toString() + ">" +
+        return "Graph<" + type.toString() + ">" +
                (directed ? "[Directed]" : "[Undirected]") +
                (weighted ? "[Weighted]" : "[Unweighted]");
     }

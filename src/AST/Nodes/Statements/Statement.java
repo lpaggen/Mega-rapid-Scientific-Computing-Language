@@ -1,8 +1,5 @@
 package AST.Nodes.Statements;
 
 import AST.Nodes.ASTNode;
-import Interpreter.Runtime.Environment;
 
-public abstract class Statement extends ASTNode {
-    public abstract void execute(Environment env);
-}
+public abstract class Statement extends ASTNode {}  // don't think much is needed here

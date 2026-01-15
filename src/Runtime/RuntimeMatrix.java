@@ -1,9 +1,9 @@
-package Interpreter.Runtime;
+package Runtime;
 
 import AST.Nodes.Conditional.BooleanNode;
 import AST.Nodes.Expressions.BinaryOperations.Arithmetic.Mul;
 import AST.Nodes.Expressions.Expression;
-import Interpreter.Tokenizer.TokenKind;
+import Lexer.TokenKind;
 import Util.WarningLogger;
 
 import java.util.Iterator;
@@ -278,7 +278,7 @@ public final class RuntimeMatrix implements MatrixLike {
         }
         Expression sum = new RuntimeScalar(0); // assuming integer zero, could be float zero too
         for (int i = 0; i < numRows; i++) {
-            sum = Interpreter.Runtime.RuntimeMatrix.add(sum, elements[i][i]);
+            sum = Runtime.RuntimeMatrix.add(sum, elements[i][i]);
         }
         throw new UnsupportedOperationException("RuntimeMatrix trace not implemented yet.");
     }
@@ -312,10 +312,10 @@ public final class RuntimeMatrix implements MatrixLike {
                 if (U.elements[i][i] instanceof RuntimeScalar zeroCheck && Math.abs(zeroCheck.getDoubleValue()) < 1e-10) {
                     throw new RuntimeException("RuntimeMatrix is singular, cannot perform LU decomposition.");
                 }
-                Expression factor = Interpreter.Runtime.RuntimeMatrix.div(U.elements[j][i], U.elements[i][i]);
+                Expression factor = Runtime.RuntimeMatrix.div(U.elements[j][i], U.elements[i][i]);
                 L.elements[j][i] = factor;
                 for (int k = i; k < numCols; k++) {
-                    U.elements[j][k] = Interpreter.Runtime.RuntimeMatrix.sub(U.elements[j][k], Interpreter.Runtime.RuntimeMatrix.mul(factor, U.elements[i][k]));
+                    U.elements[j][k] = Runtime.RuntimeMatrix.sub(U.elements[j][k], Runtime.RuntimeMatrix.mul(factor, U.elements[i][k]));
                 }
             }
         }
@@ -466,7 +466,7 @@ public final class RuntimeMatrix implements MatrixLike {
                 if (leftMat.elements[i][j] instanceof RuntimeScalar leftC && rightMat.elements[i][j] instanceof RuntimeScalar rightC) {
                     out[i][j] = new BooleanNode(leftC.getDoubleValue() > rightC.getDoubleValue());
                 } else if (leftMat.elements[i][j] instanceof RuntimeMatrix || rightMat.elements[i][j] instanceof RuntimeMatrix) {
-                    out[i][j] = Interpreter.Runtime.RuntimeMatrix.greater(leftMat.elements[i][j], rightMat.elements[i][j]);
+                    out[i][j] = Runtime.RuntimeMatrix.greater(leftMat.elements[i][j], rightMat.elements[i][j]);
                 } else {
                     throw new RuntimeException("Unable to compare elements: " + leftMat.elements[i][j] + " and " + rightMat.elements[i][j] + " at position (" + i + ", " + j + ")");
                 }
@@ -513,7 +513,7 @@ public final class RuntimeMatrix implements MatrixLike {
                 if (leftMat.elements[i][j] instanceof RuntimeScalar leftC && rightMat.elements[i][j] instanceof RuntimeScalar rightC) {
                     out[i][j] = new BooleanNode(leftC.getDoubleValue() < rightC.getDoubleValue());
                 } else if (leftMat.elements[i][j] instanceof RuntimeMatrix || rightMat.elements[i][j] instanceof RuntimeMatrix) {
-                    out[i][j] = Interpreter.Runtime.RuntimeMatrix.less(leftMat.elements[i][j], rightMat.elements[i][j]);
+                    out[i][j] = Runtime.RuntimeMatrix.less(leftMat.elements[i][j], rightMat.elements[i][j]);
                 } else {
                     throw new RuntimeException("idk man, sorry.");
                 }
@@ -560,7 +560,7 @@ public final class RuntimeMatrix implements MatrixLike {
                 if (leftMat.elements[i][j] instanceof RuntimeScalar leftC && rightMat.elements[i][j] instanceof RuntimeScalar rightC) {
                     out[i][j] = new BooleanNode(leftC.getDoubleValue() <= rightC.getDoubleValue());
                 } else if (leftMat.elements[i][j] instanceof RuntimeMatrix || rightMat.elements[i][j] instanceof RuntimeMatrix) {
-                    out[i][j] = Interpreter.Runtime.RuntimeMatrix.lessEqual(leftMat.elements[i][j], rightMat.elements[i][j]);
+                    out[i][j] = Runtime.RuntimeMatrix.lessEqual(leftMat.elements[i][j], rightMat.elements[i][j]);
                 } else {
                     throw new RuntimeException("idk man, sorry.");
                 }
@@ -606,7 +606,7 @@ public final class RuntimeMatrix implements MatrixLike {
                 if (leftMat.elements[i][j] instanceof RuntimeScalar leftC && rightMat.elements[i][j] instanceof RuntimeScalar rightC) {
                     out[i][j] = new BooleanNode(leftC.getDoubleValue() >= rightC.getDoubleValue());
                 } else if (leftMat.elements[i][j] instanceof RuntimeMatrix || rightMat.elements[i][j] instanceof RuntimeMatrix) {
-                    out[i][j] = Interpreter.Runtime.RuntimeMatrix.greaterEqual(leftMat.elements[i][j], rightMat.elements[i][j]);
+                    out[i][j] = Runtime.RuntimeMatrix.greaterEqual(leftMat.elements[i][j], rightMat.elements[i][j]);
                 } else {
                     throw new RuntimeException("idk man, sorry.");
                 }
@@ -652,7 +652,7 @@ public final class RuntimeMatrix implements MatrixLike {
                 if (leftMat.elements[i][j] instanceof RuntimeScalar leftC && rightMat.elements[i][j] instanceof RuntimeScalar rightC) {
                     out[i][j] = new BooleanNode(leftC.getDoubleValue() == rightC.getDoubleValue());
                 } else if (leftMat.elements[i][j] instanceof RuntimeMatrix || rightMat.elements[i][j] instanceof RuntimeMatrix) {
-                    out[i][j] = Interpreter.Runtime.RuntimeMatrix.equal(leftMat.elements[i][j], rightMat.elements[i][j]);
+                    out[i][j] = Runtime.RuntimeMatrix.equal(leftMat.elements[i][j], rightMat.elements[i][j]);
                 } else {
                     throw new RuntimeException("idk man, sorry.");
                 }
@@ -699,7 +699,7 @@ public final class RuntimeMatrix implements MatrixLike {
                 if (leftMat.elements[i][j] instanceof RuntimeScalar leftC && rightMat.elements[i][j] instanceof RuntimeScalar rightC) {
                     out[i][j] = new BooleanNode(leftC.getDoubleValue() != rightC.getDoubleValue());
                 } else if (leftMat.elements[i][j] instanceof RuntimeMatrix || rightMat.elements[i][j] instanceof RuntimeMatrix) {
-                    out[i][j] = Interpreter.Runtime.RuntimeMatrix.notEqual(leftMat.elements[i][j], rightMat.elements[i][j]);
+                    out[i][j] = Runtime.RuntimeMatrix.notEqual(leftMat.elements[i][j], rightMat.elements[i][j]);
                 } else {
                     throw new RuntimeException("Unable to compare elements: " + leftMat.elements[i][j] + " and " + rightMat.elements[i][j] + " at position (" + i + ", " + j + ")");
                 }
@@ -772,10 +772,10 @@ public final class RuntimeMatrix implements MatrixLike {
                 if (U.elements[i][i] instanceof RuntimeScalar zeroCheck && Math.abs(zeroCheck.getDoubleValue()) < 1e-10) {
                     throw new RuntimeException("RuntimeMatrix is singular, cannot perform LU decomposition.");
                 }
-                Expression factor = Interpreter.Runtime.RuntimeMatrix.div(U.elements[j][i], U.elements[i][i]);
+                Expression factor = Runtime.RuntimeMatrix.div(U.elements[j][i], U.elements[i][i]);
                 L.elements[j][i] = factor;
                 for (int k = i; k < numCols; k++) {
-                    U.elements[j][k] = Interpreter.Runtime.RuntimeMatrix.sub(U.elements[j][k], Interpreter.Runtime.RuntimeMatrix.mul(factor, U.elements[i][k]));
+                    U.elements[j][k] = Runtime.RuntimeMatrix.sub(U.elements[j][k], Runtime.RuntimeMatrix.mul(factor, U.elements[i][k]));
                 }
             }
         }
@@ -787,25 +787,25 @@ public final class RuntimeMatrix implements MatrixLike {
     }
 
     public static Expression add(Expression left, Expression right) {
-        return Interpreter.Runtime.RuntimeMatrix.ElementWiseOp(left, right,
+        return Runtime.RuntimeMatrix.ElementWiseOp(left, right,
                 (a, b) -> RuntimeScalar.add((RuntimeScalar) a, (RuntimeScalar) b),
                 "addition");
     }
 
     public static Expression sub(Expression left, Expression right) {
-        return Interpreter.Runtime.RuntimeMatrix.ElementWiseOp(left, right,
+        return Runtime.RuntimeMatrix.ElementWiseOp(left, right,
                 (a, b) -> RuntimeScalar.subtract((RuntimeScalar) a, (RuntimeScalar) b),
                 "subtraction");
     }
 
     public static Expression mul(Expression left, Expression right) {
-        return Interpreter.Runtime.RuntimeMatrix.ElementWiseOp(left, right,
+        return Runtime.RuntimeMatrix.ElementWiseOp(left, right,
                 (a, b) -> RuntimeScalar.multiply((RuntimeScalar) a, (RuntimeScalar) b),
                 "multiplication");
     }
 
     public static Expression div(Expression left, Expression right) {
-        return Interpreter.Runtime.RuntimeMatrix.ElementWiseOp(left, right,
+        return Runtime.RuntimeMatrix.ElementWiseOp(left, right,
                 (a, b) -> RuntimeScalar.divide((RuntimeScalar) a, (RuntimeScalar) b),
                 "Hadamard division");
     }
@@ -866,9 +866,9 @@ public final class RuntimeMatrix implements MatrixLike {
         }
         // 2x2
         if (n == 2) {
-            return Interpreter.Runtime.RuntimeMatrix.sub(
-                    Interpreter.Runtime.RuntimeMatrix.mul(elements[0][0], elements[1][1]),
-                    Interpreter.Runtime.RuntimeMatrix.mul(elements[0][1], elements[1][0])
+            return Runtime.RuntimeMatrix.sub(
+                    Runtime.RuntimeMatrix.mul(elements[0][0], elements[1][1]),
+                    Runtime.RuntimeMatrix.mul(elements[0][1], elements[1][0])
             );
         }
         Expression result = new RuntimeScalar(0); // accumulate sum
@@ -889,12 +889,12 @@ public final class RuntimeMatrix implements MatrixLike {
             }
             RuntimeMatrix subRuntimeMatrix = new RuntimeMatrix(subElements, type);
             Expression subDet = subRuntimeMatrix.determinant();  // recursive call
-            Expression term = Interpreter.Runtime.RuntimeMatrix.mul(RuntimeScalar, subDet);
+            Expression term = Runtime.RuntimeMatrix.mul(RuntimeScalar, subDet);
             // alternate signs
             if (j % 2 == 0) {
-                result = Interpreter.Runtime.RuntimeMatrix.add(result, term);
+                result = Runtime.RuntimeMatrix.add(result, term);
             } else {
-                result = Interpreter.Runtime.RuntimeMatrix.sub(result, term);
+                result = Runtime.RuntimeMatrix.sub(result, term);
             }
         }
         return result;

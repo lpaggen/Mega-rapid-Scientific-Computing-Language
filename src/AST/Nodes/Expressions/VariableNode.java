@@ -1,11 +1,10 @@
 package AST.Nodes.Expressions;
 
-import AST.Nodes.Expressions.Expression;
-import Interpreter.Parser.FunctionSymbol;
-import Interpreter.Runtime.Environment;
-import Interpreter.Parser.Symbol;
-import Interpreter.Parser.VariableSymbol;
-import Interpreter.Tokenizer.TokenKind;
+import Parser.FunctionSymbol;
+import Runtime.Environment;
+import Parser.Symbol;
+import Parser.VariableSymbol;
+import Lexer.TokenKind;
 
 public class VariableNode extends Expression {
     private final String name;

@@ -1,4 +1,4 @@
-package Interpreter.Runtime;
+package Runtime;
 
 public final class RuntimeDouble implements RuntimeScalar {
     private final double value;

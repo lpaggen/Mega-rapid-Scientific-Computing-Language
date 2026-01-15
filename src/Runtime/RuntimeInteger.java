@@ -1,4 +1,4 @@
-package Interpreter.Runtime;
+package Runtime;
 
 public final class RuntimeInteger implements RuntimeScalar {
     private final int value;

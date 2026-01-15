@@ -1,6 +1,6 @@
-import Interpreter.Parser.Parser;
-import Interpreter.Tokenizer.Tokenizer;
-import Interpreter.Tokenizer.Token;
+import Parser.Parser;
+import Lexer.Tokenizer;
+import Lexer.Token;
 
 import java.io.IOException;
 import java.nio.file.Files;

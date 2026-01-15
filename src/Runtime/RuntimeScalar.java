@@ -1,4 +1,4 @@
-package Interpreter.Runtime;
+package Runtime;
 
 public sealed interface RuntimeScalar extends RuntimeValue permits RuntimeInteger, RuntimeDouble {
     RuntimeScalar add(RuntimeScalar other);

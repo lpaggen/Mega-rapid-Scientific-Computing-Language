@@ -1,4 +1,4 @@
-package Interpreter.Runtime;
+package Runtime;
 
 import AST.Nodes.Expressions.Expression;
 

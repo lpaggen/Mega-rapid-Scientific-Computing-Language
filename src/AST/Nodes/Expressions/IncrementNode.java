@@ -1,9 +1,8 @@
 package AST.Nodes.Expressions;
 
-import AST.Nodes.DataTypes.Scalar;
-import Interpreter.Parser.VariableSymbol;
-import Interpreter.Runtime.Environment;
-import Interpreter.Tokenizer.TokenKind;
+import Parser.VariableSymbol;
+import Runtime.Environment;
+import Lexer.TokenKind;
 
 public class IncrementNode extends Expression {
     private final TokenKind operator;

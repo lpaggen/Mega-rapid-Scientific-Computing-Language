@@ -1,6 +1,6 @@
 package AST.Nodes.Expressions;
 
-import Interpreter.Runtime.Environment;
+import Runtime.Environment;
 
 public class GroupingNode extends Expression {
     private final Expression expression;

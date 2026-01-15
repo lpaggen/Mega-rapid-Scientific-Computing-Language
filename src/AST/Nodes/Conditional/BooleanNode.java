@@ -2,8 +2,8 @@ package AST.Nodes.Conditional;
 
 import AST.Nodes.DataTypes.Scalar;
 import AST.Nodes.Expressions.Expression;
-import Interpreter.Runtime.Environment;
-import Interpreter.Tokenizer.TokenKind;
+import Runtime.Environment;
+import Lexer.TokenKind;
 
 public class BooleanNode extends Expression {
     private final boolean value;
