@@ -8,10 +8,11 @@ mat<num, 3 @ 3> A = [
     [7, 8, 9]
 ];
 
-graph<u, w, num> G = {
-    node A;
-    node B = T(A);
-    edge A - B;
-};
+list<num> B = [10, 20, 30];
+
+graph<u, w, num> G = [
+    nodes: [A, B, C];
+    edges: [A-B, B-C, C-A];
+];
 
 print(G.B.weight + det(A));

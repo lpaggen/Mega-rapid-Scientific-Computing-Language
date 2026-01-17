@@ -8,13 +8,19 @@ import AST.Expressions.Functions.BuiltIns.ImportNode;
 import AST.Literals.*;
 import AST.Literals.Abstract.BraceBlockNode;
 import AST.Literals.Abstract.BracketLiteralNode;
+import AST.Literals.Graph.GraphLiteralNode;
+import AST.Literals.Graph.NodeLiteralNode;
+import AST.Literals.Linalg.MatrixLiteralNode;
 import AST.Statements.*;
 import Types.*;
+import Types.Abstract.*;
 import Util.ErrorHandler;
 import Lexer.TokenKind;
 import Lexer.Token;
 import Util.WarningLogger;
+import jdk.jfr.Label;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 // IMPORTANT NOTE
@@ -151,7 +157,7 @@ public class Parser {
             System.out.println("Parsing string literal: " + previous().getLiteral());
             return new StringLiteralNode(previous().getLexeme());
         }
-        else if (match(TokenKind.SCALAR)) {
+        else if (match(TokenKind.INTEGER, TokenKind.FLOAT)) {
             System.out.println("Parsing scalar literal: " + previous().getLiteral());
             return new ScalarLiteralNode((Number) previous().getLiteral());
         }
@@ -230,53 +236,98 @@ public class Parser {
         return access;
     }
 
-    // recall the parser does NOT care about the dimensions or types, only if this is syntactically correct !!!!!!!!!!
-//    private Expression parseMatrix() {
-//        List<List<Expression>> rows = new ArrayList<>();
-//        if (!check(TokenKind.CLOSE_BRACKET)) {  // if it's empty matrix
-//            do {
-//                List<Expression> row = new ArrayList<>();
-//                if (match(TokenKind.OPEN_BRACKET) && !check(TokenKind.CLOSE_BRACKET)) { // each row starts with an opening bracket
-//                    do {
-//                        Expression element = parseExpression();
-//                        row.add(element);
-//                    } while (match(TokenKind.COMMA)); // comma separate elements of the row
-//                    consume(TokenKind.CLOSE_BRACKET); // consume the closing bracket of the row
-//                    rows.add(row);
-//                } else {
-//                    throw new ErrorHandler(
-//                            "parsing",
-//                            peek().getLine(),
-//                            "Unexpected token: " + peek().getLexeme(),
-//                            "Expected '[' to start a new row in the matrix."
-//                    );
-//                }
-//            } while (match(TokenKind.COMMA)); // comma separate rows of the matrix
-//        }
-//        consume(TokenKind.CLOSE_BRACKET);
-//        return new MatrixLiteralNode(rows);
-//    }
-
     private TypeNode parseType() {
         TokenKind type = peek().getKind();
         return switch (type) {
             case SCALAR_TYPE -> { advance(); yield new ScalarTypeNode(); }
             case MATRIX_TYPE -> { advance(); yield parseMatrixType(); }
             case GRAPH_TYPE -> { advance(); yield parseGraphType(); }
+            case NODE_TYPE -> { advance(); yield new NodeTypeNode(); }
+            // case EDGE_TYPE -> { advance(); yield new EdgeTypeNode(); }
+            case LIST_TYPE -> { advance(); yield parseListType(); }
             default -> throw new RuntimeException("Expected a type, got " + type);
         };
     }
 
-    private TypeNode parseMatrixType() {  // have to advance tokens etc
+    private TypeNode parseListType() {
         consume(TokenKind.LESS);
         TypeNode innerType = parseType();
-        if (match(TokenKind.COMMA)) {
-            throw new RuntimeException("no, don't do it...");
-        }
         consume(TokenKind.GREATER);
-        return new MatrixTypeNode(innerType, null, null);
+        return new ListTypeNode(innerType);
     }
 
+    // using Dimension to prevent user from calling functions etc. as dimensions, gets hard to solve
+    private TypeNode parseMatrixType() {  // have to advance tokens etc
+        Dimension A = null;
+        Dimension B = null;
+        consume(TokenKind.LESS);
+        TypeNode innerType = parseType();
+        if (match(TokenKind.COMMA)) {  // user specifies a dimension already
+            MatrixShape dimensions = parseDimension();
+            A = dimensions.rows();
+            B = dimensions.cols();
+        }
+        consume(TokenKind.GREATER);
+        return new MatrixTypeNode(innerType, A, B);
+    }
+
+    private MatrixShape parseDimension() {
+        Dimension left = parseDimAddSub();
+        consume(TokenKind.AT);
+        Dimension right = parseDimAddSub();
+        return new MatrixShape(left, right);
+    }
+
+    // parsing the dimensions is once again a binary, recursive descent problem
+    private Dimension parseDimAddSub() {
+        Dimension left = parseDimMulDiv();
+        while (match(TokenKind.PLUS, TokenKind.MINUS)) {
+            Token op = previous();
+            Dimension right = parseDimMulDiv();
+            left = new BinaryDimension(left, right, toDimOp(op));
+        }
+        return left;
+    }
+
+    private Dimension parseDimMulDiv() {
+        Dimension left = parseDimAtom();
+        while (match(TokenKind.MUL, TokenKind.DIV)) {
+            Token op = previous();
+            Dimension right = parseDimAtom();
+            left = new BinaryDimension(left, right, toDimOp(op));
+        }
+        return left;
+    }
+
+    private Dimension parseDimAtom() {
+        if (match(TokenKind.INTEGER)) {
+            return new KnownDimension((Integer) previous().getLiteral());  // make a new method to avoid casting, unsafe
+        }
+        if (match(TokenKind.IDENTIFIER)) {
+            return new SymbolicDimension(previous().getLexeme());
+        }
+        if (match(TokenKind.OPEN_PAREN)) {
+            Dimension dim = parseDimAddSub();
+            consume(TokenKind.CLOSE_PAREN);
+            return dim;
+        }
+        throw new RuntimeException("Line " + peek().getLine() + ": invalid dimension. " +
+                "Expected one of <INTEGER, SYMBOL>, got dimension of type "
+                + peek().getKind() + " with value: " + peek().getLexeme());
+    }
+
+    private BinaryDimension.Op toDimOp(Token token) {
+        return switch (token.getKind()) {
+            case PLUS  -> BinaryDimension.Op.ADD;
+            case MINUS -> BinaryDimension.Op.SUB;
+            case MUL  -> BinaryDimension.Op.MUL;
+            case DIV -> BinaryDimension.Op.DIV;
+            case MOD   -> BinaryDimension.Op.MOD;
+            default -> throw new RuntimeException("Invalid operator in dimension expression");
+        };
+    }
+
+    // will fix this to use an Enum to be safer
     private TypeNode parseGraphType() {
         consume(TokenKind.LESS);
         // we will just parse the attributes, but not do anything with them yet
@@ -294,31 +345,75 @@ public class Parser {
     // atm we can declare with or without a value
     // !! type mismatch errors happen at another stage of the interpreter
     private VariableDeclarationNode parseDeclaration() {
+        System.out.println(peek());
         TypeNode type = parseType();          // mat<num>
         Token name = consume(TokenKind.IDENTIFIER);
         Expression initializer = null;  // can be anything
-
         if (match(TokenKind.EQUAL)) {  // allow for null init if no = provided
             if (type instanceof GraphTypeNode) {
                 initializer = parseGraphLiteral();
             } else if (type instanceof MatrixTypeNode) {
                 initializer = parseMatrixLiteral();
-            } else {
+            } else if (type instanceof NodeTypeNode) {
+                initializer = parseNodeLiteral();
+            } else if (type instanceof ListTypeNode) {
+                initializer = parseListLiteral();
+            }
+            else {
                 initializer = parseExpression();
             }
         }
-
         consume(TokenKind.SEMICOLON);
         return new VariableDeclarationNode(type, name.getLexeme(), initializer);
     }
 
-    private MatrixLiteralNode parseMatrixLiteral() {
-        System.out.println(peek());
-        return null;
+    private MatrixLiteralNode parseMatrixLiteral() {  // we land here with peek() being open_bracket
+        List<List<Expression>> rows = new ArrayList<>();
+        if (!check(TokenKind.CLOSE_BRACKET)) {  // check but don't consume
+            do {
+                consume(TokenKind.OPEN_BRACKET);
+                List<Expression> row = new ArrayList<>();
+                row.add(parseExpression());
+                while (match(TokenKind.COMMA)) {
+                    row.add(parseExpression());
+                }
+                consume(TokenKind.CLOSE_BRACKET);
+                rows.add(row);
+            } while (match(TokenKind.COMMA));
+        }
+        return new MatrixLiteralNode(rows);
     }
 
     private GraphLiteralNode parseGraphLiteral() {
+        List<String> nodes = new ArrayList<>();
+        List<String> edges = new ArrayList<>();
+        consume(TokenKind.OPEN_BRACKET);
+        parseField();
+        parseField();
         return null;
+    }
+
+    private NodeLiteralNode parseNodeLiteral() {
+        System.out.println("parsing node literal");
+        return null;
+    }
+
+    private ListLiteralNode parseListLiteral() {
+        System.out.println("parsing list literal");
+        consume(TokenKind.OPEN_BRACKET);
+        List<Expression> body = new ArrayList<>();
+        do {
+            body.add(parseExpression());
+        } while (match(TokenKind.COMMA));
+        consume(TokenKind.CLOSE_BRACKET);
+        return new ListLiteralNode(body);
+    }
+
+    private Map.Entry<String, Expression> parseField() {  // used for stuff like graph nodes, edges, more to come later
+        Token name = consume(TokenKind.IDENTIFIER);
+        consume(TokenKind.COLON);
+        Expression value = parseExpression();
+        return Map.entry(name.getLexeme(), value);
     }
 
     private FunctionDeclarationNode parseFunctionDeclaration() { // we should build the logic to allow users to define a function
@@ -768,7 +863,9 @@ public class Parser {
             TokenKind.VOID_TYPE,
             TokenKind.GRAPH_TYPE,
             TokenKind.NODE_TYPE,
-            TokenKind.EDGE_TYPE
+            TokenKind.EDGE_TYPE,
+            TokenKind.LIST_TYPE,
+            TokenKind.VECTOR_TYPE
     );
 
 //    private static final Map<TokenKind, TokenKind> mapDeclarationToDatatype = Map.ofEntries(

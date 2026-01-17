@@ -1,4 +1,4 @@
-package AST.Literals;
+package AST.Literals.Graph;
 
 import AST.Expressions.Expression;
 

@@ -58,6 +58,8 @@ public class Tokenizer {
             case '^': addToken(TokenKind.POWER, "**"); advance(); break;
             case ';': addToken(TokenKind.SEMICOLON, ";"); advance(); break;
             case ',': addToken(TokenKind.COMMA, ","); advance(); break;
+            case '%': addToken(TokenKind.MOD, "%"); advance(); break;
+            case '@': addToken(TokenKind.AT, "@"); advance(); break;
             case '!':
                 if (match('=')) {
                     addToken(TokenKind.NOT_EQUAL, "!=");
@@ -100,6 +102,8 @@ public class Tokenizer {
                 addToken(TokenKind.OPEN_BRACKET, "["); advance(); break;
             case ']':
                 addToken(TokenKind.CLOSE_BRACKET, "]"); advance(); break;
+            case ':' :
+                addToken(TokenKind.COLON, ":"); advance(); break;
             case '.':
                 addToken(TokenKind.DOT, "."); advance(); break;
             case '\n':
@@ -167,6 +171,7 @@ public class Tokenizer {
         put("node", TokenKind.NODE_TYPE);
         put("edge", TokenKind.EDGE_TYPE);
         put("@", TokenKind.AT);
+        put("list", TokenKind.LIST_TYPE);
     }};
 
     private boolean isDigit(char c) {
@@ -194,9 +199,8 @@ public class Tokenizer {
         } else {
             literal = Integer.parseInt(numberStr);
         }
-//        TokenKind kind = isDecimal ? TokenKind.FLOAT : TokenKind.INTEGER; // determine if it's a float or an integer
-
-        tokens.add(new Token(TokenKind.SCALAR, lexeme.toString(), literal, line));
+        TokenKind kind = isDecimal ? TokenKind.FLOAT : TokenKind.INTEGER; // determine if it's a float or an integer
+        tokens.add(new Token(kind, lexeme.toString(), literal, line));
     }
 
     private void tokenizeKeyword() {

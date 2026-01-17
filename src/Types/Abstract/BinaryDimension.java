@@ -4,7 +4,7 @@ package Types.Abstract;
 public final class BinaryDimension implements Dimension {
     private final Dimension left;
     private final Dimension right;
-    private enum Op { ADD, SUB, MUL, DIV, MOD }  // don't store as String, this is safer
+    public enum Op { ADD, SUB, MUL, DIV, MOD }  // don't store as String, this is safer
     private final Op operator;
 
     public BinaryDimension(Dimension left, Dimension right, Op operator) {

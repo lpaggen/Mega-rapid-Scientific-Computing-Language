@@ -1,4 +1,4 @@
-package AST.Literals;
+package AST.Literals.Linalg;
 
 import AST.Expressions.Expression;
 
