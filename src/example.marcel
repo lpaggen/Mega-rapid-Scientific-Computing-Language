@@ -8,11 +8,9 @@ mat<num, 3 @ 3> A = [
     [7, 8, 9]
 ];
 
-list<num> B = [10, 20, 30];
+graph<ud, uw, num> G = {
+    nodes: [A, B, C],
+    edges: [A-B, B-C, C-A]
+};
 
-graph<u, w, num> G = [
-    nodes: [A, B, C];
-    edges: [A-B, B-C, C-A];
-];
-
-print(G.B.weight + det(A));
+print("Matrix A:");

@@ -8,7 +8,8 @@ import AST.Expressions.Functions.BuiltIns.ImportNode;
 import AST.Literals.*;
 import AST.Literals.Abstract.BraceBlockNode;
 import AST.Literals.Abstract.BracketLiteralNode;
-import AST.Literals.Graph.GraphLiteralNode;
+import AST.Literals.Abstract.RecordLiteralNode;
+//import AST.Literals.Graph.GraphLiteralNode;
 import AST.Literals.Graph.NodeLiteralNode;
 import AST.Literals.Linalg.MatrixLiteralNode;
 import AST.Statements.*;
@@ -21,6 +22,7 @@ import Util.WarningLogger;
 import jdk.jfr.Label;
 
 import java.lang.reflect.Array;
+import java.text.ParseException;
 import java.util.*;
 
 // IMPORTANT NOTE
@@ -33,6 +35,7 @@ import java.util.*;
 public class Parser {
     private final List<Token> tokens;
     private int tokenPos = 0;
+
     public Parser(List<Token> tokens) {
         this.tokens = tokens;
     }
@@ -60,30 +63,24 @@ public class Parser {
         if (isDeclarationStart()) {
             System.out.println("Parsing variable declaration...");
             return parseDeclaration();
-        }
-        else if (isFunctionDeclarationStart()) {
+        } else if (isFunctionDeclarationStart()) {
             System.out.println("Parsing function declaration...");
             return parseFunctionDeclaration();
-        }
-        else if (isConditionalBranch()) {
+        } else if (isConditionalBranch()) {
             System.out.println("Parsing conditional branch...");
             return parseConditionalBranch();
-        }
-        else if (check(TokenKind.INCLUDE)) {
+        } else if (check(TokenKind.INCLUDE)) {
             System.out.println("Parsing module import statement: " + peek());
             advance(); // consume INCLUDE
             Token moduleName = consume(TokenKind.IDENTIFIER);
             consume(TokenKind.SEMICOLON);
             return new ImportNode(moduleName.getLexeme(), null);
-        }
-        else if (peek().getKind() == TokenKind.IDENTIFIER && lookAhead(1).getKind() == TokenKind.EQUAL) {
+        } else if (peek().getKind() == TokenKind.IDENTIFIER && lookAhead(1).getKind() == TokenKind.EQUAL) {
             System.out.println("Parsing variable reassignment...");
             return parseVariableReassignment();
-        }
-        else if (peek().getKind() == TokenKind.WHILE) {
+        } else if (peek().getKind() == TokenKind.WHILE) {
             return parseWhileLoop();
-        }
-        else {
+        } else {
             Expression expr = parseExpression(); // will handle identifiers, function calls, parenthesis, etc.
             consume(TokenKind.SEMICOLON); // ensure semicolon is consumed
             return new ExpressionStatementNode(expr);
@@ -150,26 +147,24 @@ public class Parser {
 
     private Expression parsePrimary() {
         System.out.println("current token at parsePrimary: " + peek());
-        if (match(TokenKind.FALSE)) return new BooleanLiteralNode(false); // this will return a PrimaryNode with a BooleanNode inside
-        else if (match(TokenKind.TRUE)) return new BooleanLiteralNode(true); // this will return a PrimaryNode with a BooleanNode inside
+        if (match(TokenKind.FALSE))
+            return new BooleanLiteralNode(false); // this will return a PrimaryNode with a BooleanNode inside
+        else if (match(TokenKind.TRUE))
+            return new BooleanLiteralNode(true); // this will return a PrimaryNode with a BooleanNode inside
         else if (match(TokenKind.NULL)) return new PrimaryNode(null);
         else if (match(TokenKind.STRING)) {
             System.out.println("Parsing string literal: " + previous().getLiteral());
             return new StringLiteralNode(previous().getLexeme());
-        }
-        else if (match(TokenKind.INTEGER, TokenKind.FLOAT)) {
+        } else if (match(TokenKind.INTEGER, TokenKind.FLOAT)) {
             System.out.println("Parsing scalar literal: " + previous().getLiteral());
             return new ScalarLiteralNode((Number) previous().getLiteral());
-        }
-        else if (match(TokenKind.OPEN_PAREN)) {
+        } else if (match(TokenKind.OPEN_PAREN)) {
             Expression expr = parseExpression();
             consume(TokenKind.CLOSE_PAREN);
             return new GroupingNode(expr);
-        }
-        else if (match(TokenKind.OPEN_BRACKET)) {  // need a mechanism to differentiate between graphs, matrices...
+        } else if (match(TokenKind.OPEN_BRACKET)) {  // need a mechanism to differentiate between graphs, matrices...
             return parseBracketLiteral();
-        }
-        else if (match(TokenKind.OPEN_BRACE)) {
+        } else if (match(TokenKind.OPEN_BRACE)) {
             return parseBraceLiteral();
         }
         // this is really not good and not safe, and it's a dumb check. but it works until i figure something better out
@@ -239,12 +234,27 @@ public class Parser {
     private TypeNode parseType() {
         TokenKind type = peek().getKind();
         return switch (type) {
-            case SCALAR_TYPE -> { advance(); yield new ScalarTypeNode(); }
-            case MATRIX_TYPE -> { advance(); yield parseMatrixType(); }
-            case GRAPH_TYPE -> { advance(); yield parseGraphType(); }
-            case NODE_TYPE -> { advance(); yield new NodeTypeNode(); }
+            case SCALAR_TYPE -> {
+                advance();
+                yield new ScalarTypeNode();
+            }
+            case MATRIX_TYPE -> {
+                advance();
+                yield parseMatrixType();
+            }
+            case GRAPH_TYPE -> {
+                advance();
+                yield parseGraphType();
+            }
+            case NODE_TYPE -> {
+                advance();
+                yield new NodeTypeNode();
+            }
             // case EDGE_TYPE -> { advance(); yield new EdgeTypeNode(); }
-            case LIST_TYPE -> { advance(); yield parseListType(); }
+            case LIST_TYPE -> {
+                advance();
+                yield parseListType();
+            }
             default -> throw new RuntimeException("Expected a type, got " + type);
         };
     }
@@ -318,11 +328,11 @@ public class Parser {
 
     private BinaryDimension.Op toDimOp(Token token) {
         return switch (token.getKind()) {
-            case PLUS  -> BinaryDimension.Op.ADD;
+            case PLUS -> BinaryDimension.Op.ADD;
             case MINUS -> BinaryDimension.Op.SUB;
-            case MUL  -> BinaryDimension.Op.MUL;
+            case MUL -> BinaryDimension.Op.MUL;
             case DIV -> BinaryDimension.Op.DIV;
-            case MOD   -> BinaryDimension.Op.MOD;
+            case MOD -> BinaryDimension.Op.MOD;
             default -> throw new RuntimeException("Invalid operator in dimension expression");
         };
     }
@@ -330,14 +340,17 @@ public class Parser {
     // will fix this to use an Enum to be safer
     private TypeNode parseGraphType() {
         consume(TokenKind.LESS);
-        // we will just parse the attributes, but not do anything with them yet
         boolean isDirected = GraphAttributes.get(consume(TokenKind.IDENTIFIER).getLexeme()); // directed or undirected
         consume(TokenKind.COMMA);
         boolean isWeighted = GraphAttributes.get(consume(TokenKind.IDENTIFIER).getLexeme()); // weighted or unweighted
+        if (peek().getKind() == TokenKind.GREATER) {
+            consume(TokenKind.GREATER);
+            return new GraphTypeNode(null, isWeighted, isDirected);
+        }
         consume(TokenKind.COMMA);
         TypeNode dataType = parseType(); // data type of the graph nodes/edges
         consume(TokenKind.GREATER);
-        return new GraphTypeNode(dataType, isWeighted, isDirected); // placeholder, will have to build a GraphTypeNode later
+        return new GraphTypeNode(dataType, isWeighted, isDirected);
     }
 
     // this method handles variable declarations, i will add more error checks at some stage
@@ -351,15 +364,14 @@ public class Parser {
         Expression initializer = null;  // can be anything
         if (match(TokenKind.EQUAL)) {  // allow for null init if no = provided
             if (type instanceof GraphTypeNode) {
-                initializer = parseGraphLiteral();
+                initializer = parseRecordLiteral();
             } else if (type instanceof MatrixTypeNode) {
                 initializer = parseMatrixLiteral();
             } else if (type instanceof NodeTypeNode) {
                 initializer = parseNodeLiteral();
             } else if (type instanceof ListTypeNode) {
                 initializer = parseListLiteral();
-            }
-            else {
+            } else {
                 initializer = parseExpression();
             }
         }
@@ -384,19 +396,36 @@ public class Parser {
         return new MatrixLiteralNode(rows);
     }
 
-    private GraphLiteralNode parseGraphLiteral() {
-        List<String> nodes = new ArrayList<>();
-        List<String> edges = new ArrayList<>();
-        consume(TokenKind.OPEN_BRACKET);
-        parseField();
-        parseField();
-        return null;
-    }
+//    private GraphLiteralNode parseGraphLiteral() {
+//        RecordLiteralNode body = parseRecordLiteral();
+//        return null;
+//    }
 
     private NodeLiteralNode parseNodeLiteral() {
         System.out.println("parsing node literal");
         return null;
     }
+
+    private RecordLiteralNode parseRecordLiteral() {
+        consume(TokenKind.OPEN_BRACE);
+        Map<String, Expression> content = new LinkedHashMap<>();
+        if (!check(TokenKind.CLOSE_BRACE)) {
+            do {
+                String key = consume(TokenKind.IDENTIFIER).getLexeme();
+                consume(TokenKind.COLON);
+                Expression value = parseExpression();
+                if (content.containsKey(key)) {
+                    throw new RuntimeException(
+                            "Duplicate key '" + key + "' in record literal"
+                    );
+                }
+                content.put(key, value);
+            } while (match(TokenKind.COMMA));
+        }
+        consume(TokenKind.CLOSE_BRACE);
+        return new RecordLiteralNode(content);
+    }
+
 
     private ListLiteralNode parseListLiteral() {
         System.out.println("parsing list literal");
@@ -409,11 +438,14 @@ public class Parser {
         return new ListLiteralNode(body);
     }
 
-    private Map.Entry<String, Expression> parseField() {  // used for stuff like graph nodes, edges, more to come later
-        Token name = consume(TokenKind.IDENTIFIER);
+    private HashMap<String, Expression> parseField() {  // used for stuff like graph nodes, edges, more to come later
+        HashMap<String, Expression> map = new HashMap<>();
+        String name = consume(TokenKind.IDENTIFIER).getLexeme();
         consume(TokenKind.COLON);
         Expression value = parseExpression();
-        return Map.entry(name.getLexeme(), value);
+        consume(TokenKind.SEMICOLON);
+        map.put(name, value) ;
+        return map;
     }
 
     private FunctionDeclarationNode parseFunctionDeclaration() { // we should build the logic to allow users to define a function

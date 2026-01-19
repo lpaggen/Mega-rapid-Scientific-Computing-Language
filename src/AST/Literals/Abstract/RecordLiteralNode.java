@@ -4,7 +4,7 @@ import AST.Expressions.Expression;
 
 import java.util.Map;
 
-public final class RecordLiteralNode extends Expression {
+public final class RecordLiteralNode extends Expression {  // this is our hashmap, key-value pairs
     private final Map<String, Expression> fields;
 
     public RecordLiteralNode(Map<String, Expression> fields) {
