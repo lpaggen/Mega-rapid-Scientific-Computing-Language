@@ -137,12 +137,12 @@
 //    }
 //
 ////    @Override
-////    public TokenKind getType(Environment env) {
+////    public TokenKind getType(ScopeStack env) {
 ////        return value.getType(env);
 ////    }
 //
 ////    @Override
-////    public Expression evaluate(Environment env) {
+////    public Expression evaluate(ScopeStack env) {
 ////        if (value != null) {
 ////            value = value.evaluate(env);
 ////        }

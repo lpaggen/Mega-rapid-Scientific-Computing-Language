@@ -6,7 +6,7 @@
 //import AST.Expressions.Expression;
 //import AST.Expressions.StringNode;
 //import AST.Expressions.VariableNode;
-//import Runtime.Environment;
+//import Semantic.ScopeStack;
 //import Lexer.TokenKind;
 //import Algebra.AlgebraEngine;
 //
@@ -17,7 +17,7 @@
 //    }
 //
 //    @Override
-//    public Expression evaluate(Environment env) {
+//    public Expression evaluate(ScopeStack env) {
 //        Expression leftVal = lhs.evaluate(env);
 //        Expression rightVal = rhs.evaluate(env);
 //        if (leftVal instanceof Scalar l && rightVal instanceof Scalar r) {
@@ -49,7 +49,7 @@
 //        return new Div(leftVal, rightVal);
 //    }
 //
-//    public double evaluateNumeric(Environment env) {
+//    public double evaluateNumeric(ScopeStack env) {
 //        double rhsVal = rhs.evaluateNumeric(env);
 //        if (rhsVal == 0.0) {
 //            throw new ArithmeticException("Division by zero during numeric evaluation.");
@@ -70,7 +70,7 @@
 //        return lhs.toString() + " / " + rhs.toString();
 //    }
 //
-//    public TokenKind getType(Environment env) {
+//    public TokenKind getType(ScopeStack env) {
 //        return super.getType(env);
 //    }
 //}

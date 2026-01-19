@@ -5,7 +5,7 @@
 //import AST.Nodes.DataTypes.Scalar;
 //import AST.Expressions.Expression;
 //import AST.BuiltIns.Functions.Expressions.BuiltInFunctionSymbol;
-//import Runtime.Environment;
+//import Semantic.ScopeStack;
 //import Lexer.TokenKind;
 //
 //import java.util.ArrayList;
@@ -17,7 +17,7 @@
 //    }
 //
 //    @Override
-//    public Object call(Environment env, List<Object> args) {
+//    public Object call(ScopeStack env, List<Object> args) {
 //        if (args.size() != 1) {
 //            throw new IllegalArgumentException("Shape function requires exactly one argument.");
 //        }

@@ -19,7 +19,7 @@ public IfNode(Expression condition, List<Statement> thenBlock, List<Statement> e
     }
 
 //    @Override
-//    public void execute(Environment env) {
+//    public void execute(ScopeStack env) {
 //        if (condition.evaluate(env) instanceof BooleanNode bool && bool.getValue()) {
 //            for (Statement stmt : thenBranch) {
 //                stmt.execute(env);

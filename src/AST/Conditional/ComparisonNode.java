@@ -2,7 +2,7 @@
 //
 //import AST.Nodes.Expressions.BinaryOperations.LogicalBinaryNode;
 //import AST.Expressions.Expression;
-//import Runtime.Environment;
+//import Semantic.ScopeStack;
 //import Lexer.TokenKind;
 //
 //// we don't need a separate node for everything, this handles it all easily
@@ -19,7 +19,7 @@
 //    }
 //
 //    @Override
-//    public Expression evaluate(Environment env) {
+//    public Expression evaluate(ScopeStack env) {
 //        Expression leftValue = lhs.evaluate(env);
 //        Expression rightValue = rhs.evaluate(env);
 //
@@ -52,7 +52,7 @@
 //    }
 //
 //    @Override
-//    public TokenKind getType(Environment env) {
+//    public TokenKind getType(ScopeStack env) {
 //        return TokenKind.BOOLEAN;
 //    }
 //

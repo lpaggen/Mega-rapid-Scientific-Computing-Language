@@ -1,7 +1,7 @@
 //package AST.Expressions.Functions.BuiltIns.Linalg;
 //
 //import AST.Expressions.Functions.BuiltIns.BuiltInFunctionSymbol;
-//import Runtime.Environment;
+//import Semantic.ScopeStack;
 //import Lexer.TokenKind;
 //
 //import java.util.List;
@@ -12,7 +12,7 @@
 //    }
 //
 //    @Override
-//    public Object call (Environment env, List<Object> arguments) {
+//    public Object call (ScopeStack env, List<Object> arguments) {
 //        if (arguments.size() != 2) {
 //            throw new RuntimeException("zeros function expects 2 arguments: rows and columns.");
 //        }

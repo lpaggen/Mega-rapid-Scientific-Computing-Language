@@ -1,7 +1,7 @@
 //package AST.Nodes.DataStructures;
 //
 //import AST.Expressions.Expression;
-//import Runtime.Environment;
+//import Semantic.ScopeStack;
 //import Lexer.TokenKind;
 //import Util.ErrorHandler;
 //
@@ -56,12 +56,12 @@
 //    }
 //
 //    @Override
-//    public Expression evaluate(Environment env) {
+//    public Expression evaluate(ScopeStack env) {
 //        weight = (weight != null) ? weight.evaluate(env) : null;
 //        return this;
 //    }
 //
-//    public TokenKind getType(Environment env) {
+//    public TokenKind getType(ScopeStack env) {
 //        return TokenKind.EDGE;
 //    }
 //
@@ -73,7 +73,7 @@
 //        return from.getId() +  to.getId();
 //    }
 //
-//    public TokenKind getWeightType(Environment env) {
+//    public TokenKind getWeightType(ScopeStack env) {
 //        if (weight == null) {
 //            throw new IllegalStateException("Edges of unweighted graph have no weight type.");
 //        }

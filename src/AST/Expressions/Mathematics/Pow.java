@@ -4,7 +4,7 @@
 //import AST.Nodes.Expressions.BinaryOperations.Arithmetic.Div;
 //import AST.Expressions.Expression;
 //import AST.Expressions.UnaryNode;
-//import Runtime.Environment;
+//import Semantic.ScopeStack;
 //import Lexer.TokenKind;
 //
 //public class Pow extends ArithmeticBinaryNode {
@@ -15,7 +15,7 @@
 //
 //    // this isn't everything we need, will adapt as we need it
 //    @Override
-//    public Expression evaluate(Environment env) {
+//    public Expression evaluate(ScopeStack env) {
 //        Expression baseExpr = lhs.evaluate(env);
 //        Expression expExpr = rhs.evaluate(env);
 //        if (baseExpr instanceof Scalar b && expExpr instanceof Scalar e) {
@@ -54,11 +54,11 @@
 //        return new Pow(baseExpr, expExpr);
 //    }
 //
-//    public TokenKind getType(Environment env) {
+//    public TokenKind getType(ScopeStack env) {
 //        return super.getType(env);
 //    }
 //
-//    public double evaluateNumeric(Environment env) {
+//    public double evaluateNumeric(ScopeStack env) {
 //        double base = lhs.evaluateNumeric(env);
 //        double exp = rhs.evaluateNumeric(env);
 //        return Math.pow(base, exp);

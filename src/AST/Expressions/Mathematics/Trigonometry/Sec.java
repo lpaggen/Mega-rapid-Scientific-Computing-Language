@@ -1,7 +1,7 @@
 //package AST.Expressions.Mathematics.Trigonometry;
 //
 //import AST.Expressions.Expression;
-//import Runtime.Environment;
+//import Semantic.ScopeStack;
 //
 //public class Sec extends Expression {
 //
@@ -12,7 +12,7 @@
 //    }
 //
 //    @Override
-//    public Expression evaluate(Environment env) {
+//    public Expression evaluate(ScopeStack env) {
 //        Expression argValue = arg.evaluate(env);
 //        if (argValue instanceof Scalar c) {
 //            return new Scalar(1 / Math.cos(c.getDoubleValue()));
@@ -20,7 +20,7 @@
 //        return new Sec(argValue);
 //    }
 //
-//    public double evaluateNumeric(Environment env) {
+//    public double evaluateNumeric(ScopeStack env) {
 //        double argValue = arg.evaluateNumeric(env);
 //        return 1 / Math.cos(argValue);
 //    }

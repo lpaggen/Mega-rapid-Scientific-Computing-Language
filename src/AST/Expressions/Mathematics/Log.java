@@ -2,7 +2,7 @@
 //
 //import AST.Nodes.DataTypes.Scalar;
 //import AST.Expressions.Expression;
-//import Runtime.Environment;
+//import Semantic.ScopeStack;
 //
 //public class Log extends Expression {
 //    private final Expression arg, base;
@@ -14,7 +14,7 @@
 //    }
 //
 //    @Override
-//    public Expression evaluate(Environment env) {
+//    public Expression evaluate(ScopeStack env) {
 //        Expression argVal = arg.evaluate(env);
 //        Expression baseVal = base.evaluate(env);
 //        if (argVal instanceof Scalar a && baseVal instanceof Scalar b) {
@@ -27,7 +27,7 @@
 //        return new Log(argVal, baseVal);
 //    }
 //
-//    public double evaluateNumeric(Environment env) {
+//    public double evaluateNumeric(ScopeStack env) {
 //        double argValue = arg.evaluateNumeric(env);
 //        double baseValue = base.evaluateNumeric(env);
 //        if (baseValue == 1) {

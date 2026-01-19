@@ -3,7 +3,7 @@
 //import AST.Nodes.Conditional.BooleanNode;
 //import AST.Nodes.DataStructures.*;
 //import AST.BuiltIns.Functions.Expressions.BuiltInFunctionSymbol;
-//import Runtime.Environment;
+//import Semantic.ScopeStack;
 //import Lexer.TokenKind;
 //
 //import java.util.List;
@@ -15,7 +15,7 @@
 //    }
 //
 //    @Override
-//    public Object call(Environment env, List<Object> args) {
+//    public Object call(ScopeStack env, List<Object> args) {
 //        if (args.size() != 2)
 //            throw new IllegalArgumentException("GetMember(obj, name) requires 2 arguments.");
 //

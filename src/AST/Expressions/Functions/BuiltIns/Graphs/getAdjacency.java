@@ -1,7 +1,7 @@
 //package AST.Expressions.Functions.BuiltIns.Graphs;
 //
 //import AST.Expressions.Functions.BuiltIns.BuiltInFunctionSymbol;
-//import Runtime.Environment;
+//import Semantic.ScopeStack;
 //import Lexer.TokenKind;
 //
 //import java.util.List;
@@ -12,7 +12,7 @@
 //    }
 //
 //    @Override
-//    public Object call(Environment env, List<Object> args) {
+//    public Object call(ScopeStack env, List<Object> args) {
 //        if (args.size() != 1)
 //            throw new IllegalArgumentException("getAdj(graph) requires 1 argument.");
 //

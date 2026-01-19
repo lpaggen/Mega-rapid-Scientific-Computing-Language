@@ -1,7 +1,7 @@
 //package AST.Expressions.Functions.BuiltIns.Graphs;
 //
 //import AST.Expressions.Functions.BuiltIns.BuiltInFunctionSymbol;
-//import Runtime.Environment;
+//import Semantic.ScopeStack;
 //
 //import java.util.List;
 //
@@ -11,7 +11,7 @@
 //    }
 //
 //    @Override
-//    public Object call(Environment env, List<Object> args) {
+//    public Object call(ScopeStack env, List<Object> args) {
 //        if (args.size() != 3) {
 //            throw new IllegalArgumentException("removeEdge(graph, [str] nodeID1, [str] nodeID2) requires exactly 3 arguments.");
 //        }

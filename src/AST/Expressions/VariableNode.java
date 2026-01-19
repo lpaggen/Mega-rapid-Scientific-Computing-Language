@@ -1,11 +1,5 @@
 package AST.Expressions;
 
-import Parser.FunctionSymbol;
-import Runtime.Environment;
-import Parser.Symbol;
-import Parser.VariableSymbol;
-import Lexer.TokenKind;
-
 public class VariableNode extends Expression {
     private final String name;
     public VariableNode(String name) {
@@ -13,7 +7,7 @@ public class VariableNode extends Expression {
     }
 
 //    @Override
-//    public Expression evaluate(Environment env) {
+//    public Expression evaluate(ScopeStack env) {
 //        // retrieve the variable value from the environment
 //        Symbol symbol = env.lookup(name);
 //        if (symbol instanceof VariableSymbol vs) {
@@ -25,12 +19,12 @@ public class VariableNode extends Expression {
 //    }
 //
 //    @Override
-//    public TokenKind getType(Environment env) {
+//    public TokenKind getType(ScopeStack env) {
 //        return env.getType(name);
 //    }
 //
 //    @Override
-//    public double evaluateNumeric(Environment env) {
+//    public double evaluateNumeric(ScopeStack env) {
 //        return 0; // not sure what this should be atm, will figure it out in later build
 //    }
 

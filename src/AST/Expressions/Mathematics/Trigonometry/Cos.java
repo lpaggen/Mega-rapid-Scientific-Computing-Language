@@ -2,7 +2,7 @@
 //
 //import AST.Nodes.DataTypes.Scalar;
 //import AST.Expressions.Expression;
-//import Runtime.Environment;
+//import Semantic.ScopeStack;
 //
 //public class Cos extends Expression {
 //    private final Expression arg;
@@ -12,7 +12,7 @@
 //    }
 //
 //    @Override
-//    public Expression evaluate(Environment env) {
+//    public Expression evaluate(ScopeStack env) {
 //        Expression argValue = this.arg.evaluate(env);
 //        if (argValue instanceof Scalar c) {
 //            return new Scalar(Math.cos(c.getDoubleValue()));
@@ -20,7 +20,7 @@
 //        return new Cos(argValue);
 //    }
 //
-//    public double evaluateNumeric(Environment env) {
+//    public double evaluateNumeric(ScopeStack env) {
 //        double argValue = arg.evaluateNumeric(env);
 //        return Math.cos(argValue);
 //    }

@@ -1,7 +1,5 @@
 package AST.Expressions;
 
-import Runtime.Environment;
-
 public class GroupingNode extends Expression {
     private final Expression expression;
 
@@ -14,7 +12,7 @@ public class GroupingNode extends Expression {
     }
 
 //    @Override
-//    public Expression evaluate(Environment env) {
+//    public Expression evaluate(ScopeStack env) {
 //        return expression.evaluate(env);
 //    }
 

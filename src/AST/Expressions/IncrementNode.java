@@ -1,7 +1,5 @@
 package AST.Expressions;
 
-import Parser.VariableSymbol;
-import Runtime.Environment;
 import Lexer.TokenKind;
 
 public class IncrementNode extends Expression {
@@ -18,7 +16,7 @@ public class IncrementNode extends Expression {
     }
 
 //    @Override
-//    public Expression evaluate(Environment env) {
+//    public Expression evaluate(ScopeStack env) {
 //        Expression argValue = arg.evaluate(env);
 //        if (argValue instanceof Scalar v && v.getValue() instanceof Integer) {
 //            Scalar newValue = new Scalar((v.getValue().intValue() + (operator == TokenKind.INCREMENT ? 1 : -1)));

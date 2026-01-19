@@ -3,7 +3,7 @@
 //import AST.Nodes.DataStructures.Graph;
 //import AST.Expressions.Expression;
 //import AST.BuiltIns.Functions.Expressions.BuiltInFunctionSymbol;
-//import Runtime.Environment;
+//import Semantic.ScopeStack;
 //
 //import java.util.List;
 //
@@ -13,7 +13,7 @@
 //    }
 //
 //    @Override
-//    public Object call(Environment env, List<Object> args) {
+//    public Object call(ScopeStack env, List<Object> args) {
 //        if (args.size() < 2 || args.size() > 4) {
 //            throw new IllegalArgumentException("union(graph1, graph2) requires 2 arguments: graph1, graph2, [optional] nodeStrategy, [optional] edgeStrategy.");
 //        }

@@ -1,7 +1,6 @@
 package AST.Expressions.Mathematics;
 
 import AST.Expressions.Expression;
-import Runtime.Environment;
 
 public class Exp extends Expression {
     private final Expression arg;
@@ -11,13 +10,13 @@ public class Exp extends Expression {
     }
 
 //    @Override
-//    public double evaluateNumeric(Environment env) {
+//    public double evaluateNumeric(ScopeStack env) {
 //        double argValue = arg.evaluateNumeric(env);
 //        return Math.exp(argValue);
 //    }
 //
 //    // so this is how we make the distinction between numeric or not, numeric are now wrapped in Constant
-//    public Expression evaluate(Environment env) {
+//    public Expression evaluate(ScopeStack env) {
 //        Expression evaluatedArg = arg.evaluate(env);
 //        if (evaluatedArg instanceof Scalar c) {
 //            double argValue = c.evaluateNumeric(env);

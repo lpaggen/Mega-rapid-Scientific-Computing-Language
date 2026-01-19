@@ -1,7 +1,6 @@
 package AST.Expressions.Mathematics.Trigonometry;
 
 import AST.Expressions.Expression;
-import Runtime.Environment;
 
 public class Csc extends Expression {
 
@@ -12,7 +11,7 @@ public class Csc extends Expression {
     }
 
 //    @Override
-//    public Expression evaluate(Environment env) {
+//    public Expression evaluate(ScopeStack env) {
 //        Expression argValue = arg.evaluate(env);
 //        if (argValue instanceof Scalar c) {
 //            return new Scalar(1 / Math.sin(c.getDoubleValue()));
@@ -20,7 +19,7 @@ public class Csc extends Expression {
 //        return new Csc(argValue);
 //    }
 //
-//    public double evaluateNumeric(Environment env) {
+//    public double evaluateNumeric(ScopeStack env) {
 //        double argValue = arg.evaluateNumeric(env);
 //        return 1 / Math.sin(argValue);
 //    }

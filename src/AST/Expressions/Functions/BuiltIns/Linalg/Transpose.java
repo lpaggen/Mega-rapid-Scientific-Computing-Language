@@ -9,7 +9,7 @@
 //    }
 //
 //    @Override
-//    public Object call(Runtime.Environment env, java.util.List<Object> args) {
+//    public Object call(Semantic.ScopeStack env, java.util.List<Object> args) {
 //        if (args.size() != 1) {
 //            throw new IllegalArgumentException("Transpose function requires exactly one argument.");
 //        }

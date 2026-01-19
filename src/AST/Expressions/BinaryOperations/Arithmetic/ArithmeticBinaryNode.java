@@ -2,7 +2,7 @@
 //
 //import AST.BinaryOperations.Expressions.BinaryNode;
 //import AST.Expressions.Expression;
-//import Runtime.Environment;
+//import Semantic.ScopeStack;
 //import Lexer.TokenKind;
 //
 //public abstract class ArithmeticBinaryNode extends BinaryNode {
@@ -12,12 +12,12 @@
 //    }
 //
 ////    @Override
-////    public Expression evaluate(Environment env) {
+////    public Expression evaluate(ScopeStack env) {
 ////        return this;
 ////    }
 //
 //    @Override
-//    public TokenKind getType(Environment env) {
+//    public TokenKind getType(ScopeStack env) {
 //        TokenKind leftType = lhs.getType(env);
 //        TokenKind rightType = rhs.getType(env);
 //        if (leftType == TokenKind.SCALAR && rightType == TokenKind.SCALAR) {

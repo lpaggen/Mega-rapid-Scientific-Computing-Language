@@ -1,7 +1,7 @@
 //package AST.Expressions.Mathematics.Trigonometry;
 //
 //import AST.Expressions.Expression;
-//import Runtime.Environment;
+//import Semantic.ScopeStack;
 //
 //public class Tan extends Expression {
 //    private final Expression arg;
@@ -11,7 +11,7 @@
 //    }
 //
 //    @Override
-//    public Expression evaluate(Environment env) {
+//    public Expression evaluate(ScopeStack env) {
 //        Expression argValue = arg.evaluate(env);
 //        if (argValue instanceof Scalar c) {
 //            return new Scalar(Math.tan(c.getDoubleValue()));
@@ -19,7 +19,7 @@
 //        return new Tan(argValue);
 //    }
 //
-//    public double evaluateNumeric(Environment env) {
+//    public double evaluateNumeric(ScopeStack env) {
 //        double argValue = arg.evaluateNumeric(env);
 //        return Math.tan(argValue);
 //    }

@@ -1,7 +1,7 @@
 //package AST.Expressions.Functions.BuiltIns.Linalg;
 //
 //import AST.Expressions.Functions.BuiltIns.BuiltInFunctionSymbol;
-//import Runtime.Environment;
+//import Semantic.ScopeStack;
 //
 //import java.util.List;
 //
@@ -11,7 +11,7 @@
 //    }
 //
 //    @Override
-//    public Object call(Environment env, List<Object> args) {
+//    public Object call(ScopeStack env, List<Object> args) {
 //        // check params
 //        if (args.size() != 1) {
 //            throw new IllegalArgumentException("Determinant function requires exactly one argument.");

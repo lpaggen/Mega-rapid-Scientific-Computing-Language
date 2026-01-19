@@ -31,7 +31,7 @@ public class VariableDeclarationNode extends Statement {
 //TODO transfer this to runtime
 //
 //    @Override
-//    public void execute(Environment env) {
+//    public void execute(ScopeStack env) {
 //        // we might want to check if we have a function call
 //        Expression value = (initializer != null) ? initializer.evaluate(env) : null;
 //

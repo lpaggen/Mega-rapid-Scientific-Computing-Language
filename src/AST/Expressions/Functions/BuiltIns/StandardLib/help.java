@@ -2,7 +2,7 @@
 //
 //import AST.BuiltIns.Functions.Expressions.BuiltInFunctionSymbol;
 //import AST.Expressions.StringNode;
-//import Parser.Symbol;
+//import Semantic.Symbol;
 //import Lexer.TokenKind;
 //
 //public class help extends BuiltInFunctionSymbol {
@@ -11,7 +11,7 @@
 //    }
 //
 //    @Override
-//    public Object call(Runtime.Environment env, java.util.List<Object> args) {
+//    public Object call(Semantic.ScopeStack env, java.util.List<Object> args) {
 //        if (args.size() != 1) {
 //            throw new IllegalArgumentException("help(functionName) requires 1 argument.");
 //        }

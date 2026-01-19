@@ -2,7 +2,7 @@
 //
 //import AST.Nodes.DataTypes.Scalar;
 //import AST.Expressions.Expression;
-//import Runtime.Environment;
+//import Semantic.ScopeStack;
 //
 //public class Cot extends Expression {
 //    private final Expression arg;
@@ -12,7 +12,7 @@
 //    }
 //
 //    @Override
-//    public Expression evaluate(Environment env) {
+//    public Expression evaluate(ScopeStack env) {
 //        Expression argValue = arg.evaluate(env);
 //        if (argValue instanceof Scalar c) {
 //            double value = c.getDoubleValue();
@@ -25,7 +25,7 @@
 //    }
 //
 //    @Override
-//    public double evaluateNumeric(Environment env) {
+//    public double evaluateNumeric(ScopeStack env) {
 //        double argValue = arg.evaluateNumeric(env);
 //        if (argValue == 0) {
 //            throw new ArithmeticException("Cotangent is undefined for 0");

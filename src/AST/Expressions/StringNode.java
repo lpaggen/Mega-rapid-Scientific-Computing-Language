@@ -1,6 +1,6 @@
 //package AST.Expressions;
 //
-//import Runtime.Environment;
+//import Semantic.ScopeStack;
 //import Lexer.TokenKind;
 //
 //public class StringNode extends Expression {
@@ -11,7 +11,7 @@
 //    }
 //
 //    @Override
-//    public Expression evaluate(Environment env) {
+//    public Expression evaluate(ScopeStack env) {
 //        return this;
 //    }
 //
@@ -25,7 +25,7 @@
 //    }
 //
 //    @Override
-//    public TokenKind getType(Environment env) {
+//    public TokenKind getType(ScopeStack env) {
 //        return TokenKind.STRING;
 //    }
 //}

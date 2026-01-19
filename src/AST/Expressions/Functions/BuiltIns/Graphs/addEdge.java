@@ -5,7 +5,7 @@
 //import AST.Nodes.DataStructures.Node;
 //import AST.Expressions.Expression;
 //import AST.BuiltIns.Functions.Expressions.BuiltInFunctionSymbol;
-//import Runtime.Environment;
+//import Semantic.ScopeStack;
 //
 //import java.util.List;
 //
@@ -15,7 +15,7 @@
 //    }
 //
 //    @Override
-//    public Object call(Environment env, List<Object> args) {
+//    public Object call(ScopeStack env, List<Object> args) {
 //        if (args.size() < 3 || args.size() > 4) {
 //            throw new IllegalArgumentException("addEdge(graph, [str] nodeID1, [str] nodeID2, [optional, expr]) requires at least 3 arguments, and takes at most 4 arguments.");
 //        }

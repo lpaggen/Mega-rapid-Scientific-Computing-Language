@@ -4,7 +4,7 @@
 //import AST.DataStructures.Array;
 //import AST.Expressions.Expression;
 //import AST.BuiltIns.Functions.Expressions.BuiltInFunctionSymbol;
-//import Runtime.Environment;
+//import Semantic.ScopeStack;
 //import Lexer.TokenKind;
 //
 //public class MatchAny extends BuiltInFunctionSymbol {
@@ -15,7 +15,7 @@
 //    // can make this more efficient if we really want to by immediately asserting
 //    // can't match type if array doesn't even contain that type, will do later
 //    @Override
-//    public Object call(Environment env, java.util.List<Object> args) {
+//    public Object call(ScopeStack env, java.util.List<Object> args) {
 //        if (args.size() != 2) {
 //            throw new IllegalArgumentException("matchAny function requires exactly two arguments.");
 //        }

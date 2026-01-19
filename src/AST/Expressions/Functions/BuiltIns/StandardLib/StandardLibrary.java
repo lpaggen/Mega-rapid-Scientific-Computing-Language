@@ -1,6 +1,6 @@
 package AST.Expressions.Functions.BuiltIns.StandardLib;
 
-import Parser.Symbol;
+import Semantic.Symbol;
 
 import java.util.HashMap;
 import java.util.Set;

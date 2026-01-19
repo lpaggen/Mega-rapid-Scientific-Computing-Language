@@ -1,7 +1,7 @@
 //package AST.Nodes.DataStructures;
 //
 //import AST.Expressions.Expression;
-//import Runtime.Environment;
+//import Semantic.ScopeStack;
 //import Runtime.RuntimeMatrix;
 //import Lexer.TokenKind;
 //import Util.WarningLogger;
@@ -24,7 +24,7 @@
 //    }
 //
 //    @Override
-//    public TokenKind getType(Environment env) {
+//    public TokenKind getType(ScopeStack env) {
 //        return TokenKind.GRAPH;
 //    }
 //
@@ -474,7 +474,7 @@
 //    }
 //
 //    @Override
-//    public Expression evaluate(Environment env) {
+//    public Expression evaluate(ScopeStack env) {
 //        for (Node node : nodes.values()) {
 //            node.evaluate(env);
 //            Expression weight = node.getValue();

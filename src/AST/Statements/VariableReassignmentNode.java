@@ -1,9 +1,6 @@
 package AST.Statements;
 
 import AST.Expressions.Expression;
-import Parser.VariableSymbol;
-import Runtime.Environment;
-import Lexer.TokenKind;
 
 // i can't be sure if this should be the final implementation or not
 // but it WILL solve the null statement issue in the conditional branching
@@ -17,7 +14,7 @@ public class VariableReassignmentNode extends Statement {
     }
 
 //    @Override
-//    public void execute(Environment env) {
+//    public void execute(ScopeStack env) {
 //        if (!env.isDeclared(variableName)) {
 //            throw new RuntimeException("Variable '" + variableName + "' is not declared.");
 //        }

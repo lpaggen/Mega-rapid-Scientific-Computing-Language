@@ -1,7 +1,8 @@
-package Runtime;
+package Semantic;
 
-import Parser.Symbol;
 import Lexer.TokenKind;
+import Types.Functions.FunctionTypeNode;
+import Types.TypeNode;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -11,10 +12,10 @@ import java.util.Map;
 // scoped hash maps! super easy concept for the time being, use a stack to push and pop scope
 // so each "level" i call "scope" is its own environment
 // the idea is that we should now check the local scope, and just go up until we find a variable to find if it is declared or not
-public class Environment {
+public class ScopeStack {
     private final Deque<Map<String, Symbol>> envStack = new ArrayDeque<>();
 
-    public Environment() {
+    public ScopeStack() {
         // initialize with a global environment -- remember we can just change this anytime!
         pushScope();
     }
@@ -54,6 +55,17 @@ public class Environment {
         throw new IllegalArgumentException("Variable '" + name + "' not found in any scope");
     }
 
+    public TypeNode lookupType(String name) {
+        Symbol sym = lookup(name);
+        if (sym instanceof FunctionSymbol funcSym) {
+            return funcSym.getType();
+        }
+        if (sym instanceof VariableSymbol varSym) {
+            return varSym.getType();
+        }
+        throw new IllegalStateException("Symbol has no type: " + name);
+    }
+
     public boolean isDeclared(String name) {
 //        return envStack.peek().containsKey(name);
         for (Map<String, Symbol> scope : envStack) {
@@ -84,10 +96,7 @@ public class Environment {
         return allSymbols;
     }
 
-    public TokenKind getType(String name) {
-        Symbol symbol = lookup(name);
-        return symbol.getType();
-    }
+
 
     public void loadModule(Map<String, Symbol> moduleSymbols) {
         Map<String, Symbol> currentScope = envStack.peek();  // lazy import

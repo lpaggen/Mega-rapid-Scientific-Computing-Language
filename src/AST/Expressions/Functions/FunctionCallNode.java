@@ -1,11 +1,7 @@
 package AST.Expressions.Functions;
 
 import AST.Expressions.Expression;
-import Runtime.Environment;
-import Parser.FunctionSymbol;
-import Lexer.TokenKind;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class FunctionCallNode extends Expression {
@@ -20,12 +16,12 @@ public class FunctionCallNode extends Expression {
         this.arguments = arguments;
     }
 
-//    public void execute(Environment env) {
+//    public void execute(ScopeStack env) {
 //        evaluate(env);
 //    }
 
 //    @Override
-//    public Expression evaluate(Environment env) {
+//    public Expression evaluate(ScopeStack env) {
 //        FunctionSymbol function = (FunctionSymbol) env.lookup(functionName);
 //        List<Object> evaluatedArgs = new ArrayList<>();
 //        for (Expression arg : arguments) {
@@ -36,7 +32,7 @@ public class FunctionCallNode extends Expression {
 //    }
 
 //    @Override
-//    public TokenKind getType(Environment env) {
+//    public TokenKind getType(ScopeStack env) {
 //        return env.lookup(functionName).getType();
 //    }
 

@@ -1,6 +1,5 @@
 package AST.Statements;
 import AST.Expressions.Expression;
-import Runtime.Environment;
 
 import java.util.List;
 
@@ -26,7 +25,7 @@ public class WhileNode extends Statement {
     }
 
 //    @Override
-//    public void execute(Environment env) {
+//    public void execute(ScopeStack env) {
 //        if (condition.evaluate(env) instanceof BooleanNode bool) {
 //            boolean cond = bool.getValue();
 //            while (cond) {

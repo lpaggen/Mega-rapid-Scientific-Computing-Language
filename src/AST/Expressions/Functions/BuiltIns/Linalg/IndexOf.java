@@ -3,7 +3,7 @@
 //import AST.Expressions.Expression;
 //import AST.DataStructures.Array;
 //import AST.Expressions.Functions.BuiltIns.BuiltInFunctionSymbol;
-//import Runtime.Environment;
+//import Semantic.ScopeStack;
 //import Lexer.TokenKind;
 //
 //import java.util.List;
@@ -17,7 +17,7 @@
 //    }
 //
 //    @Override
-//    public Object call(Environment env, List<Object> args) {
+//    public Object call(ScopeStack env, List<Object> args) {
 //        if (args.size() != 2) {
 //            throw new IllegalArgumentException("IndexOf function requires exactly two arguments.");
 //        }

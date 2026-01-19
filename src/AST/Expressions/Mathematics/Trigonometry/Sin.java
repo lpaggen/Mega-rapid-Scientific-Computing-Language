@@ -1,7 +1,6 @@
 package AST.Expressions.Mathematics.Trigonometry;
 
 import AST.Expressions.Expression;
-import Runtime.Environment;
 
 public class Sin extends Expression {
     private final Expression arg;
@@ -11,7 +10,7 @@ public class Sin extends Expression {
     }
 
 //    @Override
-//    public Expression evaluate(Environment env) {
+//    public Expression evaluate(ScopeStack env) {
 //        Expression argValue = arg.evaluate(env);
 //        if (argValue instanceof Scalar c) {
 //            return new Scalar(Math.sin(c.getDoubleValue()));
@@ -19,7 +18,7 @@ public class Sin extends Expression {
 //        return new Sin(argValue);
 //    }
 //
-//    public double evaluateNumeric(Environment env) {
+//    public double evaluateNumeric(ScopeStack env) {
 //        double argValue = arg.evaluateNumeric(env);
 //        return Math.sin(argValue);
 //    }

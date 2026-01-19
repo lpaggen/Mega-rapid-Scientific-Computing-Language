@@ -4,11 +4,9 @@ import AST.Expressions.Functions.BuiltIns.Graphs.GraphsLibrary;
 import AST.Expressions.Functions.BuiltIns.Linalg.LinalgLibrary;
 import AST.Expressions.Functions.BuiltIns.StandardLib.StandardLibrary;
 import AST.Statements.Statement;
-import Runtime.Environment;
-import Parser.Symbol;
+import Semantic.Symbol;
 
 import java.util.HashMap;
-import java.util.Map;
 
 public class ImportNode extends Statement {
     private final String moduleName;
@@ -28,7 +26,7 @@ public class ImportNode extends Statement {
     }
 
 //    @Override
-//    public void execute(Environment env) {
+//    public void execute(ScopeStack env) {
 //        try {
 //            Library libName = Library.valueOf(moduleName.toUpperCase());
 //        } catch (IllegalArgumentException e) {

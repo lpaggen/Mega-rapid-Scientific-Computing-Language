@@ -1,7 +1,5 @@
 package AST.Expressions;
 
-import Runtime.Environment;
-
 public class PrimaryNode extends Expression {
     private final Expression value;
 
@@ -10,7 +8,7 @@ public class PrimaryNode extends Expression {
     }
 
 //    @Override
-//    public Expression evaluate(Environment env) {
+//    public Expression evaluate(ScopeStack env) {
 //        return value;
 //    }
 

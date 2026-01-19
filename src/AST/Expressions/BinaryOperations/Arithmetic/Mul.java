@@ -6,7 +6,7 @@
 //import AST.Expressions.Expression;
 //import AST.Expressions.StringNode;
 //import AST.Expressions.VariableNode;
-//import Runtime.Environment;
+//import Semantic.ScopeStack;
 //import Lexer.TokenKind;
 //import Algebra.AlgebraEngine;
 //
@@ -17,7 +17,7 @@
 //    }
 //
 //    @Override
-//    public Expression evaluate(Environment env) {
+//    public Expression evaluate(ScopeStack env) {
 //        Expression leftVal = lhs.evaluate(env);
 //        Expression rightVal = rhs.evaluate(env);
 //
@@ -59,7 +59,7 @@
 //        return new Mul(leftVal, rightVal);
 //    }
 //
-//    public double evaluateNumeric(Environment env) {
+//    public double evaluateNumeric(ScopeStack env) {
 //        return lhs.evaluateNumeric(env) * rhs.evaluateNumeric(env);
 //    }
 //
@@ -68,7 +68,7 @@
 //        return lhs.toString() + " * " + rhs.toString();
 //    }
 //
-//    public TokenKind getType(Environment env) {
+//    public TokenKind getType(ScopeStack env) {
 //        return super.getType(env);
 //    }
 //

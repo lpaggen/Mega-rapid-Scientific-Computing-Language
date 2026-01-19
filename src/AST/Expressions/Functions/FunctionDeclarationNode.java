@@ -2,9 +2,7 @@ package AST.Expressions.Functions;
 
 import AST.Statements.Statement;
 import Lexer.TokenKind;
-import Runtime.Environment;
-import Parser.FunctionSymbol;
-import Parser.VariableSymbol;
+import Semantic.VariableSymbol;
 
 import java.util.List;
 
@@ -26,7 +24,7 @@ public class FunctionDeclarationNode extends Statement {
     }
 
 //    @Override
-//    public void execute(Environment env) {
+//    public void execute(ScopeStack env) {
 //        // Register the function in the environment
 //        env.declareSymbol(name, new FunctionSymbol(name, returnType, parameters, body != null ? body : List.of()));
 //

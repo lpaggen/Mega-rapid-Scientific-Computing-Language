@@ -2,7 +2,7 @@
 //
 //import AST.Expressions.Expression;
 //import AST.Literals.ScalarLiteralNode;
-//import Runtime.Environment;
+//import Semantic.ScopeStack;
 //import Lexer.TokenKind;
 //
 //import java.util.ArrayList;
@@ -64,7 +64,7 @@
 //    }
 //
 ////    @Override
-////    public Expression evaluate(Environment env) {
+////    public Expression evaluate(ScopeStack env) {
 ////        ArrayList<Expression> evaluatedElements = new ArrayList<>();
 ////        TokenKind expectedType = type;
 ////        int position = 0;

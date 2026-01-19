@@ -13,7 +13,7 @@ public class UnaryNode extends Expression {
     }
 
 //    @Override
-//    public Expression evaluate(Environment env) {
+//    public Expression evaluate(ScopeStack env) {
 //        Expression rightValue = rhs.evaluate(env);
 //        return switch (operator.getKind()) {
 //            case PLUS -> rightValue; // unary plus does nothing
@@ -36,7 +36,7 @@ public class UnaryNode extends Expression {
     }
 
 //    public double evaluateNumeric() {
-//        Environment env = new Environment();
+//        ScopeStack env = new ScopeStack();
 //        Expression rightValue = rhs.evaluate(env);
 //        if (rightValue instanceof Scalar c) {
 //            return c.evaluateNumeric(env);
@@ -48,7 +48,7 @@ public class UnaryNode extends Expression {
 //    }
 
 //    @Override
-//    public TokenKind getType(Environment env) {
+//    public TokenKind getType(ScopeStack env) {
 //        return switch (operator.getKind()) {
 //            case PLUS, MINUS -> rhs.getType(env);
 //            case NOT_EQUAL -> TokenKind.BOOLEAN;

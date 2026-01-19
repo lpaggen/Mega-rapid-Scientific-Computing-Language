@@ -1,7 +1,7 @@
 //package AST.Nodes.Expressions.BinaryOperations;
 //
 //import AST.Expressions.Expression;
-//import Runtime.Environment;
+//import Semantic.ScopeStack;
 //
 //// i am making this a subclass of BinaryNode, we could just leave everything in BinaryNode but this makes things clearer
 //public abstract class LogicalBinaryNode extends BinaryNode {
@@ -10,7 +10,7 @@
 //    }
 //
 //    @Override
-//    public Expression evaluate(Environment env) {
+//    public Expression evaluate(ScopeStack env) {
 //        return null; // can't call on this
 //    }
 //

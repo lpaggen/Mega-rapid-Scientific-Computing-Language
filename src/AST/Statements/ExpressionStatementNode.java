@@ -1,7 +1,6 @@
 package AST.Statements;
 
 import AST.Expressions.Expression;
-import Runtime.Environment;
 
 // this class is a wrapper for functions that can be called without returning a value
 // so we can work around the fact that functions extend Expression this way
@@ -12,7 +11,7 @@ public class ExpressionStatementNode extends Statement {
         this.expression = expression;
     }
 //    @Override
-//    public void execute(Environment env) {
+//    public void execute(ScopeStack env) {
 //        if (expression != null) {
 //            expression.evaluate(env);
 //        }
