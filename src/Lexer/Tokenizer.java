@@ -142,7 +142,6 @@ public class Tokenizer {
         put("cot", TokenKind.COT);
         put("csc", TokenKind.CSC);
         put("drv", TokenKind.DERIVE);
-        put("fn", TokenKind.FUNC);
         put("or", TokenKind.OR);
         put("and", TokenKind.AND);
         put("true", TokenKind.TRUE);
@@ -152,7 +151,8 @@ public class Tokenizer {
         put("else", TokenKind.ELSE);
         put("while", TokenKind.WHILE);
         put("return", TokenKind.RETURN);
-        put("num", TokenKind.SCALAR_TYPE);
+        put("int", TokenKind.INTEGER_TYPE);
+        put("float", TokenKind.FLOAT_TYPE);
         put("mat", TokenKind.MATRIX_TYPE);
         put("sym", TokenKind.MATH_TYPE);
         put("break", TokenKind.BREAK);
@@ -172,6 +172,7 @@ public class Tokenizer {
         put("edge", TokenKind.EDGE_TYPE);
         put("@", TokenKind.AT);
         put("list", TokenKind.LIST_TYPE);
+        put("fn", TokenKind.FUNC_TYPE);
     }};
 
     private boolean isDigit(char c) {

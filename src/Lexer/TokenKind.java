@@ -33,6 +33,7 @@ public enum TokenKind {
     CLOSE_BRACKET,
 
     FUNC,
+    FUNC_TYPE,
 
     MATH_TYPE,
     INTEGER_TYPE,

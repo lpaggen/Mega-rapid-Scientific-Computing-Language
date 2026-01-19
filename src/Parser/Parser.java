@@ -3,26 +3,25 @@ package Parser;
 import AST.Expressions.*;
 import AST.Expressions.BinaryOperations.BinaryNode;
 import AST.Expressions.Functions.FunctionCallNode;
-import AST.Expressions.Functions.FunctionDeclarationNode;
 import AST.Expressions.Functions.BuiltIns.ImportNode;
 import AST.Literals.*;
 import AST.Literals.Abstract.BraceBlockNode;
 import AST.Literals.Abstract.BracketLiteralNode;
 import AST.Literals.Abstract.RecordLiteralNode;
-//import AST.Literals.Graph.GraphLiteralNode;
 import AST.Literals.Graph.NodeLiteralNode;
 import AST.Literals.Linalg.MatrixLiteralNode;
 import AST.Statements.*;
+import AST.Statements.Functions.FunctionDeclNode;
+import AST.Statements.Functions.ParamNode;
+import AST.Statements.Functions.ReturnStatementNode;
 import Types.*;
 import Types.Abstract.*;
+import Types.Functions.FunctionTypeNode;
 import Util.ErrorHandler;
 import Lexer.TokenKind;
 import Lexer.Token;
 import Util.WarningLogger;
-import jdk.jfr.Label;
 
-import java.lang.reflect.Array;
-import java.text.ParseException;
 import java.util.*;
 
 // IMPORTANT NOTE
@@ -47,10 +46,10 @@ public class Parser {
         ArrayList<Statement> programBody = new ArrayList<>();
         while (!isAtEnd()) {
             Statement statement = parseStatement();
-            if (statement == null) {
-                // if we reach here, it means we have an empty statement or an unrecognized token
-                advance(); // just consume the token and continue -- will have to fix this in a future build
-                // continue;
+            if (statement != null) {
+                programBody.add(statement);
+            } else {
+                advance();
             }
         }
         // warningHandler.printWarnings();
@@ -60,31 +59,52 @@ public class Parser {
     // everything should really start from the Statement, since we have to declare variables, functions, etc.
     private Statement parseStatement() {
         System.out.println("current token at parseStatement: " + peek());
+        if (isAtEnd()) {
+            return null;
+        }
+        if (check(TokenKind.RETURN)) {
+            return parseReturnStatement();
+        }
         if (isDeclarationStart()) {
             System.out.println("Parsing variable declaration...");
             return parseDeclaration();
-        } else if (isFunctionDeclarationStart()) {
-            System.out.println("Parsing function declaration...");
+        }
+        if (isFunctionDeclarationStart()) {
             return parseFunctionDeclaration();
-        } else if (isConditionalBranch()) {
+        }
+        if (isConditionalBranch()) {
             System.out.println("Parsing conditional branch...");
             return parseConditionalBranch();
-        } else if (check(TokenKind.INCLUDE)) {
+        }
+        if (check(TokenKind.INCLUDE)) {
             System.out.println("Parsing module import statement: " + peek());
             advance(); // consume INCLUDE
             Token moduleName = consume(TokenKind.IDENTIFIER);
             consume(TokenKind.SEMICOLON);
             return new ImportNode(moduleName.getLexeme(), null);
-        } else if (peek().getKind() == TokenKind.IDENTIFIER && lookAhead(1).getKind() == TokenKind.EQUAL) {
+        }
+        if (peek().getKind() == TokenKind.IDENTIFIER && lookAhead(1).getKind() == TokenKind.EQUAL) {
             System.out.println("Parsing variable reassignment...");
             return parseVariableReassignment();
-        } else if (peek().getKind() == TokenKind.WHILE) {
+        }
+        if (peek().getKind() == TokenKind.WHILE) {
             return parseWhileLoop();
-        } else {
+        }
+        else {
             Expression expr = parseExpression(); // will handle identifiers, function calls, parenthesis, etc.
             consume(TokenKind.SEMICOLON); // ensure semicolon is consumed
             return new ExpressionStatementNode(expr);
         }
+    }
+
+    private ReturnStatementNode parseReturnStatement() {
+        consume(TokenKind.RETURN);
+        Expression value = null;
+        if (!check(TokenKind.SEMICOLON)) {
+            value = parseExpression();  // return; is allowed
+        }
+        consume(TokenKind.SEMICOLON);
+        return new ReturnStatementNode(value);
     }
 
     private Expression parseExpression() {
@@ -147,25 +167,24 @@ public class Parser {
 
     private Expression parsePrimary() {
         System.out.println("current token at parsePrimary: " + peek());
-        if (match(TokenKind.FALSE))
-            return new BooleanLiteralNode(false); // this will return a PrimaryNode with a BooleanNode inside
-        else if (match(TokenKind.TRUE))
-            return new BooleanLiteralNode(true); // this will return a PrimaryNode with a BooleanNode inside
-        else if (match(TokenKind.NULL)) return new PrimaryNode(null);
-        else if (match(TokenKind.STRING)) {
-            System.out.println("Parsing string literal: " + previous().getLiteral());
+        if (match(TokenKind.FALSE)) {
+            return new BooleanLiteralNode(false);
+        } else if (match(TokenKind.TRUE)) {
+            return new BooleanLiteralNode(true);
+        } else if (match(TokenKind.NULL)) {
+            return new PrimaryNode(null);
+        } else if (match(TokenKind.STRING)) {
             return new StringLiteralNode(previous().getLexeme());
-        } else if (match(TokenKind.INTEGER, TokenKind.FLOAT)) {
-            System.out.println("Parsing scalar literal: " + previous().getLiteral());
-            return new ScalarLiteralNode((Number) previous().getLiteral());
+        } else if (match(TokenKind.INTEGER)) {
+            return new IntegerLiteralNode((Integer) previous().getLiteral());
+        } else if (match(TokenKind.FLOAT)) {
+            return new FloatLiteralNode((Double) previous().getLiteral());
         } else if (match(TokenKind.OPEN_PAREN)) {
             Expression expr = parseExpression();
             consume(TokenKind.CLOSE_PAREN);
             return new GroupingNode(expr);
-        } else if (match(TokenKind.OPEN_BRACKET)) {  // need a mechanism to differentiate between graphs, matrices...
+        } else if (match(TokenKind.OPEN_BRACKET)) {
             return parseBracketLiteral();
-        } else if (match(TokenKind.OPEN_BRACE)) {
-            return parseBraceLiteral();
         }
         // this is really not good and not safe, and it's a dumb check. but it works until i figure something better out
         else if (match(TokenKind.IDENTIFIER)) {
@@ -209,16 +228,15 @@ public class Parser {
         return new BracketLiteralNode(elements);
     }
 
-    private Expression parseBraceLiteral() {
-        List<Statement> elements = new ArrayList<>();
-        if (!check(TokenKind.CLOSE_BRACE)) {
-            do {
-                elements.add(parseStatement());
-            } while (match(TokenKind.COMMA));
+    private BraceBlockNode parseBlock() {  // differs from parseField
+        List<Statement> statements = new ArrayList<>();
+        while (!check(TokenKind.CLOSE_BRACE) && !isAtEnd()) {
+            statements.add(parseStatement());
         }
         consume(TokenKind.CLOSE_BRACE);
-        return new BraceBlockNode(elements);
+        return new BraceBlockNode(statements);
     }
+
 
     // return the GetMember function under the hood for some attributes
     private Expression parseMemberAccess(Expression base) {
@@ -234,7 +252,7 @@ public class Parser {
     private TypeNode parseType() {
         TokenKind type = peek().getKind();
         return switch (type) {
-            case SCALAR_TYPE -> {
+            case INTEGER_TYPE, FLOAT_TYPE -> {
                 advance();
                 yield new ScalarTypeNode();
             }
@@ -250,13 +268,22 @@ public class Parser {
                 advance();
                 yield new NodeTypeNode();
             }
-            // case EDGE_TYPE -> { advance(); yield new EdgeTypeNode(); }
             case LIST_TYPE -> {
                 advance();
                 yield parseListType();
             }
+//            case FUNC_TYPE -> {
+//                advance();
+//                yield parseFunctionType();
+//            }
             default -> throw new RuntimeException("Expected a type, got " + type);
         };
+    }
+
+    private FunctionTypeNode parseFunctionType() {
+        System.out.println("SHREKK K K KK ");
+        System.out.println(peek());
+        return null;
     }
 
     private TypeNode parseListType() {
@@ -362,6 +389,7 @@ public class Parser {
         TypeNode type = parseType();          // mat<num>
         Token name = consume(TokenKind.IDENTIFIER);
         Expression initializer = null;  // can be anything
+        System.out.println(peek());
         if (match(TokenKind.EQUAL)) {  // allow for null init if no = provided
             if (type instanceof GraphTypeNode) {
                 initializer = parseRecordLiteral();
@@ -414,6 +442,7 @@ public class Parser {
                 String key = consume(TokenKind.IDENTIFIER).getLexeme();
                 consume(TokenKind.COLON);
                 Expression value = parseExpression();
+                System.out.println(value.toString());
                 if (content.containsKey(key)) {
                     throw new RuntimeException(
                             "Duplicate key '" + key + "' in record literal"
@@ -448,69 +477,20 @@ public class Parser {
         return map;
     }
 
-    private FunctionDeclarationNode parseFunctionDeclaration() { // we should build the logic to allow users to define a function
-        advance(); // consume the FUNC token
-        if (!match(TokenKind.IDENTIFIER)) { // should make sure you're not defining a function with a reserved keyword or literal
-            throw new ErrorHandler(
-                    "parsing",
-                    peek().getLine(),
-                    "Unexpected token: " + peek().getLexeme(),
-                    "Expected a function name after 'fn' keyword."
-            );
-            //throw new RuntimeException(peek() + " Expected function name after 'func' keyword.");
-        }
-        Token functionName = previous(); // we get the name etc, then we have to build the FunctionSymbol somehow
-        if (!match(TokenKind.OPEN_PAREN)) {
-            throw new ErrorHandler(
-                    "parsing",
-                    peek().getLine(),
-                    "Unexpected token: " + peek().getLexeme(),
-                    "Expected '(' after function name."
-            );
-            //throw new RuntimeException(peek() + " Expected '(' after function name.");
-        }
-        // the parameters are optional, so we can have a function with no parameters
-        // but the logic will be implemented later on, since i have no idea how to do it now
-        java.util.List<VariableSymbol> parameters = parseFunctionParameters(); // this will parse the parameters of the function
-        consume(TokenKind.CLOSE_PAREN); // consume the closing parenthesis
-        // so, for built ins, probably we will handle them at the start of this method
-        if (!match(TokenKind.ARROW)) { // if we don't have an arrow, we assume it's a built-in function
-            throw new ErrorHandler(
-                    "parsing",
-                    peek().getLine(),
-                    "Unexpected token: " + peek().getLexeme(),
-                    "Expected '->' after function parameters. Declaring a return type is mandatory."
-            );
-            //throw new RuntimeException(peek() + " Expected '->' after function parameters.");
-        } // now we should get the return type of the function
-        TokenKind returnType = consume(typeKeywords).getKind();
-        System.out.println("Function return type: " + returnType);
-        if (!match(TokenKind.OPEN_BRACE)) {
-            throw new ErrorHandler(
-                    "parsing",
-                    peek().getLine(),
-                    "Unexpected token: " + peek().getLexeme(),
-                    "Expected '{' after return type."
-            );
-            //throw new RuntimeException(peek() + " Expected '{' after return type.");
-        }
-
-        // somehow the body has to be parsed before return
-        // TODO -> parse function body ? or merely parse on the fly during interpretation?
-        // then we could have whatever we pass to the function become its own piece of code with own environment
-        
-        consume(TokenKind.RETURN); // consume the closing brace, we will handle the body later
-
-        // TODO -> parse the function body somehow ...
-        java.util.List<Statement> functionBody = null; // for now, we will just return null, since we don't have a body yet
-        consume(TokenKind.CLOSE_BRACE); // consume the closing brace, we will handle the body later
-
-        return new FunctionDeclarationNode( // does FunctionNode need its environment passed as well? most likely yes
-                functionName.getLexeme(),
-                returnType,
-                parameters,
-                functionBody
-        );
+    private FunctionDeclNode parseFunctionDeclaration() { // we should build the logic to allow users to define a function
+        advance();
+        String name = consume(TokenKind.IDENTIFIER).getLexeme();
+        consume(TokenKind.OPEN_PAREN);
+        ArrayList<ParamNode> paramList = new ArrayList<>();
+        do {
+            paramList.add(parseFunctionParam());
+        } while (match(TokenKind.COMMA));
+        consume(TokenKind.CLOSE_PAREN);
+        consume(TokenKind.ARROW);
+        TypeNode returnType = parseType();
+        consume(TokenKind.OPEN_BRACE);
+        BraceBlockNode functionBody = parseBlock();
+        return new FunctionDeclNode(name, paramList, returnType, functionBody);
     }
 
     // less than ideal, but it is fine for the demo TODO change this nonsense
@@ -525,18 +505,11 @@ public class Parser {
 
     // still have no idea how i will even apply these things, but it will happen at some point
     // for now all i can really do is just gather the params, but i can't do anything with them quite yet
-    private List<VariableSymbol> parseFunctionParameters() {
-        List<VariableSymbol> parameters = new ArrayList<>();
-        if (!check(TokenKind.CLOSE_PAREN)) {  // a function can be defined with no parameters
-            System.out.println("Parsing function parameters...");
-            do {
-                Token type = consume(typeKeywords); // parameter type
-                Token name = consume(TokenKind.IDENTIFIER);
-                parameters.add(new VariableSymbol(name.getLexeme(), type.getKind(), null));
-            } while (match(TokenKind.COMMA));
-        }
-        System.out.println("Function parameters parsed: " + parameters.size());
-        return parameters;
+    private ParamNode parseFunctionParam() {
+        String paramName = consume(TokenKind.IDENTIFIER).getLexeme();
+        consume(TokenKind.COLON);
+        TypeNode paramType = parseType();
+        return new ParamNode(paramName, paramType);
     }
 
     // arguments are the values passed to the function, while parameters are the variables defined in the function signature
@@ -591,136 +564,6 @@ public class Parser {
         consume(TokenKind.SEMICOLON); // consume the semicolon
         return new VariableReassignmentNode(varName, newValue);
     }
-
-//    private Expression parseGraph() {  // this has to look back to get the direction and weight info
-//        System.out.println("Parsing graph declaration...");
-//        boolean isDirectedGraph = false;
-//        boolean isWeightedGraph = false;
-//        HashMap<String, Node> nodeMap = new HashMap<>();  // use this to keep track of nodes by name
-//        HashMap<String, Edge> edgeMap = new HashMap<>();  // keep track of edges by name
-//        do {
-//            if (match(TokenKind.NODE_TYPE)) {
-//                parseNodeDeclaration(nodeMap);
-//            } else if (match(TokenKind.EDGE_TYPE)) {
-//                parseEdgeDeclaration(nodeMap, edgeMap);
-//            } else {
-//                throw new ErrorHandler(
-//                        "parsing",
-//                        peek().getLine(),
-//                        "Unexpected token inside graph body: " + peek(),
-//                        "Expected 'node' or 'edge' declaration inside graph."
-//                );
-//            }
-//        } while (!check(TokenKind.CLOSE_BRACE) && !isAtEnd());
-//        consume(TokenKind.CLOSE_BRACE);
-//        System.out.println("Finished parsing graph with name. Nodes: " + nodeMap.size() + ", Edges: " + edgeMap.values().size());
-//        // return new Graph(nodeMap, edgeMap, isDirectedGraph, isWeightedGraph, mapDeclarationToDatatype.get(currentDataType));
-//        return new Graph(nodeMap, edgeMap, isDirectedGraph, isWeightedGraph, null);
-//    }
-
-//    private void parseEdgeDeclaration(HashMap<String, Node> nodeMap, HashMap<String, Edge> edgeMap) {
-//        System.out.println("current token at parseEdgeDeclaration: " + peek());
-//        String from = peek().getLexeme();  // now we can actually pass it Node types
-//        Node fromNode = nodeMap.get(from);
-//        consume(TokenKind.IDENTIFIER); // consume the 'from' node name
-//        if (this.isDirectedGraph && !match(TokenKind.ARROW)) {
-//            throw new ErrorHandler(
-//                    "parsing",
-//                    peek().getLine(),
-//                    "Expected '->' for directed edge.",
-//                    "Directed edges must use '->' to indicate direction."
-//            );
-//        } else if (!this.isDirectedGraph && !match(TokenKind.MINUS)) {
-//            throw new ErrorHandler(
-//                    "parsing",
-//                    peek().getLine(),
-//                    "Expected '-' for undirected edge.",
-//                    "Undirected edges must use '-' to indicate no direction."
-//            );
-//        }
-//        String to = peek().getLexeme();
-//        Node toNode = nodeMap.get(to);
-//        consume(TokenKind.IDENTIFIER); // consume the 'to' node name
-//        System.out.println("Edge from: " + from + " to: " + to);
-//        edgeMap.put(from + to, null); // just to keep track of edges by name
-//        fromNode.addNeighbor(to, toNode); // add neighbor relationship
-//        toNode.addNeighbor(from, fromNode); // add neighbor relationship (undirected graph)
-//        // if the user does not specify a weight for the edge
-//        if (match(TokenKind.SEMICOLON)) {
-//            Expression weight = this.isWeightedGraph ? new Scalar(1) : null;
-//            Edge edge = new Edge(fromNode, toNode, weight, this.isDirectedGraph);
-//            String edgeName = from + to;
-//            fromNode.addEdge(edgeName, edge);
-//            if (!this.isDirectedGraph) {
-//                toNode.addEdge(edgeName, edge);
-//            }
-//            edgeMap.put(edgeName, edge);
-//        }
-//        else if (peek().getKind() == TokenKind.EQUAL) {
-//            if (!this.isWeightedGraph) {
-//                throw new ErrorHandler(
-//                        "parsing",
-//                        peek().getLine(),
-//                        "Unexpected weight assignment in unweighted graph for edge: " + from + (this.isDirectedGraph ? "->" : "-") + to,
-//                        "Cannot assign weights to edges in an unweighted graph."
-//                );
-//            }
-//            System.out.println("Parsing edge weight expression...");
-//            consume(TokenKind.EQUAL);
-//            Expression weight = parseExpression();
-//            consume(TokenKind.SEMICOLON);
-//            Edge edge = new Edge(fromNode, toNode, weight, this.isDirectedGraph);
-//            String edgeName = from + to;
-//            fromNode.addEdge(edgeName, edge);
-//            if (!this.isDirectedGraph) {
-//                toNode.addEdge(edgeName, edge);
-//            }
-//            edgeMap.put(edgeName, edge);
-//        }
-//        else {
-//            throw new ErrorHandler(
-//                    "parsing",
-//                    peek().getLine(),
-//                    "Unexpected token in edge declaration: " + peek(),
-//                    "Expected ';' or '=' followed by weight expression."
-//            );
-//        }
-//    }
-
-//    private void parseNodeDeclaration(HashMap<String, Node> nodeMap) {
-//        System.out.println("current token at parseNodeDeclaration: " + peek());
-//        String nodeName = peek().getLexeme();
-//        consume(TokenKind.IDENTIFIER);  // consume the node name
-//        System.out.println("Node name: " + nodeName);
-//        if (match(TokenKind.SEMICOLON)) {
-//            Expression weight = this.isWeightedGraph ? new Scalar(1) : null;
-//            Node node = new Node(weight, nodeName);
-//            nodeMap.put(nodeName, node);
-//        }
-//        else if (peek().getKind() == TokenKind.EQUAL) {
-//            if (!this.isWeightedGraph) {
-//                throw new ErrorHandler(
-//                        "parsing",
-//                        peek().getLine(),
-//                        "Unexpected weight assignment in unweighted graph for node: " + nodeName,
-//                        "Cannot assign weights to nodes in an unweighted graph."
-//                );
-//            }
-//            consume(TokenKind.EQUAL);
-//            Expression weight = parseExpression();
-//            consume(TokenKind.SEMICOLON);
-//            Node node = new Node(weight, nodeName);
-//            nodeMap.put(nodeName, node);
-//        }
-//        else {
-//            throw new ErrorHandler(
-//                    "parsing",
-//                    peek().getLine(),
-//                    "Unexpected token in node declaration: " + peek(),
-//                    "Expected ';' or '=' followed by weight expression."
-//            );
-//        }
-//    }
 
     private IfNode parseConditionalBranch() {
         if (!check(TokenKind.IF)) {
@@ -866,7 +709,7 @@ public class Parser {
 
     // will check if a user-defined function IS BEING DECLARED. calls will happen later
     private boolean isFunctionDeclarationStart() {
-        return check(TokenKind.FUNC);
+        return check(TokenKind.FUNC_TYPE);
     }
 
     private boolean isFunctionCall() {
@@ -887,7 +730,8 @@ public class Parser {
 
     // in future add support for all types
     private static final Set<TokenKind> typeKeywords = Set.of(
-            TokenKind.SCALAR_TYPE,
+            TokenKind.INTEGER_TYPE,
+            TokenKind.FLOAT_TYPE,
             TokenKind.BOOLEAN_TYPE,
             TokenKind.MATRIX_TYPE,
             TokenKind.MATH_TYPE,
@@ -899,52 +743,4 @@ public class Parser {
             TokenKind.LIST_TYPE,
             TokenKind.VECTOR_TYPE
     );
-
-//    private static final Map<TokenKind, TokenKind> mapDeclarationToDatatype = Map.ofEntries(
-//            Map.entry(TokenKind.SCALAR_TYPE, TokenKind.SCALAR),
-//            // Map.entry(TokenKind.FLOAT_TYPE, TokenKind.FLOAT),
-//            Map.entry(TokenKind.BOOLEAN_TYPE, TokenKind.BOOLEAN),
-//            Map.entry(TokenKind.MATRIX_TYPE, TokenKind.MATRIX),
-//            Map.entry(TokenKind.MATH_TYPE, TokenKind.MATH),
-//            Map.entry(TokenKind.STRING_TYPE, TokenKind.STRING),
-//            Map.entry(TokenKind.VOID_TYPE, TokenKind.VOID),
-//            Map.entry(TokenKind.ARRAY_TYPE, TokenKind.ARRAY),
-//            Map.entry(TokenKind.GRAPH_TYPE, TokenKind.GRAPH),
-//            Map.entry(TokenKind.NODE_TYPE, TokenKind.NODE),
-//            Map.entry(TokenKind.EDGE_TYPE, TokenKind.EDGE)
-//    );
-
-//    private static final Set<TokenKind> LinearAlgebraOperators = Set.of(
-//            TokenKind.MATRIX
-//    );
-
-    // probably we need some more operators here later on
-    // also for the linear algebra either we handle it through Add etc., or we make new nodes
-//    private BinaryNode inferBinaryNodeFromOperator(TokenKind operator, Expression lhs, Expression rhs) {
-//        System.out.println("inferBinaryNodeFromOperator called with operator: " + operator);
-//        System.out.println("lhs type: " + lhs.getType(environment) + ", rhs type: " + rhs.getType(environment));
-//        switch (operator) {
-//            case PLUS -> {
-//                return new Add(lhs, rhs);
-//            }
-//            case MINUS -> {
-//                return new Sub(lhs, rhs);
-//            }
-//            case MUL -> {
-//                return new Mul(lhs, rhs);
-//            }
-//            case DIV -> {
-//                return new Div(lhs, rhs);
-//            }
-//            case MOD -> {
-//                return new Mod(lhs, rhs);
-//            }
-//        }
-//        throw new ErrorHandler(
-//                "parsing",
-//                peek().getLine(),
-//                "Unsupported operator: " + operator,
-//                "Expected a valid arithmetic operator (+, -, *, /)."
-//        );
-//    }
 }
