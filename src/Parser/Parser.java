@@ -12,9 +12,7 @@ import AST.Literals.Graph.GraphNodeLiteralNode;
 import AST.Literals.Linalg.MatrixLiteralNode;
 import AST.Statements.*;
 import AST.Statements.Conditional.IfNode;
-import AST.Statements.Functions.FunctionDeclNode;
-import AST.Statements.Functions.ParamNode;
-import AST.Statements.Functions.ReturnStatementNode;
+import AST.Statements.Functions.*;
 import Types.*;
 import Types.Abstract.*;
 import Types.Functions.FunctionTypeNode;
@@ -30,7 +28,7 @@ import java.util.*;
 // it does NOT check for semantic errors or type mismatches
 // that is the job of the interpreter or a separate semantic analyzer
 // the parser will throw runtime exceptions if it encounters unexpected tokens
-// TODO the parser ONLY cares about SYNTAX AND GRAMMAR -> yeah, why did I deviate from this again?
+// TODO the parser ONLY cares about SYNTAX AND GRAMMAR
 // -> so "int x = 5.7;" is perfectly fine for the parser, but not for the interpreter
 public class Parser {
     private final List<Token> tokens;
@@ -193,11 +191,44 @@ public class Parser {
                 Expression index = parseExpression();
                 consume(TokenKind.CLOSE_BRACKET);
                 expr = new ListAccessNode(expr, index);
+            } else if (match(TokenKind.DOT) && peek().getKind() == TokenKind.MAP) {
+                expr = parseMapFunction();
+            } else if (match(TokenKind.DOT)) {
+                String memberName = consume(TokenKind.IDENTIFIER).getLexeme();
+                expr = new MemberAccessNode(expr, memberName);
             } else {
                 break;
             }
         }
         return expr;
+    }
+
+    private Expression parseMapFunction() {
+        consume(TokenKind.MAP);
+        consume(TokenKind.OPEN_PAREN);
+        consume(TokenKind.IDENTIFIER);
+        consume(TokenKind.ARROW);
+        Expression body = parseExpression();
+        consume(TokenKind.CLOSE_PAREN);
+        return new MapFunctionNode(body);
+    }
+
+    private Expression parseLambdaFunction() {
+        consume(TokenKind.MAP);
+        consume(TokenKind.OPEN_PAREN);
+        List<ParamNode> parameters = new ArrayList<>();
+        if (!check(TokenKind.CLOSE_PAREN)) {
+            do {
+                String paramName = consume(TokenKind.IDENTIFIER).getLexeme();
+                consume(TokenKind.COLON);
+                TypeNode paramType = parseType();
+                parameters.add(new ParamNode(paramName, paramType));
+            } while (match(TokenKind.COMMA));
+        }
+        consume(TokenKind.CLOSE_PAREN);
+        consume(TokenKind.ARROW);
+        Expression body = parseExpression();
+        return new LambdaFunctionNode(parameters, body);
     }
 
     private Expression parseBracketLiteral() {
@@ -249,12 +280,6 @@ public class Parser {
 //            }
             default -> throw new RuntimeException("Expected a type, got " + type);
         };
-    }
-
-    private FunctionTypeNode parseFunctionType() {
-        System.out.println("SHREKK K K KK ");
-        System.out.println(peek());
-        return null;
     }
 
     private TypeNode parseListType() {
@@ -394,11 +419,6 @@ public class Parser {
         }
         return new MatrixLiteralNode(rows);
     }
-
-//    private GraphLiteralNode parseGraphLiteral() {
-//        RecordLiteralNode body = parseRecordLiteral();
-//        return null;
-//    }
 
     private GraphNodeLiteralNode parseNodeLiteral() {
         System.out.println("parsing node literal");

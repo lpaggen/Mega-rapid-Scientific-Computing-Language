@@ -173,6 +173,8 @@ public class Tokenizer {
         put("@", TokenKind.AT);
         put("list", TokenKind.LIST_TYPE);
         put("fn", TokenKind.FUNC_TYPE);
+        put("lambda", TokenKind.LAMBDA);
+        put("map", TokenKind.MAP);
     }};
 
     private boolean isDigit(char c) {

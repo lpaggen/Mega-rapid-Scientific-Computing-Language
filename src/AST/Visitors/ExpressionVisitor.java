@@ -14,9 +14,7 @@ import AST.Literals.Abstract.RecordLiteralNode;
 import AST.Literals.Graph.EdgeLiteralNode;
 import AST.Literals.Graph.GraphNodeLiteralNode;
 import AST.Literals.Linalg.MatrixLiteralNode;
-import AST.Statements.Functions.FunctionDeclNode;
-import AST.Statements.Functions.ParamNode;
-import AST.Statements.Functions.ReturnStatementNode;
+import AST.Statements.Functions.*;
 import AST.Statements.VariableDeclarationNode;
 
 public interface ExpressionVisitor<T> {
@@ -47,4 +45,7 @@ public interface ExpressionVisitor<T> {
     T visitExp(Exp exp);
     T visitCsc(Csc csc);
     T visitListAccessNode(ListAccessNode listAccessNode);
+    T visitMemberAccessNode(MemberAccessNode memberAccessNode);
+    T visitLambdaFunctionNode(LambdaFunctionNode lambdaFunctionNode);
+    T visitMapFunctionNode(MapFunctionNode mapFunctionNode);
 }
