@@ -1,6 +1,7 @@
 package AST.Expressions.Mathematics;
 
 import AST.Expressions.Expression;
+import AST.Visitors.ExpressionVisitor;
 
 public class Exp extends Expression {
     private final Expression arg;
@@ -28,6 +29,11 @@ public class Exp extends Expression {
     @Override
     public String toString() {
         return "exp(" + arg.toString() + ")";
+    }
+
+    @Override
+    public <R> R accept(ExpressionVisitor<R> visitor) {
+        return visitor.visitExp(this);
     }
 
     public Expression getArg() {

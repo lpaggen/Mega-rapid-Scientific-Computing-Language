@@ -2,21 +2,6 @@ load stdlib;
 load graphs;
 load linalg;
 
-mat<int, 3 @ 3> A = [
-    [1, 2, 3],
-    [4, 5, 6],
-    [7, 8, 9]
-];
+list<int> numbers = [1, 2, 3, 4, 5];
 
-graph<ud, uw> G = {
-    nodes: [A, B, C],
-    edges: [A-B, B-C, C-A]
-};
-
-print("Matrix A:");
-
-fn add(x: int, y: int) -> int {
-    return x + y;
-}
-
-print(add(5, 10) * 566432);
+print(numbers[2]); # Outputs: 3

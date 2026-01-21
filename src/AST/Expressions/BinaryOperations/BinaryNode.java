@@ -1,12 +1,15 @@
 package AST.Expressions.BinaryOperations;
 
 import AST.Expressions.Expression;
+import AST.Visitors.ExpressionVisitor;
 import Lexer.TokenKind;
+import Types.TypeNode;
 
 public final class BinaryNode extends Expression {
     final Expression lhs;
     final TokenKind operator;
     final Expression rhs;
+    public TypeNode inferredType;  // set during type inference
 
     public BinaryNode(Expression lhs, TokenKind operator, Expression rhs) {
         this.lhs = lhs;
@@ -24,6 +27,11 @@ public final class BinaryNode extends Expression {
 
     public Expression getRight() {
         return rhs;
+    }
+
+    @Override
+    public <T> T accept(ExpressionVisitor<T> visitor) {
+        return visitor.visitBinaryNode(this);
     }
 
     @Override

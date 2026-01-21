@@ -1,6 +1,7 @@
 package AST.Expressions.Functions;
 
 import AST.Expressions.Expression;
+import AST.Visitors.ExpressionVisitor;
 
 import java.util.List;
 
@@ -19,6 +20,11 @@ public class FunctionCallNode extends Expression {
 
     public List<Expression> getArguments() {
         return arguments;
+    }
+
+    @Override
+    public <T> T accept(ExpressionVisitor<T> visitor) {
+        return visitor.visitFunctionCall(this);
     }
 
     @Override

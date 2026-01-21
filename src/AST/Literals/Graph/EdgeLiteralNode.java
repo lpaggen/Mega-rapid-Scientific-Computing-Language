@@ -1,6 +1,7 @@
 package AST.Literals.Graph;
 
 import AST.Expressions.Expression;
+import AST.Visitors.ExpressionVisitor;
 
 public class EdgeLiteralNode extends Expression {
     private String fromNode;
@@ -27,5 +28,10 @@ public class EdgeLiteralNode extends Expression {
     @Override
     public String toString() {
         return "EdgeLiteralNode{}";
+    }
+
+    @Override
+    public <R> R accept(ExpressionVisitor<R> visitor) {
+        return visitor.visitEdgeLiteralNode(this);
     }
 }

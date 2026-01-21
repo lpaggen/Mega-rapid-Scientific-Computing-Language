@@ -1,5 +1,7 @@
 package AST.Expressions;
 
+import AST.Visitors.ExpressionVisitor;
+
 public class GroupingNode extends Expression {
     private final Expression expression;
 
@@ -11,10 +13,10 @@ public class GroupingNode extends Expression {
         return "(" + expression.toString() + ")";
     }
 
-//    @Override
-//    public Expression evaluate(ScopeStack env) {
-//        return expression.evaluate(env);
-//    }
+    @Override
+    public <R> R accept(ExpressionVisitor<R> visitor) {
+        return visitor.visitGroupingNode(this);
+    }
 
     // need to double-check my logic here
     public Expression getValue() {

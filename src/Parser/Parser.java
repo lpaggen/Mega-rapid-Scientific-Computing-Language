@@ -8,9 +8,10 @@ import AST.Literals.*;
 import AST.Literals.Abstract.BraceBlockNode;
 import AST.Literals.Abstract.BracketLiteralNode;
 import AST.Literals.Abstract.RecordLiteralNode;
-import AST.Literals.Graph.NodeLiteralNode;
+import AST.Literals.Graph.GraphNodeLiteralNode;
 import AST.Literals.Linalg.MatrixLiteralNode;
 import AST.Statements.*;
+import AST.Statements.Conditional.IfNode;
 import AST.Statements.Functions.FunctionDeclNode;
 import AST.Statements.Functions.ParamNode;
 import AST.Statements.Functions.ReturnStatementNode;
@@ -165,57 +166,38 @@ public class Parser {
     }
 
     private Expression parsePrimary() {
-        System.out.println("current token at parsePrimary: " + peek());
-        if (match(TokenKind.FALSE)) {
-            return new BooleanLiteralNode(false);
-        } else if (match(TokenKind.TRUE)) {
-            return new BooleanLiteralNode(true);
-        } else if (match(TokenKind.NULL)) {
-            return new PrimaryNode(null);
-        } else if (match(TokenKind.STRING)) {
-            return new StringLiteralNode(previous().getLexeme());
-        } else if (match(TokenKind.INTEGER)) {
-            return new IntegerLiteralNode((Integer) previous().getLiteral());
+        Expression expr;
+        if (match(TokenKind.INTEGER)) {
+            expr = new IntegerLiteralNode((Integer) previous().getLiteral());
         } else if (match(TokenKind.FLOAT)) {
-            return new FloatLiteralNode((Double) previous().getLiteral());
+            expr = new FloatLiteralNode((Double) previous().getLiteral());
+        } else if (match(TokenKind.IDENTIFIER)) {
+            expr = new VariableNode(previous().getLexeme());
         } else if (match(TokenKind.OPEN_PAREN)) {
-            Expression expr = parseExpression();
+            expr = new GroupingNode(parseExpression());
             consume(TokenKind.CLOSE_PAREN);
-            return new GroupingNode(expr);
         } else if (match(TokenKind.OPEN_BRACKET)) {
-            return parseBracketLiteral();
+            expr = parseBracketLiteral();
+        } else {
+            throw new ErrorHandler(
+                    "parsing",
+                    peek().getLine(),
+                    "Unexpected token: " + peek().getLexeme(),
+                    "Expected a primary expression."
+            );
         }
-        else if (match(TokenKind.IDENTIFIER)) {
-            Expression var = new VariableNode(previous().getLexeme());
+        while (true) {
             if (match(TokenKind.OPEN_PAREN)) {
-                return parseFunctionCall(var);
+                expr = parseFunctionCall(expr);
+            } else if (match(TokenKind.OPEN_BRACKET)) {
+                Expression index = parseExpression();
+                consume(TokenKind.CLOSE_BRACKET);
+                expr = new ListAccessNode(expr, index);
+            } else {
+                break;
             }
-            return var;
         }
-//            while (match(TokenKind.DOT)) {  // member access detected
-//                System.out.println("Parsing member access for: " + name.getLexeme());
-//                expr = parseMemberAccess(expr);
-//            }
-////            if (match(TokenKind.OPEN_PAREN)) {  // function call detected
-////                java.util.List<Expression> args = parseFunctionArguments();
-////                consume(TokenKind.CLOSE_PAREN);
-////                return new FunctionCallNode(name.getLexeme(), args);
-////            }
-//            System.out.println("Parsing variable: " + name.getLexeme());
-//            // just check for increment here
-//            if (match(TokenKind.INCREMENT, TokenKind.DECREMENT)) {
-//                Token operator = previous();
-//                return new IncrementNode(operator.getKind(), new VariableNode(name.getLexeme()));
-//            }
-//            return expr;
-//        }
-        System.out.println("Unexpected token at parsePrimary: " + peek());
-        throw new ErrorHandler(
-                "parsing",
-                peek().getLine(),
-                "ParsePrimary Unexpected token: " + peek().getLexeme(),
-                "Expected an expression, variable, or literal value."
-        );
+        return expr;
     }
 
     private Expression parseBracketLiteral() {
@@ -237,18 +219,6 @@ public class Parser {
         consume(TokenKind.CLOSE_BRACE);
         return new BraceBlockNode(statements);
     }
-
-
-    // return the GetMember function under the hood for some attributes
-//    private Expression parseMemberAccess(Expression base) {
-//        String member = consume(TokenKind.IDENTIFIER).getLexeme();
-//        Expression access = new FunctionCallNode("getMember", List.of(base, new StringLiteralNode(member)));
-//        while (match(TokenKind.DOT)) {
-//            String nextMember = consume(TokenKind.IDENTIFIER).getLexeme();
-//            access = new FunctionCallNode("getMember", List.of(access, new StringLiteralNode(nextMember)));
-//        }
-//        return access;
-//    }
 
     private TypeNode parseType() {
         TokenKind type = peek().getKind();
@@ -273,7 +243,7 @@ public class Parser {
                 advance();
                 yield parseListType();
             }
-//            case FUNC_TYPE -> {
+//            case FUNC_TYPE -> {  // TODO return functions
 //                advance();
 //                yield parseFunctionType();
 //            }
@@ -430,7 +400,7 @@ public class Parser {
 //        return null;
 //    }
 
-    private NodeLiteralNode parseNodeLiteral() {
+    private GraphNodeLiteralNode parseNodeLiteral() {
         System.out.println("parsing node literal");
         return null;
     }

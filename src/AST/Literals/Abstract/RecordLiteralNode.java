@@ -1,6 +1,7 @@
 package AST.Literals.Abstract;
 
 import AST.Expressions.Expression;
+import AST.Visitors.ExpressionVisitor;
 
 import java.util.Map;
 
@@ -20,5 +21,10 @@ public final class RecordLiteralNode extends Expression {  // this is our hashma
         return "RecordLiteralNode{" +
                 "fields=" + fields +
                 '}';
+    }
+
+    @Override
+    public <R> R accept(ExpressionVisitor<R> visitor) {
+        return visitor.visitRecordLiteral(this);
     }
 }

@@ -1,6 +1,7 @@
 package AST.Expressions.Mathematics.Trigonometry;
 
 import AST.Expressions.Expression;
+import AST.Visitors.ExpressionVisitor;
 
 public class Sin extends Expression {
     private final Expression arg;
@@ -26,6 +27,11 @@ public class Sin extends Expression {
     @Override
     public String toString() {
         return "sin(" + arg.toString() + ")";
+    }
+
+    @Override
+    public <R> R accept(ExpressionVisitor<R> visitor) {
+        return visitor.visitSin(this);
     }
 
     public Expression getArg() {

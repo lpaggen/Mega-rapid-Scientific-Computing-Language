@@ -2,6 +2,7 @@ package AST.Literals.Abstract;
 
 import AST.Expressions.Expression;
 import AST.Statements.Statement;
+import AST.Visitors.ExpressionVisitor;
 
 import java.util.List;
 
@@ -21,5 +22,10 @@ public final class BraceBlockNode extends Expression {
         return "BraceBlockNode{" +
                 "body=" + body +
                 '}';
+    }
+
+    @Override
+    public <R> R accept(ExpressionVisitor<R> visitor) {
+        return visitor.visitBraceLiteral(this);
     }
 }

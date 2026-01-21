@@ -1,6 +1,7 @@
 package AST.Literals.Linalg;
 
 import AST.Expressions.Expression;
+import AST.Visitors.ExpressionVisitor;
 
 import java.util.List;
 
@@ -12,6 +13,10 @@ public class MatrixLiteralNode extends Expression {
     }
 
     public List<List<Expression>> getRows() {
+        return rows;
+    }
+
+    public List<List<Expression>> getElements() {
         return rows;
     }
 
@@ -28,5 +33,10 @@ public class MatrixLiteralNode extends Expression {
         }
         sb.append("]");
         return sb.toString();
+    }
+
+    @Override
+    public <R> R accept(ExpressionVisitor<R> visitor) {
+        return visitor.visitMatrixLiteralNode(this);
     }
 }

@@ -1,5 +1,6 @@
 package AST.Expressions;
 
+import AST.Visitors.ExpressionVisitor;
 import Lexer.TokenKind;
 
 public class IncrementNode extends Expression {
@@ -13,6 +14,14 @@ public class IncrementNode extends Expression {
         }
         this.operator = operator;
         this.arg = arg;
+    }
+
+    public TokenKind getOperator() {
+        return operator;
+    }
+
+    public Expression getArg() {
+        return arg;
     }
 
 //    @Override
@@ -30,5 +39,10 @@ public class IncrementNode extends Expression {
     @Override
     public String toString() {
         return null;
+    }
+
+    @Override
+    public <R> R accept(ExpressionVisitor<R> visitor) {
+        return visitor.visitIncrementNode(this);
     }
 }

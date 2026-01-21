@@ -1,6 +1,7 @@
 package AST.Literals;
 
 import AST.Expressions.Expression;
+import AST.Visitors.ExpressionVisitor;
 
 public class BooleanLiteralNode extends Expression {
     private final boolean value;
@@ -18,5 +19,10 @@ public class BooleanLiteralNode extends Expression {
         return "BooleanLiteralNode<" +
                 "value=" + value +
                 '>';
+    }
+
+    @Override
+    public <R> R accept(ExpressionVisitor<R> visitor) {
+        return visitor.visitBooleanLiteral(this);
     }
 }

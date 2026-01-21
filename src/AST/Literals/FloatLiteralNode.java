@@ -1,6 +1,7 @@
 package AST.Literals;
 
 import AST.Expressions.Expression;
+import AST.Visitors.ExpressionVisitor;
 
 public class FloatLiteralNode extends Expression {
     private final double value;
@@ -18,5 +19,10 @@ public class FloatLiteralNode extends Expression {
         return "FloatLiteralNode{" +
                 "value=" + value +
                 '}';
+    }
+
+    @Override
+    public <R> R accept(ExpressionVisitor<R> visitor) {
+        return visitor.visitFloatLiteral(this);
     }
 }

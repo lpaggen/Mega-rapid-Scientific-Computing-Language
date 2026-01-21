@@ -1,6 +1,7 @@
 package AST.Literals;
 
 import AST.Expressions.Expression;
+import AST.Visitors.ExpressionVisitor;
 
 import java.util.List;
 
@@ -27,5 +28,10 @@ public class ListLiteralNode extends Expression {
         }
         sb.append("]}");
         return sb.toString();
+    }
+
+    @Override
+    public <T> T accept(ExpressionVisitor<T> visitor) {
+        return visitor.visitListLiteral(this);
     }
 }

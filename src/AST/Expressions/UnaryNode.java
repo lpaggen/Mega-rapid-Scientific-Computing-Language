@@ -1,6 +1,7 @@
 package AST.Expressions;
 
 import AST.Literals.BooleanLiteralNode;
+import AST.Visitors.ExpressionVisitor;
 import Lexer.Token;
 
 public class UnaryNode extends Expression {
@@ -26,6 +27,11 @@ public class UnaryNode extends Expression {
     @Override
     public String toString() {
         return operator.getLexeme() + rhs.toString();
+    }
+
+    @Override
+    public <R> R accept(ExpressionVisitor<R> visitor) {
+        return visitor.visitUnaryNode(this);
     }
 
     // this block makes it so that we can also evaluate 0 and 1s as T/F

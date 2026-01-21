@@ -1,5 +1,7 @@
 package AST.Expressions;
 
+import AST.Visitors.ExpressionVisitor;
+
 public class VariableNode extends Expression {
     private final String name;
     public VariableNode(String name) {
@@ -31,6 +33,11 @@ public class VariableNode extends Expression {
     @Override
     public String toString() {
         return name;
+    }
+
+    @Override
+    public <R> R accept(ExpressionVisitor<R> visitor) {
+        return visitor.visitVariableNode(this);
     }
 
     public String getName() {

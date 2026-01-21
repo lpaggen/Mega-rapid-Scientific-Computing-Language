@@ -1,6 +1,7 @@
 package AST.Expressions.Mathematics.Trigonometry;
 
 import AST.Expressions.Expression;
+import AST.Visitors.ExpressionVisitor;
 
 public class Csc extends Expression {
 
@@ -27,6 +28,11 @@ public class Csc extends Expression {
     @Override
     public String toString() {
         return "csc(" + arg.toString() + ")";
+    }
+
+    @Override
+    public <R> R accept(ExpressionVisitor<R> visitor) {
+        return visitor.visitCsc(this);
     }
 
     public Expression getArg() {

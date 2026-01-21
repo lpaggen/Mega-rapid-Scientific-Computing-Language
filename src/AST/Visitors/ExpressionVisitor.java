@@ -1,0 +1,50 @@
+package AST.Visitors;
+
+import AST.Expressions.*;
+import AST.Expressions.BinaryOperations.BinaryNode;
+import AST.Expressions.Functions.BuiltIns.ImportNode;
+import AST.Expressions.Functions.FunctionCallNode;
+import AST.Expressions.Mathematics.Exp;
+import AST.Expressions.Mathematics.Trigonometry.Csc;
+import AST.Expressions.Mathematics.Trigonometry.Sin;
+import AST.Literals.*;
+import AST.Literals.Abstract.BraceBlockNode;
+import AST.Literals.Abstract.BracketLiteralNode;
+import AST.Literals.Abstract.RecordLiteralNode;
+import AST.Literals.Graph.EdgeLiteralNode;
+import AST.Literals.Graph.GraphNodeLiteralNode;
+import AST.Literals.Linalg.MatrixLiteralNode;
+import AST.Statements.Functions.FunctionDeclNode;
+import AST.Statements.Functions.ParamNode;
+import AST.Statements.Functions.ReturnStatementNode;
+import AST.Statements.VariableDeclarationNode;
+
+public interface ExpressionVisitor<T> {
+    T visitBraceLiteral(BraceBlockNode node);
+    T visitBracketLiteral(BracketLiteralNode node);
+    T visitFunctionCall(FunctionCallNode node);
+    T visitBinaryNode(BinaryNode node);
+    T visitIntegerLiteral (IntegerLiteralNode node);
+    T visitFloatLiteral (FloatLiteralNode node);
+    T visitIncrementNode (IncrementNode node);
+    T visitVariableNode (VariableNode node);
+    T visitStringLiteral (StringLiteralNode node);
+    T visitUnaryNode (UnaryNode node);
+    T visitPrimaryNode (PrimaryNode node);
+    T visitFunctionDeclaration (FunctionDeclNode node);
+    T visitImportNode (ImportNode node);
+    T visitRecordLiteral (RecordLiteralNode node);
+    T visitListLiteral (ListLiteralNode node);
+    T visitBooleanLiteral (BooleanLiteralNode node);
+    T visitVariableDeclarationNode (VariableDeclarationNode node);
+    T visitReturnNode (ReturnStatementNode node);
+    T visitParameterNode (ParamNode node);
+    T visitMatrixLiteralNode(MatrixLiteralNode matrixLiteralNode);
+    T visitGroupingNode(GroupingNode groupingNode);
+    T visitGraphNodeLiteralNode(GraphNodeLiteralNode nodeLiteralNode);
+    T visitSin(Sin sin);
+    T visitEdgeLiteralNode(EdgeLiteralNode edgeLiteralNode);
+    T visitExp(Exp exp);
+    T visitCsc(Csc csc);
+    T visitListAccessNode(ListAccessNode listAccessNode);
+}

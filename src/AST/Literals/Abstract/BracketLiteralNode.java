@@ -1,6 +1,7 @@
 package AST.Literals.Abstract;
 
 import AST.Expressions.Expression;
+import AST.Visitors.ExpressionVisitor;
 
 import java.util.List;
 
@@ -27,5 +28,10 @@ public final class BracketLiteralNode extends Expression {
         }
         sb.append("]}");
         return sb.toString();
+    }
+
+    @Override
+    public <R> R accept(ExpressionVisitor<R> visitor) {
+        return visitor.visitBracketLiteral(this);
     }
 }

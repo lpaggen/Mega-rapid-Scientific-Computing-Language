@@ -1,11 +1,12 @@
 package AST.Literals.Graph;
 
 import AST.Expressions.Expression;
+import AST.Visitors.ExpressionVisitor;
 
-public class NodeLiteralNode extends Expression {
+public class GraphNodeLiteralNode extends Expression {
     private final String identifier;
     private final Expression value;
-    public NodeLiteralNode(String identifier, Expression value) {
+    public GraphNodeLiteralNode(String identifier, Expression value) {
         this.identifier = identifier;
         this.value = value;
     }
@@ -20,9 +21,14 @@ public class NodeLiteralNode extends Expression {
 
     @Override
     public String toString() {
-        return "NodeLiteralNode{" +
+        return "GraphNodeLiteralNode{" +
                 "identifier='" + identifier + '\'' +
                 ", value=" + value +
                 '}';
+    }
+
+    @Override
+    public <R> R accept(ExpressionVisitor<R> visitor) {
+        return visitor.visitGraphNodeLiteralNode(this);
     }
 }

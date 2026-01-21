@@ -1,5 +1,7 @@
 package AST.Expressions;
 
+import AST.Visitors.ExpressionVisitor;
+
 public class PrimaryNode extends Expression {
     private final Expression value;
 
@@ -15,5 +17,10 @@ public class PrimaryNode extends Expression {
     @Override
     public String toString() {
         return value.toString(); // can't believe i didn't implement toString before.
+    }
+
+    @Override
+    public <R> R accept(ExpressionVisitor<R> visitor) {
+        return visitor.visitPrimaryNode(this);
     }
 }
