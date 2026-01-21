@@ -5,36 +5,21 @@ import AST.Expressions.Expression;
 import java.util.List;
 
 public class FunctionCallNode extends Expression {
-    private final String functionName;
-    // at this stage, we assume that the function is already declared in the environment
-    // so arguments must be cast to Expression
-    // in declaration time, they are VariableSymbols, now they must inherit Expression
+    private final Expression callee; // we need to keep Expression; eg print(x + y);
     private final List<Expression> arguments; // we need to keep Expression; eg print(x + y);
 
-    public FunctionCallNode(String functionName, List<Expression> arguments) {
-        this.functionName = functionName;
+    public FunctionCallNode(Expression callee, List<Expression> arguments) {
+        this.callee = callee;
         this.arguments = arguments;
     }
 
-//    public void execute(ScopeStack env) {
-//        evaluate(env);
-//    }
+    public Expression getCallee() {
+        return callee;
+    }
 
-//    @Override
-//    public Expression evaluate(ScopeStack env) {
-//        FunctionSymbol function = (FunctionSymbol) env.lookup(functionName);
-//        List<Object> evaluatedArgs = new ArrayList<>();
-//        for (Expression arg : arguments) {
-//            System.out.println("class of arg: " + arg.getClass().getSimpleName());
-//            evaluatedArgs.add(arg.evaluate(env));  // <-- This is crucial!
-//        }
-//        return (Expression) function.call(env, evaluatedArgs);
-//    }
-
-//    @Override
-//    public TokenKind getType(ScopeStack env) {
-//        return env.lookup(functionName).getType();
-//    }
+    public List<Expression> getArguments() {
+        return arguments;
+    }
 
     @Override
     public String toString() {

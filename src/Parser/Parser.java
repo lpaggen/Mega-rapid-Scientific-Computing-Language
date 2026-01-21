@@ -161,7 +161,6 @@ public class Parser {
             Expression rhs = parseUnary();
             return new UnaryNode(operator, rhs);
         }
-        System.out.println("current token at parseUnary: " + peek());
         return parsePrimary();
     }
 
@@ -186,28 +185,30 @@ public class Parser {
         } else if (match(TokenKind.OPEN_BRACKET)) {
             return parseBracketLiteral();
         }
-        // this is really not good and not safe, and it's a dumb check. but it works until i figure something better out
         else if (match(TokenKind.IDENTIFIER)) {
-            Token name = previous();
-            System.out.println("current token after identifier match: " + peek());
-            Expression expr = new VariableNode(name.getLexeme());
-            while (match(TokenKind.DOT)) {  // member access detected
-                System.out.println("Parsing member access for: " + name.getLexeme());
-                expr = parseMemberAccess(expr);
+            Expression var = new VariableNode(previous().getLexeme());
+            if (match(TokenKind.OPEN_PAREN)) {
+                return parseFunctionCall(var);
             }
-            if (match(TokenKind.OPEN_PAREN)) {  // function call detected
-                java.util.List<Expression> args = parseFunctionArguments();
-                consume(TokenKind.CLOSE_PAREN);
-                return new FunctionCallNode(name.getLexeme(), args);
-            }
-            System.out.println("Parsing variable: " + name.getLexeme());
-            // just check for increment here
-            if (match(TokenKind.INCREMENT, TokenKind.DECREMENT)) {
-                Token operator = previous();
-                return new IncrementNode(operator.getKind(), new VariableNode(name.getLexeme()));
-            }
-            return expr;
+            return var;
         }
+//            while (match(TokenKind.DOT)) {  // member access detected
+//                System.out.println("Parsing member access for: " + name.getLexeme());
+//                expr = parseMemberAccess(expr);
+//            }
+////            if (match(TokenKind.OPEN_PAREN)) {  // function call detected
+////                java.util.List<Expression> args = parseFunctionArguments();
+////                consume(TokenKind.CLOSE_PAREN);
+////                return new FunctionCallNode(name.getLexeme(), args);
+////            }
+//            System.out.println("Parsing variable: " + name.getLexeme());
+//            // just check for increment here
+//            if (match(TokenKind.INCREMENT, TokenKind.DECREMENT)) {
+//                Token operator = previous();
+//                return new IncrementNode(operator.getKind(), new VariableNode(name.getLexeme()));
+//            }
+//            return expr;
+//        }
         System.out.println("Unexpected token at parsePrimary: " + peek());
         throw new ErrorHandler(
                 "parsing",
@@ -239,15 +240,15 @@ public class Parser {
 
 
     // return the GetMember function under the hood for some attributes
-    private Expression parseMemberAccess(Expression base) {
-        String member = consume(TokenKind.IDENTIFIER).getLexeme();
-        Expression access = new FunctionCallNode("getMember", List.of(base, new StringLiteralNode(member)));
-        while (match(TokenKind.DOT)) {
-            String nextMember = consume(TokenKind.IDENTIFIER).getLexeme();
-            access = new FunctionCallNode("getMember", List.of(access, new StringLiteralNode(nextMember)));
-        }
-        return access;
-    }
+//    private Expression parseMemberAccess(Expression base) {
+//        String member = consume(TokenKind.IDENTIFIER).getLexeme();
+//        Expression access = new FunctionCallNode("getMember", List.of(base, new StringLiteralNode(member)));
+//        while (match(TokenKind.DOT)) {
+//            String nextMember = consume(TokenKind.IDENTIFIER).getLexeme();
+//            access = new FunctionCallNode("getMember", List.of(access, new StringLiteralNode(nextMember)));
+//        }
+//        return access;
+//    }
 
     private TypeNode parseType() {
         TokenKind type = peek().getKind();
@@ -512,33 +513,17 @@ public class Parser {
         return new ParamNode(paramName, paramType);
     }
 
-    // arguments are the values passed to the function, while parameters are the variables defined in the function signature
-    // so these may actually be Expression
-    private List<Expression> parseFunctionArguments() {
-        List<Expression> arguments = new ArrayList<>();
+    private Expression parseFunctionCall(Expression callee) {
+        ArrayList<Expression> arguments = new ArrayList<>();
         if (!check(TokenKind.CLOSE_PAREN)) {
-            while (true) {
-                Expression arg = parseExpression();
-                arguments.add(arg);
-                if (!match(TokenKind.COMMA))
-                    break;
-                if (check(TokenKind.CLOSE_PAREN))
-                    throw new IllegalArgumentException("Trailing comma in argument list.");
-            }
+            do {
+                arguments.add(parseExpression());
+            } while (match(TokenKind.COMMA));
         }
-        return arguments;
+        consume(TokenKind.CLOSE_PAREN);
+        return new FunctionCallNode(callee, arguments);
     }
 
-    private Expression parseFunctionCall() {
-        Token functionNameToken = consume(TokenKind.IDENTIFIER); // consume function name
-        consume(TokenKind.OPEN_PAREN); // consume '('
-
-        java.util.List<Expression> arguments = parseFunctionArguments(); // parse argument expressions
-
-        consume(TokenKind.CLOSE_PAREN); // consume ')'
-
-        return new FunctionCallNode(functionNameToken.getLexeme(), arguments);
-    }
 
     private Statement parseVariableReassignment() {
         System.out.println("before parsing variable reassignment, current token: " + peek());
@@ -658,16 +643,6 @@ public class Parser {
         }
         throw new Error("No match for " + peek().getKind() + " at line " + peek().getLine()
                 + ". Expected one of: " + Arrays.toString(kinds));
-    }
-
-    private Token consume(Set<TokenKind> tokenKinds) {
-        for (TokenKind expectedKind : tokenKinds) {
-            if (check(expectedKind)) {
-                return advance();
-            }
-        }
-        throw new Error("No match for " + peek().getKind() + " at line " + peek().getLine()
-                + ". Expected one of: " + tokenKinds);
     }
 
     private Token advance() {
