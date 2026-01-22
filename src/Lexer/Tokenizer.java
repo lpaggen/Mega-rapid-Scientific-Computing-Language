@@ -175,6 +175,7 @@ public class Tokenizer {
         put("fn", TokenKind.FUNC_TYPE);
         put("lambda", TokenKind.LAMBDA);
         put("map", TokenKind.MAP);
+        put("mut", TokenKind.MUTABLE);
     }};
 
     private boolean isDigit(char c) {

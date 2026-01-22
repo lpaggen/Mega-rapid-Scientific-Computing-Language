@@ -35,6 +35,8 @@ public enum TokenKind {
     FUNC,
     FUNC_TYPE,
 
+    MUTABLE,
+
     MATH_TYPE,
     INTEGER_TYPE,
     FLOAT_TYPE,

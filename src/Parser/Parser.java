@@ -15,7 +15,6 @@ import AST.Statements.Conditional.IfNode;
 import AST.Statements.Functions.*;
 import Types.*;
 import Types.Abstract.*;
-import Types.Functions.FunctionTypeNode;
 import Util.ErrorHandler;
 import Lexer.TokenKind;
 import Lexer.Token;
@@ -71,7 +70,7 @@ public class Parser {
         if (isFunctionDeclarationStart()) {
             return parseFunctionDeclaration();
         }
-        if (isConditionalBranch()) {
+        if (check(TokenKind.IF)) {
             System.out.println("Parsing conditional branch...");
             return parseConditionalBranch();
         }
@@ -381,23 +380,19 @@ public class Parser {
     // atm we can declare with or without a value
     // !! type mismatch errors happen at another stage of the interpreter
     private VariableDeclarationNode parseDeclaration() {
-        System.out.println(peek());
+        boolean isMutable = match(TokenKind.MUTABLE);  // optional mutable keyword, more to come
         TypeNode type = parseType();          // mat<num>
         Token name = consume(TokenKind.IDENTIFIER);
         Expression initializer = null;  // can be anything
         System.out.println(peek());
         if (match(TokenKind.EQUAL)) {  // allow for null init if no = provided
-            if (type instanceof GraphTypeNode) {
-                initializer = parseRecordLiteral();
-            } else if (type instanceof MatrixTypeNode) {
-                initializer = parseMatrixLiteral();
-            } else if (type instanceof NodeTypeNode) {
-                initializer = parseNodeLiteral();
-            } else if (type instanceof ListTypeNode) {
-                initializer = parseListLiteral();
-            } else {
-                initializer = parseExpression();
-            }
+            initializer = switch (type) {
+                case GraphTypeNode graphTypeNode -> parseRecordLiteral();
+                case MatrixTypeNode matrixTypeNode -> parseMatrixLiteral();
+                case NodeTypeNode nodeTypeNode -> parseNodeLiteral();
+                case ListTypeNode listTypeNode -> parseListLiteral();
+                case null, default -> parseExpression();
+            };
         }
         consume(TokenKind.SEMICOLON);
         return new VariableDeclarationNode(type, name.getLexeme(), initializer);
@@ -669,7 +664,7 @@ public class Parser {
     }
 
     private boolean isDeclarationStart() {
-        return check(typeKeywords);
+        return check(typeKeywords) || check(modifierKeywords);
     }
 
     // will check if a user-defined function IS BEING DECLARED. calls will happen later
@@ -683,14 +678,6 @@ public class Parser {
         }
         advance();
         return peek().getKind() == TokenKind.OPEN_PAREN;
-    }
-
-    private boolean isModuleImport() {
-        return check(TokenKind.INCLUDE); // we can add more keywords for imports later
-    }
-
-    private boolean isConditionalBranch() {
-        return check(TokenKind.IF);
     }
 
     // in future add support for all types
@@ -707,5 +694,9 @@ public class Parser {
             TokenKind.EDGE_TYPE,
             TokenKind.LIST_TYPE,
             TokenKind.VECTOR_TYPE
+    );
+
+    private static final Set<TokenKind> modifierKeywords = Set.of(
+            TokenKind.MUTABLE
     );
 }

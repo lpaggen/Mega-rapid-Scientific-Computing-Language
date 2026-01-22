@@ -2,6 +2,4 @@ load stdlib;
 load graphs;
 load linalg;
 
-list<int> numbers = [1, 2, 3, 4, 5];
-
-print(numbers.map(x -> x * x));
+mut int n = 5;
