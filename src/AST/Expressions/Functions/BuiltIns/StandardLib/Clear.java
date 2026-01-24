@@ -2,7 +2,7 @@
 //
 //import AST.Expressions.Functions.BuiltIns.BuiltInFunctionSymbol;
 //import Lexer.TokenKind;
-//import Semantic.ScopeStack;
+//import Semantic.Environment;
 //
 //import java.util.List;
 //
@@ -12,12 +12,12 @@
 //    }
 //
 //    @Override
-//    public void execute(ScopeStack env, List<Object> args) {
+//    public void execute(Environment env, List<Object> args) {
 //        // Clear the environment by removing all symbols
 //        if (args != null && !args.isEmpty()) {
 //            throw new IllegalArgumentException("Clear function does not take any arguments.");
 //        }
 //        System.out.println("Clearing environment...");
-//        env.clear(); // Assuming ScopeStack has a clear method to remove all symbols
+//        env.clear(); // Assuming Environment has a clear method to remove all symbols
 //    }
 //}

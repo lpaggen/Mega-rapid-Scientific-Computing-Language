@@ -5,7 +5,7 @@
 //import AST.Expressions.Expression;
 //import AST.BuiltIns.Functions.Expressions.BuiltInFunctionSymbol;
 //import AST.Expressions.StringNode;
-//import Semantic.ScopeStack;
+//import Semantic.Environment;
 //import Lexer.TokenKind;
 //
 //import java.util.List;
@@ -16,7 +16,7 @@
 //    }
 //
 //    @Override
-//    public Object call(ScopeStack env, List<Object> args) {
+//    public Object call(Environment env, List<Object> args) {
 //        if (args.size() < 2 || args.size() > 3) {
 //            throw new IllegalArgumentException("addNode(graph, [str] nodeID, [optional, expr] value) requires at least 2 arguments, and takes at most 3 arguments.");
 //        }

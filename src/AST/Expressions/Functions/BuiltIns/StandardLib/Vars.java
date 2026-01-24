@@ -2,7 +2,7 @@
 //
 //import AST.Expressions.Functions.BuiltIns.BuiltInFunctionSymbol;
 //import Lexer.TokenKind;
-//import Semantic.ScopeStack;
+//import Semantic.Environment;
 //import Semantic.Symbol;
 //import Semantic.VariableSymbol;
 //
@@ -10,14 +10,14 @@
 //import java.util.Map;
 //
 //public class Vars extends BuiltInFunctionSymbol {
-//    ScopeStack env;
+//    Environment env;
 //
 //    public Vars() {
 //        super("vars", TokenKind.VOID);
 //    }
 //
 //    @Override
-//    public Object call(ScopeStack env, List<Object> args) {
+//    public Object call(Environment env, List<Object> args) {
 //        PrintFunction printFunction = new PrintFunction();
 //        this.env = env;
 //        // Call the print function to print all variables in the environment

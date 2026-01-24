@@ -2,4 +2,7 @@ load stdlib;
 load graphs;
 load linalg;
 
-mut int n = 5;
+print("Creating a simple undirected graph...\n");
+
+
+print(5 > 3);

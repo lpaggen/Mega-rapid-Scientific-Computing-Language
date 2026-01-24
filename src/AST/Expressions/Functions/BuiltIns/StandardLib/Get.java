@@ -3,7 +3,7 @@
 //import AST.Nodes.DataStructures.Graph;
 //import AST.DataStructures.Array;
 //import AST.BuiltIns.Functions.Expressions.BuiltInFunctionSymbol;
-//import Semantic.ScopeStack;
+//import Semantic.Environment;
 //import Lexer.TokenKind;
 //
 //import java.util.List;
@@ -16,7 +16,7 @@
 //
 //    // "get" in my language is just under the hood syntax for []
 //    // still you can call it if you want
-//    public Object call(ScopeStack env, List<Object> args) {
+//    public Object call(Environment env, List<Object> args) {
 //        int count = 0;
 //        if (args.size() != 2) {  // yes this is counter-intuitive, but you would not use .get directly, always through []
 //            throw new IllegalArgumentException("get function requires exactly one argument: the index.");

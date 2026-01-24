@@ -179,12 +179,12 @@
 //    }
 //
 //    @Override
-//    public TokenKind getType(ScopeStack env) {
+//    public TokenKind getType(Environment env) {
 //        return type;
 //    }
 //
 //    @Override
-//    public Expression evaluate(ScopeStack env) {
+//    public Expression evaluate(Environment env) {
 //        Expression[][] evaluatedElements = new Expression[numRows][numCols];
 //        TokenKind expectedType = type;
 //        int position = 0; // linear counter

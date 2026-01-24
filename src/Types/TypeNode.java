@@ -1,8 +1,6 @@
 package Types;
 
-import AST.ASTNode;
-
-public abstract class TypeNode extends ASTNode {  // this doesn't need to be Expression at all
+public abstract class TypeNode {  // this doesn't need to be Expression at all
     private final String name;
 
     public TypeNode(String name) {

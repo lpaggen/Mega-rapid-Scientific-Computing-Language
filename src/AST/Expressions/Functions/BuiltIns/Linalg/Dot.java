@@ -3,7 +3,7 @@
 //import AST.Nodes.Conditional.BooleanNode;
 //import AST.Nodes.DataStructures.Matrix;
 //import AST.BuiltIns.Functions.Expressions.BuiltInFunctionSymbol;
-//import Semantic.ScopeStack;
+//import Semantic.Environment;
 //
 //import java.util.List;
 //
@@ -14,7 +14,7 @@
 //    }
 //
 //    @Override
-//    public Object call(ScopeStack env, List<Object> args) {
+//    public Object call(Environment env, List<Object> args) {
 //        if (args.size() != 2) {
 //            throw new IllegalArgumentException("dot product requires exactly two arguments.");
 //        }

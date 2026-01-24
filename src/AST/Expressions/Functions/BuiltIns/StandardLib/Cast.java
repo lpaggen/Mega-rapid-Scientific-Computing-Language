@@ -4,7 +4,7 @@
 ////import AST.Nodes.DataTypes.Constant;
 ////import AST.BuiltIns.Functions.Expressions.BuiltInFunctionSymbol;
 ////import AST.Expressions.StringNode;
-////import Semantic.ScopeStack;
+////import Semantic.Environment;
 ////import Lexer.TokenKind;
 ////
 ////import java.util.Array;
@@ -25,7 +25,7 @@
 ////    }
 ////
 ////    @Override
-////    public Object call(ScopeStack env, Array<Object> args) {
+////    public Object call(Environment env, Array<Object> args) {
 ////        if (args.size() != 1) {
 ////            throw new IllegalArgumentException("Cast function requires exactly one argument.");
 ////        }
@@ -69,7 +69,7 @@
 //import AST.Nodes.Conditional.BooleanNode;
 //import AST.BuiltIns.Functions.Expressions.BuiltInFunctionSymbol;
 //import AST.Expressions.StringNode;
-//import Semantic.ScopeStack;
+//import Semantic.Environment;
 //import Lexer.TokenKind;
 //
 //import java.util.List;
@@ -82,7 +82,7 @@
 //    private static final String[] supportedTypes = {"int", "string", "bool", "float"};
 //
 //    @Override
-//    public Object call(ScopeStack env, List<Object> args) {
+//    public Object call(Environment env, List<Object> args) {
 //        if (args.size() != 2) {
 //            throw new IllegalArgumentException("Cast function requires exactly two arguments: value and target type.");
 //        }

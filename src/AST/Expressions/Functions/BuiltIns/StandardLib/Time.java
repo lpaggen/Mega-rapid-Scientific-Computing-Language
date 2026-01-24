@@ -2,7 +2,7 @@
 //
 //import AST.BuiltIns.Functions.Expressions.BuiltInFunctionSymbol;
 //import Lexer.TokenKind;
-//import Semantic.ScopeStack;
+//import Semantic.Environment;
 //
 //import java.time.LocalTime;
 //import java.util.List;
@@ -17,7 +17,7 @@
 //    private static final String[] validArguments = {"h", "m", "s", "ms"};
 //
 //    @Override
-//    public Object call(ScopeStack env, List<Object> args) {
+//    public Object call(Environment env, List<Object> args) {
 //        System.out.println("Calling built-in function 'time' with arguments: " + args);
 //        // depending on the argument:
 //        // default should return human-readable time from Java's LocalTime

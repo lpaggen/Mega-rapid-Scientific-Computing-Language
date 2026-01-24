@@ -2,7 +2,7 @@
 //
 //import AST.Expressions.Functions.BuiltIns.BuiltInFunctionSymbol;
 //import Lexer.TokenKind;
-//import Semantic.ScopeStack;
+//import Semantic.Environment;
 //
 //import java.util.List;
 //
@@ -11,7 +11,7 @@
 //        super("print", TokenKind.VOID);
 //    }
 //
-//    public Object call(ScopeStack env, List<Object> args) {
+//    public Object call(Environment env, List<Object> args) {
 //        if (!args.isEmpty() && args.getFirst() != null) {
 //            System.out.println(args.getFirst().toString());
 //        } else {

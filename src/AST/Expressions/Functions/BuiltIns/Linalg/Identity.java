@@ -3,7 +3,7 @@
 //import AST.Nodes.DataStructures.Matrix;
 //import AST.Nodes.DataTypes.Scalar;
 //import AST.BuiltIns.Functions.Expressions.BuiltInFunctionSymbol;
-//import Semantic.ScopeStack;
+//import Semantic.Environment;
 //import Lexer.TokenKind;
 //
 //import java.util.List;
@@ -14,7 +14,7 @@
 //    }
 //
 //    @Override
-//    public Object call(ScopeStack env, List<Object> args) {
+//    public Object call(Environment env, List<Object> args) {
 //        if (args.size() != 1) {
 //            throw new RuntimeException("identity function expects exactly one argument.");
 //        }

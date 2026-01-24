@@ -1,8 +1,8 @@
 package Types;
 
 public class BooleanTypeNode extends TypeNode {
-    public BooleanTypeNode(String name) {
-        super(name);
+    public BooleanTypeNode() {
+        super("Bool");
     }
     @Override
     public String toString() {

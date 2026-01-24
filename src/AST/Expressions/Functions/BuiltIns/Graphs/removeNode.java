@@ -8,7 +8,7 @@
 //    }
 //
 //    @Override
-//    public Object call(Semantic.ScopeStack env, java.util.List<Object> args) {
+//    public Object call(Semantic.Environment env, java.util.List<Object> args) {
 //        if (args.size() != 2) {
 //            throw new IllegalArgumentException("removeNode(graph, [str] nodeID) requires exactly 2 arguments.");
 //        }

@@ -1,6 +1,6 @@
 package Types;
 
-import Types.Abstract.Dimension;
+import AST.Metadata.Containers.Dimension;
 
 public class MatrixTypeNode extends TypeNode {
     private final TypeNode elementType;

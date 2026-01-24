@@ -1,0 +1,41 @@
+package AST;
+
+import AST.Expression;
+import AST.Visitors.Expressions.ExpressionVisitor;
+
+public final class Csc implements Expression {
+
+    private final Expression arg;
+
+    public Csc(Expression arg) {
+        this.arg = arg;
+    }
+
+//    @Override
+//    public Expression evaluate(Environment env) {
+//        Expression argValue = arg.evaluate(env);
+//        if (argValue instanceof Scalar c) {
+//            return new Scalar(1 / Math.sin(c.getDoubleValue()));
+//        }
+//        return new Csc(argValue);
+//    }
+//
+//    public double evaluateNumeric(Environment env) {
+//        double argValue = arg.evaluateNumeric(env);
+//        return 1 / Math.sin(argValue);
+//    }
+
+    @Override
+    public String toString() {
+        return "csc(" + arg.toString() + ")";
+    }
+
+    @Override
+    public <R> R accept(ExpressionVisitor<R> visitor) {
+        return visitor.visitCsc(this);
+    }
+
+    public Expression getArg() {
+        return arg;
+    }
+}

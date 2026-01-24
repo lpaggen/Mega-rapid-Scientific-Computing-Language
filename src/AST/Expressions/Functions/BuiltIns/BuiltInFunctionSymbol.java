@@ -1,8 +1,8 @@
 //package AST.Expressions.Functions.BuiltIns;
 //
-//import AST.Literals.StringLiteralNode;
+//import AST.StringLiteralNode;
 //import Lexer.TokenKind;
-//import Semantic.ScopeStack;
+//import Semantic.Environment;
 //import Semantic.FunctionSymbol;
 //
 //import java.util.List;
@@ -18,7 +18,7 @@
 //    }
 //
 //    @Override
-//    public Object call(ScopeStack env, List<Object> args) {
+//    public Object call(Environment env, List<Object> args) {
 //        // This method should be overridden in subclasses for specific built-in functions
 //        throw new UnsupportedOperationException("Built-in function '" + name + "' is not implemented.");
 //    }
@@ -44,7 +44,7 @@
 //        return TokenKind.VOID; // some built in functions can return stuff, TODO: add support for this feature
 //    }
 //
-//    public void execute(ScopeStack env, List<Object> args) {
+//    public void execute(Environment env, List<Object> args) {
 //        // This method should be overridden in subclasses for specific built-in functions
 //        throw new UnsupportedOperationException("Built-in function '" + name + "' is not implemented.");
 //    }

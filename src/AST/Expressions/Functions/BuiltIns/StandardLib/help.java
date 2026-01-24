@@ -11,7 +11,7 @@
 //    }
 //
 //    @Override
-//    public Object call(Semantic.ScopeStack env, java.util.List<Object> args) {
+//    public Object call(Semantic.Environment env, java.util.List<Object> args) {
 //        if (args.size() != 1) {
 //            throw new IllegalArgumentException("help(functionName) requires 1 argument.");
 //        }

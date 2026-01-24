@@ -5,7 +5,7 @@
 //import AST.Expressions.Expression;
 //import AST.BuiltIns.Functions.Expressions.BuiltInFunctionSymbol;
 //import AST.Expressions.StringNode;
-//import Semantic.ScopeStack;
+//import Semantic.Environment;
 //import Lexer.TokenKind;
 //
 //import java.util.List;
@@ -16,7 +16,7 @@
 //    }
 //
 //    @Override
-//    public Object call(ScopeStack env, List<Object> args) {
+//    public Object call(Environment env, List<Object> args) {
 //        if (args.size() < 2 || args.size() > 5) {
 //            throw new IllegalArgumentException("union(graph1, graph2) requires 2 arguments: graph1, graph2, and 3 optional arguments: [optional] disjointMerge, [optional] nodeStrategy, [optional] edgeStrategy.");
 //        }

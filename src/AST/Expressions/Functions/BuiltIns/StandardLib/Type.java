@@ -2,7 +2,7 @@
 //
 //import AST.Expressions.Functions.BuiltIns.BuiltInFunctionSymbol;
 //import Lexer.TokenKind;
-//import Semantic.ScopeStack;
+//import Semantic.Environment;
 //
 //import java.util.List;
 //
@@ -14,7 +14,7 @@
 //    // this works, but at the moment we still have some Java types
 //    // so while my language wants something like "int", "string", "bool", etc. it currently returns Java types
 //    @Override
-//    public Object call(ScopeStack env, List<Object> args) {
+//    public Object call(Environment env, List<Object> args) {
 //        if (args.isEmpty()) {
 //            throw new IllegalArgumentException("Type function requires at least one argument.");
 //        }

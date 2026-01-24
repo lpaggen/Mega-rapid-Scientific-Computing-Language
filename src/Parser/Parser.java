@@ -1,20 +1,20 @@
 package Parser;
 
-import AST.Expressions.*;
-import AST.Expressions.BinaryOperations.BinaryNode;
-import AST.Expressions.Functions.FunctionCallNode;
-import AST.Expressions.Functions.BuiltIns.ImportNode;
-import AST.Literals.*;
-import AST.Literals.Abstract.BraceBlockNode;
-import AST.Literals.Abstract.BracketLiteralNode;
-import AST.Literals.Abstract.RecordLiteralNode;
-import AST.Literals.Graph.GraphNodeLiteralNode;
-import AST.Literals.Linalg.MatrixLiteralNode;
-import AST.Statements.*;
-import AST.Statements.Conditional.IfNode;
-import AST.Statements.Functions.*;
+import AST.*;
+import AST.BinaryNode;
+import AST.FunctionCallNode;
+import AST.ImportNode;
+import AST.LambdaFunctionNode;
+import AST.MapFunctionNode;
+import AST.Metadata.Containers.*;
+import AST.Metadata.Functions.*;
+import AST.BraceLiteralNode;
+import AST.BracketLiteralNode;
+import AST.RecordLiteralNode;
+import AST.GraphNodeLiteralNode;
+import AST.MatrixLiteralNode;
+import AST.IfNode;
 import Types.*;
-import Types.Abstract.*;
 import Util.ErrorHandler;
 import Lexer.TokenKind;
 import Lexer.Token;
@@ -90,7 +90,7 @@ public class Parser {
         }
         else {
             Expression expr = parseExpression(); // will handle identifiers, function calls, parenthesis, etc.
-            consume(TokenKind.SEMICOLON); // ensure semicolon is consumed
+            consume(TokenKind.SEMICOLON);
             return new ExpressionStatementNode(expr);
         }
     }
@@ -106,11 +106,9 @@ public class Parser {
     }
 
     private Expression parseExpression() {
-        System.out.println("current token at parseExpression: " + peek());
         return parseEquality();
     }
 
-    // i don't know if this still even works anymore
     private Expression parseEquality() {
         Expression expression = parseComparison();
         while (match(TokenKind.EQUAL_EQUAL, TokenKind.NOT_EQUAL)) {
@@ -168,6 +166,10 @@ public class Parser {
             expr = new IntegerLiteralNode((Integer) previous().getLiteral());
         } else if (match(TokenKind.FLOAT)) {
             expr = new FloatLiteralNode((Double) previous().getLiteral());
+        } else if (match(TokenKind.STRING)) {
+            expr = new StringLiteralNode((String) previous().getLiteral());
+        } else if (match(TokenKind.BOOLEAN)) {
+            expr = new BooleanLiteralNode((Boolean) previous().getLiteral());
         } else if (match(TokenKind.IDENTIFIER)) {
             expr = new VariableNode(previous().getLexeme());
         } else if (match(TokenKind.OPEN_PAREN)) {
@@ -241,13 +243,13 @@ public class Parser {
         return new BracketLiteralNode(elements);
     }
 
-    private BraceBlockNode parseBlock() {  // differs from parseField
+    private BraceLiteralNode parseBlock() {  // differs from parseField
         List<Statement> statements = new ArrayList<>();
         while (!check(TokenKind.CLOSE_BRACE) && !isAtEnd()) {
             statements.add(parseStatement());
         }
         consume(TokenKind.CLOSE_BRACE);
-        return new BraceBlockNode(statements);
+        return new BraceLiteralNode(statements);
     }
 
     private TypeNode parseType() {
@@ -272,6 +274,10 @@ public class Parser {
             case LIST_TYPE -> {
                 advance();
                 yield parseListType();
+            }
+            case BOOLEAN_TYPE -> {
+                advance();
+                yield new BooleanTypeNode();
             }
 //            case FUNC_TYPE -> {  // TODO return functions
 //                advance();
@@ -381,21 +387,21 @@ public class Parser {
     // !! type mismatch errors happen at another stage of the interpreter
     private VariableDeclarationNode parseDeclaration() {
         boolean isMutable = match(TokenKind.MUTABLE);  // optional mutable keyword, more to come
-        TypeNode type = parseType();          // mat<num>
+        TypeNode type = parseType();  // mat<num>
         Token name = consume(TokenKind.IDENTIFIER);
         Expression initializer = null;  // can be anything
         System.out.println(peek());
         if (match(TokenKind.EQUAL)) {  // allow for null init if no = provided
             initializer = switch (type) {
-                case GraphTypeNode graphTypeNode -> parseRecordLiteral();
-                case MatrixTypeNode matrixTypeNode -> parseMatrixLiteral();
-                case NodeTypeNode nodeTypeNode -> parseNodeLiteral();
-                case ListTypeNode listTypeNode -> parseListLiteral();
+                case GraphTypeNode _ -> parseRecordLiteral();
+                case MatrixTypeNode _ -> parseMatrixLiteral();
+                case NodeTypeNode _ -> parseNodeLiteral();
+                case ListTypeNode _ -> parseListLiteral();
                 case null, default -> parseExpression();
             };
         }
         consume(TokenKind.SEMICOLON);
-        return new VariableDeclarationNode(type, name.getLexeme(), initializer);
+        return new VariableDeclarationNode(type, name.getLexeme(), initializer, isMutable);
     }
 
     private MatrixLiteralNode parseMatrixLiteral() {  // we land here with peek() being open_bracket
@@ -463,7 +469,7 @@ public class Parser {
         return map;
     }
 
-    private FunctionDeclNode parseFunctionDeclaration() { // we should build the logic to allow users to define a function
+    private FunctionDeclarationNode parseFunctionDeclaration() { // we should build the logic to allow users to define a function
         advance();
         String name = consume(TokenKind.IDENTIFIER).getLexeme();
         consume(TokenKind.OPEN_PAREN);
@@ -475,8 +481,8 @@ public class Parser {
         consume(TokenKind.ARROW);
         TypeNode returnType = parseType();
         consume(TokenKind.OPEN_BRACE);
-        BraceBlockNode functionBody = parseBlock();
-        return new FunctionDeclNode(name, paramList, returnType, functionBody);
+        BraceLiteralNode functionBody = parseBlock();
+        return new FunctionDeclarationNode(name, paramList, returnType, functionBody);
     }
 
     // less than ideal, but it is fine for the demo TODO change this nonsense

@@ -4,7 +4,7 @@
 //import AST.DataStructures.Array;
 //import AST.Expressions.Expression;
 //import AST.BuiltIns.Functions.Expressions.BuiltInFunctionSymbol;
-//import Semantic.ScopeStack;
+//import Semantic.Environment;
 //import Lexer.TokenKind;
 //
 //public class MatchAll extends BuiltInFunctionSymbol {
@@ -13,7 +13,7 @@
 //    }
 //
 //    @Override
-//    public Object call(ScopeStack env, java.util.List<Object> args) {
+//    public Object call(Environment env, java.util.List<Object> args) {
 //        if (args.size() != 2) {
 //            throw new IllegalArgumentException("matchAny function requires exactly two arguments.");
 //        }
