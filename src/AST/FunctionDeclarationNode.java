@@ -1,17 +1,16 @@
 package AST;
 
 import AST.Metadata.Functions.ParamNode;
-import Semantic.FunctionTypeNode;
-import Types.TypeNode;
+import AST.Visitors.StatementVisitor;
 
 import java.util.List;
 
 public final class FunctionDeclarationNode implements Statement {
     private final String name;
     private final List<ParamNode> parameters;
-    private TypeNode returnType;
+    private Type returnType;
     private final BraceLiteralNode body;
-    public FunctionDeclarationNode(String name, List<ParamNode> parameters, TypeNode returnType, BraceLiteralNode body) {
+    public FunctionDeclarationNode(String name, List<ParamNode> parameters, Type returnType, BraceLiteralNode body) {
         this.name = name;
         this.parameters = parameters;
         this.returnType = returnType;
@@ -33,7 +32,7 @@ public final class FunctionDeclarationNode implements Statement {
         return parameters;
     }
 
-    public TypeNode getReturnType() {
+    public Type getReturnType() {
         return returnType;
     }
 
@@ -56,5 +55,10 @@ public final class FunctionDeclarationNode implements Statement {
         sb.append(", body=").append(body);
         sb.append('}');
         return sb.toString();
+    }
+
+    @Override
+    public <R> R accept(StatementVisitor<R> visitor) {
+        return visitor.visitFunctionDeclarationNode(this);
     }
 }

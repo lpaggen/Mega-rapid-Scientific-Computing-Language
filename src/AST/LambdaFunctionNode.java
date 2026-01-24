@@ -1,8 +1,7 @@
 package AST;
 
-import AST.Expression;
 import AST.Metadata.Functions.ParamNode;
-import AST.Visitors.Expressions.ExpressionVisitor;
+import AST.Visitors.ExpressionVisitor;
 
 import java.util.List;
 

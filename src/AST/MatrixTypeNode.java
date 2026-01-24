@@ -1,14 +1,15 @@
-package Types;
+package AST;
 
 import AST.Metadata.Containers.Dimension;
+import AST.Type;
+import AST.Visitors.TypeVisitor;
 
-public class MatrixTypeNode extends TypeNode {
-    private final TypeNode elementType;
+public final class MatrixTypeNode implements Type {
+    private final Type elementType;
     private final Dimension rows;  // Dimension is a stricter type than Expression -> constraint
     private final Dimension cols;
 
-    public MatrixTypeNode(TypeNode elementType, Dimension rows, Dimension cols) {
-        super("Matrix");
+    public MatrixTypeNode(Type elementType, Dimension rows, Dimension cols) {
         this.elementType = elementType;
         this.rows = rows;
         this.cols = cols;
@@ -22,12 +23,17 @@ public class MatrixTypeNode extends TypeNode {
         return cols;
     }
 
-    public TypeNode getElementType() {
+    public Type getElementType() {
         return elementType;
     }
 
     @Override
     public String toString() {
         return "Matrix<" + elementType.toString() + ">[" + rows + "x" + cols + "]";
+    }
+
+    @Override
+    public <R> R accept(TypeVisitor<R> visitor) {
+        return visitor.visitMatrixTypeNode(this);
     }
 }

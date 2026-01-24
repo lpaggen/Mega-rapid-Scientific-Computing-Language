@@ -1,8 +1,8 @@
 package AST.Metadata.Functions;
 
-import Types.TypeNode;
+import AST.Type;
 
-public record ParamNode(String name, TypeNode type) {
+public record ParamNode(String name, Type type) {
 
     @Override
     public String toString() {

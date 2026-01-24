@@ -1,4 +1,4 @@
-package AST.Visitors.Expressions;
+package AST.Visitors;
 
 import AST.*;
 import AST.BinaryNode;
@@ -16,7 +16,7 @@ import AST.EdgeLiteralNode;
 import AST.GraphNodeLiteralNode;
 import AST.MatrixLiteralNode;
 
-public class Evaluator implements ExpressionVisitor<Object> {
+public final class Evaluator implements ExpressionVisitor<Object> {
     @Override
     public Object visitBraceLiteral(BraceLiteralNode node) {
         return null;

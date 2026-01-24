@@ -14,11 +14,9 @@ import AST.RecordLiteralNode;
 import AST.GraphNodeLiteralNode;
 import AST.MatrixLiteralNode;
 import AST.IfNode;
-import Types.*;
 import Util.ErrorHandler;
 import Lexer.TokenKind;
 import Lexer.Token;
-import Util.WarningLogger;
 
 import java.util.*;
 
@@ -38,10 +36,8 @@ public class Parser {
     }
 
     // AST is just an array of statements
-    public ArrayList<Statement> parseProgram() {  // this method builds the AST, and must therefore return it
-        WarningLogger warningHandler = new WarningLogger();
-        warningHandler.clearWarningsFile();
-        ArrayList<Statement> programBody = new ArrayList<>();
+    public List<Statement> parseProgram() {  // this method builds the AST, and must therefore return it
+        List<Statement> programBody = new ArrayList<>();
         while (!isAtEnd()) {
             Statement statement = parseStatement();
             if (statement != null) {
@@ -56,7 +52,6 @@ public class Parser {
 
     // everything should really start from the Statement, since we have to declare variables, functions, etc.
     private Statement parseStatement() {
-        System.out.println("current token at parseStatement: " + peek());
         if (isAtEnd()) {
             return null;
         }
@@ -64,25 +59,21 @@ public class Parser {
             return parseReturnStatement();
         }
         if (isDeclarationStart()) {
-            System.out.println("Parsing variable declaration...");
             return parseDeclaration();
         }
         if (isFunctionDeclarationStart()) {
             return parseFunctionDeclaration();
         }
         if (check(TokenKind.IF)) {
-            System.out.println("Parsing conditional branch...");
             return parseConditionalBranch();
         }
         if (check(TokenKind.INCLUDE)) {
-            System.out.println("Parsing module import statement: " + peek());
             advance(); // consume INCLUDE
             Token moduleName = consume(TokenKind.IDENTIFIER);
             consume(TokenKind.SEMICOLON);
             return new ImportNode(moduleName.getLexeme(), null);
         }
         if (peek().getKind() == TokenKind.IDENTIFIER && lookAhead(1).getKind() == TokenKind.EQUAL) {
-            System.out.println("Parsing variable reassignment...");
             return parseVariableReassignment();
         }
         if (peek().getKind() == TokenKind.WHILE) {
@@ -131,7 +122,6 @@ public class Parser {
     private Expression parseTerm() {
         Expression expression = parseFactor();
         while (match(TokenKind.PLUS, TokenKind.MINUS)) {
-            System.out.println("current token at parseTerm: " + peek());
             Token operator = previous();
             Expression rhs = parseFactor();
             expression = new BinaryNode(expression, operator.getKind(), rhs);
@@ -142,7 +132,6 @@ public class Parser {
     private Expression parseFactor() {
         Expression expression = parseUnary();
         while (match(TokenKind.MUL, TokenKind.DIV)) {
-            System.out.println("current token at parseFactor: " + peek());
             Token operator = previous();
             Expression rhs = parseUnary();
             expression = new BinaryNode(expression, operator.getKind(), rhs);
@@ -152,7 +141,6 @@ public class Parser {
 
     private Expression parseUnary() {
         if (match(TokenKind.NOT, TokenKind.MINUS, TokenKind.PLUS)) { // handle both ! and negation
-            // with match() we skip the token and advance the position
             Token operator = previous();
             Expression rhs = parseUnary();
             return new UnaryNode(operator, rhs);
@@ -222,7 +210,7 @@ public class Parser {
             do {
                 String paramName = consume(TokenKind.IDENTIFIER).getLexeme();
                 consume(TokenKind.COLON);
-                TypeNode paramType = parseType();
+                Type paramType = parseType();
                 parameters.add(new ParamNode(paramName, paramType));
             } while (match(TokenKind.COMMA));
         }
@@ -252,7 +240,7 @@ public class Parser {
         return new BraceLiteralNode(statements);
     }
 
-    private TypeNode parseType() {
+    private Type parseType() {
         TokenKind type = peek().getKind();
         return switch (type) {
             case INTEGER_TYPE, FLOAT_TYPE -> {
@@ -287,19 +275,19 @@ public class Parser {
         };
     }
 
-    private TypeNode parseListType() {
+    private Type parseListType() {
         consume(TokenKind.LESS);
-        TypeNode innerType = parseType();
+        Type innerType = parseType();
         consume(TokenKind.GREATER);
         return new ListTypeNode(innerType);
     }
 
     // using Dimension to prevent user from calling functions etc. as dimensions, gets hard to solve
-    private TypeNode parseMatrixType() {  // have to advance tokens etc
+    private Type parseMatrixType() {  // have to advance tokens etc
         Dimension A = null;
         Dimension B = null;
         consume(TokenKind.LESS);
-        TypeNode innerType = parseType();
+        Type innerType = parseType();
         if (match(TokenKind.COMMA)) {  // user specifies a dimension already
             MatrixShape dimensions = parseDimension();
             A = dimensions.rows();
@@ -366,7 +354,7 @@ public class Parser {
     }
 
     // will fix this to use an Enum to be safer
-    private TypeNode parseGraphType() {
+    private Type parseGraphType() {
         consume(TokenKind.LESS);
         boolean isDirected = GraphAttributes.get(consume(TokenKind.IDENTIFIER).getLexeme()); // directed or undirected
         consume(TokenKind.COMMA);
@@ -376,7 +364,7 @@ public class Parser {
             return new GraphTypeNode(null, isWeighted, isDirected);
         }
         consume(TokenKind.COMMA);
-        TypeNode dataType = parseType(); // data type of the graph nodes/edges
+        Type dataType = parseType(); // data type of the graph nodes/edges
         consume(TokenKind.GREATER);
         return new GraphTypeNode(dataType, isWeighted, isDirected);
     }
@@ -387,10 +375,9 @@ public class Parser {
     // !! type mismatch errors happen at another stage of the interpreter
     private VariableDeclarationNode parseDeclaration() {
         boolean isMutable = match(TokenKind.MUTABLE);  // optional mutable keyword, more to come
-        TypeNode type = parseType();  // mat<num>
+        Type type = parseType();  // mat<num>
         Token name = consume(TokenKind.IDENTIFIER);
         Expression initializer = null;  // can be anything
-        System.out.println(peek());
         if (match(TokenKind.EQUAL)) {  // allow for null init if no = provided
             initializer = switch (type) {
                 case GraphTypeNode _ -> parseRecordLiteral();
@@ -422,7 +409,6 @@ public class Parser {
     }
 
     private GraphNodeLiteralNode parseNodeLiteral() {
-        System.out.println("parsing node literal");
         return null;
     }
 
@@ -434,7 +420,6 @@ public class Parser {
                 String key = consume(TokenKind.IDENTIFIER).getLexeme();
                 consume(TokenKind.COLON);
                 Expression value = parseExpression();
-                System.out.println(value.toString());
                 if (content.containsKey(key)) {
                     throw new RuntimeException(
                             "Duplicate key '" + key + "' in record literal"
@@ -449,7 +434,6 @@ public class Parser {
 
 
     private ListLiteralNode parseListLiteral() {
-        System.out.println("parsing list literal");
         consume(TokenKind.OPEN_BRACKET);
         List<Expression> body = new ArrayList<>();
         do {
@@ -479,7 +463,7 @@ public class Parser {
         } while (match(TokenKind.COMMA));
         consume(TokenKind.CLOSE_PAREN);
         consume(TokenKind.ARROW);
-        TypeNode returnType = parseType();
+        Type returnType = parseType();
         consume(TokenKind.OPEN_BRACE);
         BraceLiteralNode functionBody = parseBlock();
         return new FunctionDeclarationNode(name, paramList, returnType, functionBody);
@@ -500,7 +484,7 @@ public class Parser {
     private ParamNode parseFunctionParam() {
         String paramName = consume(TokenKind.IDENTIFIER).getLexeme();
         consume(TokenKind.COLON);
-        TypeNode paramType = parseType();
+        Type paramType = parseType();
         return new ParamNode(paramName, paramType);
     }
 
@@ -517,7 +501,6 @@ public class Parser {
 
 
     private Statement parseVariableReassignment() {
-        System.out.println("before parsing variable reassignment, current token: " + peek());
         String varName = peek().getLexeme();
         consume(TokenKind.IDENTIFIER); // consume the variable name
         if (!match(TokenKind.EQUAL)) {

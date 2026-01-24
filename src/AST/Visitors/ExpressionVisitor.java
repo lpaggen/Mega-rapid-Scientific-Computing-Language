@@ -1,4 +1,4 @@
-package AST.Visitors.Expressions;
+package AST.Visitors;
 
 import AST.*;
 import AST.BinaryNode;
@@ -16,7 +16,7 @@ import AST.EdgeLiteralNode;
 import AST.GraphNodeLiteralNode;
 import AST.MatrixLiteralNode;
 
-public interface ExpressionVisitor<T> {
+public sealed interface ExpressionVisitor<T> permits Evaluator {
     T visitBraceLiteral(BraceLiteralNode node);
     T visitBracketLiteral(BracketLiteralNode node);
     T visitFunctionCall(FunctionCallNode node);

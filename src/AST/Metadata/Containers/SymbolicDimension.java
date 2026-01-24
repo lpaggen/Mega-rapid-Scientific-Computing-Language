@@ -13,4 +13,9 @@ public final class SymbolicDimension implements Dimension {
     public String toString() {
         return identifier;
     }
+
+    @Override
+    public boolean isKnown() {
+        return false;
+    }
 }

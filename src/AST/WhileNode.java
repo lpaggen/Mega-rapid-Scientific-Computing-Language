@@ -1,6 +1,7 @@
 package AST;
 import AST.Expression;
 import AST.Statement;
+import AST.Visitors.StatementVisitor;
 
 import java.util.List;
 
@@ -23,6 +24,11 @@ public final class WhileNode implements Statement {
     @Override
     public String toString() {
         throw new UnsupportedOperationException("While loop has no string form.");
+    }
+
+    @Override
+    public <R> R accept(StatementVisitor<R> visitor) {
+        return visitor.visitWhileNode(this);
     }
 
 //    @Override

@@ -1,24 +1,24 @@
-package Semantic;
+package AST;
 
-import Types.TypeNode;
+import AST.Type;
+import AST.Visitors.TypeVisitor;
 
 import java.util.List;
 
-public final class FunctionTypeNode extends TypeNode {
-    private final List<TypeNode> parameters;
-    private final TypeNode returnType;
+public final class FunctionTypeNode implements Type {
+    private final List<Type> parameters;
+    private final Type returnType;
 
-    public FunctionTypeNode(List<TypeNode> parameters, TypeNode returnType) {
-        super("Function");
+    public FunctionTypeNode(List<Type> parameters, Type returnType) {
         this.parameters = parameters;
         this.returnType = returnType;
     }
 
-    public List<TypeNode> getParameters() {
+    public List<Type> getParameters() {
         return parameters;
     }
 
-    public TypeNode getReturnType() {
+    public Type getReturnType() {
         return returnType;
     }
 
@@ -34,5 +34,10 @@ public final class FunctionTypeNode extends TypeNode {
         }
         sb.append("], returnType=").append(returnType).append('}');
         return sb.toString();
+    }
+
+    @Override
+    public <R> R accept(TypeVisitor<R> visitor) {
+        return visitor.visitFunctionTypeNode(this);
     }
 }

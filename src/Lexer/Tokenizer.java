@@ -28,8 +28,6 @@ public class Tokenizer {
         }
         char c = peek(); // Peek at the current character
 
-        System.out.println("Scanning character: " + c + " at line " + line); // Debug print
-
         switch (c) {
             case '(': addToken(TokenKind.OPEN_PAREN, "("); advance(); break;
             case ')': addToken(TokenKind.CLOSE_PAREN, ")"); advance(); break;

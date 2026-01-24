@@ -1,10 +1,12 @@
-package Types;
+package AST;
 
-public class StringTypeNode extends TypeNode {
+import AST.Type;
+import AST.Visitors.TypeVisitor;
+
+public final class StringTypeNode implements Type {
     private final String value;
 
     public StringTypeNode(String value) {
-        super("String");
         this.value = value;
     }
 
@@ -15,5 +17,10 @@ public class StringTypeNode extends TypeNode {
     @Override
     public String toString() {
         return "\"" + value + "\"";
+    }
+
+    @Override
+    public <R> R accept(TypeVisitor<R> visitor) {
+        return visitor.visitStringTypeNode(this);
     }
 }

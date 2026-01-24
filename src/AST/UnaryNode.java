@@ -1,6 +1,6 @@
 package AST;
 
-import AST.Visitors.Expressions.ExpressionVisitor;
+import AST.Visitors.ExpressionVisitor;
 import Lexer.Token;
 
 public final class UnaryNode implements Expression {

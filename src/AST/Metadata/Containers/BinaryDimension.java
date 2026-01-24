@@ -4,6 +4,12 @@ package AST.Metadata.Containers;
 public final class BinaryDimension implements Dimension {
     private final Dimension left;
     private final Dimension right;
+
+    @Override
+    public boolean isKnown() {
+        return left.isKnown() && right.isKnown();
+    }
+
     public enum Op { ADD, SUB, MUL, DIV, MOD }  // don't store as String, this is safer
     private final Op operator;
 

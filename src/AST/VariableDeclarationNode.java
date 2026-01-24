@@ -1,16 +1,14 @@
 package AST;
 
-import AST.Expression;
-import AST.Statement;
-import Types.TypeNode;
+import AST.Visitors.StatementVisitor;
 
 public final class VariableDeclarationNode implements Statement {
-    private final TypeNode type;
+    private final Type type;
     private final String name;
     private final Expression initializer;
     private final boolean isMutable;
 
-    public VariableDeclarationNode(TypeNode type, String name, Expression initializer, boolean isMutable) {
+    public VariableDeclarationNode(Type type, String name, Expression initializer, boolean isMutable) {
         this.type = type;
         this.name = name;
         this.initializer = initializer;
@@ -21,7 +19,7 @@ public final class VariableDeclarationNode implements Statement {
         return isMutable;
     }
 
-    public TypeNode getDeclaredType() {
+    public Type getDeclaredType() {
         return type;
     }
 
@@ -31,6 +29,11 @@ public final class VariableDeclarationNode implements Statement {
 
     public Expression getInitializer() {
         return initializer;
+    }
+
+    @Override
+    public <R> R accept(StatementVisitor<R> visitor) {
+        return visitor.visitVariableDeclarationNode(this);
     }
 }
 

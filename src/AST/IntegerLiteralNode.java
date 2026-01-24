@@ -1,7 +1,6 @@
 package AST;
 
-import AST.Expression;
-import AST.Visitors.Expressions.ExpressionVisitor;
+import AST.Visitors.ExpressionVisitor;
 
 public final class IntegerLiteralNode implements Expression {
     private final Integer value;

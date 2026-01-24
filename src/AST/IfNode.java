@@ -2,6 +2,7 @@ package AST;
 
 import AST.Expression;
 import AST.Statement;
+import AST.Visitors.StatementVisitor;
 
 import java.util.List;
 
@@ -49,5 +50,10 @@ public IfNode(Expression condition, List<Statement> thenBlock, List<Statement> e
         }
         sb.append("]}");
         return sb.toString();
+    }
+
+    @Override
+    public <R> R accept(StatementVisitor<R> visitor) {
+        return visitor.visitIfNode(this);
     }
 }

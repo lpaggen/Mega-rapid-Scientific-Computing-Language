@@ -4,6 +4,7 @@ import AST.Expressions.Functions.BuiltIns.Graphs.GraphsLibrary;
 import AST.Expressions.Functions.BuiltIns.Linalg.LinalgLibrary;
 import AST.Expressions.Functions.BuiltIns.StandardLib.StandardLibrary;
 import AST.Statement;
+import AST.Visitors.StatementVisitor;
 import Semantic.Symbol;
 
 import java.util.HashMap;
@@ -49,5 +50,10 @@ public final class ImportNode implements Statement {
             case "graphs" -> GraphsLibrary.GraphsSymbols;
             default -> throw new IllegalArgumentException("Module '" + moduleName + "' not found in standard library.");
         };
+    }
+
+    @Override
+    public <R> R accept(StatementVisitor<R> visitor) {
+        return visitor.visitImportNode(this);
     }
 }

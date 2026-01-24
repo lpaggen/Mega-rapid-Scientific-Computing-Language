@@ -1,6 +1,6 @@
 package AST;
 
-import AST.Visitors.Expressions.ExpressionVisitor;
+import AST.Visitors.ExpressionVisitor;
 
 public record BooleanLiteralNode(boolean value) implements Expression {
 

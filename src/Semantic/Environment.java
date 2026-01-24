@@ -1,6 +1,6 @@
 package Semantic;
 
-import Types.TypeNode;
+import AST.Type;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -57,7 +57,7 @@ public class Environment {
         return null;  // return null, this way we don't crash the program immediately -- raise multiple errors
     }
 
-    public TypeNode lookupType(String name) {
+    public Type lookupType(String name) {
         Symbol sym = lookup(name);
         if (sym instanceof FunctionSymbol funcSym) {
             return funcSym.type();

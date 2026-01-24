@@ -1,12 +1,9 @@
 package AST.Metadata.Containers;
 
-public final class KnownDimension implements Dimension {
-    private final int value;
-    public KnownDimension(int value) {
-        this.value = value;
-    }
+public record KnownDimension(int value) implements Dimension {
 
-    public int getValue() {
-        return value;
+    @Override
+    public boolean isKnown() {
+        return true;
     }
 }

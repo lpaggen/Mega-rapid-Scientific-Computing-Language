@@ -1,5 +1,5 @@
 package Semantic;
 
-import Types.TypeNode;
+import AST.Type;
 
-public record VariableSymbol(TypeNode type, boolean mutable) implements Symbol, Mutable {}
+public record VariableSymbol(Type type, boolean mutable) implements Symbol, Mutable {}

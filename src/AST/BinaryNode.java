@@ -1,15 +1,13 @@
 package AST;
 
-import AST.Expression;
-import AST.Visitors.Expressions.ExpressionVisitor;
+import AST.Visitors.ExpressionVisitor;
 import Lexer.TokenKind;
-import Types.TypeNode;
 
 public final class BinaryNode implements Expression {
     final Expression lhs;
     final TokenKind operator;
     final Expression rhs;
-    public TypeNode inferredType;  // set during type inference
+    public Type inferredType;  // set during type inference
 
     public BinaryNode(Expression lhs, TokenKind operator, Expression rhs) {
         this.lhs = lhs;
