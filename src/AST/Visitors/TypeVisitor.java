@@ -20,4 +20,5 @@ public sealed interface TypeVisitor<R> permits TypeChecker {
 
     R visitFunctionTypeNode(FunctionTypeNode functionTypeNode);
     R visitVoidType(VoidTypeNode voidTypeNode);
+    R visitAlgebraicSymbolType(AlgebraicSymbolType algebraicSymbolType);
 }

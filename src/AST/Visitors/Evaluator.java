@@ -36,6 +36,17 @@ public final class Evaluator implements ExpressionVisitor<Object> {
     public Object visitBinaryNode(BinaryNode node) {
         Object l = node.getLeft().accept(this);
         Object r = node.getRight().accept(this);
+        if (l.getClass() == Integer.class && r.getClass() == Integer.class) {
+            int left = (Integer) l;
+            int right = (Integer) r;
+            return switch (node.getOperator()) {
+                case PLUS -> left + right;
+                case MINUS -> left - right;
+                case MUL -> left * right;
+                case DIV -> left / right;
+                default -> null;
+            };
+        }
         return null;
     }
 
@@ -146,6 +157,16 @@ public final class Evaluator implements ExpressionVisitor<Object> {
 
     @Override
     public Object visitMapFunctionNode(MapFunctionNode mapFunctionNode) {
+        return null;
+    }
+
+    @Override
+    public Object visitAlgebraicSymbol(AlgebraicSymbol algebraicSymbol) {
+        return null;
+    }
+
+    @Override
+    public Object visitAlgebraicSymbolLiteral(AlgebraicSymbolLiteralNode algebraicSymbolLiteralNode) {
         return null;
     }
 }

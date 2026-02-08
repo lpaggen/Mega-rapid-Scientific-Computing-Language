@@ -2,6 +2,7 @@ package AST.Visitors;
 
 import AST.*;
 import AST.BinaryNode;
+import AST.AlgebraicSymbol;
 import AST.ImportNode;
 import AST.FunctionCallNode;
 import AST.LambdaFunctionNode;
@@ -43,4 +44,6 @@ public sealed interface ExpressionVisitor<T> permits Evaluator {
     T visitMemberAccessNode(MemberAccessNode memberAccessNode);
     T visitLambdaFunctionNode(LambdaFunctionNode lambdaFunctionNode);
     T visitMapFunctionNode(MapFunctionNode mapFunctionNode);
+    T visitAlgebraicSymbol(AlgebraicSymbol algebraicSymbol);
+    T visitAlgebraicSymbolLiteral(AlgebraicSymbolLiteralNode algebraicSymbolLiteralNode);
 }

@@ -2,7 +2,7 @@ load stdlib;
 load graphs;
 load linalg;
 
-print("Creating a simple undirected graph...\n");
+mut int a = 5;
+mut int emil = 10;
 
-
-print(5 > 3);
+print("nils");

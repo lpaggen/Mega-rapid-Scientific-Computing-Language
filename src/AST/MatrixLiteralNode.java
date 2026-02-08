@@ -4,20 +4,7 @@ import AST.Visitors.ExpressionVisitor;
 
 import java.util.List;
 
-public final class MatrixLiteralNode implements Expression {
-    private final List<List<Expression>> rows;
-
-    public MatrixLiteralNode(List<List<Expression>> rows) {
-        this.rows = rows;
-    }
-
-    public List<List<Expression>> getRows() {
-        return rows;
-    }
-
-    public List<List<Expression>> getElements() {
-        return rows;
-    }
+public record MatrixLiteralNode(List<List<Expression>> rows) implements Expression {
 
     @Override
     public String toString() {

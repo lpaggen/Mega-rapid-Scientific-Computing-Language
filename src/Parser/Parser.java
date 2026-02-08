@@ -457,7 +457,7 @@ public class Parser {
         advance();
         String name = consume(TokenKind.IDENTIFIER).getLexeme();
         consume(TokenKind.OPEN_PAREN);
-        ArrayList<ParamNode> paramList = new ArrayList<>();
+        List<ParamNode> paramList = new ArrayList<>();
         do {
             paramList.add(parseFunctionParam());
         } while (match(TokenKind.COMMA));
@@ -489,7 +489,7 @@ public class Parser {
     }
 
     private Expression parseFunctionCall(Expression callee) {
-        ArrayList<Expression> arguments = new ArrayList<>();
+        List<Expression> arguments = new ArrayList<>();
         if (!check(TokenKind.CLOSE_PAREN)) {
             do {
                 arguments.add(parseExpression());
