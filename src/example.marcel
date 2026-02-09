@@ -2,7 +2,7 @@ load stdlib;
 load graphs;
 load linalg;
 
-mut int a = 5;
-mut int emil = 10;
-
-print("nils");
+int x = 5;
+int x = 10;
+sym a;
+sym a;

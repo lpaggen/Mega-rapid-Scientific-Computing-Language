@@ -1,6 +1,6 @@
 package AST;
 
-import AST.Visitors.ExpressionVisitor;
+import Semantic.ExpressionVisitor;
 
 public final class PrimaryNode implements Expression {
     private final Expression value;

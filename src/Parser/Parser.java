@@ -50,13 +50,15 @@ public class Parser {
         return programBody;
     }
 
-    // everything should really start from the Statement, since we have to declare variables, functions, etc.
     private Statement parseStatement() {
         if (isAtEnd()) {
             return null;
         }
         if (check(TokenKind.RETURN)) {
             return parseReturnStatement();
+        }
+        if (check(TokenKind.CLAIM)) {
+            return parseClaimStatement();
         }
         if (isDeclarationStart()) {
             return parseDeclaration();
@@ -86,6 +88,13 @@ public class Parser {
         }
     }
 
+    private ClaimStatementNode parseClaimStatement() {
+        advance();  // consume CLAIM
+        Expression expr = parseExpression();
+        consume(TokenKind.SEMICOLON);
+        return new ClaimStatementNode(expr);
+    }
+
     private ReturnStatementNode parseReturnStatement() {
         consume(TokenKind.RETURN);
         Expression value = null;
@@ -102,9 +111,10 @@ public class Parser {
 
     private Expression parseEquality() {
         Expression expression = parseComparison();
-        while (match(TokenKind.EQUAL_EQUAL, TokenKind.NOT_EQUAL)) {
+        while (match(TokenKind.EQUAL, TokenKind.EQUAL_EQUAL, TokenKind.NOT_EQUAL)) {
+            Token operator = previous(); // Get the actual operator that was matched
             Expression rhs = parseComparison();
-            expression = new BinaryNode(expression, TokenKind.EQUAL, rhs);
+            expression = new BinaryNode(expression, operator.getKind(), rhs);
         }
         return expression;
     }
@@ -267,6 +277,10 @@ public class Parser {
                 advance();
                 yield new BooleanTypeNode();
             }
+            case MATH_TYPE -> {
+                advance();
+                yield new MathTypeNode();
+            }
 //            case FUNC_TYPE -> {  // TODO return functions
 //                advance();
 //                yield parseFunctionType();
@@ -297,7 +311,7 @@ public class Parser {
         return new MatrixTypeNode(innerType, A, B);
     }
 
-    private MatrixShape parseDimension() {
+    private MatrixShape parseDimension() {  // this can be used for symbols too maybe? if we extend it to accept functions etc
         Dimension left = parseDimAddSub();
         consume(TokenKind.AT);
         Dimension right = parseDimAddSub();
@@ -375,8 +389,8 @@ public class Parser {
     // !! type mismatch errors happen at another stage of the interpreter
     private VariableDeclarationNode parseDeclaration() {
         boolean isMutable = match(TokenKind.MUTABLE);  // optional mutable keyword, more to come
-        Type type = parseType();  // mat<num>
-        Token name = consume(TokenKind.IDENTIFIER);
+        Type type = parseType();  // ex, mat<num>
+        Token identifier = consume(TokenKind.IDENTIFIER);
         Expression initializer = null;  // can be anything
         if (match(TokenKind.EQUAL)) {  // allow for null init if no = provided
             initializer = switch (type) {
@@ -388,7 +402,7 @@ public class Parser {
             };
         }
         consume(TokenKind.SEMICOLON);
-        return new VariableDeclarationNode(type, name.getLexeme(), initializer, isMutable);
+        return new VariableDeclarationNode(type, identifier.getLexeme(), initializer, isMutable, identifier.getLine());
     }
 
     private MatrixLiteralNode parseMatrixLiteral() {  // we land here with peek() being open_bracket
@@ -455,7 +469,7 @@ public class Parser {
 
     private FunctionDeclarationNode parseFunctionDeclaration() { // we should build the logic to allow users to define a function
         advance();
-        String name = consume(TokenKind.IDENTIFIER).getLexeme();
+        Token identifier = consume(TokenKind.IDENTIFIER);
         consume(TokenKind.OPEN_PAREN);
         List<ParamNode> paramList = new ArrayList<>();
         do {
@@ -466,7 +480,7 @@ public class Parser {
         Type returnType = parseType();
         consume(TokenKind.OPEN_BRACE);
         BraceLiteralNode functionBody = parseBlock();
-        return new FunctionDeclarationNode(name, paramList, returnType, functionBody);
+        return new FunctionDeclarationNode(identifier.getLexeme(), paramList, returnType, functionBody, identifier.getLine());
     }
 
     // less than ideal, but it is fine for the demo TODO change this nonsense
@@ -682,7 +696,8 @@ public class Parser {
             TokenKind.NODE_TYPE,
             TokenKind.EDGE_TYPE,
             TokenKind.LIST_TYPE,
-            TokenKind.VECTOR_TYPE
+            TokenKind.VECTOR_TYPE,
+            TokenKind.SYMBOL_TYPE
     );
 
     private static final Set<TokenKind> modifierKeywords = Set.of(

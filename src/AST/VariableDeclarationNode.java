@@ -1,35 +1,8 @@
 package AST;
 
-import AST.Visitors.StatementVisitor;
+import Semantic.StatementVisitor;
 
-public final class VariableDeclarationNode implements Statement {
-    private final Type type;
-    private final String name;
-    private final Expression initializer;
-    private final boolean isMutable;
-
-    public VariableDeclarationNode(Type type, String name, Expression initializer, boolean isMutable) {
-        this.type = type;
-        this.name = name;
-        this.initializer = initializer;
-        this.isMutable = isMutable;
-    }
-
-    public boolean isMutable() {
-        return isMutable;
-    }
-
-    public Type getDeclaredType() {
-        return type;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Expression getInitializer() {
-        return initializer;
-    }
+public record VariableDeclarationNode(Type type, String name, Expression initializer, boolean isMutable, int line) implements Statement {
 
     @Override
     public <R> R accept(StatementVisitor<R> visitor) {

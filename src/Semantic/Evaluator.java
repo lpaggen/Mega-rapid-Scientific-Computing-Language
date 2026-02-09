@@ -1,4 +1,4 @@
-package AST.Visitors;
+package Semantic;
 
 import AST.*;
 import AST.BinaryNode;

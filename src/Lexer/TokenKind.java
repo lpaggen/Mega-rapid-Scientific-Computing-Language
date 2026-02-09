@@ -103,5 +103,5 @@ public enum TokenKind {
     // PRINT,
     INCLUDE,
     READ,
-    WRITE, ELSE_IF, DOT, SCALAR_TYPE, LAMBDA, MAP,
+    WRITE, ELSE_IF, DOT, SCALAR_TYPE, LAMBDA, MAP, CLAIM,
 }

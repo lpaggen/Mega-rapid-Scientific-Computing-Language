@@ -1,10 +1,14 @@
+import AST.Statement;
 import Parser.Parser;
 import Lexer.Tokenizer;
 import Lexer.Token;
+import Semantic.SymbolTable;
+import Semantic.SymbolTableBuilder;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
@@ -22,7 +26,15 @@ public class Main {
 
         int startTimeParser = (int) System.currentTimeMillis();
         Parser parser = new Parser(tokens);
-        parser.parseProgram();
+        List<Statement> ast = parser.parseProgram();
         System.out.println("Finished parsing, took: " + ((int) System.currentTimeMillis() - startTimeParser) + " ms");
+
+        int startTimeSymbolTable = (int) System.currentTimeMillis();
+        SymbolTable symbolTable = new SymbolTable();
+        SymbolTableBuilder symbolTableBuilder = new SymbolTableBuilder(symbolTable, new ArrayList<>());
+        symbolTableBuilder.build(ast);
+        System.out.println("Finished building symbol table, took: " + ((int) System.currentTimeMillis() - startTimeSymbolTable) + " ms");
+
+        symbolTableBuilder.printErrors();
     }
 }

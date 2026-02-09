@@ -1,6 +1,6 @@
 package AST;
 
-import AST.Visitors.ExpressionVisitor;
+import Semantic.ExpressionVisitor;
 import Lexer.TokenKind;
 
 public final class IncrementNode implements Expression {

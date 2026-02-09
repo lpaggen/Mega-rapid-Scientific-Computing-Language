@@ -1,4 +1,4 @@
-package AST.Visitors;
+package Semantic;
 
 import AST.*;
 
@@ -41,6 +41,11 @@ public final class Executor implements StatementVisitor<Object> {
 
     @Override
     public Object visitWhileNode(WhileNode whileNode) {
+        return null;
+    }
+
+    @Override
+    public Object visitClaimStatementNode(ClaimStatementNode claimStatementNode) {
         return null;
     }
 }

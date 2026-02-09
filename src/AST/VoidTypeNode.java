@@ -1,6 +1,6 @@
 package AST;
 
-import AST.Visitors.TypeVisitor;
+import Semantic.TypeVisitor;
 
 public final class VoidTypeNode implements Type {
     @Override

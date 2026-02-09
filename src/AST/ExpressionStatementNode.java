@@ -1,8 +1,6 @@
 package AST;
 
-import AST.Expression;
-import AST.Statement;
-import AST.Visitors.StatementVisitor;
+import Semantic.StatementVisitor;
 
 // this class is a wrapper for functions that can be called without returning a value
 // so we can work around the fact that functions extend Expression this way

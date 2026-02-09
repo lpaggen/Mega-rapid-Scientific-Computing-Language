@@ -1,7 +1,5 @@
 package AST;
-import AST.Expression;
-import AST.Statement;
-import AST.Visitors.StatementVisitor;
+import Semantic.StatementVisitor;
 
 import java.util.List;
 

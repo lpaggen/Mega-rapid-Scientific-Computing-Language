@@ -1,7 +1,6 @@
 package AST;
 
-import AST.Type;
-import AST.Visitors.TypeVisitor;
+import Semantic.TypeVisitor;
 
 import java.util.List;
 

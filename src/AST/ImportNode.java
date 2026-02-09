@@ -3,8 +3,7 @@ package AST;
 import AST.Expressions.Functions.BuiltIns.Graphs.GraphsLibrary;
 import AST.Expressions.Functions.BuiltIns.Linalg.LinalgLibrary;
 import AST.Expressions.Functions.BuiltIns.StandardLib.StandardLibrary;
-import AST.Statement;
-import AST.Visitors.StatementVisitor;
+import Semantic.StatementVisitor;
 import Semantic.Symbol;
 
 import java.util.HashMap;

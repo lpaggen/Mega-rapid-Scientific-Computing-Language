@@ -1,7 +1,7 @@
 package AST;
 
-import AST.Visitors.StatementVisitor;
+import Semantic.StatementVisitor;
 
-public sealed interface Statement extends ASTNode permits ExpressionStatementNode, ImportNode, FunctionDeclarationNode, IfNode, ReturnStatementNode, VariableDeclarationNode, VariableReassignmentNode, WhileNode {
+public sealed interface Statement extends ASTNode permits ClaimStatementNode, ExpressionStatementNode, FunctionDeclarationNode, IfNode, ImportNode, ReturnStatementNode, VariableDeclarationNode, VariableReassignmentNode, WhileNode {
     <R> R accept(StatementVisitor<R> visitor);
 }

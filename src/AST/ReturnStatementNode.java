@@ -1,19 +1,8 @@
 package AST;
 
-import AST.Expression;
-import AST.Statement;
-import AST.Visitors.StatementVisitor;
+import Semantic.StatementVisitor;
 
-public final class ReturnStatementNode implements Statement {
-    private final Expression returnValue;
-
-    public ReturnStatementNode(Expression returnValue) {
-        this.returnValue = returnValue;
-    }
-
-    public Expression getReturnValue() {
-        return returnValue;
-    }
+public record ReturnStatementNode(Expression returnValue) implements Statement {
 
     @Override
     public String toString() {

@@ -1,8 +1,6 @@
 package AST;
 
-import AST.Expression;
-import AST.Statement;
-import AST.Visitors.StatementVisitor;
+import Semantic.StatementVisitor;
 
 // i can't be sure if this should be the final implementation or not
 // but it WILL solve the null statement issue in the conditional branching

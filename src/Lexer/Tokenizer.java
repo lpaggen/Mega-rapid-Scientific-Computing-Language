@@ -155,6 +155,7 @@ public class Tokenizer {
         put("sym", TokenKind.MATH_TYPE);
         put("break", TokenKind.BREAK);
         put("continue", TokenKind.CONTINUE);
+        put("claim", TokenKind.CLAIM);
         put("wrt", TokenKind.WRT);
         put("null", TokenKind.NULL);
         put("bool", TokenKind.BOOLEAN_TYPE);

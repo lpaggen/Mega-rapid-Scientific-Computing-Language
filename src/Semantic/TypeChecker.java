@@ -1,4 +1,4 @@
-package AST.Visitors;
+package Semantic;
 
 import AST.*;
 
@@ -66,5 +66,10 @@ public final class TypeChecker implements TypeVisitor<Type> {
     @Override
     public Type visitAlgebraicSymbolType(AlgebraicSymbolType algebraicSymbolType) {
         return new AlgebraicSymbolType();
+    }
+
+    @Override
+    public Type visitMathType(MathTypeNode mathTypeNode) {
+        return null;
     }
 }

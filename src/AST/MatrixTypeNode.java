@@ -1,8 +1,7 @@
 package AST;
 
 import AST.Metadata.Containers.Dimension;
-import AST.Type;
-import AST.Visitors.TypeVisitor;
+import Semantic.TypeVisitor;
 
 public final class MatrixTypeNode implements Type {
     private final Type elementType;

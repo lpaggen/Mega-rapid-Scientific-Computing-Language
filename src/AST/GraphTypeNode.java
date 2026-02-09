@@ -1,8 +1,7 @@
 package AST;
 
 
-import AST.Type;
-import AST.Visitors.TypeVisitor;
+import Semantic.TypeVisitor;
 
 public final class GraphTypeNode implements Type {
     private final Type type;  // for now assume the type is the same for node weights and edge capacities

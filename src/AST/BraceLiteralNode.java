@@ -1,19 +1,10 @@
 package AST;
 
-import AST.Visitors.ExpressionVisitor;
+import Semantic.ExpressionVisitor;
 
 import java.util.List;
 
-public final class BraceLiteralNode implements Expression {
-    private final List<Statement> body;
-
-    public BraceLiteralNode(List<Statement> body) {
-        this.body = body;
-    }
-
-    public List<Statement> getBody() {
-        return body;
-    }
+public record BraceLiteralNode(List<Statement> body) implements Expression {
 
     @Override
     public String toString() {

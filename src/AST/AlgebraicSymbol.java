@@ -1,7 +1,6 @@
 package AST;
 
-import AST.Expression;
-import AST.Visitors.ExpressionVisitor;
+import Semantic.ExpressionVisitor;
 
 public final class AlgebraicSymbol implements Expression {
     private final String name;

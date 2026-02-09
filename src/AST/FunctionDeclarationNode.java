@@ -1,7 +1,7 @@
 package AST;
 
 import AST.Metadata.Functions.ParamNode;
-import AST.Visitors.StatementVisitor;
+import Semantic.StatementVisitor;
 
 import java.util.List;
 
@@ -10,14 +10,20 @@ public final class FunctionDeclarationNode implements Statement {
     private final List<ParamNode> parameters;
     private Type returnType;
     private final BraceLiteralNode body;
-    public FunctionDeclarationNode(String name, List<ParamNode> parameters, Type returnType, BraceLiteralNode body) {
+    private final int line;
+    public FunctionDeclarationNode(String name, List<ParamNode> parameters, Type returnType, BraceLiteralNode body, int line) {
         this.name = name;
         this.parameters = parameters;
         this.returnType = returnType;
         this.body = body;
+        this.line = line;
     }
 
-    FunctionTypeNode getType() {
+    public int line() {
+        return line;
+    }
+
+    public FunctionTypeNode getType() {
         return new FunctionTypeNode(
                 parameters.stream().map(ParamNode::type).toList(),
                 returnType
