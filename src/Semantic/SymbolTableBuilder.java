@@ -56,9 +56,9 @@ public final class SymbolTableBuilder implements StatementVisitor<Void> {
         }
 
         symbolTable.pushScope(); // new scope for function body
-        for (ParamNode(String name, Type type) : node.getParameters()) {
+        for (ParamNode param : node.getParameters()) {
             try {
-                symbolTable.declare(name, type, false);
+                symbolTable.declare(param.name(), param.type(), false);
             } catch (RuntimeException e) {
                 errors.add("Line " + node.line() + ": " + e.getMessage());
             }

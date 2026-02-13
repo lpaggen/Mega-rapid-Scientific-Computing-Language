@@ -40,8 +40,8 @@ public final class Evaluator implements ExpressionVisitor<Object> {
             int left = (Integer) l;
             int right = (Integer) r;
             return switch (node.getOperator()) {
-                case PLUS -> left + right;
-                case MINUS -> left - right;
+                case ADD -> left + right;
+                case SUB -> left - right;
                 case MUL -> left * right;
                 case DIV -> left / right;
                 default -> null;
