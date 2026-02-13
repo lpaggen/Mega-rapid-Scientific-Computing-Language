@@ -46,4 +46,5 @@ public sealed interface ExpressionVisitor<T> permits Evaluator {
     T visitMapFunctionNode(MapFunctionNode mapFunctionNode);
     T visitAlgebraicSymbol(AlgebraicSymbol algebraicSymbol);
     T visitAlgebraicSymbolLiteral(AlgebraicSymbolLiteralNode algebraicSymbolLiteralNode);
+    T visitAssignmentNode(AssignmentNode assignmentNode);
 }

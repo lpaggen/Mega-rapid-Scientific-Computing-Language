@@ -32,9 +32,9 @@ public final class ConstraintStoreBuilder implements StatementVisitor<Void> {
 
     public void printErrors() {
         if (errors.isEmpty()) {
-            System.out.println("No semantic errors found.");
+            System.out.println("No constraint errors found.");
         } else {
-            System.out.println("Semantic Errors:");
+            System.out.println("Constraint Errors:");
             for (String error : errors) {
                 System.out.println(error);
             }
@@ -46,14 +46,15 @@ public final class ConstraintStoreBuilder implements StatementVisitor<Void> {
         Expression claim = node.claimExpression();
 
         if (!(claim instanceof BinaryNode bin)) {
+            System.out.println("claim is not a binary expression: " + claim);
             errors.add("claim expression must be a binary expression");
             return null;
         }
 
         // TODO -> future build must support full SMT / at least bounds and intervals
         // for this demo, i only prove that this can save against classic linalg errors
-        if (!(bin.getOperator() != null && !bin.getOperator().equals("="))) {
-            errors.add("claim expression must have '=' operator");
+        if (!(bin.getOperator() != null && !bin.getOperator().equals("=="))) {
+            errors.add("claim expression must have '==' operator");
         }
 
         try {

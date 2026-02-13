@@ -5,5 +5,14 @@ public enum Operators {
     SUB,
     MUL,
     DIV,
-    MOD
+    MOD,
+    EQ,
+    NEQ,
+    LT,
+    GT,
+    LTE,
+    GTE,
+    AND,
+    OR,
+    NOT
 }

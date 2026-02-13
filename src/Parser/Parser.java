@@ -106,13 +106,26 @@ public class Parser {
     }
 
     private Expression parseExpression() {
-        return parseEquality();
+        return parseAssignment();
+    }
+
+    private Expression parseAssignment() {
+        Expression expression = parseEquality();
+        if (match(TokenKind.EQUAL)) {
+            Token equals = previous();
+            Expression value = parseAssignment();
+            if (expression instanceof VariableNode variable) {
+                return new AssignmentNode(variable.getName(), value);
+            }
+            throw new RuntimeException("Invalid assignment target.");
+        }
+        return expression;
     }
 
     private Expression parseEquality() {
         Expression expression = parseComparison();
-        while (match(TokenKind.EQUAL, TokenKind.EQUAL_EQUAL, TokenKind.NOT_EQUAL)) {
-            Token operator = previous(); // Get the actual operator that was matched
+        while (match(TokenKind.EQUAL_EQUAL, TokenKind.NOT_EQUAL)) {
+            Token operator = previous();
             Expression rhs = parseComparison();
             expression = new BinaryNode(expression, tokenToOp(operator.getKind()), rhs);
         }
@@ -700,6 +713,14 @@ public class Parser {
             case MUL -> Operators.MUL;
             case DIV -> Operators.DIV;
             case MOD -> Operators.MOD;
+            case EQUAL_EQUAL -> Operators.EQ;
+            case NOT_EQUAL -> Operators.NEQ;
+            case GREATER -> Operators.GT;
+            case LESS -> Operators.LT;
+            case GREATER_EQUAL -> Operators.GTE;
+            case LESS_EQUAL -> Operators.LTE;
+            case AND -> Operators.AND;
+            case OR -> Operators.OR;
             default -> throw new Error("Unrecognized operator " + kind);
         };
     }

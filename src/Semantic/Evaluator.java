@@ -169,4 +169,9 @@ public final class Evaluator implements ExpressionVisitor<Object> {
     public Object visitAlgebraicSymbolLiteral(AlgebraicSymbolLiteralNode algebraicSymbolLiteralNode) {
         return null;
     }
+
+    @Override
+    public Object visitAssignmentNode(AssignmentNode assignmentNode) {
+        return null;
+    }
 }

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class SymbolTableBuilder implements StatementVisitor<Void> {
-    private final SymbolTable symbolTable;
+    public final SymbolTable symbolTable;
     private final List<String> errors;
 
     public SymbolTableBuilder(List<String> errors) {

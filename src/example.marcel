@@ -5,4 +5,8 @@ load linalg;
 int x = 5;
 int x = 10;
 sym a;
-sym a;
+sym b;
+
+claim a == b;
+
+claim a == 5;

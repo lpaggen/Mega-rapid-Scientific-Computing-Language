@@ -2,6 +2,7 @@ import AST.Statement;
 import Parser.Parser;
 import Lexer.Tokenizer;
 import Lexer.Token;
+import Semantic.ConstraintStoreBuilder;
 import Semantic.SymbolTable;
 import Semantic.SymbolTableBuilder;
 
@@ -33,7 +34,12 @@ public class Main {
         SymbolTableBuilder symbolTableBuilder = new SymbolTableBuilder(new ArrayList<>());
         symbolTableBuilder.build(ast);
         System.out.println("Finished building symbol table, took: " + ((int) System.currentTimeMillis() - startTimeSymbolTable) + " ms");
-
         symbolTableBuilder.printErrors();
+
+        int startTimeConstaintCollector = (int) System.currentTimeMillis();
+        ConstraintStoreBuilder constraintCollector = new ConstraintStoreBuilder(new ArrayList<>(), symbolTableBuilder.symbolTable);
+        constraintCollector.collect(ast);
+        System.out.println("Finished collecting constraints, took: " + ((int) System.currentTimeMillis() - startTimeConstaintCollector) + " ms");
+        constraintCollector.printErrors();
     }
 }
