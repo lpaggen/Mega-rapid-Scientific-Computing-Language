@@ -10,8 +10,8 @@ public final class SymbolTableBuilder implements StatementVisitor<Void> {
     private final SymbolTable symbolTable;
     private final List<String> errors;
 
-    public SymbolTableBuilder(SymbolTable symbolTable, List<String> errors) {
-        this.symbolTable = symbolTable;
+    public SymbolTableBuilder(List<String> errors) {
+        this.symbolTable = new SymbolTable();
         this.errors = errors;
     }
 
@@ -56,9 +56,9 @@ public final class SymbolTableBuilder implements StatementVisitor<Void> {
         }
 
         symbolTable.pushScope(); // new scope for function body
-        for (ParamNode param : node.getParameters()) {
+        for (ParamNode(String name, Type type) : node.getParameters()) {
             try {
-                symbolTable.declare(param.name(), param.type(), false);
+                symbolTable.declare(name, type, false);
             } catch (RuntimeException e) {
                 errors.add("Line " + node.line() + ": " + e.getMessage());
             }

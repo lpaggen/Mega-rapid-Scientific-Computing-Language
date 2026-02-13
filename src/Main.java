@@ -30,8 +30,7 @@ public class Main {
         System.out.println("Finished parsing, took: " + ((int) System.currentTimeMillis() - startTimeParser) + " ms");
 
         int startTimeSymbolTable = (int) System.currentTimeMillis();
-        SymbolTable symbolTable = new SymbolTable();
-        SymbolTableBuilder symbolTableBuilder = new SymbolTableBuilder(symbolTable, new ArrayList<>());
+        SymbolTableBuilder symbolTableBuilder = new SymbolTableBuilder(new ArrayList<>());
         symbolTableBuilder.build(ast);
         System.out.println("Finished building symbol table, took: " + ((int) System.currentTimeMillis() - startTimeSymbolTable) + " ms");
 

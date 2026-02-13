@@ -5,11 +5,11 @@ import Lexer.TokenKind;
 
 public final class BinaryNode implements Expression {
     final Expression lhs;
-    final TokenKind operator;
+    final Operators operator;
     final Expression rhs;
-    public Type inferredType;  // set during type inference
+    // public Type inferredType;  // set during type inference
 
-    public BinaryNode(Expression lhs, TokenKind operator, Expression rhs) {
+    public BinaryNode(Expression lhs, Operators operator, Expression rhs) {
         this.lhs = lhs;
         this.operator = operator;
         this.rhs = rhs;
@@ -19,7 +19,7 @@ public final class BinaryNode implements Expression {
         return lhs;
     }
 
-    public TokenKind getOperator() {
+    public Operators getOperator() {
         return operator;
     }
 

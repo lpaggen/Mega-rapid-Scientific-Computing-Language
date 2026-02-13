@@ -4,7 +4,7 @@ import AST.*;
 import AST.VariableDeclarationNode;
 import AST.VariableReassignmentNode;
 
-public sealed interface StatementVisitor<R> permits Executor, SymbolTableBuilder {
+public sealed interface StatementVisitor<R> permits ConstraintStoreBuilder, Executor, SymbolTableBuilder {
     R visitExpressionStatement(ExpressionStatementNode stmt);
     R visitImportNode(ImportNode importNode);
     R visitFunctionDeclarationNode(FunctionDeclarationNode functionDeclarationNode);

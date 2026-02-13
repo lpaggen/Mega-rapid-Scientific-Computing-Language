@@ -114,7 +114,7 @@ public class Parser {
         while (match(TokenKind.EQUAL, TokenKind.EQUAL_EQUAL, TokenKind.NOT_EQUAL)) {
             Token operator = previous(); // Get the actual operator that was matched
             Expression rhs = parseComparison();
-            expression = new BinaryNode(expression, operator.getKind(), rhs);
+            expression = new BinaryNode(expression, tokenToOp(operator.getKind()), rhs);
         }
         return expression;
     }
@@ -124,7 +124,7 @@ public class Parser {
         while (match(TokenKind.GREATER, TokenKind.LESS, TokenKind.GREATER_EQUAL, TokenKind.LESS_EQUAL)) {
             Token operator = previous(); // because match() consumes the token (advances position)
             Expression rhs = parseTerm(); // here we are also consuming the next token, which ensures the while loop actually works
-            expression = new BinaryNode(expression, operator.getKind(), rhs);
+            expression = new BinaryNode(expression, tokenToOp(operator.getKind()), rhs);
         }
         return expression;
     }
@@ -134,7 +134,7 @@ public class Parser {
         while (match(TokenKind.PLUS, TokenKind.MINUS)) {
             Token operator = previous();
             Expression rhs = parseFactor();
-            expression = new BinaryNode(expression, operator.getKind(), rhs);
+            expression = new BinaryNode(expression, tokenToOp(operator.getKind()), rhs);
         }
         return expression;
     }
@@ -144,7 +144,7 @@ public class Parser {
         while (match(TokenKind.MUL, TokenKind.DIV)) {
             Token operator = previous();
             Expression rhs = parseUnary();
-            expression = new BinaryNode(expression, operator.getKind(), rhs);
+            expression = new BinaryNode(expression, tokenToOp(operator.getKind()), rhs);
         }
         return expression;
     }
@@ -324,7 +324,7 @@ public class Parser {
         while (match(TokenKind.PLUS, TokenKind.MINUS)) {
             Token op = previous();
             Dimension right = parseDimMulDiv();
-            left = new BinaryDimension(left, right, toDimOp(op));
+            left = new BinaryDimension(left, right, tokenToOp(op.getKind()));
         }
         return left;
     }
@@ -334,7 +334,7 @@ public class Parser {
         while (match(TokenKind.MUL, TokenKind.DIV)) {
             Token op = previous();
             Dimension right = parseDimAtom();
-            left = new BinaryDimension(left, right, toDimOp(op));
+            left = new BinaryDimension(left, right, tokenToOp(op.getKind()));
         }
         return left;
     }
@@ -354,17 +354,6 @@ public class Parser {
         throw new RuntimeException("Line " + peek().getLine() + ": invalid dimension. " +
                 "Expected one of <INTEGER, SYMBOL>, got dimension of type "
                 + peek().getKind() + " with value: " + peek().getLexeme());
-    }
-
-    private BinaryDimension.Op toDimOp(Token token) {
-        return switch (token.getKind()) {
-            case PLUS -> BinaryDimension.Op.ADD;
-            case MINUS -> BinaryDimension.Op.SUB;
-            case MUL -> BinaryDimension.Op.MUL;
-            case DIV -> BinaryDimension.Op.DIV;
-            case MOD -> BinaryDimension.Op.MOD;
-            default -> throw new RuntimeException("Invalid operator in dimension expression");
-        };
     }
 
     // will fix this to use an Enum to be safer
@@ -703,4 +692,15 @@ public class Parser {
     private static final Set<TokenKind> modifierKeywords = Set.of(
             TokenKind.MUTABLE
     );
+
+    private Operators tokenToOp(TokenKind kind) {
+        return switch (kind) {
+            case PLUS -> Operators.ADD;
+            case MINUS -> Operators.SUB;
+            case MUL -> Operators.MUL;
+            case DIV -> Operators.DIV;
+            case MOD -> Operators.MOD;
+            default -> throw new Error("Unrecognized operator " + kind);
+        };
+    }
 }

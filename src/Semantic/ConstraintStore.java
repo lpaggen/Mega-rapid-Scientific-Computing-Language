@@ -51,22 +51,22 @@ public final class ConstraintStore {  // union find data structure to store symb
     }
 
     public void addEqualityConstraint(Dimension x, Dimension y) {
-        if (x instanceof SymbolicDimension s1 && y instanceof SymbolicDimension s2) {
-            union(s1.name(), s2.name());
+        if (x instanceof SymbolicDimension(String s1) && y instanceof SymbolicDimension(String s2)) {
+            union(s1, s2);
         }
-        if (x instanceof KnownDimension k1 && y instanceof KnownDimension k2) {
-            if (k1.value() != k2.value()) {
-                throw new RuntimeException("Constraint violation: " + k1.value() + " != " + k2.value());
+        if (x instanceof KnownDimension(int k1) && y instanceof KnownDimension(int k2)) {
+            if (k1 != k2) {
+                throw new RuntimeException("Constraint violation: " + k1 + " != " + k2);
             }
         }
-        if (x instanceof KnownDimension k && y instanceof SymbolicDimension s) {
-            bindSymbolToValue(s.name(), k.value());
+        if (x instanceof KnownDimension(int k) && y instanceof SymbolicDimension(String s)) {
+            bindSymbolToValue(s, k);
         }
-        if (x instanceof SymbolicDimension s && y instanceof KnownDimension k) {
-            bindSymbolToValue(s.name(), k.value());
+        if (x instanceof SymbolicDimension(String s) && y instanceof KnownDimension(int k)) {
+            bindSymbolToValue(s, k);
         }
 
-        // TODO complex cases, eg :    claim a + 1 = b + 1;
+        // TODO complex cases, eg :    claim a + 1 = b + 1;  --> can solve with weight/offset, but does NOT solve * etc
     }
 
     private void bindSymbolToValue(String symbol, int value) {
