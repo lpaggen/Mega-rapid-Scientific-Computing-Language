@@ -160,7 +160,7 @@ public class Tokenizer {
         put("null", TokenKind.NULL);
         put("bool", TokenKind.BOOLEAN_TYPE);
         put("str", TokenKind.STRING_TYPE);
-        put("->", TokenKind.ARROW); // both for functions and for edges in graphs
+        put("->", TokenKind.ARROW);
         put("void", TokenKind.VOID_TYPE);
         put("load", TokenKind.INCLUDE);
         put("read", TokenKind.READ);
@@ -175,6 +175,7 @@ public class Tokenizer {
         put("lambda", TokenKind.LAMBDA);
         put("map", TokenKind.MAP);
         put("mut", TokenKind.MUTABLE);
+        put("as", TokenKind.AS);
     }};
 
     private boolean isDigit(char c) {

@@ -74,14 +74,12 @@ public final class SymbolTableBuilder implements StatementVisitor<Void> {
 
     @Override
     public Void visitIfNode(IfNode node) {
-        // Then branch
         symbolTable.pushScope();
         for (Statement stmt : node.thenBranch()) {
             stmt.accept(this);
         }
         symbolTable.popScope();
 
-        // Else branch
         if (node.elseBranch() != null) {
             symbolTable.pushScope();
             for (Statement stmt : node.elseBranch()) {
@@ -127,6 +125,7 @@ public final class SymbolTableBuilder implements StatementVisitor<Void> {
     @Override
     public Void visitImportNode(ImportNode node) {
         // TODO: Handle module imports
+        symbolTable.declare(node.alias() != null ? node.alias() : node.moduleName(), node.getType(), false);
         return null;
     }
 }

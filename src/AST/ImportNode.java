@@ -8,21 +8,10 @@ import Semantic.Symbol;
 
 import java.util.HashMap;
 
-public final class ImportNode implements Statement {
-    private final String moduleName;
-    private final String alias;
+public record ImportNode(String moduleName, String alias) implements Statement {
 
-    public ImportNode(String moduleName, String alias) {
-        this.moduleName = moduleName;
-        this.alias = alias;
-    }
-
-    public String getModuleName() {
-        return moduleName;
-    }
-
-    public String getAlias() {
-        return alias;
+    public Type getType() {
+        return new ModuleType(alias != null ? alias : moduleName);
     }
 
 //    @Override

@@ -23,4 +23,5 @@ public sealed interface TypeVisitor<R> permits TypeChecker {
     R visitAlgebraicSymbolType(AlgebraicSymbolType algebraicSymbolType);
 
     R visitMathType(MathTypeNode mathTypeNode);
+    R visitModuleType(ModuleType moduleType);
 }

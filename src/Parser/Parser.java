@@ -72,6 +72,10 @@ public class Parser {
         if (check(TokenKind.INCLUDE)) {
             advance(); // consume INCLUDE
             Token moduleName = consume(TokenKind.IDENTIFIER);
+            String alias = null;
+            if (match(TokenKind.AS)) {  // parsing with alias
+                alias = consume(TokenKind.IDENTIFIER).getLexeme();
+            }
             consume(TokenKind.SEMICOLON);
             return new ImportNode(moduleName.getLexeme(), null);
         }
@@ -202,7 +206,7 @@ public class Parser {
             } else if (match(TokenKind.OPEN_BRACKET)) {
                 Expression index = parseExpression();
                 consume(TokenKind.CLOSE_BRACKET);
-                expr = new ListAccessNode(expr, index);
+                expr = new ListAccessNode(expr, index);  // supports nested list access like a[0][1]
             } else if (match(TokenKind.DOT) && peek().getKind() == TokenKind.MAP) {
                 expr = parseMapFunction();
             } else if (match(TokenKind.DOT)) {

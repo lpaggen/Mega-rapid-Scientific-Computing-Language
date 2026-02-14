@@ -72,4 +72,9 @@ public final class TypeChecker implements TypeVisitor<Type> {
     public Type visitMathType(MathTypeNode mathTypeNode) {
         return null;
     }
+
+    @Override
+    public Type visitModuleType(ModuleType moduleType) {
+        return null;
+    }
 }

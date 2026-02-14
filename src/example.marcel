@@ -1,12 +1,18 @@
-load stdlib;
-load graphs;
-load linalg;
+load stdlib as std;
+load graphs as g;
+load linalg as l;
 
 int x = 5;
-int x = 10;
 sym a;
 sym b;
 
 claim a == b;
-
 claim a == 5;
+
+mat<int, a@b> M = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];
+
+# mat<int, a@b> N = l::inverse(M);  # this works because M is a square matrix
+
+# mat<int, a@2b> P = l::hstack(M, M);
+
+# mat<int, 2a@b> Q = l::vstack(M, M);

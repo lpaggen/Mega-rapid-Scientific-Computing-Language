@@ -15,7 +15,7 @@ import java.util.List;
 public final class ConstraintStoreBuilder implements StatementVisitor<Void> {
     private final ConstraintStore constraintStore;
     private final List<String> errors;
-    private final SymbolTable symbolTable;
+    private final SymbolTable symbolTable;  // TODO: contains info like int x = 5; maybe we should use this!
 
     public ConstraintStoreBuilder(List<String> errors, SymbolTable symbolTable) {
         this.constraintStore = new ConstraintStore();
