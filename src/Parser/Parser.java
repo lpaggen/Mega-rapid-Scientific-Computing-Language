@@ -400,8 +400,13 @@ public class Parser {
         Expression initializer = null;  // can be anything
         if (match(TokenKind.EQUAL)) {  // allow for null init if no = provided
             initializer = switch (type) {
-                case GraphTypeNode _ -> parseRecordLiteral();
-                case MatrixTypeNode _ -> parseMatrixLiteral();
+                case GraphTypeNode _ -> {
+                    if (check(TokenKind.OPEN_BRACE)) yield parseRecordLiteral();
+                    else yield parseExpression();}
+                case MatrixTypeNode _ -> {
+                    if (check(TokenKind.OPEN_BRACKET)) yield parseMatrixLiteral();
+                    else yield parseExpression();
+                }
                 case NodeTypeNode _ -> parseNodeLiteral();
                 case ListTypeNode _ -> parseListLiteral();
                 case null, default -> parseExpression();
