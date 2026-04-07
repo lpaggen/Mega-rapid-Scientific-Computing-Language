@@ -47,4 +47,5 @@ public sealed interface ExpressionVisitor<T> permits Evaluator {
     T visitAlgebraicSymbol(AlgebraicSymbol algebraicSymbol);
     T visitAlgebraicSymbolLiteral(AlgebraicSymbolLiteralNode algebraicSymbolLiteralNode);
     T visitAssignmentNode(AssignmentNode assignmentNode);
+    T visitNameSpaceAccessNode(NamespaceAccessNode nameSpaceAccessNode);
 }

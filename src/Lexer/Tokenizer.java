@@ -101,7 +101,14 @@ public class Tokenizer {
             case ']':
                 addToken(TokenKind.CLOSE_BRACKET, "]"); advance(); break;
             case ':' :
-                addToken(TokenKind.COLON, ":"); advance(); break;
+                if (match(':')) {
+                    addToken(TokenKind.SCOPERESOLVER, "::");
+                    advance(); // Advance for the second ':'
+                } else {
+                    addToken(TokenKind.COLON, ":");
+                    advance(); // Advance for the single ':'
+                }
+                break;
             case '.':
                 addToken(TokenKind.DOT, "."); advance(); break;
             case '\n':

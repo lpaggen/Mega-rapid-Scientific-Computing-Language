@@ -2,22 +2,7 @@ package AST;
 
 import Semantic.ExpressionVisitor;
 
-public final class MemberAccessNode implements Expression {
-    private final Expression object;
-    private final String memberName;
-
-    public MemberAccessNode(Expression object, String memberName) {
-        this.object = object;
-        this.memberName = memberName;
-    }
-
-    public Expression getObject() {
-        return object;
-    }
-
-    public String getMemberName() {
-        return memberName;
-    }
+public record MemberAccessNode(Expression object, String memberName) implements Expression {
 
     @Override
     public String toString() {

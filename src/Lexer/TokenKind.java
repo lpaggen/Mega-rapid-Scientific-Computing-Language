@@ -10,6 +10,7 @@ public enum TokenKind {
     FLOAT,
     LIST,
     GRAPH,
+    SCOPERESOLVER, // for resolving scopes in the parser
     NODE,
     EDGE,
     GRAPH_TYPE,

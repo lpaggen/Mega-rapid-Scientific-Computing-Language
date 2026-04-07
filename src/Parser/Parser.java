@@ -207,16 +207,28 @@ public class Parser {
                 Expression index = parseExpression();
                 consume(TokenKind.CLOSE_BRACKET);
                 expr = new ListAccessNode(expr, index);  // supports nested list access like a[0][1]
-            } else if (match(TokenKind.DOT) && peek().getKind() == TokenKind.MAP) {
+            }
+            else if (match(TokenKind.DOT) && peek().getKind() == TokenKind.MAP) {
                 expr = parseMapFunction();
-            } else if (match(TokenKind.DOT)) {
+            }
+            else if (match(TokenKind.DOT)) {
                 String memberName = consume(TokenKind.IDENTIFIER).getLexeme();
                 expr = new MemberAccessNode(expr, memberName);
-            } else {
+            }
+            else if (match(TokenKind.SCOPERESOLVER)) {  // namespace access, ex: math::sin
+                String namespace = previous().getLexeme();  // get the namespace name before the ::
+                expr = parseNameSpaceAccess(namespace);
+            }
+            else {
                 break;
             }
         }
         return expr;
+    }
+
+    private Expression parseNameSpaceAccess(String namespace) {
+        String functionName = consume(TokenKind.IDENTIFIER).getLexeme();
+        return new NamespaceAccessNode(namespace, functionName);
     }
 
     private Expression parseMapFunction() {
@@ -402,13 +414,17 @@ public class Parser {
             initializer = switch (type) {
                 case GraphTypeNode _ -> {
                     if (check(TokenKind.OPEN_BRACE)) yield parseRecordLiteral();
-                    else yield parseExpression();}
+                    else yield parseExpression();
+                }
                 case MatrixTypeNode _ -> {
                     if (check(TokenKind.OPEN_BRACKET)) yield parseMatrixLiteral();
                     else yield parseExpression();
                 }
-                case NodeTypeNode _ -> parseNodeLiteral();
-                case ListTypeNode _ -> parseListLiteral();
+                case NodeTypeNode _ -> parseNodeLiteral();  //TODO : finish this method, currently empty
+                case ListTypeNode _ -> {
+                    if (check(TokenKind.OPEN_BRACKET)) yield parseListLiteral();
+                    else yield parseExpression();
+                }
                 case null, default -> parseExpression();
             };
         }

@@ -174,4 +174,9 @@ public final class Evaluator implements ExpressionVisitor<Object> {
     public Object visitAssignmentNode(AssignmentNode assignmentNode) {
         return null;
     }
+
+    @Override
+    public Object visitNameSpaceAccessNode(NamespaceAccessNode nameSpaceAccessNode) {
+        return null;
+    }
 }
