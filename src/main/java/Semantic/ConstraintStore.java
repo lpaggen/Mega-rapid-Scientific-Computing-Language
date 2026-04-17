@@ -5,6 +5,7 @@ import AST.Metadata.Containers.KnownDimension;
 import AST.Metadata.Containers.SymbolicDimension;
 
 import java.util.HashMap;
+import com.microsoft.z3.*;
 
 public final class ConstraintStore {  // union find data structure to store symbolic dimension constraints
     private final HashMap<String, String> parent = new HashMap<>();

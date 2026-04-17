@@ -544,7 +544,7 @@ public class Parser {
     private Statement parseVariableReassignment() {
         String varName = peek().getLexeme();
         consume(TokenKind.IDENTIFIER); // consume the variable name
-        if (!match(TokenKind.EQUAL)) {
+        if (check(TokenKind.EQUAL_EQUAL)) {
             throw new ErrorHandler(
                     "parsing",
                     peek().getLine(),
@@ -552,14 +552,7 @@ public class Parser {
                     "Expected '=' for variable reassignment."
             );
         }
-        if (match(TokenKind.EQUAL)) {
-            throw new ErrorHandler(
-                    "parsing",
-                    peek().getLine(),
-                    "Unexpected token: " + peek().getLexeme(),
-                    "Cannot use == when assigning value to variable."
-            );
-        }
+        consume(TokenKind.EQUAL); // consume the equals sign
         Expression newValue = parseExpression();
         consume(TokenKind.SEMICOLON); // consume the semicolon
         return new VariableReassignmentNode(varName, newValue);
