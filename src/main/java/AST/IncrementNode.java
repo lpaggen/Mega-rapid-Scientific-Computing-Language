@@ -3,25 +3,12 @@ package AST;
 import Semantic.ExpressionVisitor;
 import Lexer.TokenKind;
 
-public final class IncrementNode implements Expression {
-    private final TokenKind operator;
-    private final Expression arg;
-
+public record IncrementNode(TokenKind operator, Expression arg) implements Expression {
     // you want to check firstly if it's ++ or --, if not, throw an error
-    public IncrementNode(TokenKind operator, Expression arg) {
+    public IncrementNode {
         if (operator != TokenKind.INCREMENT && operator != TokenKind.DECREMENT) {
             throw new IllegalArgumentException("Operator must be either INCREMENT (++) or DECREMENT (--).");
         }
-        this.operator = operator;
-        this.arg = arg;
-    }
-
-    public TokenKind getOperator() {
-        return operator;
-    }
-
-    public Expression getArg() {
-        return arg;
     }
 
 //    @Override

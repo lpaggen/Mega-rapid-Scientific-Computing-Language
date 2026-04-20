@@ -2,16 +2,7 @@ package AST;
 
 import Semantic.ExpressionVisitor;
 
-public final class StringLiteralNode implements Expression {
-    private final String value;
-
-    public StringLiteralNode(String value) {
-        this.value = value;
-    }
-
-    public String getValue() {
-        return value;
-    }
+public record StringLiteralNode(String value) implements Expression {
 
     @Override
     public String toString() {

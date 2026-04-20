@@ -6,8 +6,9 @@ int x = 5;
 sym a;
 sym b;
 
-claim a == b;
-claim a == 5;
+claim a = b;
+claim a = 5;
+claim b > 6;
 
 mat<int, a@b> M = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];
 

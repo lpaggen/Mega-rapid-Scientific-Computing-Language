@@ -8,52 +8,14 @@ import java.util.HashMap;
 import com.microsoft.z3.*;
 
 public final class ConstraintStore {  // union find data structure to store symbolic dimension constraints
-    private final HashMap<String, String> parent = new HashMap<>();
-    private final HashMap<String, Integer> rank = new HashMap<>();
-    private final HashMap<String, Integer> symbolValues = new HashMap<>();  // for symbolic dimensions that are bound to known values
-    public ConstraintStore() {}
-
-    private String find(String x) {
-        if (!parent.containsKey(x)) {
-            parent.put(x, x);
-            rank.put(x, 0);
-            return x;
-        }
-        if (!parent.get(x).equals(x)) {  // while not root, keep going up the tree and do path compression
-            parent.put(x, find(parent.get(x)));
-        }
-
-        return parent.get(x);
-    }
-
-    private void union(String x, String y) {
-        String rootX = find(x);
-        String rootY = find(y);
-
-        if (rootX.equals(rootY)) {
-            return;  // belong to same set
-        }
-
-        int rankX = rank.get(rootX);
-        int rankY = rank.get(rootY);  // smaller tree goes under bigger tree to keep the tree flat
-
-        if (rankX < rankY) {
-            parent.put(rootX, rootY);
-        } else if (rankX > rankY) {
-            parent.put(rootY, rootX);
-        } else {
-            parent.put(rootY, rootX);
-            rank.put(rootX, rankX + 1);
-        }
-    }
-
-    private boolean areEqual(String x, String y) {
-        return find(x).equals(find(y));
-    }
+    private final Context ctx = new Context();  // Z3 context for SMT solving
+    private final Solver solver = ctx.mkSolver();  // Z3 solver instance
 
     public void addEqualityConstraint(Dimension x, Dimension y) {
         if (x instanceof SymbolicDimension(String s1) && y instanceof SymbolicDimension(String s2)) {
-            union(s1, s2);
+            IntExpr z3Var1 = ctx.mkIntConst(s1);
+            IntExpr z3Var2 = ctx.mkIntConst(s2);
+            solver.add(ctx.mkEq(z3Var1, z3Var2));
         }
         if (x instanceof KnownDimension(int k1) && y instanceof KnownDimension(int k2)) {
             if (k1 != k2) {
@@ -61,56 +23,110 @@ public final class ConstraintStore {  // union find data structure to store symb
             }
         }
         if (x instanceof KnownDimension(int k) && y instanceof SymbolicDimension(String s)) {
-            bindSymbolToValue(s, k);
+            IntExpr z3Var = ctx.mkIntConst(s);
+            IntNum z3Value = ctx.mkInt(k);
+            solver.add(ctx.mkEq(z3Var, z3Value));
         }
         if (x instanceof SymbolicDimension(String s) && y instanceof KnownDimension(int k)) {
-            bindSymbolToValue(s, k);
+            IntExpr z3Var = ctx.mkIntConst(s);
+            IntNum z3Value = ctx.mkInt(k);
+            solver.add(ctx.mkEq(z3Var, z3Value));
         }
-
-        // TODO complex cases, eg :    claim a + 1 = b + 1;  --> can solve with weight/offset, but does NOT solve * etc
     }
 
-    private void bindSymbolToValue(String symbol, int value) {
-        String root = find(symbol);
-        if (symbolValues.containsKey(root)) {
-            int existingValue = symbolValues.get(root);
-            if (existingValue != value) {
-                throw new RuntimeException(
-                        "Inconsistent constraint: " + symbol +
-                                " cannot be both " + existingValue + " and " + value
-                );
+    public void addGreaterThanConstraint(Dimension x, Dimension y) {
+        if (x instanceof SymbolicDimension(String s1) && y instanceof SymbolicDimension(String s2)) {
+            IntExpr z3Var1 = ctx.mkIntConst(s1);
+            IntExpr z3Var2 = ctx.mkIntConst(s2);
+            solver.add(ctx.mkGt(z3Var1, z3Var2));
+        }
+        if (x instanceof KnownDimension(int k1) && y instanceof KnownDimension(int k2)) {
+            if (k1 <= k2) {
+                throw new RuntimeException("Constraint violation: " + k1 + " is not greater than " + k2);
             }
         }
-        symbolValues.put(root, value);
+        if (x instanceof KnownDimension(int k) && y instanceof SymbolicDimension(String s)) {
+            IntExpr z3Var = ctx.mkIntConst(s);
+            IntNum z3Value = ctx.mkInt(k);
+            solver.add(ctx.mkGt(z3Value, z3Var));
+        }
+        if (x instanceof SymbolicDimension(String s) && y instanceof KnownDimension(int k)) {
+            IntExpr z3Var = ctx.mkIntConst(s);
+            IntNum z3Value = ctx.mkInt(k);
+            solver.add(ctx.mkGt(z3Var, z3Value));
+        }
     }
 
-    private Integer getSymbolValue(String symbol) {
-        String root = find(symbol);
-        return symbolValues.get(root);
+    public void addLessThanConstraint(Dimension x, Dimension y) {
+        if (x instanceof SymbolicDimension(String s1) && y instanceof SymbolicDimension(String s2)) {
+            IntExpr z3Var1 = ctx.mkIntConst(s1);
+            IntExpr z3Var2 = ctx.mkIntConst(s2);
+            solver.add(ctx.mkLt(z3Var1, z3Var2));
+        }
+        if (x instanceof KnownDimension(int k1) && y instanceof KnownDimension(int k2)) {
+            if (k1 >= k2) {
+                throw new RuntimeException("Constraint violation: " + k1 + " is not less than " + k2);
+            }
+        }
+        if (x instanceof KnownDimension(int k) && y instanceof SymbolicDimension(String s)) {
+            IntExpr z3Var = ctx.mkIntConst(s);
+            IntNum z3Value = ctx.mkInt(k);
+            solver.add(ctx.mkLt(z3Value, z3Var));
+        }
+        if (x instanceof SymbolicDimension(String s) && y instanceof KnownDimension(int k)) {
+            IntExpr z3Var = ctx.mkIntConst(s);
+            IntNum z3Value = ctx.mkInt(k);
+            solver.add(ctx.mkLt(z3Var, z3Value));
+        }
     }
 
-    public boolean canProve(Dimension x, Dimension y) {
-        if (x == null || y == null) {
-            return false;
+    public void addGreaterEqualConstraint(Dimension x, Dimension y) {
+        if (x instanceof SymbolicDimension(String s1) && y instanceof SymbolicDimension(String s2)) {
+            IntExpr z3Var1 = ctx.mkIntConst(s1);
+            IntExpr z3Var2 = ctx.mkIntConst(s2);
+            solver.add(ctx.mkGe(z3Var1, z3Var2));
         }
-        if (x == null && y == null) {
-            return true;
+        if (x instanceof KnownDimension(int k1) && y instanceof KnownDimension(int k2)) {
+            if (k1 < k2) {
+                throw new RuntimeException("Constraint violation: " + k1 + " is not greater than or equal to " + k2);
+            }
         }
-        if (x instanceof SymbolicDimension s1 && y instanceof SymbolicDimension s2) {
-            return areEqual(s1.name(), s2.name());
+        if (x instanceof KnownDimension(int k) && y instanceof SymbolicDimension(String s)) {
+            IntExpr z3Var = ctx.mkIntConst(s);
+            IntNum z3Value = ctx.mkInt(k);
+            solver.add(ctx.mkGe(z3Value, z3Var));
         }
-        if (x instanceof KnownDimension k1 && y instanceof KnownDimension k2) {
-            return k1.value() == k2.value();
+        if (x instanceof SymbolicDimension(String s) && y instanceof KnownDimension(int k)) {
+            IntExpr z3Var = ctx.mkIntConst(s);
+            IntNum z3Value = ctx.mkInt(k);
+            solver.add(ctx.mkGe(z3Var, z3Value));
         }
-        if (x instanceof KnownDimension k && y instanceof SymbolicDimension s) {
-            Integer value = getSymbolValue(s.name());
-            return value != null && value == k.value();
+    }
+
+    public void addLessEqualConstraint(Dimension x, Dimension y) {
+        if (x instanceof SymbolicDimension(String s1) && y instanceof SymbolicDimension(String s2)) {
+            IntExpr z3Var1 = ctx.mkIntConst(s1);
+            IntExpr z3Var2 = ctx.mkIntConst(s2);
+            solver.add(ctx.mkLe(z3Var1, z3Var2));
         }
-        if (x instanceof SymbolicDimension s && y instanceof KnownDimension k) {
-            Integer value = getSymbolValue(s.name());
-            return value != null && value == k.value();
+        if (x instanceof KnownDimension(int k1) && y instanceof KnownDimension(int k2)) {
+            if (k1 > k2) {
+                throw new RuntimeException("Constraint violation: " + k1 + " is not less than or equal to " + k2);
+            }
         }
-        // TODO complex cases, eg :    claim a + 1 = b + 1;
-        return false;
+        if (x instanceof KnownDimension(int k) && y instanceof SymbolicDimension(String s)) {
+            IntExpr z3Var = ctx.mkIntConst(s);
+            IntNum z3Value = ctx.mkInt(k);
+            solver.add(ctx.mkLe(z3Value, z3Var));
+        }
+        if (x instanceof SymbolicDimension(String s) && y instanceof KnownDimension(int k)) {
+            IntExpr z3Var = ctx.mkIntConst(s);
+            IntNum z3Value = ctx.mkInt(k);
+            solver.add(ctx.mkLe(z3Var, z3Value));
+        }
+    }
+
+    public Status isSatisfied() {
+        return solver.check();
     }
 }

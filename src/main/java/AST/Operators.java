@@ -14,5 +14,5 @@ public enum Operators {
     GTE,
     AND,
     OR,
-    NOT
+    EQUALS, NOT
 }

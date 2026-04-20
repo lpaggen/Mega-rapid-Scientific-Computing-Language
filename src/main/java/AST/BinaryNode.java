@@ -4,10 +4,9 @@ import Semantic.ExpressionVisitor;
 import Lexer.TokenKind;
 
 public final class BinaryNode implements Expression {
-    final Expression lhs;
-    final Operators operator;
-    final Expression rhs;
-    // public Type inferredType;  // set during type inference
+    private final Expression lhs;
+    private final Operators operator;
+    private final Expression rhs;
 
     public BinaryNode(Expression lhs, Operators operator, Expression rhs) {
         this.lhs = lhs;

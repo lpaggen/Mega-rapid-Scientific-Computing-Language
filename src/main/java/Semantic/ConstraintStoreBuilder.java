@@ -6,8 +6,9 @@ import AST.Metadata.Containers.Dimension;
 import AST.Metadata.Containers.KnownDimension;
 import AST.Metadata.Containers.SymbolicDimension;
 
-import java.io.ObjectStreamClass;
 import java.util.List;
+
+import com.microsoft.z3.*;
 
 /**
  * ConstraintStoreBuilder collects "claim" statements at compile-time and populates the ConstraintStore.
@@ -15,7 +16,7 @@ import java.util.List;
 public final class ConstraintStoreBuilder implements StatementVisitor<Void> {
     private final ConstraintStore constraintStore;
     private final List<String> errors;
-    private final SymbolTable symbolTable;  // TODO: contains info like int x = 5; maybe we should use this!
+    private final SymbolTable symbolTable;
 
     public ConstraintStoreBuilder(List<String> errors, SymbolTable symbolTable) {
         this.constraintStore = new ConstraintStore();
@@ -23,16 +24,16 @@ public final class ConstraintStoreBuilder implements StatementVisitor<Void> {
         this.symbolTable = symbolTable;
     }
 
-    public ConstraintStore collect(List<Statement> ast) {
+    public void collect(List<Statement> ast) {
         for (Statement statement : ast) {
             statement.accept(this);
         }
-        return constraintStore;
     }
 
     public void printErrors() {
         if (errors.isEmpty()) {
             System.out.println("No constraint errors found.");
+            System.out.println("Constraints are satisfiable: " + constraintStore.isSatisfied());
         } else {
             System.out.println("Constraint Errors:");
             for (String error : errors) {
@@ -44,27 +45,19 @@ public final class ConstraintStoreBuilder implements StatementVisitor<Void> {
     @Override
     public Void visitClaimStatementNode(ClaimStatementNode node) {
         Expression claim = node.claimExpression();
-
-        if (!(claim instanceof BinaryNode bin)) {
-            System.out.println("claim is not a binary expression: " + claim);
-            errors.add("claim expression must be a binary expression");
-            return null;
+        if (claim instanceof AssignmentNode expr) {  // ex: claim x = 2 * y + 3
+            constraintStore.addEqualityConstraint(extractDimension(new VariableNode(expr.variableName())), extractDimension(expr.value()));
+        } else if (claim instanceof BinaryNode bin) {
+            switch (bin.getOperator()) {
+                case GT -> constraintStore.addGreaterThanConstraint(extractDimension(bin.getLeft()), extractDimension(bin.getRight()));
+                case LT -> constraintStore.addLessThanConstraint(extractDimension(bin.getLeft()), extractDimension(bin.getRight()));
+                case GTE -> constraintStore.addGreaterEqualConstraint(extractDimension(bin.getLeft()), extractDimension(bin.getRight()));
+                case LTE -> constraintStore.addLessEqualConstraint(extractDimension(bin.getLeft()), extractDimension(bin.getRight()));
+                default -> errors.add("Unsupported operator in claim: " + bin.getOperator());
+            }
+        } else {
+            errors.add("Unsupported operation in claim: " + claim);
         }
-
-        // TODO -> future build must support full SMT / at least bounds and intervals
-        // for this demo, i only prove that this can save against classic linalg errors
-        if (!(bin.getOperator() != null && !bin.getOperator().equals("=="))) {
-            errors.add("claim expression must have '==' operator");
-        }
-
-        try {
-            Dimension left = extractDimension(bin.getLeft());
-            Dimension right = extractDimension(bin.getRight());
-            constraintStore.addEqualityConstraint(left, right);
-        } catch (IllegalArgumentException e) {
-            errors.add("Invalid claim: " + e.getMessage());
-        }
-
         return null;
     }
 
