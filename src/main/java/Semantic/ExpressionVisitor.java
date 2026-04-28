@@ -17,13 +17,13 @@ import AST.EdgeLiteralNode;
 import AST.GraphNodeLiteralNode;
 import AST.MatrixLiteralNode;
 
-public sealed interface ExpressionVisitor<T> permits Evaluator {
+public sealed interface ExpressionVisitor<T> permits DimensionLowerer, Evaluator {
     T visitBraceLiteral(BraceLiteralNode node);
     T visitBracketLiteral(BracketLiteralNode node);
     T visitFunctionCall(FunctionCallNode node);
     T visitBinaryNode(BinaryNode node);
-    T visitIntegerLiteral (IntegerLiteralNode node);
-    T visitFloatLiteral (FloatLiteralNode node);
+    T visitIntegerLiteral(IntegerLiteralNode node);
+    T visitFloatLiteral(FloatLiteralNode node);
     T visitIncrementNode (IncrementNode node);
     T visitVariableNode (VariableNode node);
     T visitStringLiteral (StringLiteralNode node);

@@ -28,14 +28,23 @@ public final class ConstraintStore {  // Z3 SMT API
             }
         }
         if (x instanceof KnownDimension(int k) && y instanceof SymbolicDimension(String s)) {
+            if (k <= 1) {
+                throw new RuntimeException("Constraint violation: " + k + " is not greater than 0");
+            }
             IntExpr z3Var = ctx.mkIntConst(s);
             IntNum z3Value = ctx.mkInt(k);
             solver.add(ctx.mkEq(z3Var, z3Value));
         }
         if (x instanceof SymbolicDimension(String s) && y instanceof KnownDimension(int k)) {
+            if (k <= 1) {
+                throw new RuntimeException("Constraint violation: " + k + " is not greater than 0");
+            }
             IntExpr z3Var = ctx.mkIntConst(s);
             IntNum z3Value = ctx.mkInt(k);
             solver.add(ctx.mkEq(z3Var, z3Value));
+            if (solver.check() == Status.UNSATISFIABLE) {
+                throw new RuntimeException("Constraint violation: " + s + " cannot be equal to " + k);
+            }
         }
     }
 

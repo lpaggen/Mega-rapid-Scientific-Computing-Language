@@ -170,7 +170,7 @@ public class Parser {
         if (match(TokenKind.NOT, TokenKind.MINUS, TokenKind.PLUS)) { // handle both ! and negation
             Token operator = previous();
             Expression rhs = parseUnary();
-            return new UnaryNode(operator, rhs);
+            return new UnaryNode(tokenToOp(operator.getKind()), rhs);
         }
         return parsePrimary();
     }

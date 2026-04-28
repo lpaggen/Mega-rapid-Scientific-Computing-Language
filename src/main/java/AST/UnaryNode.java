@@ -4,10 +4,10 @@ import Semantic.ExpressionVisitor;
 import Lexer.Token;
 
 public final class UnaryNode implements Expression {
-    private final Token operator;
+    private final Operators operator;
     private final Expression rhs;
 
-    public UnaryNode(Token operator, Expression rhs) {
+    public UnaryNode(Operators operator, Expression rhs) {
         this.operator = operator;
         this.rhs = rhs;
     }
@@ -25,7 +25,7 @@ public final class UnaryNode implements Expression {
 
     @Override
     public String toString() {
-        return operator.getLexeme() + rhs.toString();
+        return operator + rhs.toString();
     }
 
     @Override
@@ -68,7 +68,7 @@ public final class UnaryNode implements Expression {
 //        return new Mul(new Scalar(-1), rightValue);
 //    }
 
-    public Token getOperator() {
+    public Operators getOperator() {
         return operator;
     }
 

@@ -16,12 +16,13 @@ import com.microsoft.z3.*;
 public final class ConstraintStoreBuilder implements StatementVisitor<Void> {
     private final ConstraintStore constraintStore;
     private final List<String> errors;
-    private final SymbolTable symbolTable;
+//    private final SymbolTable symbolTable;
+    private final DimensionLowerer dimensionLowerer = new DimensionLowerer();
 
     public ConstraintStoreBuilder(List<String> errors, SymbolTable symbolTable) {
         this.constraintStore = new ConstraintStore();
         this.errors = errors;
-        this.symbolTable = symbolTable;
+//        this.symbolTable = symbolTable;
     }
 
     public void collect(List<Statement> ast) {
@@ -62,30 +63,7 @@ public final class ConstraintStoreBuilder implements StatementVisitor<Void> {
     }
 
     private Dimension extractDimension(Expression expr) {
-        if (expr instanceof VariableNode var) {
-            String name = var.getName();
-            TypeInfo info = symbolTable.lookup(name);
-            if (info == null) {
-                throw new IllegalArgumentException("Variable " + name + " not found");
-            }
-            if (!(info.type() instanceof MathTypeNode)) {
-                errors.add("Variable " + name + " is not a math type");
-            }
-            return new SymbolicDimension(name);
-        }
-
-        if (expr instanceof IntegerLiteralNode lit) {
-            return new KnownDimension(lit.getValue());
-        }
-
-        if (expr instanceof BinaryNode bin) {
-            Dimension left = extractDimension(bin.getLeft());  // recurse until base
-            Dimension right = extractDimension(bin.getRight());
-            Operators op = bin.getOperator();
-            return new BinaryDimension(left, right, op);
-        }
-
-        throw new IllegalArgumentException("Cannot extract dimension from: " + expr);
+        return expr.accept(dimensionLowerer);
     }
 
     @Override
