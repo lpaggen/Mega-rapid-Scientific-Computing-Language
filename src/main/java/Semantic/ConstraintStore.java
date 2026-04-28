@@ -7,9 +7,14 @@ import AST.Metadata.Containers.SymbolicDimension;
 import java.util.HashMap;
 import com.microsoft.z3.*;
 
-public final class ConstraintStore {  // union find data structure to store symbolic dimension constraints
+public final class ConstraintStore {  // Z3 SMT API
     private final Context ctx = new Context();  // Z3 context for SMT solving
     private final Solver solver = ctx.mkSolver();  // Z3 solver instance
+
+    public boolean checkPositivity() {
+        //TODO
+        return true;
+    }
 
     public void addEqualityConstraint(Dimension x, Dimension y) {
         if (x instanceof SymbolicDimension(String s1) && y instanceof SymbolicDimension(String s2)) {

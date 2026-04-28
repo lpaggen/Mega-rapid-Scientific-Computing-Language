@@ -3,7 +3,6 @@ import Parser.Parser;
 import Lexer.Tokenizer;
 import Lexer.Token;
 import Semantic.ConstraintStoreBuilder;
-import Semantic.SymbolTable;
 import Semantic.SymbolTableBuilder;
 
 import java.io.IOException;
