@@ -14,13 +14,13 @@
 ////    private static final String[] supportedTypes = {"int", "string", "bool", "float"};
 ////
 ////    public Cast(String arg) {
-////        super("cast", TokenKind.VOID); // actual type will be determined dynamically
+////        super("cast", TokenKind.VOID); // actual typeInterface will be determined dynamically
 ////        this.toType = switch (arg.toLowerCase()) {
 ////            case "int" -> TokenKind.INTEGER;
 ////            case "string" -> TokenKind.STRING;
 ////            case "bool" -> TokenKind.BOOLEAN;
 ////            case "float" -> TokenKind.FLOAT;
-////            default -> throw new IllegalArgumentException("Unsupported cast type: " + arg);
+////            default -> throw new IllegalArgumentException("Unsupported cast typeInterface: " + arg);
 ////        };
 ////    }
 ////
@@ -35,7 +35,7 @@
 ////            case FLOAT -> new Constant(toFloat(value));
 ////            case BOOLEAN -> new BooleanNode(toBool(value));
 ////            case STRING -> new StringNode(toStringValue(value));
-////            default -> throw new IllegalArgumentException("Unsupported cast type: " + toType);
+////            default -> throw new IllegalArgumentException("Unsupported cast typeInterface: " + toType);
 ////        };
 ////    }
 ////
@@ -84,7 +84,7 @@
 //    @Override
 //    public Object call(Environment env, List<Object> args) {
 //        if (args.size() != 2) {
-//            throw new IllegalArgumentException("Cast function requires exactly two arguments: value and target type.");
+//            throw new IllegalArgumentException("Cast function requires exactly two arguments: value and target typeInterface.");
 //        }
 //        Object value = args.getFirst();
 //        String targetType = args.get(1).toString().toLowerCase();
@@ -94,7 +94,7 @@
 //            case "float" -> new Scalar(Float.parseFloat(value.toString()));
 //            case "bool" -> new BooleanNode(Boolean.parseBoolean(value.toString()));
 //            case "str" -> new StringNode(value.toString());  // there's some exceptions here we should handle later
-//            default -> throw new IllegalArgumentException("Unsupported cast type: " + targetType + "." +
+//            default -> throw new IllegalArgumentException("Unsupported cast typeInterface: " + targetType + "." +
 //                    " Supported types are: " + String.join(", ", supportedTypes) + ".");
 //        };
 //    }

@@ -10,8 +10,8 @@ import java.util.HashMap;
 
 public record ImportNode(String moduleName, String alias) implements Statement {
 
-    public Type getType() {
-        return new ModuleType(alias != null ? alias : moduleName);
+    public TypeInterface getType() {
+        return new ModuleTypeInterface(alias != null ? alias : moduleName);
     }
 
 //    @Override

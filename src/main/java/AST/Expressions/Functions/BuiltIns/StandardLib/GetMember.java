@@ -11,7 +11,7 @@
 //public class GetMember extends BuiltInFunctionSymbol {
 //
 //    public GetMember() {
-//        super("getMember", TokenKind.VOID); // dynamic type
+//        super("getMember", TokenKind.VOID); // dynamic typeInterface
 //    }
 //
 //    @Override
@@ -55,7 +55,7 @@
 //            };
 //        }
 //
-//        // this won't work -> we need to return a custom node, or array etc, not Java type
+//        // this won't work -> we need to return a custom node, or array etc, not Java typeInterface
 ////        if (obj instanceof Matrix mat) {
 ////            return switch (member) {
 ////                // case "rows" -> mat.getRows();
@@ -76,6 +76,6 @@
 //            throw new IllegalArgumentException("Cannot access member '" + member + "' on null object");
 //        }
 //
-//        throw new IllegalArgumentException("Cannot access member '" + member + "' on type " + obj.getClass().getSimpleName());
+//        throw new IllegalArgumentException("Cannot access member '" + member + "' on typeInterface " + obj.getClass().getSimpleName());
 //    }
 //}

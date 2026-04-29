@@ -3,18 +3,18 @@ package AST;
 
 import Semantic.TypeVisitor;
 
-public final class GraphTypeNode implements Type {
-    private final Type type;  // for now assume the type is the same for node weights and edge capacities
+public final class GraphTypeNodeInterface implements TypeInterface {
+    private final TypeInterface typeInterface;  // for now assume the typeInterface is the same for node weights and edge capacities
     private final boolean directed;
     private final boolean weighted;
-    public GraphTypeNode(Type type, boolean directed, boolean weighted) {
-        this.type = type;
+    public GraphTypeNodeInterface(TypeInterface typeInterface, boolean directed, boolean weighted) {
+        this.typeInterface = typeInterface;
         this.directed = directed;
         this.weighted = weighted;
     }
 
-    public Type getType() {
-        return type;
+    public TypeInterface getType() {
+        return typeInterface;
     }
 
     public boolean isDirected() {
@@ -27,7 +27,7 @@ public final class GraphTypeNode implements Type {
 
     @Override
     public String toString() {
-        return "Graph<" + type.toString() + ">" +
+        return "Graph<" + typeInterface.toString() + ">" +
                (directed ? "[Directed]" : "[Undirected]") +
                (weighted ? "[Weighted]" : "[Unweighted]");
     }

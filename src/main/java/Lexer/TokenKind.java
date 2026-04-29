@@ -23,7 +23,7 @@ public enum TokenKind {
     NUM,
     STRING,
     NULL,
-    VOID, // this is a special type that means "no return value" or "no value at all"
+    VOID, // this is a special typeInterface that means "no return value" or "no value at all"
     IDENTIFIER,
     MATH, // for mathematical expressions
     AT,

@@ -13,7 +13,7 @@
 //public class AlgebraEngine {
 //    public static Expression simplify(Expression expression) {
 //        Boolean isRaw = false;
-//        System.out.println("Attempting to simplify: " + expression.toString() + " of type " + expression.getClass().getSimpleName());
+//        System.out.println("Attempting to simplify: " + expression.toString() + " of typeInterface " + expression.getClass().getSimpleName());
 //        switch (expression.getClass().getSimpleName()) {
 //            case "Mul":
 //                Mul multiply = (Mul) expression;

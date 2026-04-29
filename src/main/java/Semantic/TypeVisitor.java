@@ -3,25 +3,25 @@ package Semantic;
 import AST.*;
 
 public sealed interface TypeVisitor<R> permits TypeChecker {
-    R visitListType(ListTypeNode listTypeNode);
-    R visitBooleanType(BooleanTypeNode booleanTypeNode);
+    R visitListType(ListTypeNodeInterface listTypeNode);
+    R visitBooleanType(BooleanTypeNodeInterface booleanTypeNode);
 
-    R visitEdgeTypeNode(EdgeTypeNode edgeTypeNode);
+    R visitEdgeTypeNode(EdgeTypeNodeInterface edgeTypeNode);
 
-    R visitGraphTypeNode(GraphTypeNode graphTypeNode);
+    R visitGraphTypeNode(GraphTypeNodeInterface graphTypeNode);
 
-    R visitMatrixTypeNode(MatrixTypeNode matrixTypeNode);
+    R visitMatrixTypeNode(MatrixTypeNodeInterface matrixTypeNode);
 
-    R visitNodeTypeNode(NodeTypeNode nodeTypeNode);
+    R visitNodeTypeNode(NodeTypeNodeInterface nodeTypeNode);
 
-    R visitScalarTypeNode(ScalarTypeNode scalarTypeNode);
+    R visitScalarTypeNode(ScalarTypeNodeInterface scalarTypeNode);
 
-    R visitStringTypeNode(StringTypeNode stringTypeNode);
+    R visitStringTypeNode(StringTypeNodeInterface stringTypeNode);
 
-    R visitFunctionTypeNode(FunctionTypeNode functionTypeNode);
-    R visitVoidType(VoidTypeNode voidTypeNode);
-    R visitAlgebraicSymbolType(AlgebraicSymbolType algebraicSymbolType);
+    R visitFunctionTypeNode(FunctionTypeNodeInterface functionTypeNode);
+    R visitVoidType(VoidTypeNodeInterface voidTypeNode);
+    R visitAlgebraicSymbolType(AlgebraicSymbolTypeInterface algebraicSymbolType);
 
-    R visitMathType(MathTypeNode mathTypeNode);
-    R visitModuleType(ModuleType moduleType);
+    R visitMathType(MathTypeNodeInterface mathTypeNode);
+    R visitModuleType(ModuleTypeInterface moduleType);
 }

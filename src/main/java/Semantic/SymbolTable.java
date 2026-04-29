@@ -1,11 +1,14 @@
 package Semantic;
 
-import AST.MathTypeNode;
+import AST.MathTypeNodeInterface;
+import AST.TypeAttributes;
+import AST.TypeInterface;
 import AST.Type;
+
 import java.util.*;
 
 public class SymbolTable {
-    private final Deque<Map<String, TypeInfo>> scopes = new ArrayDeque<>();
+    private final Deque<Map<String, Type>> scopes = new ArrayDeque<>();
 
     public SymbolTable() {
         pushScope();
@@ -22,21 +25,21 @@ public class SymbolTable {
         scopes.pop();
     }
 
-    public void declare(String name, Type type, boolean isMutable) {
-        Map<String, TypeInfo> currentScope = scopes.peek();
+    public void declare(String name, TypeInterface typeInterface, boolean isMutable) {
+        Map<String, Type> currentScope = scopes.peek();
         if (currentScope.containsKey(name)) {
             throw new RuntimeException("Symbol already declared: " + name);
         }
-        currentScope.put(name, new TypeInfo(name, type, isMutable));
+        currentScope.put(name, new Type(typeInterface, new TypeAttributes(isMutable, false)));
     }
 
     public boolean isMutable(String name) {
-        TypeInfo info = lookup(name);
-        return info != null && info.isMutable();
+        Type type = lookup(name);
+        return type != null && type.attributes().mutable();
     }
 
-    public TypeInfo lookup(String name) {
-        for (Map<String, TypeInfo> scope : scopes) {
+    public Type lookup(String name) {
+        for (Map<String, Type> scope : scopes) {
             if (scope.containsKey(name)) {
                 return scope.get(name);
             }
@@ -45,8 +48,8 @@ public class SymbolTable {
     }
 
     public boolean isSymbolicDimension(String name) {
-        TypeInfo info = lookup(name);
-        return info != null && info.type() instanceof MathTypeNode;
+        Type info = lookup(name);
+        return info != null && info.typeInterface() instanceof MathTypeNodeInterface;
     }
 
     public boolean isDeclared(String name) {
@@ -54,9 +57,3 @@ public class SymbolTable {
     }
 }
 
-// we need a TypeInfo class to store the type and mutability of a symbol
-record TypeInfo(
-        String name,
-        Type type,
-        boolean isMutable
-) {}

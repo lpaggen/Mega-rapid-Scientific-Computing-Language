@@ -2,7 +2,7 @@ package AST;
 
 import Semantic.TypeVisitor;
 
-public final class VoidTypeNode implements Type {
+public final class VoidTypeNodeInterface implements TypeInterface {
     @Override
     public String toString() {
         return "void";

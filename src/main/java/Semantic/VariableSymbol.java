@@ -1,5 +1,5 @@
 package Semantic;
 
-import AST.Type;
+import AST.TypeInterface;
 
-public record VariableSymbol(Type type, boolean mutable) implements Symbol, Mutable {}
+public record VariableSymbol(TypeInterface typeInterface, boolean mutable) implements Symbol, Mutable {}

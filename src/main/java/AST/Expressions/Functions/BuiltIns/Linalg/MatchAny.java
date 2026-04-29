@@ -13,7 +13,7 @@
 //    }
 //
 //    // can make this more efficient if we really want to by immediately asserting
-//    // can't match type if array doesn't even contain that type, will do later
+//    // can't match typeInterface if array doesn't even contain that typeInterface, will do later
 //    @Override
 //    public Object call(Environment env, java.util.List<Object> args) {
 //        if (args.size() != 2) {

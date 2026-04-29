@@ -13,7 +13,7 @@
 //
 //public class Shape extends BuiltInFunctionSymbol {
 //    public Shape() {
-//        super("shape", TokenKind.ARRAY); // Return type can be defined as needed
+//        super("shape", TokenKind.ARRAY); // Return typeInterface can be defined as needed
 //    }
 //
 //    @Override

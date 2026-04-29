@@ -2,7 +2,7 @@ package AST;
 
 import Semantic.TypeVisitor;
 
-public record ModuleType(String moduleName) implements Type {
+public record ModuleTypeInterface(String moduleName) implements TypeInterface {
 
     @Override
     public <R> R accept(TypeVisitor<R> visitor) {

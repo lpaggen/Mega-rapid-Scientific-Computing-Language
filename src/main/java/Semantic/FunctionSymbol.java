@@ -1,5 +1,5 @@
 package Semantic;
 
-import AST.FunctionTypeNode;
+import AST.FunctionTypeNodeInterface;
 
-public record FunctionSymbol(FunctionTypeNode type) implements Symbol {}
+public record FunctionSymbol(FunctionTypeNodeInterface type) implements Symbol {}

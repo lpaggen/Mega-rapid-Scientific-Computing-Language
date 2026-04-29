@@ -6,9 +6,9 @@
 //
 //import java.util.List;
 //
-//public class Type extends BuiltInFunctionSymbol {
-//    public Type() {
-//        super("type", TokenKind.VOID); // this returns something else than void, of course, idk how to implement it yet
+//public class TypeInterface extends BuiltInFunctionSymbol {
+//    public TypeInterface() {
+//        super("typeInterface", TokenKind.VOID); // this returns something else than void, of course, idk how to implement it yet
 //    }
 //
 //    // this works, but at the moment we still have some Java types
@@ -16,13 +16,13 @@
 //    @Override
 //    public Object call(Environment env, List<Object> args) {
 //        if (args.isEmpty()) {
-//            throw new IllegalArgumentException("Type function requires at least one argument.");
+//            throw new IllegalArgumentException("TypeInterface function requires at least one argument.");
 //        }
 //
 //        Object arg = args.get(0);
 //        String typeName = arg.getClass().getSimpleName();
 //
-//        // Return the type name as a string
+//        // Return the typeInterface name as a string
 //        return typeName;
 //    }
 //}

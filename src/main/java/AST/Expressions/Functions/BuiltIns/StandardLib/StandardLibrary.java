@@ -15,7 +15,7 @@ public class StandardLibrary {
 //        builtInSymbols.put("print", new PrintFunction());
 //        builtInSymbols.put("time", new Time());
 //        builtInSymbols.put("vars", new Vars());
-//        builtInSymbols.put("type", new Type());
+//        builtInSymbols.put("typeInterface", new TypeInterface());
 //        builtInSymbols.put("cast", new Cast()); // i had a cool int() etc version but it conflicts with reserved keywords like int, float, etc.
 //        builtInSymbols.put("getMember", new GetMember());
 //        builtInSymbols.put("help", new help());

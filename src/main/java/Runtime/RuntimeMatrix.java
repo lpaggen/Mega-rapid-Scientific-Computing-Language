@@ -11,12 +11,12 @@
 //    private final Expression[][] elements;
 //    int numRows;
 //    int numCols;
-//    private final TokenKind type;
+//    private final TokenKind typeInterface;
 //    private static final double EPSILON = 1e-10;  // used as tol for stability
 //    //  private WarningLogger warningLogger = new WarningLogger();
-//    public RuntimeMatrix(Expression[][] elements, TokenKind type) {
+//    public RuntimeMatrix(Expression[][] elements, TokenKind typeInterface) {
 //        this.elements = elements;
-//        this.type = type;
+//        this.typeInterface = typeInterface;
 //        this.numRows = elements.length;
 //        this.numCols = elements.length > 0 ? elements[0].length : 0;
 //    }
@@ -92,7 +92,7 @@
 //    public RuntimeMatrix getRow(int row) {
 //        Expression[][] rowElements = new Expression[1][numCols];
 //        System.arraycopy(elements[row], 0, rowElements[0], 0, numCols);
-//        return new RuntimeMatrix(rowElements, type);
+//        return new RuntimeMatrix(rowElements, typeInterface);
 //    }
 //
 //    public RuntimeMatrix sliceRow(int startCol, int endCol) {
@@ -101,7 +101,7 @@
 //        }
 //        Expression[][] slicedElements = new Expression[1][endCol - startCol];
 //        System.arraycopy(this.getRow(0).elements[0], startCol, slicedElements[0], 0, endCol - startCol);
-//        return new RuntimeMatrix(slicedElements, type);
+//        return new RuntimeMatrix(slicedElements, typeInterface);
 //    }
 //
 //    public RuntimeMatrix sliceColumn(int startRow, int endRow) {
@@ -112,7 +112,7 @@
 //        for (int i = startRow; i < endRow; i++) {
 //            slicedElements[i - startRow][0] = this.getColumn(0).elements[i][0];
 //        }
-//        return new RuntimeMatrix(slicedElements, type);
+//        return new RuntimeMatrix(slicedElements, typeInterface);
 //    }
 //
 //    public RuntimeMatrix getColumn(int col) {
@@ -120,7 +120,7 @@
 //        for (int i = 0; i < numRows; i++) {
 //            colElements[i][0] = elements[i][col];
 //        }
-//        return new RuntimeMatrix(colElements, type);
+//        return new RuntimeMatrix(colElements, typeInterface);
 //    }
 //
 //    @Override
@@ -151,7 +151,7 @@
 //                transposed[j][i] = elements[i][j];
 //            }
 //        }
-//        return new RuntimeMatrix(transposed, type);
+//        return new RuntimeMatrix(transposed, typeInterface);
 //    }
 //
 //    @Override
@@ -180,13 +180,13 @@
 //
 //    @Override
 //    public TokenKind getType(Environment env) {
-//        return type;
+//        return typeInterface;
 //    }
 //
 //    @Override
 //    public Expression evaluate(Environment env) {
 //        Expression[][] evaluatedElements = new Expression[numRows][numCols];
-//        TokenKind expectedType = type;
+//        TokenKind expectedType = typeInterface;
 //        int position = 0; // linear counter
 //        for (Expression elem : this) {
 //            Expression evaluated = elem.evaluate(env);
@@ -197,7 +197,7 @@
 //                warningLogger.addWarning(1, "Implicit conversion from numeric to boolean in RuntimeMatrix at position " + position, -1);
 //                warningLogger.logWarningsToFile();
 //            } else if (evaluated.getType(env) != expectedType) {
-//                throw new RuntimeException("RuntimeMatrix type mismatch: expected "
+//                throw new RuntimeException("RuntimeMatrix typeInterface mismatch: expected "
 //                        + expectedType + ", got " + evaluated.getType(env)
 //                        + " in element " + evaluated + " at position " + position);
 //            }
@@ -807,7 +807,7 @@
 //        RuntimeScalar rightConst = right instanceof RuntimeScalar ? (RuntimeScalar) right : null;
 //        int rows;
 //        int cols;
-//        TokenKind type;
+//        TokenKind typeInterface;
 //        // check if the types are legal on either side
 //        if (leftMat == null && leftConst == null) {
 //            throw new RuntimeException("Left operand must be a RuntimeMatrix or RuntimeScalar for addition, got: " + left.getClass().getSimpleName());
@@ -817,11 +817,11 @@
 //        if (leftMat != null) {
 //            rows = leftMat.rows();
 //            cols = leftMat.cols();
-//            type = leftMat.getType();
+//            typeInterface = leftMat.getType();
 //        } else if (rightMat != null) {
 //            cols = rightMat.cols();
 //            rows = rightMat.rows();
-//            type = rightMat.getType();
+//            typeInterface = rightMat.getType();
 //        } else {  // both RuntimeScalars
 //            return operator.apply(leftConst, rightConst);
 //        }
@@ -832,7 +832,7 @@
 //                    rightMat.rows() + "x" + rightMat.cols());
 //        }
 //        Expression[][] resultElements = new Expression[rows][cols];
-//        for (int i = 0; i < rows; i++) {  // need to resolve the type of the elements every time
+//        for (int i = 0; i < rows; i++) {  // need to resolve the typeInterface of the elements every time
 //            for (int j = 0; j < cols; j++) {
 //                resultElements[i][j] = operator.apply(
 //                        leftMat != null ? leftMat.get(i, j) : leftConst,
@@ -840,7 +840,7 @@
 //                );
 //            }
 //        }
-//        return new RuntimeMatrix(resultElements, type);
+//        return new RuntimeMatrix(resultElements, typeInterface);
 //    }
 //
 //    public Expression determinant() {
@@ -875,7 +875,7 @@
 //                    subElements[r - 1][subColIndex++] = elements[r][c];
 //                }
 //            }
-//            RuntimeMatrix subRuntimeMatrix = new RuntimeMatrix(subElements, type);
+//            RuntimeMatrix subRuntimeMatrix = new RuntimeMatrix(subElements, typeInterface);
 //            Expression subDet = subRuntimeMatrix.determinant();  // recursive call
 //            Expression term = Runtime.RuntimeMatrix.mul(RuntimeScalar, subDet);
 //            // alternate signs
@@ -917,6 +917,6 @@
 //                clonedElements[i][j] = elements[i][j].clone();
 //            }
 //        }
-//        return new RuntimeMatrix(clonedElements, type);
+//        return new RuntimeMatrix(clonedElements, typeInterface);
 //    }
 //}

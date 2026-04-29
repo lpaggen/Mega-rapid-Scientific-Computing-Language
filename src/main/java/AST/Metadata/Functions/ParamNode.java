@@ -1,14 +1,14 @@
 package AST.Metadata.Functions;
 
-import AST.Type;
+import AST.TypeInterface;
 
-public record ParamNode(String name, Type type) {
+public record ParamNode(String name, TypeInterface typeInterface) {
 
     @Override
     public String toString() {
         return "ParamNode{" +
                 "name='" + name + '\'' +
-                ", type=" + type +
+                ", typeInterface=" + typeInterface +
                 '}';
     }
 }

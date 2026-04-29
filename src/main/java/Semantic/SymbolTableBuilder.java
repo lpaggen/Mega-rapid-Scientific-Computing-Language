@@ -3,7 +3,6 @@ package Semantic;
 import AST.*;
 import AST.Metadata.Functions.ParamNode;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public final class SymbolTableBuilder implements StatementVisitor<Void> {
@@ -39,7 +38,7 @@ public final class SymbolTableBuilder implements StatementVisitor<Void> {
     @Override
     public Void visitVariableDeclarationNode(VariableDeclarationNode node) {
         try {
-            symbolTable.declare(node.name(), node.type(), node.isMutable());
+            symbolTable.declare(node.name(), node.type().typeInterface(), node.type().attributes().mutable());
         } catch (RuntimeException e) {
             errors.add("Line " + node.line() + ": " + e.getMessage());
         }
@@ -58,7 +57,7 @@ public final class SymbolTableBuilder implements StatementVisitor<Void> {
         symbolTable.pushScope(); // new scope for function body
         for (ParamNode param : node.getParameters()) {
             try {
-                symbolTable.declare(param.name(), param.type(), false);
+                symbolTable.declare(param.name(), param.typeInterface(), false);
             } catch (RuntimeException e) {
                 errors.add("Line " + node.line() + ": " + e.getMessage());
             }

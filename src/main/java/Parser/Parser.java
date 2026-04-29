@@ -22,7 +22,7 @@ import java.util.*;
 
 // IMPORTANT NOTE
 // the parser is ONLY responsible for parsing the code and building the AST
-// it does NOT check for semantic errors or type mismatches
+// it does NOT check for semantic errors or typeInterface mismatches
 // that is the job of the interpreter or a separate semantic analyzer
 // the parser will throw runtime exceptions if it encounters unexpected tokens
 // TODO the parser ONLY cares about SYNTAX AND GRAMMAR
@@ -228,7 +228,17 @@ public class Parser {
 
     private Expression parseNameSpaceAccess(String namespace) {
         String functionName = consume(TokenKind.IDENTIFIER).getLexeme();
-        return new NamespaceAccessNode(namespace, functionName);
+        ArrayList<VariableNode> args = new ArrayList<>();
+        while (match(TokenKind.OPEN_PAREN)) {
+            if (!check(TokenKind.CLOSE_PAREN)) {
+                do {
+                    String argName = consume(TokenKind.IDENTIFIER).getLexeme();
+                    args.add(new VariableNode(argName));
+                } while (match(TokenKind.COMMA));
+            }
+            consume(TokenKind.CLOSE_PAREN);
+        }
+        return new NamespaceAccessNode(namespace, functionName, args);  // TODO rename NamespaceCallNode in future build
     }
 
     private Expression parseMapFunction() {
@@ -249,8 +259,8 @@ public class Parser {
             do {
                 String paramName = consume(TokenKind.IDENTIFIER).getLexeme();
                 consume(TokenKind.COLON);
-                Type paramType = parseType();
-                parameters.add(new ParamNode(paramName, paramType));
+                TypeInterface paramTypeInterface = parseType();
+                parameters.add(new ParamNode(paramName, paramTypeInterface));
             } while (match(TokenKind.COMMA));
         }
         consume(TokenKind.CLOSE_PAREN);
@@ -279,12 +289,12 @@ public class Parser {
         return new BraceLiteralNode(statements);
     }
 
-    private Type parseType() {
+    private TypeInterface parseType() {
         TokenKind type = peek().getKind();
         return switch (type) {
             case INTEGER_TYPE, FLOAT_TYPE -> {
                 advance();
-                yield new ScalarTypeNode();
+                yield new ScalarTypeNodeInterface();
             }
             case MATRIX_TYPE -> {
                 advance();
@@ -296,7 +306,7 @@ public class Parser {
             }
             case NODE_TYPE -> {
                 advance();
-                yield new NodeTypeNode();
+                yield new NodeTypeNodeInterface();
             }
             case LIST_TYPE -> {
                 advance();
@@ -304,40 +314,40 @@ public class Parser {
             }
             case BOOLEAN_TYPE -> {
                 advance();
-                yield new BooleanTypeNode();
+                yield new BooleanTypeNodeInterface();
             }
             case MATH_TYPE -> {
                 advance();
-                yield new MathTypeNode();
+                yield new MathTypeNodeInterface();
             }
 //            case FUNC_TYPE -> {  // TODO return functions
 //                advance();
 //                yield parseFunctionType();
 //            }
-            default -> throw new RuntimeException("Expected a type, got " + type);
+            default -> throw new RuntimeException("Expected a typeInterface, got " + type);
         };
     }
 
-    private Type parseListType() {
+    private TypeInterface parseListType() {
         consume(TokenKind.LESS);
-        Type innerType = parseType();
+        TypeInterface innerTypeInterface = parseType();
         consume(TokenKind.GREATER);
-        return new ListTypeNode(innerType);
+        return new ListTypeNodeInterface(innerTypeInterface);
     }
 
     // using Dimension to prevent user from calling functions etc. as dimensions, gets hard to solve
-    private Type parseMatrixType() {  // have to advance tokens etc
+    private TypeInterface parseMatrixType() {  // have to advance tokens etc
         Dimension A = null;
         Dimension B = null;
         consume(TokenKind.LESS);
-        Type innerType = parseType();
+        TypeInterface innerTypeInterface = parseType();
         if (match(TokenKind.COMMA)) {  // user specifies a dimension already
             MatrixShape dimensions = parseDimension();
             A = dimensions.rows();
             B = dimensions.cols();
         }
         consume(TokenKind.GREATER);
-        return new MatrixTypeNode(innerType, A, B);
+        return new MatrixTypeNodeInterface(innerTypeInterface, A, B);
     }
 
     private MatrixShape parseDimension() {  // this can be used for symbols too maybe? if we extend it to accept functions etc
@@ -381,47 +391,47 @@ public class Parser {
             return dim;
         }
         throw new RuntimeException("Line " + peek().getLine() + ": invalid dimension. " +
-                "Expected one of <INTEGER, SYMBOL>, got dimension of type "
+                "Expected one of <INTEGER, SYMBOL>, got dimension of typeInterface "
                 + peek().getKind() + " with value: " + peek().getLexeme());
     }
 
     // will fix this to use an Enum to be safer
-    private Type parseGraphType() {
+    private TypeInterface parseGraphType() {
         consume(TokenKind.LESS);
         boolean isDirected = GraphAttributes.get(consume(TokenKind.IDENTIFIER).getLexeme()); // directed or undirected
         consume(TokenKind.COMMA);
         boolean isWeighted = GraphAttributes.get(consume(TokenKind.IDENTIFIER).getLexeme()); // weighted or unweighted
         if (peek().getKind() == TokenKind.GREATER) {
             consume(TokenKind.GREATER);
-            return new GraphTypeNode(null, isWeighted, isDirected);
+            return new GraphTypeNodeInterface(null, isWeighted, isDirected);
         }
         consume(TokenKind.COMMA);
-        Type dataType = parseType(); // data type of the graph nodes/edges
+        TypeInterface dataTypeInterface = parseType(); // data typeInterface of the graph nodes/edges
         consume(TokenKind.GREATER);
-        return new GraphTypeNode(dataType, isWeighted, isDirected);
+        return new GraphTypeNodeInterface(dataTypeInterface, isWeighted, isDirected);
     }
 
     // this method handles variable declarations, i will add more error checks at some stage
     // for now i just want to be able to recognize variables and declare them into the env
     // atm we can declare with or without a value
-    // !! type mismatch errors happen at another stage of the interpreter
+    // !! typeInterface mismatch errors happen at another stage of the interpreter
     private VariableDeclarationNode parseDeclaration() {
         boolean isMutable = match(TokenKind.MUTABLE);  // optional mutable keyword, more to come
-        Type type = parseType();  // ex, mat<num>
+        TypeInterface typeInterface = parseType();  // ex, mat<num>
         Token identifier = consume(TokenKind.IDENTIFIER);
         Expression initializer = null;  // can be anything
         if (match(TokenKind.EQUAL)) {  // allow for null init if no = provided
-            initializer = switch (type) {
-                case GraphTypeNode _ -> {
+            initializer = switch (typeInterface) {
+                case GraphTypeNodeInterface _ -> {
                     if (check(TokenKind.OPEN_BRACE)) yield parseRecordLiteral();
                     else yield parseExpression();
                 }
-                case MatrixTypeNode _ -> {
+                case MatrixTypeNodeInterface _ -> {
                     if (check(TokenKind.OPEN_BRACKET)) yield parseMatrixLiteral();
                     else yield parseExpression();
                 }
-                case NodeTypeNode _ -> parseNodeLiteral();  //TODO : finish this method, currently empty
-                case ListTypeNode _ -> {
+                case NodeTypeNodeInterface _ -> parseNodeLiteral();  //TODO : finish this method, currently empty
+                case ListTypeNodeInterface _ -> {
                     if (check(TokenKind.OPEN_BRACKET)) yield parseListLiteral();
                     else yield parseExpression();
                 }
@@ -429,7 +439,7 @@ public class Parser {
             };
         }
         consume(TokenKind.SEMICOLON);
-        return new VariableDeclarationNode(type, identifier.getLexeme(), initializer, isMutable, identifier.getLine());
+        return new VariableDeclarationNode(new Type(typeInterface, new TypeAttributes(isMutable, false)), identifier.getLexeme(), initializer, identifier.getLine());
     }
 
     private MatrixLiteralNode parseMatrixLiteral() {  // we land here with peek() being open_bracket
@@ -504,10 +514,10 @@ public class Parser {
         } while (match(TokenKind.COMMA));
         consume(TokenKind.CLOSE_PAREN);
         consume(TokenKind.ARROW);
-        Type returnType = parseType();
+        TypeInterface returnTypeInterface = parseType();
         consume(TokenKind.OPEN_BRACE);
         BraceLiteralNode functionBody = parseBlock();
-        return new FunctionDeclarationNode(identifier.getLexeme(), paramList, returnType, functionBody, identifier.getLine());
+        return new FunctionDeclarationNode(identifier.getLexeme(), paramList, returnTypeInterface, functionBody, identifier.getLine());
     }
 
     // less than ideal, but it is fine for the demo TODO change this nonsense
@@ -525,8 +535,8 @@ public class Parser {
     private ParamNode parseFunctionParam() {
         String paramName = consume(TokenKind.IDENTIFIER).getLexeme();
         consume(TokenKind.COLON);
-        Type paramType = parseType();
-        return new ParamNode(paramName, paramType);
+        TypeInterface paramTypeInterface = parseType();
+        return new ParamNode(paramName, paramTypeInterface);
     }
 
     private Expression parseFunctionCall(Expression callee) {

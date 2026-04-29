@@ -26,7 +26,7 @@
 //        if (leftType == TokenKind.MATH || rightType == TokenKind.MATH) {
 //            return TokenKind.MATH;
 //        }
-//        throw new RuntimeException("Type error in arithmetic operation: " + leftType + " and " + rightType);
+//        throw new RuntimeException("TypeInterface error in arithmetic operation: " + leftType + " and " + rightType);
 //    }
 //
 //    @Override

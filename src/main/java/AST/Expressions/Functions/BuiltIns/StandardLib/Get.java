@@ -11,7 +11,7 @@
 //
 //public class Get extends BuiltInFunctionSymbol {
 //    public Get() {
-//        super("get", TokenKind.VOID); // return type depends on the array's type, not sure how to handle it
+//        super("get", TokenKind.VOID); // return typeInterface depends on the array's typeInterface, not sure how to handle it
 //    }
 //
 //    // "get" in my language is just under the hood syntax for []

@@ -1,14 +1,9 @@
 package Semantic;
 
 import AST.*;
-import AST.Metadata.Containers.BinaryDimension;
 import AST.Metadata.Containers.Dimension;
-import AST.Metadata.Containers.KnownDimension;
-import AST.Metadata.Containers.SymbolicDimension;
 
 import java.util.List;
-
-import com.microsoft.z3.*;
 
 /**
  * ConstraintStoreBuilder collects "claim" statements at compile-time and populates the ConstraintStore.
@@ -16,13 +11,11 @@ import com.microsoft.z3.*;
 public final class ConstraintStoreBuilder implements StatementVisitor<Void> {
     private final ConstraintStore constraintStore;
     private final List<String> errors;
-//    private final SymbolTable symbolTable;
     private final DimensionLowerer dimensionLowerer = new DimensionLowerer();
 
     public ConstraintStoreBuilder(List<String> errors, SymbolTable symbolTable) {
         this.constraintStore = new ConstraintStore();
         this.errors = errors;
-//        this.symbolTable = symbolTable;
     }
 
     public void collect(List<Statement> ast) {

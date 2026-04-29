@@ -7,7 +7,7 @@
 //
 //public class Determinant extends BuiltInFunctionSymbol {
 //    public Determinant() {
-//        super("det", null); // Return type can be defined as needed
+//        super("det", null); // Return typeInterface can be defined as needed
 //    }
 //
 //    @Override

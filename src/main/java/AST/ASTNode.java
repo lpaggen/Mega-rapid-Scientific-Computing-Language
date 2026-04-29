@@ -1,3 +1,3 @@
 package AST;
 
-public sealed interface ASTNode permits Statement, Expression, Type {}
+public sealed interface ASTNode permits Statement, Expression, TypeInterface {}

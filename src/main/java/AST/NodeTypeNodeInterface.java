@@ -2,8 +2,8 @@ package AST;
 
 import Semantic.TypeVisitor;
 
-public final class NodeTypeNode implements Type {
-    public NodeTypeNode() {}
+public final class NodeTypeNodeInterface implements TypeInterface {
+    public NodeTypeNodeInterface() {}
 
     @Override
     public <R> R accept(TypeVisitor<R> visitor) {

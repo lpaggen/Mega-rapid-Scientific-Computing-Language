@@ -2,9 +2,9 @@ package AST;
 
 import Semantic.TypeVisitor;
 
-public final class StringTypeNode implements Type {
+public final class StringTypeNodeInterface implements TypeInterface {
 
-    public StringTypeNode() {}
+    public StringTypeNodeInterface() {}
 
     @Override
     public <R> R accept(TypeVisitor<R> visitor) {

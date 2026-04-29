@@ -1,6 +1,6 @@
 package Semantic;
 
-import AST.Type;
+import AST.TypeInterface;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -57,13 +57,13 @@ public class Environment {
         return null;  // return null, this way we don't crash the program immediately -- raise multiple errors
     }
 
-    public Type lookupType(String name) {
+    public TypeInterface lookupType(String name) {
         Symbol sym = lookup(name);
         if (sym instanceof FunctionSymbol funcSym) {
             return funcSym.type();
         }
         if (sym instanceof VariableSymbol varSym) {
-            return varSym.type();
+            return varSym.typeInterface();
         }
         return null;
     }

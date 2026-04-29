@@ -2,7 +2,7 @@ package AST;
 
 import Semantic.StatementVisitor;
 
-public record VariableDeclarationNode(Type type, String name, Expression initializer, boolean isMutable, int line) implements Statement {
+public record VariableDeclarationNode(Type type, String name, Expression initializer, int line) implements Statement {
 
     @Override
     public <R> R accept(StatementVisitor<R> visitor) {
@@ -17,11 +17,11 @@ public record VariableDeclarationNode(Type type, String name, Expression initial
 //        // we might want to check if we have a function call
 //        Expression value = (initializer != null) ? initializer.evaluate(env) : null;
 //
-//        switch (type.getKind()) {
+//        switch (typeInterface.getKind()) {
 //            case MATH:
 //                if (value instanceof StringNode) {
-//                    throw new ErrorHandler("execution", variable.getLine(), "Type mismatch: expected math, got string", "Please ensure the initializer is a math expression.");
-//                    //throw new RuntimeException("Type mismatch: expected math, got string at line " + variable.getLine());
+//                    throw new ErrorHandler("execution", variable.getLine(), "TypeInterface mismatch: expected math, got string", "Please ensure the initializer is a math expression.");
+//                    //throw new RuntimeException("TypeInterface mismatch: expected math, got string at line " + variable.getLine());
 //                }
 //                value = new VariableNode(variable.getLexeme());
 //                break;
@@ -31,26 +31,26 @@ public record VariableDeclarationNode(Type type, String name, Expression initial
 ////                    value = new Scalar(v.getDoubleValue());
 ////                    warningLogger.addWarning(1, "Implicit conversion from integer to float at line " + variable.getLine(), variable.getLine());
 //                if (!(value instanceof Scalar v && v.getValue() != null)) {
-//                    throw new ErrorHandler("execution", variable.getLine(), "Type mismatch: expected scalar, got " + (value != null ? value.getClass().getSimpleName() : "null"), "Please ensure the initializer is a float.");
-//                    //throw new RuntimeException("Type mismatch: expected float, got " + (value != null ? value.getClass().getSimpleName() : "null") + " at line " + variable.getLine());
+//                    throw new ErrorHandler("execution", variable.getLine(), "TypeInterface mismatch: expected scalar, got " + (value != null ? value.getClass().getSimpleName() : "null"), "Please ensure the initializer is a float.");
+//                    //throw new RuntimeException("TypeInterface mismatch: expected float, got " + (value != null ? value.getClass().getSimpleName() : "null") + " at line " + variable.getLine());
 //                }
 //                break;
 ////            case INTEGER:
 ////                if (!(value instanceof Scalar v && v.getValue() instanceof Integer)) {
-////                    throw new ErrorHandler("execution", variable.getLine(), "Type mismatch: expected integer, got " + (value != null ? value.getClass().getSimpleName() : "null"), "Please ensure the initializer is an integer.");
-////                    //throw new RuntimeException("Type mismatch: expected integer, got " + (value != null ? value.getClass().getSimpleName() : "null") + " at line " + variable.getLine());
+////                    throw new ErrorHandler("execution", variable.getLine(), "TypeInterface mismatch: expected integer, got " + (value != null ? value.getClass().getSimpleName() : "null"), "Please ensure the initializer is an integer.");
+////                    //throw new RuntimeException("TypeInterface mismatch: expected integer, got " + (value != null ? value.getClass().getSimpleName() : "null") + " at line " + variable.getLine());
 ////                }
 ////                break;
 //            case STRING:
 //                if (!(value instanceof StringNode)) {
-//                    throw new ErrorHandler("execution", variable.getLine(), "Type mismatch: expected string, got " + (value != null ? value.getClass().getSimpleName() : "null"), " Please ensure the initializer is a string.");
-//                    //throw new RuntimeException("Type mismatch: expected string, got " + (value != null ? value.getClass().getSimpleName() : "null") + " at line " + variable.getLine());
+//                    throw new ErrorHandler("execution", variable.getLine(), "TypeInterface mismatch: expected string, got " + (value != null ? value.getClass().getSimpleName() : "null"), " Please ensure the initializer is a string.");
+//                    //throw new RuntimeException("TypeInterface mismatch: expected string, got " + (value != null ? value.getClass().getSimpleName() : "null") + " at line " + variable.getLine());
 //                }
 //                break;
 //            case BOOLEAN:
 //                if (!(value instanceof BooleanNode)) {
-//                    throw new ErrorHandler("execution", variable.getLine(), "Type mismatch: expected boolean, got " + (value != null ? value.getClass().getSimpleName() : "null"), "Please ensure the initializer is a boolean.");
-//                    //throw new RuntimeException("Type mismatch: expected boolean, got " + (value != null ? value.getClass().getSimpleName() : "null") + " at line " + variable.getLine());
+//                    throw new ErrorHandler("execution", variable.getLine(), "TypeInterface mismatch: expected boolean, got " + (value != null ? value.getClass().getSimpleName() : "null"), "Please ensure the initializer is a boolean.");
+//                    //throw new RuntimeException("TypeInterface mismatch: expected boolean, got " + (value != null ? value.getClass().getSimpleName() : "null") + " at line " + variable.getLine());
 //                }
 //                break;
 //            case MATRIX:
@@ -59,22 +59,22 @@ public record VariableDeclarationNode(Type type, String name, Expression initial
 //                    warningLogger.addWarning(2, "Initialized matrix is empty at line " + variable.getLine(), variable.getLine());
 //                }
 //                if (v == null) {
-//                    throw new ErrorHandler("execution", variable.getLine(), "Type mismatch: expected matrix, got " + (value != null ? value.getClass().getSimpleName() : "null"), "Please ensure the initializer is a matrix.");
-//                    //throw new RuntimeException("Type mismatch: expected vector, got " + (value != null ? value.getClass().getSimpleName() : "null") + " at line " + variable.getLine());
+//                    throw new ErrorHandler("execution", variable.getLine(), "TypeInterface mismatch: expected matrix, got " + (value != null ? value.getClass().getSimpleName() : "null"), "Please ensure the initializer is a matrix.");
+//                    //throw new RuntimeException("TypeInterface mismatch: expected vector, got " + (value != null ? value.getClass().getSimpleName() : "null") + " at line " + variable.getLine());
 //                }
 //                break;
 //            case GRAPH:
 //                Graph g = (Graph) value;
 //                if (g == null) {
-//                    throw new ErrorHandler("execution", variable.getLine(), "Type mismatch: expected graph, got " + (value != null ? value.getClass().getSimpleName() : "null"), "Please ensure the initializer is a graph.");
-//                    //throw new RuntimeException("Type mismatch: expected graph, got " + (value != null ? value.getClass().getSimpleName() : "null") + " at line " + variable.getLine());
+//                    throw new ErrorHandler("execution", variable.getLine(), "TypeInterface mismatch: expected graph, got " + (value != null ? value.getClass().getSimpleName() : "null"), "Please ensure the initializer is a graph.");
+//                    //throw new RuntimeException("TypeInterface mismatch: expected graph, got " + (value != null ? value.getClass().getSimpleName() : "null") + " at line " + variable.getLine());
 //                }
 //                if (g.isEmpty()) {
 //                    warningLogger.addWarning(3, "Initialized graph is empty at line " + variable.getLine(), variable.getLine());
 //                }
 //                break;
 //        }
-//        env.declareSymbol(variable.getLexeme(), new VariableSymbol(variable.getLexeme(), type.getKind(), value));
+//        env.declareSymbol(variable.getLexeme(), new VariableSymbol(variable.getLexeme(), typeInterface.getKind(), value));
 //    }
 //
 //    // will work on this in a later build, it's not necessary yet

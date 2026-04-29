@@ -2,11 +2,13 @@ package AST;
 
 import Semantic.ExpressionVisitor;
 
-public record NamespaceAccessNode(String namespace, String expression) implements Expression {
+import java.util.List;
+
+public record NamespaceAccessNode(String namespace, String method, List<VariableNode> args) implements Expression {
 
     @Override
     public String toString() {
-        return namespace + "::" + expression.toString();
+        return namespace + "::" + method + "(" + String.join(", ", args.stream().map(VariableNode::toString).toList()) + ")";
     }
 
     @Override

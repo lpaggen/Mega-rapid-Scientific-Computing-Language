@@ -8,13 +8,13 @@ import java.util.List;
 public final class FunctionDeclarationNode implements Statement {
     private final String name;
     private final List<ParamNode> parameters;
-    private Type returnType;
+    private TypeInterface returnTypeInterface;
     private final BraceLiteralNode body;
     private final int line;
-    public FunctionDeclarationNode(String name, List<ParamNode> parameters, Type returnType, BraceLiteralNode body, int line) {
+    public FunctionDeclarationNode(String name, List<ParamNode> parameters, TypeInterface returnTypeInterface, BraceLiteralNode body, int line) {
         this.name = name;
         this.parameters = parameters;
-        this.returnType = returnType;
+        this.returnTypeInterface = returnTypeInterface;
         this.body = body;
         this.line = line;
     }
@@ -23,10 +23,10 @@ public final class FunctionDeclarationNode implements Statement {
         return line;
     }
 
-    public FunctionTypeNode getType() {
-        return new FunctionTypeNode(
-                parameters.stream().map(ParamNode::type).toList(),
-                returnType
+    public FunctionTypeNodeInterface getType() {
+        return new FunctionTypeNodeInterface(
+                parameters.stream().map(ParamNode::typeInterface).toList(),
+                returnTypeInterface
         );
     }
 
@@ -38,8 +38,8 @@ public final class FunctionDeclarationNode implements Statement {
         return parameters;
     }
 
-    public Type getReturnType() {
-        return returnType;
+    public TypeInterface getReturnType() {
+        return returnTypeInterface;
     }
 
     public BraceLiteralNode getBody() {
@@ -57,7 +57,7 @@ public final class FunctionDeclarationNode implements Statement {
                 sb.append(", ");
             }
         }
-        sb.append("], returnType=").append(returnType);
+        sb.append("], returnTypeInterface=").append(returnTypeInterface);
         sb.append(", body=").append(body);
         sb.append('}');
         return sb.toString();

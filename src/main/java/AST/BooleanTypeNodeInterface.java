@@ -2,8 +2,8 @@ package AST;
 
 import Semantic.TypeVisitor;
 
-public final class BooleanTypeNode implements Type {
-    public BooleanTypeNode() {}
+public final class BooleanTypeNodeInterface implements TypeInterface {
+    public BooleanTypeNodeInterface() {}
     @Override
     public String toString() {
         return "Bool";

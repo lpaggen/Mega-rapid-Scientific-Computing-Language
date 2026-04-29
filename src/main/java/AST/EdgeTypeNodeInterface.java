@@ -2,20 +2,20 @@ package AST;
 
 import Semantic.TypeVisitor;
 
-public final class EdgeTypeNode implements Type {
-    private final Type from;
-    private final Type to;
+public final class EdgeTypeNodeInterface implements TypeInterface {
+    private final TypeInterface from;
+    private final TypeInterface to;
 
-    public EdgeTypeNode(Type from, Type to) {
+    public EdgeTypeNodeInterface(TypeInterface from, TypeInterface to) {
         this.from = from;
         this.to = to;
     }
 
-    public Type getFrom() {
+    public TypeInterface getFrom() {
         return from;
     }
 
-    public Type getTo() {
+    public TypeInterface getTo() {
         return to;
     }
 

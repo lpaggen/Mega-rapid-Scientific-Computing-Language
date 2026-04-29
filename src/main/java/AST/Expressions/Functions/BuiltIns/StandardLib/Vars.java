@@ -27,10 +27,10 @@
 //            Symbol symbol = entry.getValue();
 //            // Print the variable name and its value
 //            if (symbol instanceof VariableSymbol vSymbol && vSymbol.getValue() != null) {
-//                printFunction.call(env, List.of(varName + " = " + vSymbol.getValue() + ", Type: " + vSymbol.getType()));
-//            } else { // if it's a function: we should print its name, return type, params
+//                printFunction.call(env, List.of(varName + " = " + vSymbol.getValue() + ", TypeInterface: " + vSymbol.getType()));
+//            } else { // if it's a function: we should print its name, return typeInterface, params
 //                StringBuilder sb = new StringBuilder(varName + " = ");
-//                sb.append("Function: ").append(symbol.getName()).append(", Type: ").append(symbol.getType());
+//                sb.append("Function: ").append(symbol.getName()).append(", TypeInterface: ").append(symbol.getType());
 //                if (symbol instanceof VariableSymbol vSymbol) {
 //                    sb.append(", Value: ").append(vSymbol.getValue());
 //                }
