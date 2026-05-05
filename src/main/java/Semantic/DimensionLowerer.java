@@ -60,7 +60,7 @@ public final class DimensionLowerer implements ExpressionVisitor<Dimension> {
 
     @Override
     public Dimension visitVariableNode(VariableNode node) {
-        return new SymbolicDimension(node.getName());
+        return new SymbolicDimension(node.name());
     }
 
     @Override
@@ -70,11 +70,6 @@ public final class DimensionLowerer implements ExpressionVisitor<Dimension> {
 
     @Override
     public Dimension visitPrimaryNode(PrimaryNode node) {
-        return null;
-    }
-
-    @Override
-    public Dimension visitImportNode(ImportNode node) {
         return null;
     }
 

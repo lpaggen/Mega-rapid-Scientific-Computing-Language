@@ -1,11 +1,9 @@
 package Semantic;
 
-import Semantic.IntrinsicFunction;
-
 import java.util.HashMap;
 import java.util.Map;
 
-public final class Registry {
+public final class Registry {  // for functions
     private final Map<String, IntrinsicFunction> functions = new HashMap<>();
 
     public Registry() {
@@ -14,7 +12,7 @@ public final class Registry {
 //        register("graphs", "plot", new GraphPlotFunction());
     }
 
-    private void register(String namespace, String method, IntrinsicFunction fn) {
+    public void register(String namespace, String method, IntrinsicFunction fn) {
         functions.put(key(namespace, method), fn);
     }
 
@@ -22,7 +20,7 @@ public final class Registry {
         return functions.get(key(namespace, method));
     }
 
-    private String key(String ns, String method) {
+    public static String key(String ns, String method) {
         return ns + "::" + method;
     }
 }

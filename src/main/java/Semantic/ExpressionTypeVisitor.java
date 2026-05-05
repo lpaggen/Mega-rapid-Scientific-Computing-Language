@@ -3,9 +3,18 @@ package Semantic;
 import AST.*;
 
 import java.util.List;
+import java.util.jar.JarOutputStream;
 
-public final class TypeCheckerVisitor implements ExpressionVisitor<Type> {
-    private final Registry registry = new Registry();
+public final class ExpressionTypeVisitor implements ExpressionVisitor<Type> {
+    private final Registry registry;
+    private final ConstraintStore constraintStore;
+    private final SymbolTable symbolTable;
+
+    public ExpressionTypeVisitor(Registry registry, ConstraintStore constraintStore, SymbolTable symbolTable) {
+        this.registry = registry;
+        this.constraintStore = constraintStore;
+        this.symbolTable = symbolTable;
+    }
 
     @Override
     public Type visitBraceLiteral(BraceLiteralNode node) {
@@ -19,7 +28,9 @@ public final class TypeCheckerVisitor implements ExpressionVisitor<Type> {
 
     @Override
     public Type visitFunctionCall(FunctionCallNode node) {
-        return null;
+        Type calleeType = node.callee().accept(this);
+        IntrinsicFunction fn = registry.lookupNamespaceMethod("intrinsic", node.name());
+        return fn.apply(calleeType, constraintStore);
     }
 
     @Override
@@ -44,7 +55,7 @@ public final class TypeCheckerVisitor implements ExpressionVisitor<Type> {
 
     @Override
     public Type visitVariableNode(VariableNode node) {
-        return null;
+        return symbolTable.lookup(node.name());  // TODO must have type from somewhere, maybe check symbol table?
     }
 
     @Override
@@ -59,11 +70,6 @@ public final class TypeCheckerVisitor implements ExpressionVisitor<Type> {
 
     @Override
     public Type visitPrimaryNode(PrimaryNode node) {
-        return null;
-    }
-
-    @Override
-    public Type visitImportNode(ImportNode node) {
         return null;
     }
 
@@ -155,10 +161,11 @@ public final class TypeCheckerVisitor implements ExpressionVisitor<Type> {
     @Override
     public Type visitNameSpaceAccessNode(NamespaceAccessNode node) {
         List<Type> argTypes = node.args().stream()
-                .map(arg -> arg.accept(this))  // Recursively check the typeInterface of each argument
+                .map(arg -> arg.accept(this))
                 .toList();
-        IntrinsicFunction fn = registry.lookupNamespaceMethod(node.namespace(), node.method());
-        return fn.apply(argTypes.get(0));
+        System.out.println("Looking up intrinsic function for namespace: " + node.namespace() + ", method: " + node.method() + ", with argument types: " + argTypes);
+        IntrinsicFunction fn = registry.lookupNamespaceMethod(node.namespace(), node.method());  // TODO solve null cases
+        System.out.println("Type of intrinsic function: " + argTypes.getFirst());
+        return fn.apply(argTypes.get(0), constraintStore);
     }
-
 }

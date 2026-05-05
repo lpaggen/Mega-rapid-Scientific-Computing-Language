@@ -11,7 +11,7 @@ public record MatrixTypeNodeInterface(TypeInterface elementTypeInterface, Dimens
 
     @Override
     public String toString() {
-        return "Matrix<" + elementTypeInterface.toString() + ">[" + rows + "x" + cols + "]";
+        return "Matrix<" + elementTypeInterface.toString() + ">[" + rows + "@" + cols + "]";
     }
 
     @Override

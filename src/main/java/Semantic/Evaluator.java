@@ -86,11 +86,6 @@ public final class Evaluator implements ExpressionVisitor<Object> {
     }
 
     @Override
-    public Object visitImportNode(ImportNode node) {
-        return null;
-    }
-
-    @Override
     public Object visitRecordLiteral(RecordLiteralNode node) {
         return null;
     }

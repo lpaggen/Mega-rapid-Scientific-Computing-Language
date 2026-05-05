@@ -4,22 +4,11 @@ import Semantic.ExpressionVisitor;
 
 import java.util.List;
 
-public final class FunctionCallNode implements Expression {
-    private final Expression callee; // we need to keep Expression; eg print(x + y);
-    private final List<Expression> arguments; // we need to keep Expression; eg print(x + y);
-
-    public FunctionCallNode(Expression callee, List<Expression> arguments) {
-        this.callee = callee;
-        this.arguments = arguments;
-    }
-
-    public Expression getCallee() {
-        return callee;
-    }
-
-    public List<Expression> getArguments() {
-        return arguments;
-    }
+/**
+ * @param callee    we need to keep Expression; eg print(x + y);
+ * @param arguments we need to keep Expression; eg print(x + y);
+ */
+public record FunctionCallNode(String name, Expression callee, List<Expression> arguments) implements Expression {
 
     @Override
     public <T> T accept(ExpressionVisitor<T> visitor) {
@@ -28,6 +17,15 @@ public final class FunctionCallNode implements Expression {
 
     @Override
     public String toString() {
-        return null;
+        StringBuilder sb = new StringBuilder();
+        sb.append(name).append("(");
+        for (int i = 0; i < arguments.size(); i++) {
+            sb.append(arguments.get(i));
+            if (i < arguments.size() - 1) {
+                sb.append(", ");
+            }
+        }
+        sb.append(")");
+        return sb.toString();
     }
 }

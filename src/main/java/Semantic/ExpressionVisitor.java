@@ -17,7 +17,7 @@ import AST.EdgeLiteralNode;
 import AST.GraphNodeLiteralNode;
 import AST.MatrixLiteralNode;
 
-public sealed interface ExpressionVisitor<T> permits DimensionLowerer, Evaluator, TypeCheckerVisitor {
+public sealed interface ExpressionVisitor<T> permits DimensionLowerer, Evaluator, ExpressionTypeVisitor {
     T visitBraceLiteral(BraceLiteralNode node);
     T visitBracketLiteral(BracketLiteralNode node);
     T visitFunctionCall(FunctionCallNode node);
@@ -29,7 +29,6 @@ public sealed interface ExpressionVisitor<T> permits DimensionLowerer, Evaluator
     T visitStringLiteral (StringLiteralNode node);
     T visitUnaryNode (UnaryNode node);
     T visitPrimaryNode (PrimaryNode node);
-    T visitImportNode (ImportNode node);
     T visitRecordLiteral (RecordLiteralNode node);
     T visitListLiteral (ListLiteralNode node);
     T visitBooleanLiteral (BooleanLiteralNode node);

@@ -46,7 +46,7 @@ public class Parser {
                 advance();
             }
         }
-        // warningHandler.printWarnings();
+        // warningHandler.printWarnings(); -> moved to SemanticAnalyzer
         return programBody;
     }
 
@@ -119,7 +119,7 @@ public class Parser {
             Token equals = previous();
             Expression value = parseAssignment();
             if (expression instanceof VariableNode variable) {
-                return new AssignmentNode(variable.getName(), value);
+                return new AssignmentNode(variable.name(), value);
             }
             throw new RuntimeException("Invalid assignment target.");
         }
@@ -215,8 +215,10 @@ public class Parser {
                 String memberName = consume(TokenKind.IDENTIFIER).getLexeme();
                 expr = new MemberAccessNode(expr, memberName);
             }
-            else if (match(TokenKind.SCOPERESOLVER)) {  // namespace access, ex: math::sin
+            else if (check(TokenKind.SCOPERESOLVER)) {  // namespace access, ex: math::sin
                 String namespace = previous().getLexeme();  // get the namespace name before the ::
+                advance();
+                System.out.println("Namespace detected: " + namespace);
                 expr = parseNameSpaceAccess(namespace);
             }
             else {
@@ -233,7 +235,7 @@ public class Parser {
             if (!check(TokenKind.CLOSE_PAREN)) {
                 do {
                     String argName = consume(TokenKind.IDENTIFIER).getLexeme();
-                    args.add(new VariableNode(argName));
+                    args.add(new VariableNode(argName));  // TODO this is always NULL, need to know the type, not only the name
                 } while (match(TokenKind.COMMA));
             }
             consume(TokenKind.CLOSE_PAREN);
@@ -547,9 +549,8 @@ public class Parser {
             } while (match(TokenKind.COMMA));
         }
         consume(TokenKind.CLOSE_PAREN);
-        return new FunctionCallNode(callee, arguments);
+        return new FunctionCallNode(callee.toString(), callee, arguments);
     }
-
 
     private Statement parseVariableReassignment() {
         String varName = peek().getLexeme();

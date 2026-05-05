@@ -2,8 +2,7 @@ import AST.Statement;
 import Parser.Parser;
 import Lexer.Tokenizer;
 import Lexer.Token;
-import Semantic.ConstraintStoreBuilder;
-import Semantic.SymbolTableBuilder;
+import Semantic.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -30,16 +29,22 @@ public class Main {
         List<Statement> ast = parser.parseProgram();
         System.out.println("Finished parsing, took: " + ((int) System.currentTimeMillis() - startTimeParser) + " ms");
 
-        int startTimeSymbolTable = (int) System.currentTimeMillis();
-        SymbolTableBuilder symbolTableBuilder = new SymbolTableBuilder(new ArrayList<>());
-        symbolTableBuilder.build(ast);
-        System.out.println("Finished building symbol table, took: " + ((int) System.currentTimeMillis() - startTimeSymbolTable) + " ms");
-        symbolTableBuilder.printErrors();
+//        int startTimeSymbolTable = (int) System.currentTimeMillis();
+//        SymbolTable symbols = new SymbolTable();
+//        SymbolTableBuilder symbolTableBuilder = new SymbolTableBuilder(symbols);
+//        symbolTableBuilder.build(ast);
+//        System.out.println("Finished building symbol table, took: " + ((int) System.currentTimeMillis() - startTimeSymbolTable) + " ms");
+//        symbolTableBuilder.printErrors();
+//
+//        int startTimeConstaintCollector = (int) System.currentTimeMillis();
+//        ConstraintStoreBuilder constraintCollector = new ConstraintStoreBuilder();
+//        constraintCollector.collect(ast);
+//        System.out.println("Finished collecting constraints, took: " + ((int) System.currentTimeMillis() - startTimeConstaintCollector) + " ms");
+//        constraintCollector.printErrors();
 
-        int startTimeConstaintCollector = (int) System.currentTimeMillis();
-        ConstraintStoreBuilder constraintCollector = new ConstraintStoreBuilder(new ArrayList<>(), symbolTableBuilder.symbolTable);
-        constraintCollector.collect(ast);
-        System.out.println("Finished collecting constraints, took: " + ((int) System.currentTimeMillis() - startTimeConstaintCollector) + " ms");
-        constraintCollector.printErrors();
+        SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer();
+        int startTimeSemanticAnalyzer = (int) System.currentTimeMillis();
+        semanticAnalyzer.run(ast);
+        System.out.println("Finished semantic analysis, took: " + ((int) System.currentTimeMillis() - startTimeSemanticAnalyzer) + " ms");
     }
 }

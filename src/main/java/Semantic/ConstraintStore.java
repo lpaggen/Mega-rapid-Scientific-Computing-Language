@@ -4,18 +4,11 @@ import AST.Metadata.Containers.Dimension;
 import AST.Metadata.Containers.KnownDimension;
 import AST.Metadata.Containers.SymbolicDimension;
 
-import java.util.HashMap;
 import com.microsoft.z3.*;
 
 public final class ConstraintStore {  // Z3 SMT API
     private final Context ctx = new Context();  // Z3 context for SMT solving
     private final Solver solver = ctx.mkSolver();  // Z3 solver instance
-    private static final ConstraintStore tempStore = new ConstraintStore();  // separate store for proving constraints, to avoid mutating the main store during checks
-
-    public boolean checkPositivity() {
-        //TODO
-        return true;
-    }
 
     public void addEqualityConstraint(Dimension x, Dimension y) {
         if (x instanceof SymbolicDimension(String s1) && y instanceof SymbolicDimension(String s2)) {
@@ -23,7 +16,7 @@ public final class ConstraintStore {  // Z3 SMT API
             IntExpr z3Var2 = ctx.mkIntConst(s2);
             solver.add(ctx.mkEq(z3Var1, z3Var2));
             if (solver.check() == Status.UNSATISFIABLE) {
-                throw new RuntimeException("Constraint violation: " + s1 + " cannot be equal to " + s2);
+                throw new RuntimeException("Constraint violation: " + s1 + " cannot be equal to " + s2);  // TODO stop checking at every constraint, only check at the end, and report all violations together if possible
             }
         }
         if (x instanceof KnownDimension(int k1) && y instanceof KnownDimension(int k2)) {
@@ -183,13 +176,7 @@ public final class ConstraintStore {  // Z3 SMT API
         }
     }
 
-    @Deprecated // will see if this works
-    public static boolean canProveEqual(Dimension x, Dimension y) {
-        tempStore.addEqualityConstraint(x, y);
-        return tempStore.isSatisfied() == Status.SATISFIABLE;
-    }
-
-    public Status isSatisfied() {
-        return solver.check();
+    public boolean isSatisfied() {
+        return solver.check() == Status.SATISFIABLE;
     }
 }

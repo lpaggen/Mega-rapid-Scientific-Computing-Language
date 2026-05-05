@@ -3,15 +3,16 @@ package Semantic;
 import AST.*;
 import AST.Metadata.Functions.ParamNode;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public final class SymbolTableBuilder implements StatementVisitor<Void> {
     public final SymbolTable symbolTable;
     private final List<String> errors;
 
-    public SymbolTableBuilder(List<String> errors) {
-        this.symbolTable = new SymbolTable();
+    public SymbolTableBuilder(SymbolTable symbolTable, List<String> errors) {
         this.errors = errors;
+        this.symbolTable = symbolTable;
     }
 
     public void printErrors() {
@@ -45,6 +46,7 @@ public final class SymbolTableBuilder implements StatementVisitor<Void> {
         return null;
     }
 
+    // TODO refactor, this is too fragile
     @Override
     public Void visitFunctionDeclarationNode(FunctionDeclarationNode node) {
         try {
@@ -100,7 +102,6 @@ public final class SymbolTableBuilder implements StatementVisitor<Void> {
         return null;
     }
 
-    // Pass-through visitors (no symbols declared)
     @Override
     public Void visitExpressionStatement(ExpressionStatementNode stmt) {
         return null;

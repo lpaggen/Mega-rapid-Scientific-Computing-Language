@@ -1,6 +1,6 @@
 load stdlib as std;
 load graphs as g;
-load linalg as l;
+load linalg;
 
 int x = 67;
 sym a;
@@ -8,10 +8,11 @@ sym b;
 
 claim a = 6;
 claim b = 2;
+claim a > b;
 
 mat<int, a@b> M = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];
 
-mat<int, a@b> N = l::inverse(M);  # this works because M is a square matrix
+mat<int, a@b> N = linalg::inverse(M);  # this works because M is a square matrix
 
 while (x > 0) {
     print("x is positive");

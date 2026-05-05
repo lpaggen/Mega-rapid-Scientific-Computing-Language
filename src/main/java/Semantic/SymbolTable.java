@@ -9,6 +9,7 @@ import java.util.*;
 
 public class SymbolTable {
     private final Deque<Map<String, Type>> scopes = new ArrayDeque<>();
+    public final Registry registry = new Registry();
 
     public SymbolTable() {
         pushScope();
@@ -45,11 +46,6 @@ public class SymbolTable {
             }
         }
         return null;
-    }
-
-    public boolean isSymbolicDimension(String name) {
-        Type info = lookup(name);
-        return info != null && info.typeInterface() instanceof MathTypeNodeInterface;
     }
 
     public boolean isDeclared(String name) {

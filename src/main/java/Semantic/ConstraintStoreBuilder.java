@@ -3,6 +3,7 @@ package Semantic;
 import AST.*;
 import AST.Metadata.Containers.Dimension;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,8 +14,8 @@ public final class ConstraintStoreBuilder implements StatementVisitor<Void> {
     private final List<String> errors;
     private final DimensionLowerer dimensionLowerer = new DimensionLowerer();
 
-    public ConstraintStoreBuilder(List<String> errors, SymbolTable symbolTable) {
-        this.constraintStore = new ConstraintStore();
+    public ConstraintStoreBuilder(ConstraintStore constraintStore, List<String> errors) {
+        this.constraintStore = constraintStore;
         this.errors = errors;
     }
 
@@ -79,6 +80,21 @@ public final class ConstraintStoreBuilder implements StatementVisitor<Void> {
     }
 
     @Override
+    public Void visitReturnStatementNode(ReturnStatementNode returnStatementNode) {
+        return null;
+    }
+
+    @Override
+    public Void visitVariableDeclarationNode(VariableDeclarationNode variableDeclarationNode) {
+        return null;
+    }
+
+    @Override
+    public Void visitVariableReassignmentNode(VariableReassignmentNode variableReassignmentNode) {
+        return null;
+    }
+
+    @Override
     public Void visitWhileNode(WhileNode node) {
         for (Statement stmt : node.getBody()) {
             stmt.accept(this);
@@ -93,21 +109,6 @@ public final class ConstraintStoreBuilder implements StatementVisitor<Void> {
 
     @Override
     public Void visitImportNode(ImportNode importNode) {
-        return null;
-    }
-
-    @Override
-    public Void visitReturnStatementNode(ReturnStatementNode returnStatementNode) {
-        return null;
-    }
-
-    @Override
-    public Void visitVariableDeclarationNode(VariableDeclarationNode variableDeclarationNode) {
-        return null;
-    }
-
-    @Override
-    public Void visitVariableReassignmentNode(VariableReassignmentNode variableReassignmentNode) {
         return null;
     }
 }
