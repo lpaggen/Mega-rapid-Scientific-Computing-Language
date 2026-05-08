@@ -16,7 +16,7 @@ public final class ConstraintStore {  // Z3 SMT API
             IntExpr z3Var2 = ctx.mkIntConst(s2);
             solver.add(ctx.mkEq(z3Var1, z3Var2));
             if (solver.check() == Status.UNSATISFIABLE) {
-                throw new RuntimeException("Constraint violation: " + s1 + " cannot be equal to " + s2);  // TODO stop checking at every constraint, only check at the end, and report all violations together if possible
+                throw new RuntimeException("Constraint violation: " + s1 + " cannot be equal to " + s2);  // TODO stop checking at every constraint, only check at the end, and report all violations together if possible ? is it even possible with z3
             }
         }
         if (x instanceof KnownDimension(int k1) && y instanceof KnownDimension(int k2)) {
