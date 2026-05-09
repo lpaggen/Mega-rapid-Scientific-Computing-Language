@@ -9,7 +9,6 @@ import java.util.*;
 
 public class SymbolTable {
     private final Deque<Map<String, Type>> scopes = new ArrayDeque<>();
-    public final Registry registry = new Registry();
 
     public SymbolTable() {
         pushScope();

@@ -7,11 +7,11 @@ import Semantic.TypeVisitor;
  * @param rows Dimension is a stricter typeInterface than Expression -> constraint.
  *             we can only use dimensions that are provably positive integers, and we can only use them in contexts where they are provably equal to other dimensions (e.g. matrix multiplication)
  */
-public record MatrixTypeNodeInterface(TypeInterface elementTypeInterface, Dimension rows, Dimension cols) implements TypeInterface {
+public record MatrixTypeNodeInterface(Type entryDataType, Dimension rows, Dimension cols) implements TypeInterface {
 
     @Override
     public String toString() {
-        return "Matrix<" + elementTypeInterface.toString() + ">[" + rows + "@" + cols + "]";
+        return "Matrix<" + entryDataType.toString() + ">[" + rows + "@" + cols + "]";
     }
 
     @Override

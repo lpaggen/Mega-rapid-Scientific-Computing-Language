@@ -3,16 +3,10 @@ load graphs as g;
 load linalg;
 
 int x = 67;
-sym a;
-sym b;
 
-claim a = 6;
-claim b = 2;
-claim a > b;
+mat<int, a@b> M = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12]];
 
-mat<int, a@b> M = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];
-
-mat<int, a@b> N = linalg::inverse(M);  # this works because M is a square matrix
+mat<int, 3@4> P = linalg::transpose(M);
 
 while (x > 0) {
     print("x is positive");

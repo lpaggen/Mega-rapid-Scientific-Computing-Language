@@ -1,5 +1,9 @@
 package Semantic;
 
+import AST.Functions.IntrinsicFunction;
+import AST.Functions.LinalgInverseFunction;
+import AST.Functions.LinalgTransposeFunction;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,7 +12,7 @@ public final class Registry {  // for functions
 
     public Registry() {
         register("linalg", "inverse", new LinalgInverseFunction());
-//        register("linalg", "transpose", new LinalgTransposeFunction());
+        register("linalg", "transpose", new LinalgTransposeFunction());
 //        register("graphs", "plot", new GraphPlotFunction());
     }
 

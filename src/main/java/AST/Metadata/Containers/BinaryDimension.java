@@ -10,6 +10,11 @@ public record BinaryDimension(Dimension left, Dimension right, Operators operato
     }
 
     @Override
+    public String getName() {
+        return toString();
+    }
+
+    @Override
     public String toString() {
         return "(" + left.toString() + " " + operator + " " + right.toString() + ")";
     }

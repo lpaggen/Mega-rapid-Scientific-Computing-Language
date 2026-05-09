@@ -5,4 +5,9 @@ public record SymbolicDimension(String name) implements Dimension {
     public boolean isKnown() {
         return false;
     }
+
+    @Override
+    public String getName() {
+        return name;
+    }
 }
