@@ -349,7 +349,7 @@ public class Parser {
             B = dimensions.cols();
         }
         consume(TokenKind.GREATER);
-        return new MatrixTypeNodeInterface(innerTypeInterface, A, B);
+        return new MatrixTypeNodeInterface(new Type(innerTypeInterface, new TypeAttributes(false, false)), A, B);
     }
 
     private MatrixShape parseDimension() {  // this can be used for symbols too maybe? if we extend it to accept functions etc
@@ -393,7 +393,7 @@ public class Parser {
             return dim;
         }
         throw new RuntimeException("Line " + peek().getLine() + ": invalid dimension. " +
-                "Expected one of <INTEGER, SYMBOL>, got dimension of typeInterface "
+                "Expected one of <INTEGER, SYMBOL>, got dimension of type "
                 + peek().getKind() + " with value: " + peek().getLexeme());
     }
 
@@ -444,9 +444,10 @@ public class Parser {
         return new VariableDeclarationNode(new Type(typeInterface, new TypeAttributes(isMutable, false)), identifier.getLexeme(), initializer, identifier.getLine());
     }
 
-    private MatrixLiteralNode parseMatrixLiteral() {  // we land here with peek() being open_bracket
+    private MatrixLiteralNode parseMatrixLiteral() {
+        consume(TokenKind.OPEN_BRACKET);
         List<List<Expression>> rows = new ArrayList<>();
-        if (!check(TokenKind.CLOSE_BRACKET)) {  // check but don't consume
+        if (!check(TokenKind.CLOSE_BRACKET)) {
             do {
                 consume(TokenKind.OPEN_BRACKET);
                 List<Expression> row = new ArrayList<>();
@@ -458,6 +459,7 @@ public class Parser {
                 rows.add(row);
             } while (match(TokenKind.COMMA));
         }
+        consume(TokenKind.CLOSE_BRACKET);
         return new MatrixLiteralNode(rows);
     }
 
