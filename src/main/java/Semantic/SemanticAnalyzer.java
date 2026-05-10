@@ -12,7 +12,7 @@ public class SemanticAnalyzer {
     private final Registry registry = new Registry();
 
     public SemanticAnalyzer() {
-        SymbolTable symbols = new SymbolTable(); // TODO solve, these all should be sharing a common context
+        SymbolTable symbols = new SymbolTable();
         List<String> errors = new java.util.ArrayList<>();
         ConstraintStore constraintStore = new ConstraintStore();
         this.symbolTableBuilder = new SymbolTableBuilder(symbols, errors);

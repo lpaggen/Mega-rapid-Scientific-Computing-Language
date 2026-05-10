@@ -1,6 +1,7 @@
 package Semantic;
 
 import AST.*;
+import AST.Metadata.Containers.Dimension;
 
 import java.util.List;
 
@@ -58,14 +59,17 @@ public final class ExpressionDispatchVisitor implements StatementVisitor<Stateme
         TypeInterface declared = node.type().typeInterface();
         if (declared instanceof MatrixTypeNodeInterface expected) {
             if (actual instanceof MatrixTypeNodeInterface found) {
-                System.out.println("Adding equality constraints for matrix dimensions: expected " + expected.rows() + "x" + expected.cols() + ", found " + found.rows() + "x" + found.cols());
+                Dimension expected_rows = DimensionLowerer.fold(expected.rows());
+                Dimension expected_cols = DimensionLowerer.fold(expected.cols());
+                Dimension found_rows = DimensionLowerer.fold(found.rows());
+                Dimension found_cols = DimensionLowerer.fold(found.cols());
                 constraintStore.addEqualityConstraint(
-                        expected.rows(),
-                        found.rows()
+                        expected_rows,
+                        found_rows
                 );
                 constraintStore.addEqualityConstraint(
-                        expected.cols(),
-                        found.cols()
+                        expected_cols,
+                        found_cols
                 );
             } else {
                 throw new RuntimeException("Type mismatch: expected a matrix type, but got " + actual + " at line " + node.line());

@@ -7,6 +7,26 @@ import AST.Metadata.Containers.KnownDimension;
 import AST.Metadata.Containers.SymbolicDimension;
 
 public final class DimensionLowerer implements ExpressionVisitor<Dimension> {
+    public static Dimension fold(Dimension dim) {
+        if (dim instanceof BinaryDimension binaryDim) {
+            Dimension left = fold(binaryDim.left());
+            Dimension right = fold(binaryDim.right());
+            if (left instanceof KnownDimension leftKnown && right instanceof KnownDimension rightKnown) {
+                int result = switch (binaryDim.operator()) {
+                    case ADD -> leftKnown.value() + rightKnown.value();
+                    case SUB -> leftKnown.value() - rightKnown.value();
+                    case MUL -> leftKnown.value() * rightKnown.value();
+                    case DIV -> leftKnown.value() / rightKnown.value();
+                    default -> throw new IllegalStateException("Unexpected operator: " + binaryDim.operator());
+                };
+                return new KnownDimension(result);
+            } else {
+                return new BinaryDimension(left, right, binaryDim.operator());
+            }
+        }
+        return dim;
+    }
+
     @Override
     public Dimension visitGroupingNode(GroupingNode groupingNode) {
         return groupingNode.getValue().accept(this);
@@ -16,7 +36,7 @@ public final class DimensionLowerer implements ExpressionVisitor<Dimension> {
     public Dimension visitBinaryNode(BinaryNode node) {
         Dimension leftDim = node.getLeft().accept(this);
         Dimension rightDim = node.getRight().accept(this);
-        return new BinaryDimension(leftDim, rightDim, node.getOperator());
+        return fold(new BinaryDimension(leftDim, rightDim, node.getOperator()));
     }
 
     @Override

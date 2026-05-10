@@ -37,12 +37,14 @@ public final class ConstraintStoreBuilder implements StatementVisitor<Void> {
         }
     }
 
+    // TODO extract dimension -> folding only happens in the claim statement, it should also happen in the objects themselves
     @Override
     public Void visitClaimStatementNode(ClaimStatementNode node) {
         Expression claim = node.claimExpression();
         if (claim instanceof AssignmentNode expr) {  // ex: claim x = 2 * y + 3
             constraintStore.addEqualityConstraint(extractDimension(new VariableNode(expr.variableName())), extractDimension(expr.value()));
-        } else if (claim instanceof BinaryNode bin) {
+        }
+        else if (claim instanceof BinaryNode bin) {
             switch (bin.getOperator()) {
                 case GT -> constraintStore.addGreaterThanConstraint(extractDimension(bin.getLeft()), extractDimension(bin.getRight()));
                 case LT -> constraintStore.addLessThanConstraint(extractDimension(bin.getLeft()), extractDimension(bin.getRight()));

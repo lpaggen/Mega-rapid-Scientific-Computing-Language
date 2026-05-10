@@ -6,7 +6,7 @@ int x = 67;
 
 mat<int, a@b> M = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12]];
 
-mat<int, 3@4> P = linalg::transpose(M);
+mat<int, 2+1@a> P = linalg::transpose(M);
 
 while (x > 0) {
     print("x is positive");
