@@ -1,6 +1,5 @@
 package AST;
 
-import Semantic.TypeVisitor;
 
 public final class EdgeTypeNodeInterface implements TypeInterface {
     private final TypeInterface from;
@@ -24,8 +23,8 @@ public final class EdgeTypeNodeInterface implements TypeInterface {
         return "Edge(" + from.toString() + " -> " + to.toString() + ")";
     }
 
-    @Override
-    public <R> R accept(TypeVisitor<R> visitor) {
-        return visitor.visitEdgeTypeNode(this);
-    }
+//    @Override
+//    public <R> R accept(TypeVisitor<R> visitor) {
+//        return visitor.visitEdgeTypeNode(this);
+//    }
 }

@@ -2,11 +2,17 @@ load stdlib as std;
 load graphs as g;
 load linalg;
 
-int x = 67;
+int n;
+int m;
+int k;
+int p;
 
-mat<int, a@b> M = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12]];
+mat<int, 3@3> A;
+mat<int, p@m> B;
 
-mat<int, 2+1@a> P = linalg::transpose(M);
+mat<int, k@n> C = linalg::inverse(A) * B;
+
+claim p = 3;  # this crashes, the compiler knows p must be 3
 
 while (x > 0) {
     print("x is positive");

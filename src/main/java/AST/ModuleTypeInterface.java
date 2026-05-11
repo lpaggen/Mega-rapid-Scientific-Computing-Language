@@ -1,13 +1,13 @@
 package AST;
 
-import Semantic.TypeVisitor;
+//import Semantic.TypeVisitor;
 
 public record ModuleTypeInterface(String moduleName) implements TypeInterface {
-
-    @Override
-    public <R> R accept(TypeVisitor<R> visitor) {
-        return visitor.visitModuleType(this);
-    }
+//
+//    @Override
+//    public <R> R accept(TypeVisitor<R> visitor) {
+//        return visitor.visitModuleType(this);
+//    }
 
     @Override
     public String toString() {

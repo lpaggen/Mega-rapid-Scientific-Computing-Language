@@ -1,6 +1,6 @@
 package AST;
 
-import Semantic.TypeVisitor;
+
 
 import java.util.List;
 
@@ -34,9 +34,9 @@ public final class FunctionTypeNodeInterface implements TypeInterface {
         sb.append("], returnTypeInterface=").append(returnTypeInterface).append('}');
         return sb.toString();
     }
-
-    @Override
-    public <R> R accept(TypeVisitor<R> visitor) {
-        return visitor.visitFunctionTypeNode(this);
-    }
+//
+//    @Override
+//    public <R> R accept(TypeVisitor<R> visitor) {
+//        return visitor.visitFunctionTypeNode(this);
+//    }
 }

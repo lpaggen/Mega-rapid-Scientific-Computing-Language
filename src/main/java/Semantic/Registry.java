@@ -13,7 +13,6 @@ public final class Registry {  // for functions
     public Registry() {
         register("linalg", "inverse", new LinalgInverseFunction());
         register("linalg", "transpose", new LinalgTransposeFunction());
-//        register("graphs", "plot", new GraphPlotFunction());
     }
 
     public void register(String namespace, String method, IntrinsicFunction fn) {

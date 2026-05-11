@@ -6,7 +6,7 @@ import AST.Metadata.Containers.Dimension;
 import java.util.List;
 
 public final class ExpressionDispatchVisitor implements StatementVisitor<Statement> { // TODO fill in every visit method, this is just a skeleton
-    private final ExpressionTypeVisitor expressionTypeVisitor;
+    private final TypeChecker typeChecker;
     private final ConstraintStore constraintStore;
     private final SymbolTable symbolTable;
 
@@ -16,8 +16,8 @@ public final class ExpressionDispatchVisitor implements StatementVisitor<Stateme
         }
     }
 
-    public ExpressionDispatchVisitor(ExpressionTypeVisitor expressionTypeVisitor, ConstraintStore constraintStore, SymbolTable symbolTable) {
-        this.expressionTypeVisitor = expressionTypeVisitor;
+    public ExpressionDispatchVisitor(TypeChecker typeChecker, ConstraintStore constraintStore, SymbolTable symbolTable) {
+        this.typeChecker = typeChecker;
         this.constraintStore = constraintStore;
         this.symbolTable = symbolTable;
     }
@@ -45,7 +45,7 @@ public final class ExpressionDispatchVisitor implements StatementVisitor<Stateme
     @Override
     public Statement visitReturnStatementNode(ReturnStatementNode node) {
         if (node.returnValue() != null) {
-            node.returnValue().accept(expressionTypeVisitor);
+            node.returnValue().accept(typeChecker);
         }
         return null;
     }
@@ -53,12 +53,12 @@ public final class ExpressionDispatchVisitor implements StatementVisitor<Stateme
     @Override
     public Statement visitVariableDeclarationNode(VariableDeclarationNode node) {
         if (node.initializer() == null) {
-            return node; // No initializer, so no type constraints to check
+            return node;  // want to maybe include some sort of "uninitialized" type here to catch cases where the variable is used before being initialized
         }
-        TypeInterface actual = node.initializer().accept(expressionTypeVisitor).typeInterface();
+        TypeInterface actual = node.initializer().accept(typeChecker).type().typeInterface();
         TypeInterface declared = node.type().typeInterface();
-        if (declared instanceof MatrixTypeNodeInterface expected) {
-            if (actual instanceof MatrixTypeNodeInterface found) {
+        if (declared instanceof MatrixType expected) {
+            if (actual instanceof MatrixType found) {
                 Dimension expected_rows = DimensionLowerer.fold(expected.rows());
                 Dimension expected_cols = DimensionLowerer.fold(expected.cols());
                 Dimension found_rows = DimensionLowerer.fold(found.rows());

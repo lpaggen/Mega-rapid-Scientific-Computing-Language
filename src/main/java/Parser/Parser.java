@@ -349,7 +349,7 @@ public class Parser {
             B = dimensions.cols();
         }
         consume(TokenKind.GREATER);
-        return new MatrixTypeNodeInterface(new Type(innerTypeInterface, new TypeAttributes(false, false)), A, B);
+        return new MatrixType(new Type(innerTypeInterface, new TypeAttributes(false, false)), A, B);
     }
 
     private MatrixShape parseDimension() {  // this can be used for symbols too maybe? if we extend it to accept functions etc
@@ -428,7 +428,7 @@ public class Parser {
                     if (check(TokenKind.OPEN_BRACE)) yield parseRecordLiteral();
                     else yield parseExpression();
                 }
-                case MatrixTypeNodeInterface _ -> {
+                case MatrixType _ -> {
                     if (check(TokenKind.OPEN_BRACKET)) yield parseMatrixLiteral();
                     else yield parseExpression();
                 }

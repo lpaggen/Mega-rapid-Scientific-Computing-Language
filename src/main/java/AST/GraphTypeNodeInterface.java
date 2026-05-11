@@ -1,7 +1,6 @@
 package AST;
 
 
-import Semantic.TypeVisitor;
 
 public final class GraphTypeNodeInterface implements TypeInterface {
     private final TypeInterface typeInterface;  // for now assume the typeInterface is the same for node weights and edge capacities
@@ -31,9 +30,9 @@ public final class GraphTypeNodeInterface implements TypeInterface {
                (directed ? "[Directed]" : "[Undirected]") +
                (weighted ? "[Weighted]" : "[Unweighted]");
     }
-
-    @Override
-    public <R> R accept(TypeVisitor<R> visitor) {
-        return visitor.visitGraphTypeNode(this);
-    }
+//
+//    @Override
+//    public <R> R accept(TypeVisitor<R> visitor) {
+//        return visitor.visitGraphTypeNode(this);
+//    }
 }

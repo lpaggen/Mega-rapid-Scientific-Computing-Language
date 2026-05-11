@@ -1,15 +1,15 @@
 package AST;
 
-import Semantic.TypeVisitor;
+//import Semantic.TypeVisitor;
 
 public final class VoidTypeNodeInterface implements TypeInterface {
     @Override
     public String toString() {
         return "void";
     }
-
-    @Override
-    public <R> R accept(TypeVisitor<R> visitor) {
-        return visitor.visitVoidType(this);
-    }
+//
+//    @Override
+//    public <R> R accept(TypeVisitor<R> visitor) {
+//        return visitor.visitVoidType(this);
+//    }
 }

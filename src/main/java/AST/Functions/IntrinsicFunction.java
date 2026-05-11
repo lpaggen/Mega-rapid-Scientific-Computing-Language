@@ -1,8 +1,9 @@
 package AST.Functions;
 
 import AST.Type;
+import AST.TypedExpression;
 import Semantic.ConstraintStore;
 
 public sealed interface IntrinsicFunction permits LinalgInverseFunction, LinalgTransposeFunction {
-    Type apply(Type type, ConstraintStore constraintStore);
+    TypedExpression apply(TypedExpression type, ConstraintStore constraintStore);
 }

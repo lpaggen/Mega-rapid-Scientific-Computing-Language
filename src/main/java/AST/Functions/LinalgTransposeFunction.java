@@ -1,11 +1,16 @@
 package AST.Functions;
 
+import AST.MatrixType;
+import AST.Type;
+import AST.TypedExpression;
+import Semantic.ConstraintStore;
+
 public final class LinalgTransposeFunction implements IntrinsicFunction {
     @Override
-    public AST.Type apply(AST.Type type, Semantic.ConstraintStore constraintStore) {
-        if (!(type.typeInterface() instanceof AST.MatrixTypeNodeInterface m)) {
+    public TypedExpression apply(TypedExpression type, ConstraintStore constraintStore) {
+        if (!(type.type().typeInterface() instanceof MatrixType m)) {
             throw new RuntimeException("linalg::transpose expects a matrix argument, got " + type);
         }
-        return new AST.Type(new AST.MatrixTypeNodeInterface(m.entryDataType(), m.cols(), m.rows()), new AST.TypeAttributes(type.attributes().mutable(), type.attributes().constant()));
+        return new TypedExpression(type.expr(), new Type(new MatrixType(m.entryDataType(), m.cols(), m.rows()), new AST.TypeAttributes(type.type().attributes().mutable(), type.type().attributes().constant())));
     }
 }

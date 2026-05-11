@@ -1,6 +1,5 @@
 package AST;
 
-import Semantic.TypeVisitor;
 
 public final class BooleanTypeNodeInterface implements TypeInterface {
     public BooleanTypeNodeInterface() {}
@@ -9,8 +8,8 @@ public final class BooleanTypeNodeInterface implements TypeInterface {
         return "Bool";
     }
 
-    @Override
-    public <R> R accept(TypeVisitor<R> visitor) {
-        return visitor.visitBooleanType(this);
-    }
+//    @Override
+//    public <R> R accept(TypeVisitor<R> visitor) {
+//        return visitor.visitBooleanType(this);
+//    }
 }

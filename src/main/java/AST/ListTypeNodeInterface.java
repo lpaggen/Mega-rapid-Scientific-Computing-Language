@@ -1,6 +1,6 @@
 package AST;
 
-import Semantic.TypeVisitor;
+
 
 public final class ListTypeNodeInterface implements TypeInterface {
     private TypeInterface elementTypeInterface;
@@ -16,9 +16,9 @@ public final class ListTypeNodeInterface implements TypeInterface {
     public String toString() {
         return "List<" + elementTypeInterface.toString() + ">";
     }
-
-    @Override
-    public <R> R accept(TypeVisitor<R> visitor) {
-        return visitor.visitListType(this);
-    }
+//
+//    @Override
+//    public <R> R accept(TypeVisitor<R> visitor) {
+//        return visitor.visitListType(this);
+//    }
 }

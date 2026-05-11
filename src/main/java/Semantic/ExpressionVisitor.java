@@ -3,7 +3,6 @@ package Semantic;
 import AST.*;
 import AST.BinaryNode;
 import AST.AlgebraicSymbol;
-import AST.ImportNode;
 import AST.FunctionCallNode;
 import AST.LambdaFunctionNode;
 import AST.MapFunctionNode;
@@ -17,7 +16,7 @@ import AST.EdgeLiteralNode;
 import AST.GraphNodeLiteralNode;
 import AST.MatrixLiteralNode;
 
-public sealed interface ExpressionVisitor<T> permits DimensionLowerer, Evaluator, ExpressionTypeVisitor {
+public sealed interface ExpressionVisitor<T> permits DimensionLowerer, Evaluator, TypeChecker {
     T visitBraceLiteral(BraceLiteralNode node);
     T visitBracketLiteral(BracketLiteralNode node);
     T visitFunctionCall(FunctionCallNode node);
